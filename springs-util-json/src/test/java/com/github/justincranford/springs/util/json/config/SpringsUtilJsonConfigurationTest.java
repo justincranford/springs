@@ -12,9 +12,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.util.basic.Base64Util;
-import com.github.justincranford.springs.util.basic.DateTimeUtil;
-import com.github.justincranford.springs.util.basic.SecureRandomUtil;
+import com.github.justincranford.springs.util.basic.util.Base64Util;
+import com.github.justincranford.springs.util.basic.util.DateTimeUtil;
+import com.github.justincranford.springs.util.basic.util.SecureRandomUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

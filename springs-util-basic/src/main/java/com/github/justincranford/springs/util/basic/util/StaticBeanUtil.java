@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.basic;
+package com.github.justincranford.springs.util.basic.util;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

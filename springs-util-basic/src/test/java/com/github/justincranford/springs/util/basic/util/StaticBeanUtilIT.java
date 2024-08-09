@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import com.github.justincranford.springs.util.basic.AbstractIT;
-import com.github.justincranford.springs.util.basic.StaticBeanUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

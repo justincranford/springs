@@ -5,8 +5,8 @@ import java.time.OffsetDateTime;
 import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.justincranford.springs.util.basic.DateTimeUtil;
-import com.github.justincranford.springs.util.basic.SecureRandomUtil;
+import com.github.justincranford.springs.util.basic.util.DateTimeUtil;
+import com.github.justincranford.springs.util.basic.util.SecureRandomUtil;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;

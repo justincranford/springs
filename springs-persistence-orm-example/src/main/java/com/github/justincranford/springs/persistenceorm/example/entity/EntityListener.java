@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.util.basic.DateTimeUtil;
+import com.github.justincranford.springs.util.basic.util.DateTimeUtil;
 
 import jakarta.persistence.PostLoad;
 import jakarta.persistence.PostPersist;

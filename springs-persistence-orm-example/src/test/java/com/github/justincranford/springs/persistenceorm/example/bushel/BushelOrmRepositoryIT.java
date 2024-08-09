@@ -13,8 +13,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.github.justincranford.springs.persistenceorm.example.AbstractIT;
 import com.github.justincranford.springs.persistenceorm.example.apple.AppleOrm;
 import com.github.justincranford.springs.persistenceorm.example.apple.AppleOrm.Type;
-import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-import com.github.justincranford.springs.util.basic.StringUtil;
+import com.github.justincranford.springs.util.basic.util.SecureRandomUtil;
+import com.github.justincranford.springs.util.basic.util.StringUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
