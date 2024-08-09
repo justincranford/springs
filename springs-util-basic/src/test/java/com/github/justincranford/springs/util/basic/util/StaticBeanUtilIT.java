@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.observability.util;
+package com.github.justincranford.springs.util.basic.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,14 +7,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-import com.github.justincranford.springs.util.observability.AbstractIT;
+import com.github.justincranford.springs.util.basic.AbstractIT;
+import com.github.justincranford.springs.util.basic.StaticBeanUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @Slf4j
 @SuppressWarnings("static-method")
-public class StaticBeanUtilTest extends AbstractIT {
+public class StaticBeanUtilIT extends AbstractIT {
 	@Test
 	void testComponentBean1() {
 		assertThat(StaticBeanUtil.get(Bean1.class)).isInstanceOf(Bean1.class);

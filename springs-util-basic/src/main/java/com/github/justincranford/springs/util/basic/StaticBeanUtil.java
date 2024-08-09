@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.observability.util;
+package com.github.justincranford.springs.util.basic;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
