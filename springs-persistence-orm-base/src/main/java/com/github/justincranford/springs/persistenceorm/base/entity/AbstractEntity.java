@@ -48,8 +48,10 @@ import lombok.extern.slf4j.Slf4j;
 public class AbstractEntity {
 	protected static final String WHERE_CLAUSE = "delete_date_time IS NULL OR delete_date_time < NOW()";
 	protected static final int SEQUENCE_ID_INITIAL_VALUE = 1000;
-	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_SMALL = 25;
+	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_SMALL = 10;
 	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM = 100;
+	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_LARGE = 1000;
+	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_EXTRA_LARGE = 10000;
 	protected static final String SEQUENCE_ID = "ABSTRACT_ENTITY_SEQUENCE_ID";
 
 	@Id
