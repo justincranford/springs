@@ -10,13 +10,13 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
+import org.springframework.validation.annotation.Validated;
 
-import jakarta.annotation.Nonnull;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern.Flag;
 import jakarta.validation.constraints.Positive;
@@ -31,7 +31,7 @@ import lombok.ToString;
 @Component
 @ConfigurationProperties(prefix="springs.persistenceorm.base",ignoreUnknownFields=false,ignoreInvalidFields=false)
 @PropertySource("classpath:springs-persistence-orm-base.properties")
-@Valid
+@Validated
 @Getter
 @Setter
 @ToString(callSuper=false)
@@ -39,32 +39,28 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpringsPersistenceOrmBaseProperties {
-	@Nonnull
 	@NotNull
-	@NotBlank
+	@NotEmpty
 	@Size(min=1, max=255)
     private String hostName;
 
-	@Nonnull
+	@NotNull
 	@Min(value=1)
 	@Max(value=65535)
 	@Positive
     private Integer port;
 
-	@Nonnull
 	@NotNull
-	@NotBlank
+	@NotEmpty
 	@Size(min=1+1+1, max=64+1+255)
 	@Email(flags = { Flag.CASE_INSENSITIVE })
     private String from;
 
-	@Nonnull
 	@NotNull
 //	@PositiveOrZero
     @DurationUnit(ChronoUnit.DAYS)
     private Duration durationInDays;
 
-	@Nonnull
 	@NotNull
 //	@Min(value = 0)
 //	@PositiveOrZero
