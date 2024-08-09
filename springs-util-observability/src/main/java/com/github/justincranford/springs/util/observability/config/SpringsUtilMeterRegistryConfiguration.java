@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Primary;
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.ImmutableTag;
+import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
@@ -29,11 +30,13 @@ import io.micrometer.core.instrument.logging.LoggingMeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 //import io.micrometer.prometheusmetrics.PrometheusConfig;
 //import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
+import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @EnableAspectJAutoProxy
 //@ComponentScan(basePackages={"com.github.justincranford.springs.util.observability"})
 @SuppressWarnings({"nls", "static-method"})
+@Slf4j
 public class SpringsUtilMeterRegistryConfiguration {
 	@Autowired
 	private ApplicationContext applicationContext;

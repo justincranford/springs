@@ -1,10 +1,7 @@
 package com.github.justincranford.springs.util.observability.config;
 
-import java.util.stream.StreamSupport;
-
 import org.springframework.stereotype.Component;
 
-import io.micrometer.common.KeyValue;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +24,4 @@ public class TraceObservationHandler implements ObservationHandler<Observation.C
     public boolean supportsContext(final Observation.Context context) {
         return true;
     }
-//, getUserTypeFromContext(context)
-//	private String getUserTypeFromContext(final Observation.Context context) {
-//        return StreamSupport.stream(context.getLowCardinalityKeyValues().spliterator(), false)
-//                .filter(keyValue -> "userType".equals(keyValue.getKey()))
-//                .map(KeyValue::getValue)
-//                .findFirst()
-//                .orElse("UNKNOWN");
-//    }
 }

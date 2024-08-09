@@ -1,8 +1,5 @@
 package com.github.justincranford.springs.persistenceorm.example;
 
-import java.util.List;
-
-import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
@@ -17,7 +14,6 @@ import com.github.justincranford.springs.persistenceorm.example.config.SpringsPe
 import com.github.justincranford.springs.persistenceorm.example.properties.SpringsPersistenceOrmProperties;
 import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
 
-import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.annotation.Observed;
 import jakarta.annotation.PostConstruct;
@@ -31,8 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 @Accessors(fluent = true)
 @ActiveProfiles({"test"})
 @Slf4j
-@SuppressWarnings("nls")
 @Observed
+@SuppressWarnings("static-method")
 public class AbstractIT {
     @Autowired
 	private MeterRegistry meterRegistry;
@@ -48,32 +44,11 @@ public class AbstractIT {
 	@PostConstruct
 	private void postConstruct() {
 		SpringsUtilTestContainers.startAllContainers();
-		PrintAllMetrics.METER_REGISTRY = this.meterRegistry;
-	}
-
-    @AfterAll
-    static void afterAll() {
-    	PrintAllMetrics.printAllMetrics();
 	}
 
     @Configuration
 	@EnableAutoConfiguration
 	public static class AbstractITConfiguration {
     	// do nothing
-    }
-
-    private static class PrintAllMetrics {
-    	// set by AbstractIT @PostConstruct from @Autowired
-    	// Used by AbstractIT @AfterAll to print all Metric IDs and Measurements
-        private static MeterRegistry METER_REGISTRY;
-        private static void printAllMetrics() {
-    		assert METER_REGISTRY != null : "METER_REGISTRY must not be null";
-    		final List<Meter> meters = METER_REGISTRY.getMeters();
-    		if (meters.isEmpty()) {
-    			log.info("No meters");
-    		} else {
-    			meters.forEach(meter -> {log.atInfo().addArgument(() -> meter.getId()).addArgument(() -> meter.measure()).log("Meter: {} = {}");});
-    		}
-    	}
     }
 }
