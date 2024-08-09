@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.observability.util;
+package com.github.justincranford.springs.util.observability.meter.util;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.observability.config;
+package com.github.justincranford.springs.util.observability.meter;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
