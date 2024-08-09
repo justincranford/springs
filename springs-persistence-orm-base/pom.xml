@@ -11,9 +11,9 @@
 		<relativePath>..</relativePath>
 	</parent>
 
-	<artifactId>springs-persistence-orm-example</artifactId>
-	<name>Springs Persistence ORM Example</name>
-	<description>Springs Persistence ORM Example</description>
+	<artifactId>springs-persistence-orm-base</artifactId>
+	<name>Springs Persistence ORM Base</name>
+	<description>Springs Persistence ORM Base</description>
 
 	<dependencies>
 		<dependency>
@@ -30,17 +30,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-
-        <dependency>
-            <groupId>com.github.justincranford.springs</groupId>
-            <artifactId>springs-persistence-orm-base</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-util-basic</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
@@ -50,25 +39,12 @@
 			<artifactId>springs-util-json</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>com.github.justincranford.springs</groupId>
-			<artifactId>springs-util-observability</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>com.github.justincranford.springs</groupId>
-			<artifactId>springs-util-testcontainers</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		    <scope>test</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>

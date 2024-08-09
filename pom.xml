@@ -23,6 +23,7 @@
 		<module>springs-util-json</module>
 		<module>springs-util-observability</module>
 		<module>springs-util-testcontainers</module>
+		<module>springs-persistence-orm-base</module>
 		<module>springs-persistence-orm-example</module>
 		<module>springs-service-example</module>
 		<module>springs-server-example</module>
