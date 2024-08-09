@@ -10,8 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.github.justincranford.springs.persistenceorm.example.apple.AppleOrmRepository;
 import com.github.justincranford.springs.persistenceorm.example.bushel.BushelOrmRepository;
-import com.github.justincranford.springs.persistenceorm.example.config.SpringsPersistenceOrmConfiguration;
-import com.github.justincranford.springs.persistenceorm.example.properties.SpringsPersistenceOrmProperties;
+import com.github.justincranford.springs.persistenceorm.example.config.SpringsPersistenceOrmExampleConfiguration;
 import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -21,7 +20,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
-@SpringBootTest(classes={SpringsPersistenceOrmConfiguration.class,SpringsUtilTestContainers.class,AbstractIT.AbstractITConfiguration.class})
+@SpringBootTest(classes={SpringsPersistenceOrmExampleConfiguration.class,SpringsUtilTestContainers.class,AbstractIT.AbstractITConfiguration.class})
 @AutoConfigureObservability
 @Getter
 @Accessors(fluent = true)
@@ -34,8 +33,6 @@ public class AbstractIT {
 	private MeterRegistry meterRegistry;
     @Autowired
     private ApplicationContext applicationContext;
-	@Autowired
-	private SpringsPersistenceOrmProperties springsPersistenceOrmProperties;
     @Autowired
 	private AppleOrmRepository appleOrmRepository;
 	@Autowired

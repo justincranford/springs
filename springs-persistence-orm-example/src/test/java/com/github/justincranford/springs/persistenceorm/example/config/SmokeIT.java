@@ -8,16 +8,13 @@ import com.github.justincranford.springs.persistenceorm.example.AbstractIT;
 
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings("nls")
 @Slf4j
 public class SmokeIT extends AbstractIT {
 	@Test
 	void contextLoads() {
 		assertThat(super.meterRegistry()).isNotNull();
 		assertThat(super.applicationContext()).isNotNull();
-		assertThat(super.springsPersistenceOrmProperties()).isNotNull();
 		assertThat(super.appleOrmRepository()).isNotNull();
 		assertThat(super.bushelOrmRepository()).isNotNull();
-		log.info("springsPersistenceOrmProperties: {}", super.springsPersistenceOrmProperties());
 	}
 }

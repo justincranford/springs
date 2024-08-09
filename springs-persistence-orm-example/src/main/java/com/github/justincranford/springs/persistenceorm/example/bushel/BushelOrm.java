@@ -9,8 +9,8 @@ import org.hibernate.envers.Audited;
 import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.example.apple.AppleOrm;
-import com.github.justincranford.springs.persistenceorm.example.entity.AbstractEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;

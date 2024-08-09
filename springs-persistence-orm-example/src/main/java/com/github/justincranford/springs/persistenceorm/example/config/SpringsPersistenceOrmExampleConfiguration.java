@@ -16,6 +16,6 @@ import com.github.justincranford.springs.util.observability.config.SpringsUtilOb
 @ComponentScan(basePackages={"com.github.justincranford.springs.persistenceorm.example"})
 @EnableJpaRepositories(basePackages={"com.github.justincranford.springs.persistenceorm.example"}, repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)
 @Import({SpringsUtilBasicConfiguration.class,SpringsUtilJsonConfiguration.class,SpringsUtilObservabilityConfiguration.class})
-public class SpringsPersistenceOrmConfiguration {
+public class SpringsPersistenceOrmExampleConfiguration {
 	// do nothing
 }
