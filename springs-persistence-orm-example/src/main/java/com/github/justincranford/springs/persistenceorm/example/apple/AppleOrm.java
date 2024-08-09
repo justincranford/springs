@@ -46,6 +46,7 @@ import lombok.experimental.Accessors;
 @SQLDelete(sql="UPDATE apple SET delete_date_time=NOW() WHERE internal_id=? AND version=?")
 @SQLRestriction(AbstractEntity.WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="apple_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
+@SuppressWarnings("nls")
 public class AppleOrm extends AbstractEntity {
 	public enum Type {
 		EMPIRE, GALA, GOLDEN_DELICIOUS;

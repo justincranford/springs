@@ -1,12 +1,8 @@
 package com.github.justincranford.springs.persistenceorm.example.bushel;
 
-import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.Audited;
