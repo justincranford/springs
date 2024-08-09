@@ -33,19 +33,19 @@ public class SpringsUtilTestContainers {
 
 	private static List<AbstractTestContainer<?>> allTestContainerInstances() {
 		return List.of(
-//		    new TestContainerElasticsearch(),  // Example: 23.152 seconds 47.656 seconds
-//		    new TestContainerKeycloak(),       // Example: 18.809 seconds 40.408 seconds
-//		    new TestContainerGrafana(),        // Example: 10.437 seconds 17.041 seconds
-//		    new TestContainerKafka(),          // Example:  8.321 seconds 15.380 seconds
-//		    new TestContainerZipkin(),         // Example:  6.794 seconds 17.291 seconds
-//		    new TestContainerDynamoDb(),       // Example:  6.300 seconds 11.433 seconds
-//		    new TestContainerPostgresql(),     // Example:  6.204 seconds  4.056 seconds
-//		    new TestContainerSeleniumChrome(), // Example:  5.468 seconds  7.835 seconds
-//		    new TestContainerMongoDb(),        // Example:  5.060 seconds  7.026 seconds
-//		    new TestContainerVault(),          // Example:  3.640 seconds  2.909 seconds
-//		    new TestContainerConsul(),         // Example:  2.602 seconds  2.933 seconds
-//		    new TestContainerRedis(),          // Example:  2.334 seconds  2.647 seconds
-//		    new TestContainerOllama()          // Example:  1.318 seconds  1.936 seconds
+		    new TestContainerElasticsearch(),  // Example: 23.152 seconds 47.656 seconds
+		    new TestContainerKeycloak(),       // Example: 18.809 seconds 40.408 seconds
+		    new TestContainerGrafana(),        // Example: 10.437 seconds 17.041 seconds
+		    new TestContainerKafka(),          // Example:  8.321 seconds 15.380 seconds
+		    new TestContainerZipkin(),         // Example:  6.794 seconds 17.291 seconds
+		    new TestContainerDynamoDb(),       // Example:  6.300 seconds 11.433 seconds
+		    new TestContainerPostgresql(),     // Example:  6.204 seconds  4.056 seconds
+		    new TestContainerSeleniumChrome(), // Example:  5.468 seconds  7.835 seconds
+		    new TestContainerMongoDb(),        // Example:  5.060 seconds  7.026 seconds
+		    new TestContainerVault(),          // Example:  3.640 seconds  2.909 seconds
+		    new TestContainerConsul(),         // Example:  2.602 seconds  2.933 seconds
+		    new TestContainerRedis(),          // Example:  2.334 seconds  2.647 seconds
+		    new TestContainerOllama()          // Example:  1.318 seconds  1.936 seconds
 		);
 	}
 
