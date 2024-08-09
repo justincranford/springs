@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.observability.config;
+package com.github.justincranford.springs.util.observability.handler;
 
 import org.springframework.stereotype.Component;
 
@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-@SuppressWarnings({"nls", "static-method"})
+@SuppressWarnings({"nls"})
 public class TraceObservationHandler implements ObservationHandler<Observation.Context> {
 	@Override
     public void onStart(final Observation.Context context) {

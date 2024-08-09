@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.observability.config;
+package com.github.justincranford.springs.util.observability.util;
 
 import java.util.List;
 
