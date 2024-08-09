@@ -11,10 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SmokeIT extends AbstractIT {
 	@Test
-	void contextLoads() {
+	void testBeans() {
 		assertThat(super.meterRegistry()).isNotNull();
 		assertThat(super.applicationContext()).isNotNull();
 		assertThat(super.appleOrmRepository()).isNotNull();
 		assertThat(super.bushelOrmRepository()).isNotNull();
+		assertThat(super.springsPersistenceOrmExampleProperties()).isNotNull();
+		assertThat(super.springsPersistenceOrmBaseProperties()).isNotNull();
 	}
 }

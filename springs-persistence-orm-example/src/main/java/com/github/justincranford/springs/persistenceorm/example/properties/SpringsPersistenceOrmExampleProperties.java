@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.base.properties;
+package com.github.justincranford.springs.persistenceorm.example.properties;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -29,8 +29,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Component
-@ConfigurationProperties(prefix="springs.persistenceorm.base",ignoreUnknownFields=false,ignoreInvalidFields=false)
-@PropertySource("classpath:springs-persistence-orm-base.properties")
+@ConfigurationProperties(prefix="springs.persistenceorm.example",ignoreUnknownFields=false,ignoreInvalidFields=false)
+@PropertySource("classpath:springs-persistence-orm-example.properties")
 @Valid
 @Getter
 @Setter
@@ -38,7 +38,7 @@ import lombok.ToString;
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class SpringsPersistenceOrmBaseProperties {
+public class SpringsPersistenceOrmExampleProperties {
 	@Nonnull
 	@NotNull
 	@NotBlank
