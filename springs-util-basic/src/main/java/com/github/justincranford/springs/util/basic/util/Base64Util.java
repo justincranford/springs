@@ -7,7 +7,10 @@ public class Base64Util {
 	public static final Encoder STD_ENCODE = new Encoder(Base64.getEncoder().withoutPadding());
 	public static final Decoder STD_DECODE = new Decoder(Base64.getDecoder());
 
-	public static final Encoder MIME_ENCODE = new Encoder(Base64.getMimeEncoder().withoutPadding());
+    private static final byte[] CRLF = new byte[] {'\r', '\n'};
+    private static final byte[] LF = new byte[] {'\n'};
+	public static final Encoder MIME76_ENCODE = new Encoder(Base64.getMimeEncoder(76, CRLF).withoutPadding());
+	public static final Encoder MIME_ENCODE = new Encoder(Base64.getMimeEncoder(Integer.MAX_VALUE, LF).withoutPadding());
 	public static final Decoder MIME_DECODE = new Decoder(Base64.getMimeDecoder());
 
 	public static final Encoder URL_ENCODE = new Encoder(Base64.getUrlEncoder().withoutPadding());
