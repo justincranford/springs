@@ -30,7 +30,7 @@ import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
-import com.github.justincranford.springs.util.basic.util.SecureRandomUtil;
+import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 
 @SuppressWarnings("nls")
 public class CertUtil {

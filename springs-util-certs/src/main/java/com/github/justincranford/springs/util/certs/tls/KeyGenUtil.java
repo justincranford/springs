@@ -7,7 +7,7 @@ import java.security.spec.ECGenParameterSpec;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import com.github.justincranford.springs.util.basic.util.SecureRandomUtil;
+import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 
 @SuppressWarnings("nls")
 public class KeyGenUtil {

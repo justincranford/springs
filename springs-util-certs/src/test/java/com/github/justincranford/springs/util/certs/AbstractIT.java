@@ -8,13 +8,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.github.justincranford.springs.util.certs.tls.TomcatTlsInitializer;
-import com.github.justincranford.springs.util.observability.config.SpringsUtilObservabilityConfiguration;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
 @SpringBootTest(
-	classes={SpringsUtilObservabilityConfiguration.class, AbstractIT.AbstractITConfiguration.class},
+	classes={AbstractIT.AbstractITConfiguration.class},
 	webEnvironment = WebEnvironment.RANDOM_PORT
 )
 @ContextConfiguration(

@@ -14,27 +14,4 @@
 	<artifactId>springs-util-basic</artifactId>
 	<name>Springs Util Basic</name>
 	<description>Springs Util Basic</description>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-aop</artifactId>
-		</dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-logging</artifactId>
-        </dependency>
-
-		<dependency>
-			<groupId>com.github.justincranford.springs</groupId>
-			<artifactId>springs-util-observability</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-	</dependencies>
 </project>

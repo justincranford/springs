@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.basic.util;
+package com.github.justincranford.springs.util.basic;
 
 import java.lang.reflect.Array;
 import java.util.stream.IntStream;

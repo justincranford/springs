@@ -13,8 +13,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.github.justincranford.springs.persistenceorm.example.AbstractIT;
 import com.github.justincranford.springs.persistenceorm.example.apple.AppleOrm;
 import com.github.justincranford.springs.persistenceorm.example.apple.AppleOrm.Type;
-import com.github.justincranford.springs.util.basic.util.SecureRandomUtil;
-import com.github.justincranford.springs.util.basic.util.StringUtil;
+import com.github.justincranford.springs.util.basic.SecureRandomUtil;
+import com.github.justincranford.springs.util.basic.StringUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +51,7 @@ public class BushelOrmRepositoryIT extends AbstractIT {
 			assertThat(bushelById).isPresent();
 			log.info("Bushel By ID: {}\n{}\n", savedBushel.internalId(), bushelById.orElseThrow());
 			IntStream.range(appleOffsetStart, appleOffsetStart + args.numApples()).forEach(appleOffset -> {
-				final Type type = SecureRandomUtil.staticRandomEnumElement(AppleOrm.Type.class);
+				final Type type = SecureRandomUtil.randomEnumElement(AppleOrm.Type.class);
 				final AppleOrm savedApple = super.appleOrmRepository().save(AppleOrm.builder().type(type).description(description + "_" + appleOffset).build());
 				savedBushel.addApple(savedApple);
 				final Optional<AppleOrm> appleById = super.appleOrmRepository().findById(savedApple.internalId());
@@ -59,7 +59,7 @@ public class BushelOrmRepositoryIT extends AbstractIT {
 				log.info("Apple By ID: {}\n{}\n", savedApple.internalId(), appleById.orElseThrow());
 			});
 			IntStream.range(appleOffsetStart, appleOffsetStart + args.numApples()).forEach(appleOffset -> {
-				final Type type = SecureRandomUtil.staticRandomEnumElement(AppleOrm.Type.class);
+				final Type type = SecureRandomUtil.randomEnumElement(AppleOrm.Type.class);
 				final AppleOrm savedApple = super.appleOrmRepository().save(AppleOrm.builder().type(type).description("").build());
 				savedBushel.addApple(savedApple);
 				final Optional<AppleOrm> appleById = super.appleOrmRepository().findById(savedApple.internalId());

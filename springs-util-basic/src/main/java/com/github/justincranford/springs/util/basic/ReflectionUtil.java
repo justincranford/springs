@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.basic.util;
+package com.github.justincranford.springs.util.basic;
 
 public class ReflectionUtil {
 	public static Object invokeStaticMethod(final Class<?> clazz, final String staticMethodName, final Object... args) {

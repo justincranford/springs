@@ -5,8 +5,8 @@ import java.time.OffsetDateTime;
 import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.justincranford.springs.util.basic.util.DateTimeUtil;
-import com.github.justincranford.springs.util.basic.util.SecureRandomUtil;
+import com.github.justincranford.springs.util.basic.DateTimeUtil;
+import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;
@@ -92,7 +92,7 @@ public class AbstractEntity {
 
 	@PrePersist
 	public void prePersist() {
-		this.externalId = SecureRandomUtil.staticRandomBytes(32);
+		this.externalId = SecureRandomUtil.randomBytes(32);
 		this.createDateTime = DateTimeUtil.nowUtcTruncatedToMilliseconds();
 	}
 	@PostPersist

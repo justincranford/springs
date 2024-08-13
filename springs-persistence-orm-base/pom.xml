@@ -33,6 +33,11 @@
             <artifactId>spring-boot-starter-logging</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.justincranford.springs</groupId>
+            <artifactId>springs-util-observability</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-util-basic</artifactId>

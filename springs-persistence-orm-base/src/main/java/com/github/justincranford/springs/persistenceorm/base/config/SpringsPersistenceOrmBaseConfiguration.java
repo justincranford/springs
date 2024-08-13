@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
-import com.github.justincranford.springs.util.basic.config.SpringsUtilBasicConfiguration;
 import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
 import com.github.justincranford.springs.util.observability.config.SpringsUtilObservabilityConfiguration;
 
@@ -23,7 +22,6 @@ import com.github.justincranford.springs.util.observability.config.SpringsUtilOb
 	repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class
 )
 @Import({
-	SpringsUtilBasicConfiguration.class,
 	SpringsUtilJsonConfiguration.class,
 	SpringsUtilObservabilityConfiguration.class
 })

@@ -12,9 +12,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.util.basic.util.Base64Util;
-import com.github.justincranford.springs.util.basic.util.DateTimeUtil;
-import com.github.justincranford.springs.util.basic.util.SecureRandomUtil;
+import com.github.justincranford.springs.util.basic.Base64Util;
+import com.github.justincranford.springs.util.basic.DateTimeUtil;
+import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +30,7 @@ public class SpringsUtilJsonConfigurationTest {
 
 	@Test
 	void testSerializeDeserializeNonNulls() throws IOException {
-		helper(new Pojo(Integer.valueOf(SecureRandomUtil.SECURE_RANDOM.nextInt()), Base64Util.MIME_ENCODE.string(SecureRandomUtil.staticRandomBytes(32)), DateTimeUtil.nowUtcTruncatedToNanoseconds()));
+		helper(new Pojo(Integer.valueOf(SecureRandomUtil.SECURE_RANDOM.nextInt()), Base64Util.MIME_ENCODE.string(SecureRandomUtil.randomBytes(32)), DateTimeUtil.nowUtcTruncatedToNanoseconds()));
 	}
 
 	@Test

@@ -16,7 +16,7 @@ import org.springframework.boot.autoconfigure.ssl.PemSslBundleProperties;
 import org.springframework.boot.autoconfigure.ssl.PropertiesSslBundle;
 import org.springframework.boot.ssl.SslBundle;
 
-import com.github.justincranford.springs.util.basic.util.SecureRandomUtil;
+import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.google.common.collect.Sets;
 
 @SuppressWarnings("nls")

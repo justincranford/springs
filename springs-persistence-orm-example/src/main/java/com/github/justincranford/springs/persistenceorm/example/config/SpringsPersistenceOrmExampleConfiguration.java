@@ -11,7 +11,6 @@ import com.github.justincranford.springs.persistenceorm.base.config.SpringsPersi
 import com.github.justincranford.springs.persistenceorm.example.apple.AppleOrm;
 import com.github.justincranford.springs.persistenceorm.example.bushel.BushelOrm;
 import com.github.justincranford.springs.persistenceorm.example.properties.SpringsPersistenceOrmExampleProperties;
-import com.github.justincranford.springs.util.basic.config.SpringsUtilBasicConfiguration;
 import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
 import com.github.justincranford.springs.util.observability.config.SpringsUtilObservabilityConfiguration;
 
@@ -26,7 +25,6 @@ import com.github.justincranford.springs.util.observability.config.SpringsUtilOb
 )
 @Import({
 	SpringsPersistenceOrmBaseConfiguration.class,
-	SpringsUtilBasicConfiguration.class,
 	SpringsUtilJsonConfiguration.class,
 	SpringsUtilObservabilityConfiguration.class
 })

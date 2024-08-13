@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.basic.util;
+package com.github.justincranford.springs.util.basic;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

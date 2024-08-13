@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 
-import com.github.justincranford.springs.util.basic.util.Base64Util;
+import com.github.justincranford.springs.util.basic.Base64Util;
 
 @SuppressWarnings("nls")
 public class PemUtil {
