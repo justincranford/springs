@@ -26,6 +26,7 @@
         <module>springs-util-observability</module>
         <module>springs-util-certs</module>
         <module>springs-util-testcontainers</module>
+        <module>springs-util-security</module>
         <module>springs-persistence-orm-base</module>
         <module>springs-persistence-orm-example</module>
         <module>springs-service-example</module>
@@ -43,6 +44,11 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpkix-jdk18on</artifactId>
+                <version>1.78.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
                 <version>1.78.1</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->

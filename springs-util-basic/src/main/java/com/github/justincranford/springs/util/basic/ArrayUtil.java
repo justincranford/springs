@@ -1,11 +1,20 @@
 package com.github.justincranford.springs.util.basic;
 
 import java.lang.reflect.Array;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 public class ArrayUtil {
 	public static <O> O firstOrNull(final O[] array) {
 		return (array != null) && (array.length > 0) ? array[0] : null;
+	}
+
+	public static byte[] concat(final byte[]... byteArrays) {
+	    final int concatLength = Arrays.stream(byteArrays).mapToInt(byteArray -> byteArray.length).sum();
+		final ByteBuffer byteBuffer = ByteBuffer.allocate(concatLength);
+	    Arrays.stream(byteArrays).forEach(byteArray -> byteBuffer.put(byteArray));
+	    return byteBuffer.array();
 	}
 
 	@SuppressWarnings("unchecked")
