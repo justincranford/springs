@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.security.encoder;
+package com.github.justincranford.springs.util.security.encoder.argon2;
 
 import static org.bouncycastle.crypto.params.Argon2Parameters.ARGON2_id;
 
@@ -10,20 +10,19 @@ import java.util.function.Function;
 
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
 import org.bouncycastle.crypto.params.Argon2Parameters;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-import com.github.justincranford.springs.util.security.encoder.Argon2EncodingUtils.Argon2Hash;
+import com.github.justincranford.springs.util.security.encoder.argon2.Argon2EncodingUtils.Argon2Hash;
 
-import lombok.RequiredArgsConstructor;
-
-@Configuration
-@RequiredArgsConstructor
 @SuppressWarnings({"nls"})
-public class EncodersArgon2 {
+public class Argon2Encoder {
+	private Argon2Encoder() {
+		// do nothing
+	}
+
 	public static class RandomSalt extends CustomArgon2Encoder {
 		public RandomSalt(byte[] context, int randomSaltLength, int hashLength, int parallelism, int memory, int iterations) {
 			super(context, (rawPassword) -> SecureRandomUtil.randomBytes(randomSaltLength), hashLength, parallelism, memory, iterations);

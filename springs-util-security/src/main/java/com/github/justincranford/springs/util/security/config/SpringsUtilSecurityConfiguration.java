@@ -7,12 +7,13 @@ import org.springframework.context.annotation.Import;
 
 import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
 import com.github.justincranford.springs.util.observability.config.SpringsUtilObservabilityConfiguration;
+import com.github.justincranford.springs.util.security.encoder.EncodersConfiguration;
 import com.github.justincranford.springs.util.security.properties.SpringsUtilSecurityProperties;
 
 @Configuration
 @EnableConfigurationProperties
 @ComponentScan(
-	basePackageClasses = {SpringsUtilSecurityProperties.class}
+	basePackageClasses = {SpringsUtilSecurityProperties.class, EncodersConfiguration.class}
 )
 @Import({
 	SpringsUtilObservabilityConfiguration.class,

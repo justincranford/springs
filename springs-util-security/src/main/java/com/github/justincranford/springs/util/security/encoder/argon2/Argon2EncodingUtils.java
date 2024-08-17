@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.justincranford.springs.util.security.encoder;
+package com.github.justincranford.springs.util.security.encoder.argon2;
 
 import java.util.Base64;
 
