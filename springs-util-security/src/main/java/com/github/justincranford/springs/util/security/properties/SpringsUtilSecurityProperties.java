@@ -41,9 +41,9 @@ public class SpringsUtilSecurityProperties {
 		// TODO more validation
 
 		this.keyEncoder.entrySet().stream().forEach(keyEncoders -> {
-			final int constantSaltCount = this.keyValueEncodersArgon2.constantSalt.containsKey(keyEncoders.getValue()) ? 1 : 0;
-			final int derivedSaltCount  = this.keyValueEncodersArgon2.derivedSalt.containsKey(keyEncoders.getValue())  ? 1 : 0;
-			final int randomSaltCount   = this.keyValueEncodersArgon2.randomSalt.containsKey(keyEncoders.getValue())   ? 1 : 0;
+			final int constantSaltCount = this.encodersArgon2.constantSalt.containsKey(keyEncoders.getValue()) ? 1 : 0;
+			final int derivedSaltCount  = this.encodersArgon2.derivedSalt.containsKey(keyEncoders.getValue())  ? 1 : 0;
+			final int randomSaltCount   = this.encodersArgon2.randomSalt.containsKey(keyEncoders.getValue())   ? 1 : 0;
 			final int count             = constantSaltCount + derivedSaltCount + randomSaltCount;
 			if (count == 0) {
 				throw new ValidationException("No encoder defined for keyEncoder[" + keyEncoders.getKey() + "]=" + keyEncoders.getValue());
@@ -53,9 +53,9 @@ public class SpringsUtilSecurityProperties {
 		});
 
 		this.valueEncoder.entrySet().stream().forEach(valueEncoders -> {
-			final int constantSaltCount = this.keyValueEncodersArgon2.constantSalt.containsKey(valueEncoders.getValue()) ? 1 : 0;
-			final int derivedSaltCount  = this.keyValueEncodersArgon2.derivedSalt.containsKey(valueEncoders.getValue())  ? 1 : 0;
-			final int randomSaltCount   = this.keyValueEncodersArgon2.randomSalt.containsKey(valueEncoders.getValue())   ? 1 : 0;
+			final int constantSaltCount = this.encodersArgon2.constantSalt.containsKey(valueEncoders.getValue()) ? 1 : 0;
+			final int derivedSaltCount  = this.encodersArgon2.derivedSalt.containsKey(valueEncoders.getValue())  ? 1 : 0;
+			final int randomSaltCount   = this.encodersArgon2.randomSalt.containsKey(valueEncoders.getValue())   ? 1 : 0;
 			final int count             = constantSaltCount + derivedSaltCount + randomSaltCount;
 			if (count == 0) {
 				throw new ValidationException("No encoder defined for keyEncoder[" + valueEncoders.getKey() + "]=" + valueEncoders.getValue());
@@ -75,7 +75,7 @@ public class SpringsUtilSecurityProperties {
 	@Size(min=Constants.MIN_VALUE_ENCODERS, max=Constants.MAX_VALUE_ENCODERS)
 	private TreeMap<Integer, String> valueEncoder; // rank => configName
 
-	private KeyValueEncodersArgon2 keyValueEncodersArgon2;
+	private EncodersArgon2 encodersArgon2;
 
 	@Component
 	@Validated
@@ -85,7 +85,7 @@ public class SpringsUtilSecurityProperties {
 	@Builder(toBuilder=true)
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class KeyValueEncodersArgon2 {
+	public static class EncodersArgon2 {
 		@NotNull
 		@Builder.Default
 		@Size(min=Constants.MIN_CONSTANT_SALT_ENCODERS, max=Constants.MAX_CONSTANT_SALT_ENCODERS)

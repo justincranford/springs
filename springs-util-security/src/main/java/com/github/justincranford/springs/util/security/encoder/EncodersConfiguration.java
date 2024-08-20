@@ -1,9 +1,9 @@
 package com.github.justincranford.springs.util.security.encoder;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.github.justincranford.springs.util.security.encoder.argon2.Argon2Encoder;
+import com.github.justincranford.springs.util.security.properties.SpringsUtilSecurityProperties;
+import com.github.justincranford.springs.util.security.properties.SpringsUtilSecurityProperties.EncodersArgon2;
 
 @Configuration
 @Import({EncodersConfiguration.KeyEncodersConfiguration.class, EncodersConfiguration.ValueEncodersConfiguration.class})
@@ -28,69 +30,61 @@ public class EncodersConfiguration {
 
 	@Configuration
 	public class KeyEncodersConfiguration {
-		private final LinkedHashMap<String, PasswordEncoder> idToValueEncoders     = toLinkedHashMap(keyEncoder1(), keyEncoder0());
-		private final String                                 defaultValueEncoderId = this.idToValueEncoders.firstEntry().getKey();
+		private final LinkedHashMap<String, PasswordEncoder> idToKeyEncoders = new LinkedHashMap<>();
+		public KeyEncodersConfiguration(final SpringsUtilSecurityProperties props) {
+			final List<String> keyEncoderConfigNames = new ArrayList<>(props.getKeyEncoder().values());
+			Collections.reverse(keyEncoderConfigNames);
+			for (final String keyEncoderConfigName : keyEncoderConfigNames) {
+				final EncodersArgon2.ConstantSalt constantSaltProps = props.getEncodersArgon2().getConstantSalt().get(keyEncoderConfigName);
+				final EncodersArgon2.DerivedSalt derivedSaltProps = props.getEncodersArgon2().getDerivedSalt().get(keyEncoderConfigName);
+				final Argon2Encoder.CustomArgon2Encoder keyEncoder;
+				final String id;
+				if ((constantSaltProps == null) && (derivedSaltProps == null)) {
+					throw new RuntimeException();
+				} else if ((constantSaltProps != null) && (derivedSaltProps != null)) {
+					throw new RuntimeException();
+				} else if (constantSaltProps != null) {
+					id = constantSaltProps.getId();
+					keyEncoder = new Argon2Encoder.ConstantSalt(constantSaltProps.getContext().getBytes(), constantSaltProps.getConstantSalt().getBytes(), constantSaltProps.getHashLength(), constantSaltProps.getParallelism(), constantSaltProps.getMemoryInKB(), constantSaltProps.getIterations());
+				} else {
+					id = derivedSaltProps.getId();
+					keyEncoder = new Argon2Encoder.DerivedSalt(derivedSaltProps.getContext().getBytes(), derivedSaltProps.getMinimumDerivedSaltLength(), derivedSaltProps.getHashLength(), derivedSaltProps.getParallelism(), derivedSaltProps.getMemoryInKB(), derivedSaltProps.getIterations());
+				}
+				this.idToKeyEncoders.put(id, keyEncoder);
+			}
+		}
 		@Bean
 		public DelegatingPasswordEncoder keyEncoders() {
-			final DelegatingPasswordEncoder delegatingPasswordEncoder = new DelegatingPasswordEncoder(this.defaultValueEncoderId, this.idToValueEncoders);
+			final DelegatingPasswordEncoder delegatingPasswordEncoder = new DelegatingPasswordEncoder(this.idToKeyEncoders.firstEntry().getKey(), this.idToKeyEncoders);
 			delegatingPasswordEncoder.setDefaultPasswordEncoderForMatches(NOOP_PASSWORD_ENCODER);
 			return delegatingPasswordEncoder;
-		}
-		// @VisibleForTesting
-		public IdAndPasswordEncoder keyEncoder() {
-			return keyEncoder1();
-		}
-		// @VisibleForTesting
-		public IdAndPasswordEncoder keyEncoder1() {
-			final int minimumDerivedSaltLength = 16;
-			final byte[] contextBytes = "context1".getBytes();
-			return new IdAndPasswordEncoder("1", new Argon2Encoder.DerivedSalt(contextBytes, minimumDerivedSaltLength, 32, 1, 1 << 14, 2));
-		}
-		// @VisibleForTesting
-		public IdAndPasswordEncoder keyEncoder0() {
-			final byte[] constantSaltBytes = "Constant16-Bytes".getBytes();
-			final byte[] contextBytes = "context0".getBytes();
-			return new IdAndPasswordEncoder("0", new Argon2Encoder.ConstantSalt(contextBytes, constantSaltBytes, 16, 1, 1 << 13, 1));
 		}
 	}
 
 	@Configuration
 	public class ValueEncodersConfiguration {
-		private final LinkedHashMap<String, PasswordEncoder> idToKeyEncoders     = toLinkedHashMap(valueEncoder1(), valueEncoder0());
-		private final String                                 defaultKeyEncoderId = this.idToKeyEncoders.firstEntry().getKey();
+		private final LinkedHashMap<String, PasswordEncoder> idToValueEncoders = new LinkedHashMap<>();
+		public ValueEncodersConfiguration(final SpringsUtilSecurityProperties props) {
+			final List<String> valueEncoderConfigNames = new ArrayList<>(props.getValueEncoder().values());
+			Collections.reverse(valueEncoderConfigNames);
+			for (final String valueEncoderConfigName : valueEncoderConfigNames) {
+				final EncodersArgon2.RandomSalt randomSaltProps = props.getEncodersArgon2().getRandomSalt().get(valueEncoderConfigName);
+				final Argon2Encoder.CustomArgon2Encoder keyEncoder;
+				final String id;
+				if (randomSaltProps == null) {
+					throw new RuntimeException();
+				} else {
+					id = randomSaltProps.getId();
+					keyEncoder = new Argon2Encoder.DerivedSalt(randomSaltProps.getContext().getBytes(), randomSaltProps.getRandomSaltLength(), randomSaltProps.getHashLength(), randomSaltProps.getParallelism(), randomSaltProps.getMemoryInKB(), randomSaltProps.getIterations());
+				}
+				this.idToValueEncoders.put(id, keyEncoder);
+			}
+		}
 		@Bean
 		public DelegatingPasswordEncoder valueEncoders() {
-			final DelegatingPasswordEncoder delegatingPasswordEncoder = new DelegatingPasswordEncoder(this.defaultKeyEncoderId, this.idToKeyEncoders);
+			final DelegatingPasswordEncoder delegatingPasswordEncoder = new DelegatingPasswordEncoder(this.idToValueEncoders.firstEntry().getKey(), this.idToValueEncoders);
 			delegatingPasswordEncoder.setDefaultPasswordEncoderForMatches(NOOP_PASSWORD_ENCODER);
 			return delegatingPasswordEncoder;
 		}
-		// @VisibleForTesting
-		public IdAndPasswordEncoder valueEncoder() {
-			return new IdAndPasswordEncoder(this.defaultKeyEncoderId, this.idToKeyEncoders.get(this.defaultKeyEncoderId));
-		}
-		// @VisibleForTesting
-		public IdAndPasswordEncoder valueEncoder1() {
-			final byte[] contextBytes = "context1".getBytes();
-			return new IdAndPasswordEncoder("1", new Argon2Encoder.RandomSalt(contextBytes, 16, 32, 1, 1 << 14, 2));
-		}
-		// @VisibleForTesting
-		public IdAndPasswordEncoder valueEncoder0() {
-			final byte[] contextBytes = "context0".getBytes();
-			return new IdAndPasswordEncoder("0", new Argon2Encoder.RandomSalt(contextBytes, 16, 32, 1, 1 << 14, 2));
-		}
 	}
-
-	private static LinkedHashMap<String, PasswordEncoder> toLinkedHashMap(final IdAndPasswordEncoder...idAndPasswordEncoders) {
-		return Stream.of(idAndPasswordEncoders)
-				.map(idAndPasswordEncoder -> Map.entry(idAndPasswordEncoder.id(), idAndPasswordEncoder.encoder()))
-				.collect(Collectors.toMap(
-                    Map.Entry::getKey,
-                    Map.Entry::getValue,
-                    (encoderA, encoderB) -> { throw new IllegalStateException("Error"); },
-                    LinkedHashMap::new
-                )
-			);
-	}
-
-	private record IdAndPasswordEncoder(String id, PasswordEncoder encoder) { }
 }

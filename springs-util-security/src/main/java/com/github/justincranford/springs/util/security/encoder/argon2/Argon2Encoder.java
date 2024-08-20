@@ -40,7 +40,7 @@ public class Argon2Encoder {
 		}
 	}
 
-	private static class CustomArgon2Encoder extends Argon2PasswordEncoder {
+	public static class CustomArgon2Encoder extends Argon2PasswordEncoder {
 		private final Function<CharSequence, String> encodeFunction;
 		private final Function<String, Boolean> upgradeEncodingFunction;
 		public CustomArgon2Encoder(byte[] context, Function<CharSequence, byte[]> saltSupplier, int hashLength, int parallelism, int memory, int iterations) {
@@ -117,7 +117,7 @@ public class Argon2Encoder {
 		}
 	}
 
-	private static byte[] derivedSalt(
+	public static byte[] derivedSalt(
 		final CharSequence rawPassword,
 		final byte[] context,
 		final int minimumDerivedSaltLength,
