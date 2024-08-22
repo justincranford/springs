@@ -20,24 +20,25 @@ import com.github.justincranford.springs.util.security.hashes.encoder.argon2.Arg
 @SuppressWarnings({"nls"})
 public class Argon2Encoder {
 	private static final int ARGON2_ALGORITHM_TYPE = Argon2Parameters.ARGON2_id;
+	private static final int ARGON2_VERSION = Argon2Parameters.ARGON2_VERSION_13;
 
 	private Argon2Encoder() {
 		// do nothing
 	}
 
 	public static class RandomSalt extends CustomArgon2Encoder {
-		public RandomSalt(byte[] context, int randomSaltLength, int hashLength, int parallelism, int memory, int iterations) {
-			super(RandomSalt.class, context, (rawPassword) -> SecureRandomUtil.randomBytes(randomSaltLength), hashLength, parallelism, memory, iterations);
+		public RandomSalt(int randomSaltLength, byte[] associatedData, int hashLength, int parallelism, int memory, int iterations) {
+			super(RandomSalt.class, (rawPassword) -> SecureRandomUtil.randomBytes(randomSaltLength), associatedData, hashLength, parallelism, memory, iterations);
 		}
 	}
 	public static class DerivedSalt extends CustomArgon2Encoder {
-		public DerivedSalt(byte[] context, int minimumDerivedSaltLength, int hashLength, int parallelism, int memory, int iterations) {
-			super(DerivedSalt.class, context, (rawPassword) -> derivedSalt(rawPassword, context, minimumDerivedSaltLength, hashLength, parallelism, memory, iterations), hashLength, parallelism, memory, iterations);
+		public DerivedSalt(int derivedSaltLength, byte[] associatedData, int hashLength, int parallelism, int memory, int iterations) {
+			super(DerivedSalt.class, (rawPassword) -> derivedSalt(rawPassword, associatedData, derivedSaltLength, hashLength, parallelism, memory, iterations), associatedData, hashLength, parallelism, memory, iterations);
 		}
 	}
 	public static class ConstantSalt extends CustomArgon2Encoder {
-		public ConstantSalt(byte[] context, byte[] constantSalt, int hashLength, int parallelism, int memory, int iterations) {
-			super(ConstantSalt.class, context, (rawPassword) -> constantSalt, hashLength, parallelism, memory, iterations);
+		public ConstantSalt(byte[] constantSalt, byte[] associatedData, int hashLength, int parallelism, int memory, int iterations) {
+			super(ConstantSalt.class, (rawPassword) -> constantSalt, associatedData, hashLength, parallelism, memory, iterations);
 		}
 	}
 
@@ -45,36 +46,30 @@ public class Argon2Encoder {
 		private final Function<CharSequence, String> encodeFunction;
 		private final BiFunction<CharSequence, String, Boolean> matchesFunction;
 		private final Function<String, Boolean> upgradeEncodingFunction;
-		public CustomArgon2Encoder(Class<? extends CustomArgon2Encoder> clazz, byte[] context, Function<CharSequence, byte[]> saltSupplier, int hashLength, int parallelism, int memory, int iterations) {
+		public CustomArgon2Encoder(
+			final Class<? extends CustomArgon2Encoder> clazz,
+			final Function<CharSequence, byte[]> saltSupplier,
+			final byte[] associatedData,
+			final int hashLength,
+			final int parallelism,
+			final int memory,
+			final int iterations
+		) {
 			super(saltSupplier.apply("").length, hashLength, parallelism, memory, iterations);
 
 			if (clazz.equals(ConstantSalt.class)) {
-				// constant salt (i.e. salt is reused for different passwords) => deterministic hash
-				final byte[] constantExtendedSalt = ArrayUtil.concat(context, saltSupplier.apply(""));
-				final Argon2Parameters sameParametersForEveryRawPassword = new Argon2Parameters.Builder(ARGON2_ALGORITHM_TYPE)
-					.withSalt(constantExtendedSalt)
-					.withParallelism(parallelism)
-					.withMemoryAsKB(memory)
-					.withIterations(iterations)
-					.build();
+				final Argon2Parameters params = params(saltSupplier.apply(""), associatedData, parallelism, memory, iterations);
 				this.encodeFunction = (rawPassword) -> {
-					final byte[] hash = computeHash(rawPassword, sameParametersForEveryRawPassword, hashLength);
+					final byte[] hash = computeHash(rawPassword, params, hashLength);
 					return encodeHash(hash); // omit parameters from output
 				};
 				this.matchesFunction = (rawPassword, encodedPassword) -> MessageDigest.isEqual(encode(rawPassword).getBytes(StandardCharsets.UTF_8), encodedPassword.getBytes(StandardCharsets.UTF_8));
 				this.upgradeEncodingFunction = (encodedPassword) -> Boolean.FALSE; // never upgrade encoding when using constant salt
 			} else {
-				// random or derived salt (i.e. salt is not reused for different passwords)
 				this.encodeFunction = (rawPassword) -> {
-					final byte[] uniqueExtendedSalt = ArrayUtil.concat(context, saltSupplier.apply(rawPassword));
-					final Argon2Parameters uniqueParametersPerPassword = new Argon2Parameters.Builder(ARGON2_ALGORITHM_TYPE)
-						.withSalt(uniqueExtendedSalt)
-						.withParallelism(parallelism)
-						.withMemoryAsKB(memory)
-						.withIterations(iterations)
-						.build();
-					final byte[] hash = computeHash(rawPassword, uniqueParametersPerPassword, hashLength);
-					return Argon2EncodingUtils.encode(hash, uniqueParametersPerPassword); // include parameters in output
+					final Argon2Parameters params = params(saltSupplier.apply(rawPassword), associatedData, parallelism, memory, iterations);
+					final byte[] hash = computeHash(rawPassword, params, hashLength);
+					return Argon2EncodingUtils.encode(hash, params); // include parameters in output
 				};
 				this.matchesFunction = (rawPassword, encodedPassword) -> super.matches(rawPassword, encodedPassword);
 				if (clazz.equals(DerivedSalt.class)) {
@@ -125,14 +120,14 @@ public class Argon2Encoder {
 
 	public static byte[] derivedSalt(
 		final CharSequence rawPassword,
-		final byte[] context,
-		final int minimumDerivedSaltLength,
+		final byte[] associatedData,
+		final int derivedSaltLength,
 		final int hashLength,
 		final int parallelism,
 		final int memory,
 		final int iterations
 	) {
-		final byte[] bytes = canonicalEncodeDerivedSaltParameters(rawPassword, context, minimumDerivedSaltLength, hashLength, parallelism, memory, iterations);
+		final byte[] bytes = canonicalEncodeDerivedSaltParameters(rawPassword, derivedSaltLength, associatedData, hashLength, parallelism, memory, iterations);
 		try {
 			return MessageDigest.getInstance("SHA-512").digest(bytes);
 		} catch (NoSuchAlgorithmException e) {
@@ -142,23 +137,34 @@ public class Argon2Encoder {
 
 	private static byte[] canonicalEncodeDerivedSaltParameters(
 		final CharSequence rawPassword,
-		final byte[] context,
-		final int minimumDerivedSaltLength,
+		final int derivedSaltLength,
+		final byte[] associatedData,
 		final int hashLength,
 		final int parallelism,
 		final int memory,
 		final int iterations
 	) {
-		return ByteBuffer.allocate(rawPassword.length() + context.length + 24)
+		return ByteBuffer.allocate(rawPassword.length() + associatedData.length + 28)
 			.order(ByteOrder.BIG_ENDIAN)
 			.put(rawPassword.toString().getBytes(StandardCharsets.UTF_8)) // different derived salt per different password
-			.put(context)
-			.putInt(minimumDerivedSaltLength)
+			.putInt(ARGON2_VERSION)
+			.putInt(derivedSaltLength)
+			.put(associatedData)
 			.putInt(ARGON2_ALGORITHM_TYPE)
 			.putInt(hashLength)
 			.putInt(parallelism)
 			.putInt(memory)
 			.putInt(iterations)
 			.array();
+	}
+
+	private static Argon2Parameters params(final byte[] salt, final byte[] associatedData, int parallelism, int memory, int iterations) {
+		return new Argon2Parameters.Builder(ARGON2_ALGORITHM_TYPE)
+			.withVersion(ARGON2_VERSION)
+			.withSalt(ArrayUtil.concat(salt, associatedData)) // BC supports salt+secret+associatedData, Spring only salt; squeeze them into salt
+			.withParallelism(parallelism)
+			.withMemoryAsKB(memory)
+			.withIterations(iterations)
+			.build();
 	}
 }

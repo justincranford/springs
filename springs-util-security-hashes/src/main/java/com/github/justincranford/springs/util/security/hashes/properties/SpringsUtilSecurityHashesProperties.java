@@ -128,7 +128,7 @@ public class SpringsUtilSecurityHashesProperties {
 			@Min(value=Constants.MIN_DERIVED_SALT_LENGTH)
 			@Max(value=Constants.MAX_DERIVED_SALT_LENGTH)
 			@Positive
-			private Integer minimumDerivedSaltLength;
+			private Integer derivedSaltLength;
 		}
 
 		@Component
@@ -160,8 +160,8 @@ public class SpringsUtilSecurityHashesProperties {
 			private String id;
 
 			@NotNull
-			@Size(min=Constants.MIN_CONTEXT_LENGTH, max=Constants.MAX_CONTEXT_LENGTH)
-			private String context;
+			@Size(min=Constants.MIN_ASSOCIATED_DATA_LENGTH, max=Constants.MAX_ASSOCIATED_DATA_LENGTH)
+			private String associatedData;
 
 			@NotNull
 			@Min(value=Constants.MIN_HASH_LENGTH)
@@ -211,8 +211,8 @@ public class SpringsUtilSecurityHashesProperties {
 		private static final int MIN_ID_LENGTH = 1;
 		private static final int MAX_ID_LENGTH = 2;
 
-		private static final int MIN_CONTEXT_LENGTH = 0;
-		private static final int MAX_CONTEXT_LENGTH = 1024;
+		private static final int MIN_ASSOCIATED_DATA_LENGTH = 0;
+		private static final int MAX_ASSOCIATED_DATA_LENGTH = 1024;
 
 		private static final int MIN_HASH_LENGTH = 16;
 		private static final int MAX_HASH_LENGTH = 1024;
