@@ -24,8 +24,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@ConfigurationProperties(prefix="springs.util.security",ignoreUnknownFields=false,ignoreInvalidFields=false)
-@PropertySource("classpath:springs-util-security.properties")
+@ConfigurationProperties(prefix="springs.util.security.hashes",ignoreUnknownFields=false,ignoreInvalidFields=false)
+@PropertySource("classpath:springs-util-security-hashes.properties")
 @Component
 @Validated
 @Getter
@@ -35,7 +35,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuppressWarnings({"nls"})
-public class SpringsUtilSecurityProperties {
+public class SpringsUtilSecurityHashesProperties {
 	@PostConstruct
 	public void init() {
 		// TODO more validation

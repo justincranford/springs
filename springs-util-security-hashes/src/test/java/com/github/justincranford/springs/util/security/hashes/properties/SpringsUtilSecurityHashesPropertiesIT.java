@@ -10,10 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("nls")
 @Slf4j
-public class SpringsUtilSecurityPropertiesIT extends AbstractIT {
+public class SpringsUtilSecurityHashesPropertiesIT extends AbstractIT {
 	@Test
 	void loadBaseProperties() {
-		assertThat(super.springsUtilSecurityProperties()).isNotNull();
-		log.info("properties: {}", super.springsUtilSecurityProperties());
+		assertThat(super.springsUtilSecurityHashesProperties()).isNotNull();
+		log.info("properties: {}", super.springsUtilSecurityHashesProperties());
 	}
 }

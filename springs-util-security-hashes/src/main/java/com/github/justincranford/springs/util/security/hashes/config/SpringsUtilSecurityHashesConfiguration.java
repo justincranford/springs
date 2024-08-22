@@ -8,17 +8,17 @@ import org.springframework.context.annotation.Import;
 import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
 import com.github.justincranford.springs.util.observability.config.SpringsUtilObservabilityConfiguration;
 import com.github.justincranford.springs.util.security.hashes.encoder.EncodersConfiguration;
-import com.github.justincranford.springs.util.security.hashes.properties.SpringsUtilSecurityProperties;
+import com.github.justincranford.springs.util.security.hashes.properties.SpringsUtilSecurityHashesProperties;
 
 @Configuration
 @EnableConfigurationProperties
 @ComponentScan(
-	basePackageClasses = {SpringsUtilSecurityProperties.class, EncodersConfiguration.class}
+	basePackageClasses = {SpringsUtilSecurityHashesProperties.class, EncodersConfiguration.class}
 )
 @Import({
 	SpringsUtilObservabilityConfiguration.class,
 	SpringsUtilJsonConfiguration.class
 })
-public class SpringsUtilSecurityConfiguration {
+public class SpringsUtilSecurityHashesConfiguration {
 	// do nothing
 }

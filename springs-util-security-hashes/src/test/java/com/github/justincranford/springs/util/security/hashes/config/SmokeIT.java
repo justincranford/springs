@@ -10,5 +10,9 @@ public class SmokeIT extends AbstractIT {
 	@Test
 	void loadProperties() {
 		assertThat(super.applicationContext()).isNotNull();
+		assertThat(super.encodersConfiguration()).isNotNull();
+		assertThat(super.passwordEncoder()).isNotNull();
+		assertThat(super.keyEncoders()).isNotNull();
+		assertThat(super.valueEncoders()).isNotNull();
 	}
 }
