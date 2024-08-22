@@ -19,10 +19,12 @@ public class TestContainerConsul extends AbstractTestContainer<ConsulContainer> 
 	private static final Integer CONSUL_GRPC_PORT = Integer.valueOf(8502);
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(15);
 
+	@Override
 	public String getContainerName() {
 		return DOCKER_IMAGE_NAME;
 	}
 
+	@Override
 	public ConsulContainer initAndGetInstance() {
 		try {
 			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);

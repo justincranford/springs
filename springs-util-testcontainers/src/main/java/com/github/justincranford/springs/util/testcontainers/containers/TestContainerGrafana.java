@@ -21,10 +21,12 @@ public class TestContainerGrafana extends AbstractTestContainer<LgtmStackContain
 	private static final Integer PROMETHEUS_PORT = Integer.valueOf(9090);
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(30);
 
+	@Override
 	public String getContainerName() {
 		return DOCKER_IMAGE_NAME;
 	}
 
+	@Override
 	public LgtmStackContainer initAndGetInstance() {
 		try {
 			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);

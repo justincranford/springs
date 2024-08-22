@@ -23,7 +23,7 @@ import com.github.justincranford.springs.util.security.hashes.properties.Springs
 import lombok.Getter;
 
 @Configuration
-@SuppressWarnings({"deprecation", "nls", "static-method"})
+@SuppressWarnings({"deprecation", "nls", "static-method", "boxing"})
 public class EncodersConfiguration {
 	// TODO upgradeEncoding true
 	private static final PasswordEncoder NOOP_PASSWORD_ENCODER = NoOpPasswordEncoder.getInstance();
@@ -56,6 +56,7 @@ public class EncodersConfiguration {
 		return new KeyEncoders(idToKeyEncoders.firstEntry().getKey(), idToKeyEncoders);
 	}
 
+	@SuppressWarnings("null")
 	@Bean
 	public ValueEncoders valueEncoders(final SpringsUtilSecurityHashesProperties props) {
 		final Map<String, RandomSalt> randomSaltProps = props.getEncodersArgon2().getRandomSalt();

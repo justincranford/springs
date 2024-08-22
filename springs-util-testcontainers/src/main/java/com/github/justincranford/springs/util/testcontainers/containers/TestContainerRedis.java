@@ -18,10 +18,12 @@ public class TestContainerRedis extends AbstractTestContainer<GenericContainer<?
 	private static final Integer REDIS_PORT = Integer.valueOf(6379);
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(15);
 
+	@Override
 	public String getContainerName() {
 		return DOCKER_IMAGE_NAME;
 	}
 
+	@Override
 	public GenericContainer<?> initAndGetInstance() {
 		try {
 			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);

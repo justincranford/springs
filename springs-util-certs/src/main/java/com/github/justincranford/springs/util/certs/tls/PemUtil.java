@@ -12,7 +12,7 @@ import com.github.justincranford.springs.util.basic.Base64Util;
 
 @SuppressWarnings("nls")
 public class PemUtil {
-	public static String toPems(final X509Certificate... certificates) throws CertificateEncodingException {
+	public static String toPems(final X509Certificate... certificates) {
 		final byte[][] payloads = Arrays.stream(certificates).map(certificate -> {
 			try {
 				return certificate.getEncoded();

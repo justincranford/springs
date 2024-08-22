@@ -21,10 +21,12 @@ public class TestContainerSeleniumChrome extends AbstractTestContainer<BrowserWe
     private static final Integer VNC_PORT = Integer.valueOf(5900);
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(15);
 
+	@Override
 	public String getContainerName() {
 		return DOCKER_IMAGE_NAME;
 	}
 
+	@Override
 	public BrowserWebDriverContainer<?> initAndGetInstance() {
 		try {
 			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);

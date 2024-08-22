@@ -22,10 +22,12 @@ public class TestContainerElasticsearch extends AbstractTestContainer<Elasticsea
     private static final Integer ELASTICSEARCH_TRANSPORT_PORT = Integer.valueOf(9300);
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(60);
 
+	@Override
 	public String getContainerName() {
 		return DOCKER_IMAGE_NAME;
 	}
 
+	@Override
 	public ElasticsearchContainer initAndGetInstance() {
 		try {
 			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);

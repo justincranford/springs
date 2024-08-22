@@ -29,6 +29,7 @@ import org.bouncycastle.util.Arrays;
  * @author Simeon Macke
  * @since 5.3
  */
+@SuppressWarnings({"nls", "hiding"})
 final class Argon2EncodingUtils {
 
 	private static final Base64.Encoder b64encoder = Base64.getEncoder().withoutPadding();

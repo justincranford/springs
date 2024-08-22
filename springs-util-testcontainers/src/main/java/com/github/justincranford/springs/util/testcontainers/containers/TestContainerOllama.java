@@ -18,10 +18,12 @@ public class TestContainerOllama extends AbstractTestContainer<OllamaContainer> 
 	private static final Integer OLLAMA_PORT = Integer.valueOf(11434);
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(15);
 
+	@Override
 	public String getContainerName() {
 		return DOCKER_IMAGE_NAME;
 	}
 
+	@Override
 	public OllamaContainer initAndGetInstance() {
 		try {
 			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);

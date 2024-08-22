@@ -17,10 +17,12 @@ public final class TestContainerKeycloak extends AbstractTestContainer<KeycloakC
 //    private static final Integer KEYCLOAK_PORT_MGMT = Integer.valueOf(9000);
 //    private static final Duration START_TIMEOUT = Duration.ofSeconds(120);
 
+	@Override
 	public String getContainerName() {
 		return DOCKER_IMAGE_NAME;
 	}
 
+	@Override
 	public KeycloakContainer initAndGetInstance() {
 		try {
 			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);

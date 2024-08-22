@@ -19,10 +19,12 @@ public class TestContainerKafka extends AbstractTestContainer<KafkaContainer> {
 	private static final Integer ZOOKEEPER_PORT = Integer.valueOf(2181);
    	private static final Duration START_TIMEOUT = Duration.ofSeconds(30);
 
+	@Override
 	public String getContainerName() {
 		return DOCKER_IMAGE_NAME;
 	}
 
+	@Override
    	public KafkaContainer initAndGetInstance() {
 		try {
 			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);

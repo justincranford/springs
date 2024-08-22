@@ -18,10 +18,12 @@ public class TestContainerVault extends AbstractTestContainer<VaultContainer<?>>
 	private static final Integer VAULT_PORT = Integer.valueOf(8200);
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(15);
 
+	@Override
 	public String getContainerName() {
 		return DOCKER_IMAGE_NAME;
 	}
 
+	@Override
 	public VaultContainer<?> initAndGetInstance() {
 		try {
 			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);

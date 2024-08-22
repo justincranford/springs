@@ -18,10 +18,12 @@ public class TestContainerDynamoDb extends AbstractTestContainer<GenericContaine
 	private static final Integer DYNAMODB_PORT = Integer.valueOf(8000);
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(30);
 
+	@Override
 	public String getContainerName() {
 		return DOCKER_IMAGE_NAME;
 	}
 
+	@Override
 	public GenericContainer<?> initAndGetInstance() {
 		try {
 			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);

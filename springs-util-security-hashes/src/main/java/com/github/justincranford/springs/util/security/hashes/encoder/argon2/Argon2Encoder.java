@@ -43,7 +43,7 @@ public class Argon2Encoder {
 		}
 	}
 
-	public static class CustomArgon2Encoder extends Argon2PasswordEncoder {
+	private static class CustomArgon2Encoder extends Argon2PasswordEncoder {
 		private final Function<CharSequence, String> encode;
 		private final BiFunction<CharSequence, String, Boolean> matches;
 		private final Function<String, Boolean> upgradeEncoding;

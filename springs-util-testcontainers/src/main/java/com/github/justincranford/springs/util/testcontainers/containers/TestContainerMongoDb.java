@@ -18,10 +18,12 @@ public class TestContainerMongoDb extends AbstractTestContainer<MongoDBContainer
 	private static final Integer MONGODB_PORT = Integer.valueOf(27017);
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(15);
 
+	@Override
 	public String getContainerName() {
 		return DOCKER_IMAGE_NAME;
 	}
 
+	@Override
 	public MongoDBContainer initAndGetInstance() {
 		try {
 			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);

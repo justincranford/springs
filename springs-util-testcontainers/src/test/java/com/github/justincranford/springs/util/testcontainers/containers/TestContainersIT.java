@@ -14,7 +14,7 @@ import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilT
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls", "static-method"})
+@SuppressWarnings({"nls", "static-method", "resource"})
 public class TestContainersIT extends AbstractIT {
 	public static Stream<AbstractTestContainer<?>> args() {
 		return Stream.of(

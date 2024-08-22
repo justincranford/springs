@@ -65,7 +65,8 @@ public class AbstractIT {
         SpringsUtilTestContainers.startContainers(List.of(SpringsUtilTestContainers.POSTGRESQL));
     }
 
-    @DynamicPropertySource
+    @SuppressWarnings("resource")
+	@DynamicPropertySource
     public static void postgresqlContainerProperties(final DynamicPropertyRegistry registry) {
 		if (SpringsUtilTestContainers.POSTGRESQL.isRunning()) {
 			log.info("Setting dynamic properties from SpringsUtilTestContainers.POSTGRESQL");

@@ -17,10 +17,12 @@ public class TestContainerZipkin extends AbstractTestContainer<GenericContainer<
 	private static final Integer ZIPKIN_PORT = Integer.valueOf(9411);
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(30);
 
+	@Override
 	public String getContainerName() {
 		return DOCKER_IMAGE_NAME;
 	}
 
+	@Override
 	public GenericContainer<?> initAndGetInstance() {
 		try {
 			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);

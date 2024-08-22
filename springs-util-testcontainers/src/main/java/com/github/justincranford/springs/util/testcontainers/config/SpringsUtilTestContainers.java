@@ -100,12 +100,11 @@ public class SpringsUtilTestContainers {
         if (isStarted) {
             log.info("Already started container, image name: {}", testContainerInstance.getContainerName());
         } else {
-            final GenericContainer<?> genericContainer = testContainerInstance.initAndGetInstance();
-        	try {
+        	try (final GenericContainer<?> genericContainer = testContainerInstance.initAndGetInstance()) {
                 log.info("Starting container, image name: {}", testContainerInstance.getContainerName());
                 genericContainer.start();
             } catch(Throwable t) {
-                log.info("Start container failed, image name: {}, duration: {}", testContainerInstance.getContainerName(), format(startNanos));
+                log.info("Start container failed, image name: {}, duration: {}", testContainerInstance.getContainerName(), format(startNanos), t);
             } finally {
                 log.info("Started container, image name: {}, duration: {}", testContainerInstance.getContainerName(), format(startNanos));
             }
@@ -120,12 +119,11 @@ public class SpringsUtilTestContainers {
         if (isStopped) {
             log.info("Already stopped container, image name: {}", testContainerInstance.getContainerName());
         } else {
-            try {
-                final GenericContainer<?> genericContainer = testContainerInstance.getInstance();
+            try (final GenericContainer<?> genericContainer = testContainerInstance.getInstance()) {
                 log.info("Stopping container, image name: {}", testContainerInstance.getContainerName());
                 genericContainer.stop();
             } catch(Throwable t) {
-                log.info("Stop container failed, image name: {}, duration: {}", testContainerInstance.getContainerName(), format(startNanos));
+                log.info("Stop container failed, image name: {}, duration: {}", testContainerInstance.getContainerName(), format(startNanos), t);
             } finally {
                 log.info("Stopped container, image name: {}, duration: {}", testContainerInstance.getContainerName(), format(startNanos));
             }

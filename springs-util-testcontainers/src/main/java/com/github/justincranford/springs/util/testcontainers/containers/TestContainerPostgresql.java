@@ -18,10 +18,12 @@ public class TestContainerPostgresql extends AbstractTestContainer<PostgreSQLCon
 	private static final Integer POSTGRESQL_PORT = PostgreSQLContainer.POSTGRESQL_PORT;
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(15);
 
+	@Override
 	public String getContainerName() {
 		return DOCKER_IMAGE_NAME;
 	}
 
+	@Override
 	public PostgreSQLContainer<?> initAndGetInstance() {
 		try {
 			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);
