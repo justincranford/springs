@@ -8,9 +8,6 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 
 import com.github.justincranford.springs.util.security.hashes.AbstractIT;
-import com.github.justincranford.springs.util.security.hashes.encoder.EncodersConfiguration.Encoder;
-import com.github.justincranford.springs.util.security.hashes.encoder.EncodersConfiguration.KeyEncoders;
-import com.github.justincranford.springs.util.security.hashes.encoder.EncodersConfiguration.ValueEncoders;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +39,7 @@ public class ConfiguredEncodersIT extends AbstractIT {
 			}
 		}
 
-		for (final Encoder encoder : super.keyEncoders().idToEncoders().values()) {
+		for (final KeyEncoder encoder : super.keyEncoders().idToEncoders().values()) {
 			// original password is encoded multiple times, each one with different (random) salt, and produces different hash
 			final List<String> encodedEmailAddressList = IntStream.rangeClosed(1, REPEATS).boxed().map(i -> encoder.encode(rawEmailAddress)).toList();
 			log.info("encodedPasswordList:\n{}", encodedEmailAddressList.stream().map(s -> "\n  "+s).toList().toString().replace("]", "\n]"));
@@ -83,7 +80,7 @@ public class ConfiguredEncodersIT extends AbstractIT {
 			}
 		}
 
-		for (final Encoder encoder : super.valueEncoders().idToEncoders().values()) {
+		for (final ValueEncoder encoder : super.valueEncoders().idToEncoders().values()) {
 			// original password is encoded multiple times, each one with different (random) salt, and produces different hash
 			final List<String> encodedPasswordList = IntStream.rangeClosed(1, REPEATS).boxed().map(i -> encoder.encode(rawPassword)).toList();
 			log.info("encodedPasswordList:\n{}", encodedPasswordList.stream().map(s -> "\n  "+s).toList().toString().replace("]", "\n]"));
