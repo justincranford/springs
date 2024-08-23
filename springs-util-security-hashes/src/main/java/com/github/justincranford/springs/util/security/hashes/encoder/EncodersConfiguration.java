@@ -37,16 +37,16 @@ public class EncodersConfiguration {
 		final Map<String, ConstantSalt> constantSaltPropsMap = props.getEncodersArgon2().getConstantSalt();
 
 		final LinkedHashMap<String, KeyEncoder> idToKeyEncoders = new LinkedHashMap<>();
-		for (final String keyEncoderConfigName : reverse(props.getKeyEncoder().values())) {
-			final boolean isDerivedSalt  = derivedSaltPropsMap.containsKey(keyEncoderConfigName);
-			final boolean isConstantSalt = constantSaltPropsMap.containsKey(keyEncoderConfigName);
-			Assert.isTrue(isDerivedSalt ^ isConstantSalt, "KeyEncoder must be DerivedSalt or ConstantSalt");
-			if (isDerivedSalt) {
-				final EncodersArgon2.DerivedSalt derivedSaltProps = derivedSaltPropsMap.get(keyEncoderConfigName);
+		for (final String name : reverse(props.getKeyEncoder().values())) {
+			final EncodersArgon2.DerivedSalt derivedSaltProps = derivedSaltPropsMap.get(name);
+			final EncodersArgon2.ConstantSalt constantSaltProps = constantSaltPropsMap.get(name);
+			Assert.isTrue((derivedSaltProps != null) ^ (constantSaltProps != null), "KeyEncoder must be DerivedSalt or ConstantSalt");
+			if (derivedSaltProps != null) {
 				idToKeyEncoders.put(derivedSaltProps.getId(), buildKeyEncoder(derivedSaltProps));
-			} else if (isConstantSalt) {
-				final EncodersArgon2.ConstantSalt constantSaltProps = constantSaltPropsMap.get(keyEncoderConfigName);
+			} else if (constantSaltProps != null) {
 				idToKeyEncoders.put(constantSaltProps.getId(), buildKeyEncoder(constantSaltProps));
+			} else {
+				throw new RuntimeException("Impossible");
 			}
 		}
 		Assert.notEmpty(idToKeyEncoders, "KeyEncoders map must not be empty");
@@ -58,11 +58,14 @@ public class EncodersConfiguration {
 		final Map<String, RandomSalt> randomSaltPropsMap = props.getEncodersArgon2().getRandomSalt();
 
 		final LinkedHashMap<String, ValueEncoder> idToValueEncoders = new LinkedHashMap<>();
-		for (final String valueEncoderConfigName : reverse(props.getValueEncoder().values())) {
-			final boolean isRandomSalt = randomSaltPropsMap.containsKey(valueEncoderConfigName);
-			Assert.isTrue(isRandomSalt, "ValueEncoder must be RandomSalt");
-			final EncodersArgon2.RandomSalt randomSalt = randomSaltPropsMap.get(valueEncoderConfigName);
-			idToValueEncoders.put(randomSalt.getId(), buildValueEncoder(randomSalt));
+		for (final String name : reverse(props.getValueEncoder().values())) {
+			final EncodersArgon2.RandomSalt randomSalt = randomSaltPropsMap.get(name);
+			Assert.isTrue((randomSalt != null), "ValueEncoder must be RandomSalt");
+			if (randomSalt != null) {
+				idToValueEncoders.put(randomSalt.getId(), buildValueEncoder(randomSalt));
+			} else {
+				throw new RuntimeException("Impossible");
+			}
 		}
 		Assert.notEmpty(idToValueEncoders, "ValueEncoders map must not be empty");
 		return new ValueEncoders(idToValueEncoders.firstEntry().getKey(), idToValueEncoders);
