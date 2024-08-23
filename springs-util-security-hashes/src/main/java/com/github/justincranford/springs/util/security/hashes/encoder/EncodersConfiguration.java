@@ -1,6 +1,7 @@
 package com.github.justincranford.springs.util.security.hashes.encoder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,12 +35,9 @@ public class EncodersConfiguration {
 	public KeyEncoders keyEncoders(final SpringsUtilSecurityHashesProperties props) {
 		final Map<String, DerivedSalt>  derivedSaltPropsMap  = props.getEncodersArgon2().getDerivedSalt();
 		final Map<String, ConstantSalt> constantSaltPropsMap = props.getEncodersArgon2().getConstantSalt();
-		final List<String> keyEncoderConfigNames = new ArrayList<>(props.getKeyEncoder().values());
-		Assert.notEmpty(keyEncoderConfigNames, "KeyEncoder config names must not be empty");
-		Collections.reverse(keyEncoderConfigNames);
 
 		final LinkedHashMap<String, KeyEncoder> idToKeyEncoders = new LinkedHashMap<>();
-		for (final String keyEncoderConfigName : keyEncoderConfigNames) {
+		for (final String keyEncoderConfigName : reverse(props.getKeyEncoder().values())) {
 			final boolean isDerivedSalt  = derivedSaltPropsMap.containsKey(keyEncoderConfigName);
 			final boolean isConstantSalt = constantSaltPropsMap.containsKey(keyEncoderConfigName);
 			Assert.isTrue(isDerivedSalt ^ isConstantSalt, "KeyEncoder must be DerivedSalt or ConstantSalt");
@@ -55,16 +53,12 @@ public class EncodersConfiguration {
 		return new KeyEncoders(idToKeyEncoders.firstEntry().getKey(), idToKeyEncoders);
 	}
 
-	@SuppressWarnings("null")
 	@Bean
 	public ValueEncoders valueEncoders(final SpringsUtilSecurityHashesProperties props) {
 		final Map<String, RandomSalt> randomSaltPropsMap = props.getEncodersArgon2().getRandomSalt();
-		final List<String> valueEncoderConfigNames = new ArrayList<>(props.getValueEncoder().values());
-		Assert.notEmpty(valueEncoderConfigNames, "ValueEncoder config names must not be empty");
-		Collections.reverse(valueEncoderConfigNames);
 
 		final LinkedHashMap<String, ValueEncoder> idToValueEncoders = new LinkedHashMap<>();
-		for (final String valueEncoderConfigName : valueEncoderConfigNames) {
+		for (final String valueEncoderConfigName : reverse(props.getValueEncoder().values())) {
 			final boolean isRandomSalt = randomSaltPropsMap.containsKey(valueEncoderConfigName);
 			Assert.isTrue(isRandomSalt, "ValueEncoder must be RandomSalt");
 			final EncodersArgon2.RandomSalt randomSalt = randomSaltPropsMap.get(valueEncoderConfigName);
@@ -72,6 +66,13 @@ public class EncodersConfiguration {
 		}
 		Assert.notEmpty(idToValueEncoders, "ValueEncoders map must not be empty");
 		return new ValueEncoders(idToValueEncoders.firstEntry().getKey(), idToValueEncoders);
+	}
+
+	private List<String> reverse(final Collection<String> configNames) {
+		final List<String> valueEncoderConfigNames = new ArrayList<>(configNames);
+		Assert.notEmpty(valueEncoderConfigNames, "Config names must not be empty");
+		Collections.reverse(valueEncoderConfigNames);
+		return valueEncoderConfigNames;
 	}
 
 	private KeyEncoder buildKeyEncoder(final EncodersArgon2.DerivedSalt derivedSalt) {
