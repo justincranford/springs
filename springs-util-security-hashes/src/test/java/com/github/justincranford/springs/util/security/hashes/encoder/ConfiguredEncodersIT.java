@@ -8,6 +8,10 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 
 import com.github.justincranford.springs.util.security.hashes.AbstractIT;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.KeyEncoder;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.KeyEncoders;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.ValueEncoder;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.ValueEncoders;
 
 import lombok.extern.slf4j.Slf4j;
 

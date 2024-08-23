@@ -12,6 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
 
 import com.github.justincranford.springs.util.security.hashes.encoder.argon2.Argon2Encoder;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.KeyEncoder;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.KeyEncoders;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.ValueEncoder;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.ValueEncoders;
 import com.github.justincranford.springs.util.security.hashes.properties.SpringsUtilSecurityHashesProperties;
 import com.github.justincranford.springs.util.security.hashes.properties.SpringsUtilSecurityHashesProperties.EncodersArgon2;
 import com.github.justincranford.springs.util.security.hashes.properties.SpringsUtilSecurityHashesProperties.EncodersArgon2.ConstantSalt;

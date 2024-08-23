@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.security.hashes.encoder;
+package com.github.justincranford.springs.util.security.hashes.encoder.model;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 
 @Getter
 @Accessors(fluent=true)
-@SuppressWarnings({"deprecation"})
+@SuppressWarnings({"deprecation", "rawtypes", "unchecked"})
 public abstract class Encoders<ENCODERCLASS extends Encoder> extends DelegatingPasswordEncoder {
 	// TODO upgradeEncoding true
 	private static final PasswordEncoder NOOP_PASSWORD_ENCODER = NoOpPasswordEncoder.getInstance();
