@@ -21,6 +21,7 @@ import com.github.justincranford.springs.util.security.hashes.properties.Springs
 import com.github.justincranford.springs.util.security.hashes.properties.SpringsUtilSecurityHashesProperties.EncodersArgon2.RandomSalt;
 
 import lombok.Getter;
+import lombok.experimental.Accessors;
 
 @Configuration
 @SuppressWarnings({"deprecation", "nls", "static-method", "boxing"})
@@ -75,25 +76,27 @@ public class EncodersConfiguration {
 	}
 
 	@Getter
+	@Accessors(fluent=true)
 	public static class KeyEncoders extends DelegatingPasswordEncoder {
 		private final String currentIdForEncode;
-		private final Map<String, PasswordEncoder> currentIdToKeyEncoders;
-		public KeyEncoders(final String id, final Map<String, PasswordEncoder> map) {
+		private final LinkedHashMap<String, PasswordEncoder> idToEncoders;
+		public KeyEncoders(final String id, final LinkedHashMap<String, PasswordEncoder> map) {
 			super(id, map);
 			this.currentIdForEncode = id;
-			this.currentIdToKeyEncoders = map;
+			this.idToEncoders = map;
 			super.setDefaultPasswordEncoderForMatches(NOOP_PASSWORD_ENCODER);
 		}
 	}
 
 	@Getter
+	@Accessors(fluent=true)
 	public static class ValueEncoders extends DelegatingPasswordEncoder {
 		private final String currentIdForEncode;
-		private final Map<String, PasswordEncoder> currentIdToValueEncoders;
-		public ValueEncoders(final String id, final Map<String, PasswordEncoder> map) {
+		private final LinkedHashMap<String, PasswordEncoder> idToEncoders;
+		public ValueEncoders(final String id, final LinkedHashMap<String, PasswordEncoder> map) {
 			super(id, map);
 			this.currentIdForEncode = id;
-			this.currentIdToValueEncoders = map;
+			this.idToEncoders = map;
 			super.setDefaultPasswordEncoderForMatches(NOOP_PASSWORD_ENCODER);
 		}
 	}
