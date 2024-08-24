@@ -10,7 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.github.justincranford.springs.util.security.hashes.config.SpringsUtilSecurityHashesConfiguration;
-import com.github.justincranford.springs.util.security.hashes.encoder.EncodersConfiguration;
+import com.github.justincranford.springs.util.security.hashes.encoder.config.EncodersConfiguration;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.KeyEncoders;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.ValueEncoders;
 import com.github.justincranford.springs.util.security.hashes.properties.SpringsUtilSecurityHashesProperties;

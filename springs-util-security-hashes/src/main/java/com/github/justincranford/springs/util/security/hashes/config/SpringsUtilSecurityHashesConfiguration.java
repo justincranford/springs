@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Import;
 
 import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
 import com.github.justincranford.springs.util.observability.config.SpringsUtilObservabilityConfiguration;
-import com.github.justincranford.springs.util.security.hashes.encoder.EncodersConfiguration;
+import com.github.justincranford.springs.util.security.hashes.encoder.config.EncodersConfiguration;
 import com.github.justincranford.springs.util.security.hashes.properties.SpringsUtilSecurityHashesProperties;
 
 @Configuration

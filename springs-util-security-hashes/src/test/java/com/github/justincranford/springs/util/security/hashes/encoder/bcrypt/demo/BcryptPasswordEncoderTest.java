@@ -1,4 +1,5 @@
-package com.github.justincranford.springs.util.security.hashes.demo;
+package com.github.justincranford.springs.util.security.hashes.encoder.bcrypt.demo;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;

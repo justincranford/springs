@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.security.hashes.encoder;
+package com.github.justincranford.springs.util.security.hashes.encoder.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

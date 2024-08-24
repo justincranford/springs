@@ -1,8 +1,10 @@
 package com.github.justincranford.springs.util.security.hashes.properties;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
@@ -34,7 +36,7 @@ import lombok.ToString;
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor
-@SuppressWarnings({"nls"})
+@SuppressWarnings({"nls", "unchecked", "rawtypes"})
 public class SpringsUtilSecurityHashesProperties {
 	@PostConstruct
 	public void init() {
@@ -84,6 +86,20 @@ public class SpringsUtilSecurityHashesProperties {
 	@ToString(callSuper=false)
 	@Builder(toBuilder=true)
 	public static class Encoders {
+		public Argon2.AbstractSalt get(final String name) {
+			final Map<String, Argon2.AbstractSalt> constantSalt = (Map) this.getArgon2().getConstantSalt();
+			final Map<String, Argon2.AbstractSalt>  derivedSalt = (Map) this.getArgon2().getDerivedSalt();
+			final Map<String, Argon2.AbstractSalt>   randomSalt = (Map) this.getArgon2().getRandomSalt();
+			final List<Argon2.AbstractSalt> matches = Stream.of(constantSalt, derivedSalt, randomSalt)
+				.map(map -> map.get(name)).filter(a -> a != null).toList();
+			if (matches.size() == 1) {
+				return matches.get(0);
+			} else if (matches.isEmpty()) {
+				throw new RuntimeException("No encoders found. Expected one and only one.");
+			}
+			throw new RuntimeException("Multiple encoders found. Expected one and only one.");
+		}
+
 		private Argon2 argon2;
 
 		@Component

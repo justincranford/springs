@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.security.hashes.config;
+package com.github.justincranford.springs.util.security.hashes.smoke;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
