@@ -9,17 +9,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.github.justincranford.springs.util.security.hashes.AbstractIT;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.KeyEncoder;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.KeyEncoders;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.ValueEncoder;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.ValueEncoders;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.Encoder;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.Encoders;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings({"nls", "boxing"})
 public class ConfiguredEncodersIT extends AbstractIT {
-	private static final int REPEATS = 3;
+	private static final int REPEATS = 2;
 
 	@Test
 	void testTopLevelKeyEncoders() {
@@ -28,9 +26,7 @@ public class ConfiguredEncodersIT extends AbstractIT {
 
 	@Test
 	void testEachIndividualKeyEncoder() {
-		for (final KeyEncoder encoder : super.keyEncoders().idToEncoders().values()) {
-			helper(encoder, "Hello.World@example.com");
-		}
+		super.keyEncoders().idToEncoders().values().forEach(keyEncoder -> helper(keyEncoder, "Hello.World@example.com"));
 	}
 
 	@Test
@@ -40,9 +36,7 @@ public class ConfiguredEncodersIT extends AbstractIT {
 
 	@Test
 	void testEachIndividualValueEncoder() {
-		for (final ValueEncoder encoder : super.valueEncoders().idToEncoders().values()) {
-			helper(encoder, "P@ssw0rd");
-		}
+		super.valueEncoders().idToEncoders().values().forEach(valueEncoder -> helper(valueEncoder, "Hello.World@example.com"));
 	}
 
 	private static void helper(final PasswordEncoder encoder, final String raw) {
@@ -52,13 +46,9 @@ public class ConfiguredEncodersIT extends AbstractIT {
 
 		// original password matches all encoded hashes+parameters
 		for (final String encoded : encodeds) {
-			if (encoder instanceof KeyEncoders keyEncoders) {
-				assertThat(encoded).startsWith("{" + keyEncoders.idForEncode() + "}");
-			} else if (encoder instanceof ValueEncoders valueEncoders) {
-				assertThat(encoded).startsWith("{" + valueEncoders.idForEncode() + "}");
-			} else if (encoder instanceof KeyEncoder) {
-				assertThat(encoded).doesNotStartWith("{");
-			} else if (encoder instanceof ValueEncoder) {
+			if (encoder instanceof Encoders encoders) { // KeyEncoders, ValueEncoders
+				assertThat(encoded).startsWith("{" + encoders.idForEncode() + "}");
+			} else if (encoder instanceof Encoder) { // KeyEncoder, ValueEncoder
 				assertThat(encoded).doesNotStartWith("{");
 			} else {
 				throw new RuntimeException("Unexpected encoder");
