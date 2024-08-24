@@ -9,7 +9,6 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.github.justincranford.springs.util.security.hashes.AbstractIT;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.Encoder;
@@ -55,16 +54,16 @@ public class ConfiguredEncodersIT extends AbstractIT {
 
 		// original password matches all encoded hashes+parameters
 		for (final String encoded : encodeds) {
-			if (encoderWithIdForEncode instanceof Encoders encoders) { // KeyEncoders, ValueEncoders
-				assertThat(encoded).startsWith("{" + encoderWithIdForEncode.idForEncode() + "}");
-			} else if (encoderWithIdForEncode instanceof Encoder encoder) { // KeyEncoder, ValueEncoder
-				assertThat(encoded).doesNotStartWith("{" + encoderWithIdForEncode.idForEncode() + "}");
+			final String className = encoderWithIdForEncode.getClass().getSimpleName();
+			final String idForEncode = encoderWithIdForEncode.idForEncode();
+			if (encoderWithIdForEncode instanceof Encoders) { // DelegatingPasswordEncoder => KeyEncoders, ValueEncoders
+				assertThat(encoded).startsWith("{" + idForEncode + "}");
+			} else if (encoderWithIdForEncode instanceof Encoder) { // PasswordEncoder => KeyEncoder, ValueEncoder
+				assertThat(encoded).doesNotStartWith("{" + idForEncode + "}");
 				assertThat(encoded).doesNotStartWith("{");
 			} else {
 				throw new RuntimeException("Unexpected encoder");
 			}
-			final String className = encoderWithIdForEncode.getClass().getSimpleName();
-			final String idForEncode = encoderWithIdForEncode.idForEncode();
 			final boolean matches = encoderWithIdForEncode.matches(raw, encoded);
 			final boolean upgradeEncoding = encoderWithIdForEncode.upgradeEncoding(encoded);
 			log.info("class: {}, idForEncode: {}, matches: {}, upgradeEncoding: {}, raw: {}, encoded: {}", className, idForEncode, matches, upgradeEncoding, raw, encoded);
