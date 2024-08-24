@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent=true)
 @SuppressWarnings({"deprecation", "rawtypes", "unchecked"})
-public abstract class Encoders<ENCODERCLASS extends Encoder> extends DelegatingPasswordEncoder {
+public abstract class Encoders<ENCODERCLASS extends Encoder> extends DelegatingPasswordEncoder implements EncoderWithIdForEncode {
 	// TODO upgradeEncoding true
 	private static final PasswordEncoder NOOP_PASSWORD_ENCODER = NoOpPasswordEncoder.getInstance();
 

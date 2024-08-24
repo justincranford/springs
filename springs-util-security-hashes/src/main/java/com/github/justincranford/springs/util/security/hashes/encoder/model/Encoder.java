@@ -9,10 +9,11 @@ import lombok.experimental.Accessors;
 @RequiredArgsConstructor
 @Getter
 @Accessors(fluent = true)
-public abstract class Encoder implements PasswordEncoder {
+public abstract class Encoder implements EncoderWithIdForEncode {
 	private final String idForEncode;
 	private final PasswordEncoder encoder;
 
+	@Override
 	public String idForEncode() {
 		return this.idForEncode;
 	}

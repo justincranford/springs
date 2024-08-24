@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.github.justincranford.springs.util.security.hashes.AbstractIT;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.Encoder;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.EncoderWithIdForEncode;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.Encoders;
 
 import lombok.extern.slf4j.Slf4j;
@@ -47,26 +48,26 @@ public class ConfiguredEncodersIT extends AbstractIT {
 		super.valueEncoders().idToEncoders().values().forEach(valueEncoder -> helper(valueEncoder, "P@ssw0rd"));
 	}
 
-	private static void helper(final PasswordEncoder passwordEncoder, final String raw) {
+	private static void helper(final EncoderWithIdForEncode encoderWithIdForEncode, final String raw) {
 		// original password is encoded multiple times, each one with different (random) salt, and produces different hash
-		final List<String> encodeds = IntStream.rangeClosed(1, REPEATS).boxed().map(i -> passwordEncoder.encode(raw)).toList();
+		final List<String> encodeds = IntStream.rangeClosed(1, REPEATS).boxed().map(i -> encoderWithIdForEncode.encode(raw)).toList();
 //		log.info("encodeds:\n{}", encodeds.stream().map(s -> "\n  "+s).toList().toString().replace("]", "\n]"));
 
 		// original password matches all encoded hashes+parameters
 		for (final String encoded : encodeds) {
-			final String idForEncode;
-			if (passwordEncoder instanceof Encoders encoders) { // KeyEncoders, ValueEncoders
-				assertThat(encoded).startsWith("{" + encoders.idForEncode() + "}");
-				idForEncode = encoders.idForEncode();
-			} else if (passwordEncoder instanceof Encoder encoder) { // KeyEncoder, ValueEncoder
+			if (encoderWithIdForEncode instanceof Encoders encoders) { // KeyEncoders, ValueEncoders
+				assertThat(encoded).startsWith("{" + encoderWithIdForEncode.idForEncode() + "}");
+			} else if (encoderWithIdForEncode instanceof Encoder encoder) { // KeyEncoder, ValueEncoder
+				assertThat(encoded).doesNotStartWith("{" + encoderWithIdForEncode.idForEncode() + "}");
 				assertThat(encoded).doesNotStartWith("{");
-				idForEncode = encoder.idForEncode();
 			} else {
 				throw new RuntimeException("Unexpected encoder");
 			}
-			final boolean matches = passwordEncoder.matches(raw, encoded);
-			final boolean upgradeEncoding = passwordEncoder.upgradeEncoding(encoded);
-			log.info("class: {}, idForEncode: {}, matches: {}, upgradeEncoding: {}, raw: {}, encoded: {}", passwordEncoder.getClass().getSimpleName(), idForEncode, matches, upgradeEncoding, raw, encoded);
+			final String className = encoderWithIdForEncode.getClass().getSimpleName();
+			final String idForEncode = encoderWithIdForEncode.idForEncode();
+			final boolean matches = encoderWithIdForEncode.matches(raw, encoded);
+			final boolean upgradeEncoding = encoderWithIdForEncode.upgradeEncoding(encoded);
+			log.info("class: {}, idForEncode: {}, matches: {}, upgradeEncoding: {}, raw: {}, encoded: {}", className, idForEncode, matches, upgradeEncoding, raw, encoded);
 			assertThat(matches).isTrue();
 			assertThat(upgradeEncoding).isFalse();
 		}
