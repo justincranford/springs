@@ -21,41 +21,50 @@ import lombok.extern.slf4j.Slf4j;
 public class Pbkdf2EncodersTest {
 	private static final int REPEATS = 3;
 
-	private static final Map<String, PasswordEncoder> map1 = Map.of(
-		"default", Pbkdf2Encoder.DerivedSalt.DEFAULT1
+	private static final String keyEncodersDefault = "derived";
+	private static final Map<String, PasswordEncoder> keyEncodersMap = Map.of(
+		"derived", Pbkdf2Encoder.DerivedSalt.DEFAULT1,
+		"constant", Pbkdf2Encoder.ConstantSalt.DEFAULT1
 	);
-	private static final DelegatingPasswordEncoder keyEncoders = new DelegatingPasswordEncoder("default", map1);
+	private static final DelegatingPasswordEncoder keyEncoders = new DelegatingPasswordEncoder(
+		keyEncodersDefault,
+		keyEncodersMap
+	);
 
-	private static final Map<String, PasswordEncoder> map2 = Map.of(
-		"default", Pbkdf2Encoder.RandomSalt.DEFAULT1
+	private static final String valueEncodersDefault = "random";
+	private static final Map<String, PasswordEncoder> valueEncodersMap = Map.of(
+		"random", Pbkdf2Encoder.RandomSalt.DEFAULT1
 	);
-	private static final DelegatingPasswordEncoder valueEncoders = new DelegatingPasswordEncoder("default", map2);
+	private static final DelegatingPasswordEncoder valueEncoders = new DelegatingPasswordEncoder(
+		valueEncodersDefault,
+		valueEncodersMap
+	);
 
 	@Order(1)
 	@Test
 	void testTopLevelKeyEncoders() {
-		helper(keyEncoders, "Hello.World@example.com");
+		helper(keyEncoders, keyEncodersDefault, "Hello.World@example.com");
 	}
 
 	@Order(2)
 	@Test
 	void testTopLevelValueEncoders() {
-		helper(valueEncoders, "P@ssw0rd");
+		helper(valueEncoders, valueEncodersDefault, "P@ssw0rd");
 	}
 
 	@Order(3)
 	@Test
 	void testEachIndividualKeyEncoder() {
-		map1.values().forEach(keyEncoder -> helper(keyEncoder, "Hello.World@example.com"));
+		keyEncodersMap.values().forEach(keyEncoder -> helper(keyEncoder, "n/a",  "Hello.World@example.com"));
 	}
 
 	@Order(4)
 	@Test
 	void testEachIndividualValueEncoder() {
-		map2.values().forEach(valueEncoder -> helper(valueEncoder, "P@ssw0rd"));
+		valueEncodersMap.values().forEach(valueEncoder -> helper(valueEncoder, "n/a", "P@ssw0rd"));
 	}
 
-	private static void helper(final PasswordEncoder passwordEncoder, final String raw) {
+	private static void helper(final PasswordEncoder passwordEncoder, final String idForEncode, final String raw) {
 		// original password is encoded multiple times, each one with different (random) salt, and produces different hash
 		final List<String> encodeds = IntStream.rangeClosed(1, REPEATS).boxed().map(i -> passwordEncoder.encode(raw)).toList();
 //		log.info("encodeds:\n{}", encodeds.stream().map(s -> "\n  "+s).toList().toString().replace("]", "\n]"));
@@ -63,12 +72,9 @@ public class Pbkdf2EncodersTest {
 		// original password matches all encoded hashes+parameters
 		for (final String encoded : encodeds) {
 			final String className = passwordEncoder.getClass().getSimpleName();
-			final String idForEncode;
 			if (passwordEncoder instanceof DelegatingPasswordEncoder) { // DelegatingPasswordEncoder => KeyEncoders, ValueEncoders
-				idForEncode = "default";
 				assertThat(encoded).startsWith("{" + idForEncode + "}");
 			} else { // PasswordEncoder => KeyEncoder, ValueEncoder
-				idForEncode = "n/a";
 				assertThat(encoded).doesNotStartWith("{");
 			}
 			final boolean matches = passwordEncoder.matches(raw, encoded);

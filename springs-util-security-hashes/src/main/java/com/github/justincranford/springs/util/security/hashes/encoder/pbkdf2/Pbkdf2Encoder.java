@@ -211,38 +211,40 @@ public final class Pbkdf2Encoder {
 		private static final PRF PRF = Pbkdf2Encoder.PRF.PBKDF2WithHmacSHA256;
 		private static final int RANDOM_SALT_LENGTH = 32;
 		private static final int DERIVED_SALT_LENGTH = 32;
-		private static final byte[] CONSTANT_SALT = new byte[0];
+		private static final byte[] CONSTANT_SALT = "salt".getBytes(StandardCharsets.UTF_8);
 		private static final int ITERATIONS = 600_000;
 		private static final int DK_LEN = 32;
 		private static final DIGEST DERIVED_SALT_DIGEST = Pbkdf2Encoder.DIGEST.SHA256;
-		private static final String SEPARATOR_PARAMETERS = ":";
-	    private static final String SEPARATOR_HASH = ",";
+		private static final String SEPARATOR_ENCODE_PARAMETERS = ":";
+		private static final String SEPARATOR_DECODE_PARAMETERS = SEPARATOR_ENCODE_PARAMETERS;
+	    private static final String SEPARATOR_ENCODE_HASH = "|";
+	    private static final String SEPARATOR_DECODE_HASH = "\\" + SEPARATOR_ENCODE_HASH;
 	}
 
     public static String encodeParameters(final ClearParameters clearParameters) {
     	return new StringBuilder()
 			.append(Base64Util.STD_ENCODE.string(clearParameters.clearContext()))
-			.append(Default1.SEPARATOR_PARAMETERS)
+			.append(Default1.SEPARATOR_ENCODE_PARAMETERS)
 			.append(Base64Util.STD_ENCODE.string(clearParameters.salt()))
-			.append(Default1.SEPARATOR_PARAMETERS)
+			.append(Default1.SEPARATOR_ENCODE_PARAMETERS)
 			.append(clearParameters.iterations())
-			.append(Default1.SEPARATOR_PARAMETERS)
+			.append(Default1.SEPARATOR_ENCODE_PARAMETERS)
 			.append(clearParameters.dkLenBytes())
-			.append(Default1.SEPARATOR_PARAMETERS)
+			.append(Default1.SEPARATOR_ENCODE_PARAMETERS)
 			.append(clearParameters.prf())
    			.toString();
     }
     public static ClearParameters decodeClearParameters(final String clearEncodedParameters) {
-        final String[] parts = clearEncodedParameters.split(Default1.SEPARATOR_PARAMETERS);
+        final String[] parts = clearEncodedParameters.split(Default1.SEPARATOR_DECODE_PARAMETERS);
         int part = 0;
         return new ClearParameters(Base64Util.STD_DECODE.bytes(parts[part++]), Base64Util.STD_DECODE.bytes(parts[part++]), Integer.parseInt(parts[part++]), Integer.parseInt(parts[part++]), parts[part++]);
     }
 
     public static String encodeParametersAndHash(final ClearParametersAndClearHash clearParametersAndClearHash) {
-		return encodeParameters(clearParametersAndClearHash.clearParameters()) + Default1.SEPARATOR_HASH +  encodeClearHash(clearParametersAndClearHash.clearHash());
+		return encodeParameters(clearParametersAndClearHash.clearParameters()) + Default1.SEPARATOR_ENCODE_HASH +  encodeClearHash(clearParametersAndClearHash.clearHash());
     }
     public static ClearParametersAndClearHash decodeClearParametersAndClearHash(final String clearParametersAndClearHash) {
-        final String[] parts = clearParametersAndClearHash.split(Default1.SEPARATOR_HASH);
+        final String[] parts = clearParametersAndClearHash.split(Default1.SEPARATOR_DECODE_HASH);
         return new ClearParametersAndClearHash(decodeClearParameters(parts[0]), decodeClearHash(parts[1]));
     }
 
