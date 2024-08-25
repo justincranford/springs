@@ -56,12 +56,12 @@ public final class Pbkdf2Encoder {
 			final int dkLenBytes
 		) {
 			final BiFunction<ClearParameters, CharSequence, byte[]> computeClearHash = (clearParameters, rawInput) -> computeClearHash(clearParameters, new SecretParameters(context.secret(), rawInput));
-			if (clazz.equals(ConstantSalt.class)) {
+			if (clazz.equals(ConstantSalt.class) || clazz.equals(DerivedSalt.class)) {
 				final ClearParameters clearParameters = new ClearParameters(context.clear(), saltSupplier.apply(""), iterations, dkLenBytes, prf.name());
 				this.encode = (rawInput) ->  encodeClearHash(computeClearHash.apply(clearParameters, rawInput)); // omit  clear parameters
 				this.matches = (rawInput, encodedClearHash) -> Boolean.valueOf(MessageDigest.isEqual(decodeClearHash(encodedClearHash), computeClearHash.apply(clearParameters, rawInput)));
 				this.upgradeEncoding = (encodedClearParametersAndClearHash) -> Boolean.FALSE; // never upgrade encoding when using constant salt
-			} else {
+			} else if (clazz.equals(RandomSalt.class)) {
 				this.encode = (rawInput) -> {
 					final ClearParameters clearParameters = new ClearParameters(context.clear(), saltSupplier.apply(rawInput), iterations, dkLenBytes, prf.name());
 					return encodeParametersAndHash(new ClearParametersAndClearHash(clearParameters, computeClearHash.apply(clearParameters, rawInput))); // include parameters in output
@@ -71,21 +71,17 @@ public final class Pbkdf2Encoder {
 					final byte[] clearHashChallenge = computeClearHash.apply(clearParametersAndClearHash.clearParameters(), rawInput);
 					return Boolean.valueOf(MessageDigest.isEqual(clearParametersAndClearHash.clearHash(), clearHashChallenge));
 				};
-				if (clazz.equals(DerivedSalt.class)) {
-					this.upgradeEncoding = (encodedClearParametersAndClearHash) -> Boolean.FALSE; // never upgrade encoding when using derived salt
-				} else if (clazz.equals(RandomSalt.class)) {
-					this.upgradeEncoding = (encodedClearParametersAndClearHash) -> {
-						if (encodedClearParametersAndClearHash == null || encodedClearParametersAndClearHash.length() == 0) {
-							return Boolean.FALSE;
-						}
-						final ClearParametersAndClearHash clearParametersAndClearHash = decodeClearParametersAndClearHash(encodedClearParametersAndClearHash);
-						final ClearParameters clearParameters = clearParametersAndClearHash.clearParameters();
-						final byte[] clearHash = clearParametersAndClearHash.clearHash();
-						return Boolean.valueOf(clearHash.length < dkLenBytes || clearParameters.iterations() < iterations);
-					};
-				} else {
-					throw new RuntimeException("Unsupported class " + clazz.getCanonicalName());
-				}
+				this.upgradeEncoding = (encodedClearParametersAndClearHash) -> {
+					if (encodedClearParametersAndClearHash == null || encodedClearParametersAndClearHash.length() == 0) {
+						return Boolean.FALSE;
+					}
+					final ClearParametersAndClearHash clearParametersAndClearHash = decodeClearParametersAndClearHash(encodedClearParametersAndClearHash);
+					final ClearParameters clearParameters = clearParametersAndClearHash.clearParameters();
+					final byte[] clearHash = clearParametersAndClearHash.clearHash();
+					return Boolean.valueOf(clearHash.length < dkLenBytes || clearParameters.iterations() < iterations);
+				};
+			} else {
+				throw new RuntimeException("Unsupported class " + clazz.getCanonicalName());
 			}
 		}
 
