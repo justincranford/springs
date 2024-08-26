@@ -66,20 +66,48 @@ public final class Pbkdf2Encoder {
 			final int iterations,
 			final int dkLenBytes
 		) {
-			final BiFunction<Pbkdf2ClearParameters, CharSequence, byte[]> computeClearHash = (clearParameters, rawInput) -> computeClearHash(clearParameters, new Pbkdf2SecretParameters(context.secret(), rawInput));
-			final Pbkdf2ClearParameters configuredClearParameters = new Pbkdf2ClearParameters(context.clear(), saltSupplier.apply(""), iterations, dkLenBytes, alg.name());
-			if (clazz.equals(ConstantSalt.class) || clazz.equals(DerivedSalt.class)) {
-				this.encode = (rawInput) ->  encodeClearHash(encoderDecoder, computeClearHash.apply(configuredClearParameters, rawInput)); // omit  clear parameters
-				this.matches = (rawInput, encodedClearHash) -> Boolean.valueOf(MessageDigest.isEqual(decodeClearHash(encoderDecoder, encodedClearHash), computeClearHash.apply(configuredClearParameters, rawInput)));
+			final Pbkdf2ClearParameters constantClearParameters = new Pbkdf2ClearParameters(context.clear(), saltSupplier.apply(""), iterations, dkLenBytes, alg.name());
+			final Function<CharSequence, Pbkdf2SecretParameters> constructSecretParameters = (rawInput) -> new Pbkdf2SecretParameters(context.secret(), rawInput);
+			final BiFunction<Pbkdf2ClearParameters, Pbkdf2SecretParameters, byte[]> computeClearHash = (clearParameters, secretParameters) -> computeClearHash(clearParameters, secretParameters);
+			if (clazz.equals(ConstantSalt.class)) {
+				this.encode = (rawInput) ->  {
+					final Pbkdf2SecretParameters constructedSecretParameters = constructSecretParameters.apply(rawInput);
+					final byte[] computedClearHash = computeClearHash.apply(constantClearParameters, constructedSecretParameters);
+					return encodeClearHash(encoderDecoder, computedClearHash); // omit  clear parameters
+				};
+				this.matches = (rawInput, encodedClearHash) -> {
+					final byte[] parsedClearHash = decodeClearHash(encoderDecoder, encodedClearHash);
+					final Pbkdf2SecretParameters constructedSecretParameters = constructSecretParameters.apply(rawInput);
+					final byte[] computedClearHashChallenge = computeClearHash.apply(constantClearParameters, constructedSecretParameters);
+					return Boolean.valueOf(MessageDigest.isEqual(parsedClearHash, computedClearHashChallenge));
+				};
 				this.upgradeEncoding = (encodedClearParametersAndClearHash) -> Boolean.FALSE; // never upgrade encoding when using constant salt
+			} else if (clazz.equals(DerivedSalt.class)) {
+				this.encode = (rawInput) -> {
+					final Pbkdf2ClearParameters computedClearParameters = new Pbkdf2ClearParameters(context.clear(), saltSupplier.apply(rawInput), iterations, dkLenBytes, alg.name());
+					final Pbkdf2SecretParameters constructedSecretParameters = constructSecretParameters.apply(rawInput);
+					final byte[] computedClearHash = computeClearHash.apply(computedClearParameters, constructedSecretParameters);
+					return encodeClearHash(encoderDecoder, computedClearHash); // omit clear parameters
+				};
+				this.matches = (rawInput, encodedClearHash) -> {
+					final byte[] parsedClearHash = decodeClearHash(encoderDecoder, encodedClearHash);
+					final Pbkdf2ClearParameters computedClearParameters = new Pbkdf2ClearParameters(context.clear(), saltSupplier.apply(rawInput), iterations, dkLenBytes, alg.name());
+					final Pbkdf2SecretParameters constructedSecretParameters = constructSecretParameters.apply(rawInput);
+					final byte[] computedClearHashChallenge = computeClearHash.apply(computedClearParameters, constructedSecretParameters);
+					return Boolean.valueOf(MessageDigest.isEqual(parsedClearHash, computedClearHashChallenge));
+				};
+				this.upgradeEncoding = (encodedClearParametersAndClearHash) -> Boolean.FALSE; // never upgrade encoding when using derived salt
 			} else if (clazz.equals(RandomSalt.class)) {
 				this.encode = (rawInput) -> {
 					final Pbkdf2ClearParameters computedClearParameters = new Pbkdf2ClearParameters(context.clear(), saltSupplier.apply(rawInput), iterations, dkLenBytes, alg.name());
-					return encodeClearParametersAndClearHash(encoderDecoder, new Pbkdf2ClearParametersAndClearHash(computedClearParameters, computeClearHash.apply(computedClearParameters, rawInput))); // include clear parameters
+					final Pbkdf2SecretParameters constructedSecretParameters = constructSecretParameters.apply(rawInput);
+					final byte[] computedClearHash = computeClearHash.apply(computedClearParameters, constructedSecretParameters);
+					return encodeClearParametersAndClearHash(encoderDecoder, new Pbkdf2ClearParametersAndClearHash(computedClearParameters, computedClearHash)); // include clear parameters
 				};
 				this.matches = (rawInput, encodedClearParametersAndClearHash) -> {
 					final Pbkdf2ClearParametersAndClearHash parsedClearParametersAndClearHash = decodeClearParametersAndClearHash(encoderDecoder, encodedClearParametersAndClearHash);
-					final byte[] computedClearHashChallenge = computeClearHash.apply(parsedClearParametersAndClearHash.clearParameters(), rawInput);
+					final Pbkdf2SecretParameters constructedSecretParameters = constructSecretParameters.apply(rawInput);
+					final byte[] computedClearHashChallenge = computeClearHash.apply(parsedClearParametersAndClearHash.clearParameters(), constructedSecretParameters);
 					return Boolean.valueOf(MessageDigest.isEqual(parsedClearParametersAndClearHash.clearHash(), computedClearHashChallenge));
 				};
 				this.upgradeEncoding = (encodedClearParametersAndClearHash) -> {
@@ -90,11 +118,11 @@ public final class Pbkdf2Encoder {
 					final Pbkdf2ClearParameters parsedClearParameters = parsedClearParametersAndClearHash.clearParameters();
 					final byte[] parsedClearHash = parsedClearParametersAndClearHash.clearHash();
 					return Boolean.valueOf(
-						(!MessageDigest.isEqual(configuredClearParameters.clearContext(), parsedClearParameters.clearContext()))
-						|| (configuredClearParameters.salt().length != parsedClearParameters.salt().length)
-						|| (configuredClearParameters.iterations() != parsedClearParameters.iterations())
-						|| (configuredClearParameters.dkLenBytes() != parsedClearHash.length)
-						|| (!configuredClearParameters.alg().equals(parsedClearParameters.alg()))
+						(!MessageDigest.isEqual(constantClearParameters.clearContext(), parsedClearParameters.clearContext()))
+						|| (constantClearParameters.salt().length != parsedClearParameters.salt().length)
+						|| (constantClearParameters.iterations() != parsedClearParameters.iterations())
+						|| (constantClearParameters.dkLenBytes() != parsedClearHash.length)
+						|| (!constantClearParameters.alg().equals(parsedClearParameters.alg()))
 					);
 				};
 			} else {
