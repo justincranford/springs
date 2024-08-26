@@ -27,19 +27,19 @@ import lombok.NoArgsConstructor;
 public final class Pbkdf2Encoder {
 	public static final class RandomSalt extends FlexiblePbkdf2Encoder {
 		public static final RandomSalt DEFAULT1 = new RandomSalt(Default1.ENCODER_DECODER, Default1.CONTEXT, Default1.ALG, Default1.RANDOM_SALT_LENGTH, Default1.ITERATIONS, Default1.DK_LEN);
-		public RandomSalt(final EncoderDecoder encoderDecoder, final Context context, final Pbkdf2Encoder.ALG alg, final int randomSaltLength, final int iterations, final int dkLenBytes) {
+		public RandomSalt(final Base64Util.EncoderDecoder encoderDecoder, final Context context, final Pbkdf2Encoder.ALG alg, final int randomSaltLength, final int iterations, final int dkLenBytes) {
 			super(RandomSalt.class, encoderDecoder, context, alg, (rawInput) -> SecureRandomUtil.randomBytes(randomSaltLength), iterations, dkLenBytes);
 		}
 	}
 	public static final class DerivedSalt extends FlexiblePbkdf2Encoder {
 		public static final DerivedSalt DEFAULT1 = new DerivedSalt(Default1.ENCODER_DECODER, Default1.CONTEXT, Default1.ALG, Default1.DERIVED_SALT_LENGTH, Default1.ITERATIONS, Default1.DK_LEN, Default1.DERIVED_SALT_MAC);
-		public DerivedSalt(final EncoderDecoder encoderDecoder, final Context context, final Pbkdf2Encoder.ALG alg, final int derivedSaltLength, final int iterations, final int dkLenBytes, final MacUtil.ALG mac) {
+		public DerivedSalt(final Base64Util.EncoderDecoder encoderDecoder, final Context context, final Pbkdf2Encoder.ALG alg, final int derivedSaltLength, final int iterations, final int dkLenBytes, final MacUtil.ALG mac) {
 			super(DerivedSalt.class, encoderDecoder, context, alg, (rawInput) -> derivedSalt(mac, new ClearParameters(context.clear(), new byte[derivedSaltLength], iterations, dkLenBytes, alg.alg()), new SecretParameters(context.secret(), rawInput)), iterations, dkLenBytes);
 		}
 	}
 	public static final class ConstantSalt extends FlexiblePbkdf2Encoder {
 		public static final ConstantSalt DEFAULT1 = new ConstantSalt(Default1.ENCODER_DECODER, Default1.CONTEXT, Default1.ALG, Default1.CONSTANT_SALT, Default1.ITERATIONS, Default1.DK_LEN);
-		public ConstantSalt(final EncoderDecoder encoderDecoder, final Context context, final Pbkdf2Encoder.ALG alg, final byte[] constantSalt, final int iterations, final int dkLenBytes) {
+		public ConstantSalt(final Base64Util.EncoderDecoder encoderDecoder, final Context context, final Pbkdf2Encoder.ALG alg, final byte[] constantSalt, final int iterations, final int dkLenBytes) {
 			super(ConstantSalt.class, encoderDecoder, context, alg, (rawInput) -> constantSalt, iterations, dkLenBytes);
 		}
 	}
@@ -50,7 +50,7 @@ public final class Pbkdf2Encoder {
 		private final Function<String, Boolean> upgradeEncoding;
 		public FlexiblePbkdf2Encoder(
 			final Class<? extends FlexiblePbkdf2Encoder> clazz,
-			final EncoderDecoder encoderDecoder,
+			final Base64Util.EncoderDecoder encoderDecoder,
 			final Context context,
 			final Pbkdf2Encoder.ALG alg,
 			final Function<CharSequence, byte[]> saltSupplier,
@@ -164,8 +164,7 @@ public final class Pbkdf2Encoder {
 	}
 
 	private static class Default1 {
-		private static final EncoderDecoder ENCODER_DECODER = new EncoderDecoder(Base64Util.STD_ENCODE, Base64Util.MIME_DECODE);
-
+		private static final Base64Util.EncoderDecoder ENCODER_DECODER = Base64Util.MIME;
 		private static final Context CONTEXT = new Context(new byte[0], new byte[0]);
 		private static final ALG ALG = Pbkdf2Encoder.ALG.PBKDF2WithHmacSHA256;
 		private static final int RANDOM_SALT_LENGTH = 32;
@@ -180,11 +179,11 @@ public final class Pbkdf2Encoder {
 	    private static final String SEPARATOR_DECODE_HASH = "\\" + SEPARATOR_ENCODE_HASH;
 	}
 
-    public static String encodeParameters(final EncoderDecoder encoderDecoder, final ClearParameters clearParameters) {
+    public static String encodeParameters(final Base64Util.EncoderDecoder encoderDecoder, final ClearParameters clearParameters) {
 		return StringUtil.toString("", Default1.SEPARATOR_ENCODE_PARAMETERS, "",
 			List.of(
-				encoderDecoder.encoder().string(clearParameters.clearContext()),
-				encoderDecoder.encoder().string(clearParameters.salt()),
+				encoderDecoder.encodeToString(clearParameters.clearContext()),
+				encoderDecoder.encodeToString(clearParameters.salt()),
 				Integer.valueOf(clearParameters.iterations()),
 				Integer.valueOf(clearParameters.dkLenBytes()),
 				clearParameters.alg()
@@ -192,24 +191,24 @@ public final class Pbkdf2Encoder {
 		);
     }
 
-    public static ClearParameters decodeClearParameters(final EncoderDecoder encoderDecoder, final String clearEncodedParameters) {
+    public static ClearParameters decodeClearParameters(final Base64Util.EncoderDecoder encoderDecoder, final String clearEncodedParameters) {
         final String[] parts = clearEncodedParameters.split(Default1.SEPARATOR_DECODE_PARAMETERS);
         int part = 0;
-        return new ClearParameters(encoderDecoder.decoder().bytes(parts[part++]), encoderDecoder.decoder().bytes(parts[part++]), Integer.parseInt(parts[part++]), Integer.parseInt(parts[part++]), parts[part++]);
+        return new ClearParameters(encoderDecoder.decodeFromString(parts[part++]), encoderDecoder.decodeFromString(parts[part++]), Integer.parseInt(parts[part++]), Integer.parseInt(parts[part++]), parts[part++]);
     }
 
-    public static String encodeParametersAndHash(final EncoderDecoder encoderDecoder, final ClearParametersAndClearHash clearParametersAndClearHash) {
+    public static String encodeParametersAndHash(final Base64Util.EncoderDecoder encoderDecoder, final ClearParametersAndClearHash clearParametersAndClearHash) {
 		return encodeParameters(encoderDecoder, clearParametersAndClearHash.clearParameters()) + Default1.SEPARATOR_ENCODE_HASH +  encodeClearHash(encoderDecoder, clearParametersAndClearHash.clearHash());
     }
-    public static ClearParametersAndClearHash decodeClearParametersAndClearHash(final EncoderDecoder encoderDecoder, final String clearParametersAndClearHash) {
+    public static ClearParametersAndClearHash decodeClearParametersAndClearHash(final Base64Util.EncoderDecoder encoderDecoder, final String clearParametersAndClearHash) {
         final String[] parts = clearParametersAndClearHash.split(Default1.SEPARATOR_DECODE_HASH);
         return new ClearParametersAndClearHash(decodeClearParameters(encoderDecoder, parts[0]), decodeClearHash(encoderDecoder, parts[1]));
     }
 
-    private static String encodeClearHash(final EncoderDecoder encoderDecoder, final byte[] hash) {
-		return encoderDecoder.encoder().string(hash);
+    private static String encodeClearHash(final Base64Util.EncoderDecoder encoderDecoder, final byte[] hash) {
+		return encoderDecoder.encodeToString(hash);
 	}
-	private static byte[] decodeClearHash(final EncoderDecoder encoderDecoder, final String encodedHash) {
-		return encoderDecoder.decoder().bytes(encodedHash);
+	private static byte[] decodeClearHash(final Base64Util.EncoderDecoder encoderDecoder, final String encodedHash) {
+		return encoderDecoder.decodeFromString(encodedHash);
 	}
 }
