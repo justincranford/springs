@@ -1,10 +1,9 @@
 package com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -15,8 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.basic.Base64Util;
+import com.github.justincranford.springs.util.basic.ByteUtil;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-import com.github.justincranford.springs.util.security.hashes.util.MessageDigestUtil;
+import com.github.justincranford.springs.util.basic.StringUtil;
+import com.github.justincranford.springs.util.security.hashes.util.MacUtil;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,21 +26,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class Pbkdf2Encoder {
 	public static final class RandomSalt extends FlexiblePbkdf2Encoder {
-		public static final RandomSalt DEFAULT1 = new RandomSalt(Default1.CONTEXT, Default1.PRF, Default1.RANDOM_SALT_LENGTH, Default1.ITERATIONS, Default1.DK_LEN);
-		public RandomSalt(final Context context, final PRF prf, final int randomSaltLength, final int iterations, final int dkLenBytes) {
-			super(RandomSalt.class, context, prf, (rawInput) -> SecureRandomUtil.randomBytes(randomSaltLength), iterations, dkLenBytes);
+		public static final RandomSalt DEFAULT1 = new RandomSalt(Default1.CONTEXT, Default1.ALG, Default1.RANDOM_SALT_LENGTH, Default1.ITERATIONS, Default1.DK_LEN);
+		public RandomSalt(final Context context, final Pbkdf2Encoder.ALG alg, final int randomSaltLength, final int iterations, final int dkLenBytes) {
+			super(RandomSalt.class, context, alg, (rawInput) -> SecureRandomUtil.randomBytes(randomSaltLength), iterations, dkLenBytes);
 		}
 	}
 	public static final class DerivedSalt extends FlexiblePbkdf2Encoder {
-		public static final DerivedSalt DEFAULT1 = new DerivedSalt(Default1.CONTEXT, Default1.PRF, Default1.DERIVED_SALT_LENGTH, Default1.ITERATIONS, Default1.DK_LEN, Default1.DERIVED_SALT_DIGEST);
-		public DerivedSalt(final Context context, final PRF prf, final int derivedSaltLength, final int iterations, final int dkLenBytes, final DIGEST digest) {
-			super(DerivedSalt.class, context, prf, (rawInput) -> derivedSalt(digest, new ClearParameters(context.clear(), new byte[derivedSaltLength], iterations, dkLenBytes, prf.prf()), new SecretParameters(context.secret(), rawInput)), iterations, dkLenBytes);
+		public static final DerivedSalt DEFAULT1 = new DerivedSalt(Default1.CONTEXT, Default1.ALG, Default1.DERIVED_SALT_LENGTH, Default1.ITERATIONS, Default1.DK_LEN, Default1.DERIVED_SALT_MAC);
+		public DerivedSalt(final Context context, final Pbkdf2Encoder.ALG alg, final int derivedSaltLength, final int iterations, final int dkLenBytes, final MacUtil.ALG mac) {
+			super(DerivedSalt.class, context, alg, (rawInput) -> derivedSalt(mac, new ClearParameters(context.clear(), new byte[derivedSaltLength], iterations, dkLenBytes, alg.alg()), new SecretParameters(context.secret(), rawInput)), iterations, dkLenBytes);
 		}
 	}
 	public static final class ConstantSalt extends FlexiblePbkdf2Encoder {
-		public static final ConstantSalt DEFAULT1 = new ConstantSalt(Default1.CONTEXT, Default1.PRF, Default1.CONSTANT_SALT, Default1.ITERATIONS, Default1.DK_LEN);
-		public ConstantSalt(final Context context, final PRF prf, final byte[] constantSalt, final int iterations, final int dkLenBytes) {
-			super(ConstantSalt.class, context, prf, (rawInput) -> constantSalt, iterations, dkLenBytes);
+		public static final ConstantSalt DEFAULT1 = new ConstantSalt(Default1.CONTEXT, Default1.ALG, Default1.CONSTANT_SALT, Default1.ITERATIONS, Default1.DK_LEN);
+		public ConstantSalt(final Context context, final Pbkdf2Encoder.ALG alg, final byte[] constantSalt, final int iterations, final int dkLenBytes) {
+			super(ConstantSalt.class, context, alg, (rawInput) -> constantSalt, iterations, dkLenBytes);
 		}
 	}
 
@@ -50,20 +51,20 @@ public final class Pbkdf2Encoder {
 		public FlexiblePbkdf2Encoder(
 			final Class<? extends FlexiblePbkdf2Encoder> clazz,
 			final Context context,
-			final PRF prf,
+			final Pbkdf2Encoder.ALG alg,
 			final Function<CharSequence, byte[]> saltSupplier,
 			final int iterations,
 			final int dkLenBytes
 		) {
 			final BiFunction<ClearParameters, CharSequence, byte[]> computeClearHash = (clearParameters, rawInput) -> computeClearHash(clearParameters, new SecretParameters(context.secret(), rawInput));
 			if (clazz.equals(ConstantSalt.class) || clazz.equals(DerivedSalt.class)) {
-				final ClearParameters clearParameters = new ClearParameters(context.clear(), saltSupplier.apply(""), iterations, dkLenBytes, prf.name());
+				final ClearParameters clearParameters = new ClearParameters(context.clear(), saltSupplier.apply(""), iterations, dkLenBytes, alg.name());
 				this.encode = (rawInput) ->  encodeClearHash(computeClearHash.apply(clearParameters, rawInput)); // omit  clear parameters
 				this.matches = (rawInput, encodedClearHash) -> Boolean.valueOf(MessageDigest.isEqual(decodeClearHash(encodedClearHash), computeClearHash.apply(clearParameters, rawInput)));
 				this.upgradeEncoding = (encodedClearParametersAndClearHash) -> Boolean.FALSE; // never upgrade encoding when using constant salt
 			} else if (clazz.equals(RandomSalt.class)) {
 				this.encode = (rawInput) -> {
-					final ClearParameters clearParameters = new ClearParameters(context.clear(), saltSupplier.apply(rawInput), iterations, dkLenBytes, prf.name());
+					final ClearParameters clearParameters = new ClearParameters(context.clear(), saltSupplier.apply(rawInput), iterations, dkLenBytes, alg.name());
 					return encodeParametersAndHash(new ClearParametersAndClearHash(clearParameters, computeClearHash.apply(clearParameters, rawInput))); // include parameters in output
 				};
 				this.matches = (rawInput, encodedClearParametersAndClearHash) -> {
@@ -107,48 +108,34 @@ public final class Pbkdf2Encoder {
 				clearParameters.iterations(),
 				clearParameters.dkLenBytes() * 8
 			);
-			final SecretKeyFactory skf = SecretKeyFactory.getInstance(clearParameters.prf());
+			final SecretKeyFactory skf = SecretKeyFactory.getInstance(clearParameters.alg());
 			return skf.generateSecret(spec).getEncoded();
 		} catch (GeneralSecurityException ex) {
 			throw new IllegalStateException("Could not create hash", ex);
 		}
-
 	}
 
-    public static byte[] derivedSalt(final DIGEST digest, final ClearParameters clearParameters, final SecretParameters secretParameters) {
-		return MessageDigestUtil.messageDigest(
-			digest.alg(),
-			canonicalEncodedParametersForDerivedSalt(clearParameters, secretParameters)
+    public static byte[] derivedSalt(final MacUtil.ALG mac, final ClearParameters clearParameters, final SecretParameters secretParameters) {
+		final byte[] key = ArrayUtil.concat(
+			secretParameters.rawInput().toString().getBytes(StandardCharsets.UTF_8),
+			secretParameters.secretContext().toString().getBytes(StandardCharsets.UTF_8)
 		);
-	}
-
-	private static byte[] canonicalEncodedParametersForDerivedSalt(final ClearParameters clearParameters, final SecretParameters secretParameters) {
-		final byte[] rawInputBytes = secretParameters.rawInput().toString().getBytes(StandardCharsets.UTF_8);
-		final byte[] secretContextBytes = secretParameters.secretContext().toString().getBytes(StandardCharsets.UTF_8);
-		final int saltLength = clearParameters.salt().length;
-		final byte[] clearContextBytes = clearParameters.clearContext();
-		final int iterations = clearParameters.iterations();
-		final int dkLenBytes = clearParameters.dkLenBytes();
-		final byte[] prfBytes = clearParameters.prf().getBytes(StandardCharsets.UTF_8);
-
-		return ByteBuffer.allocate(rawInputBytes.length + secretContextBytes.length + 4 + clearContextBytes.length + 4 + 4 + prfBytes.length)
-			.order(ByteOrder.BIG_ENDIAN)
-			.put(rawInputBytes) // different derived salt per different password
-			.put(secretContextBytes) // different derived salt per different password
-			.putInt(saltLength)
-			.put(clearContextBytes)
-			.putInt(iterations)
-			.putInt(dkLenBytes)
-			.put(prfBytes)
-			.array();
+		final byte[] dataChunks = ArrayUtil.concat(
+			ByteUtil.byteArray(clearParameters.salt().length),
+			clearParameters.clearContext(),
+			ByteUtil.byteArray(clearParameters.iterations()),
+			ByteUtil.byteArray(clearParameters.dkLenBytes()),
+			clearParameters.alg().getBytes(StandardCharsets.UTF_8)
+		);
+		return MacUtil.hmac(mac.alg(), key, dataChunks);
 	}
 
 	private static record Context(byte[] clear, byte[] secret) { }
-    private static record ClearParameters(byte[] clearContext, byte[] salt, int iterations, int dkLenBytes, String prf) { }
+    private static record ClearParameters(byte[] clearContext, byte[] salt, int iterations, int dkLenBytes, String alg) { }
     private static record ClearParametersAndClearHash(ClearParameters clearParameters, byte[] clearHash) { }
     private static record SecretParameters(byte[] secretContext, CharSequence rawInput) { }
 
-    public enum PRF {
+    public enum ALG {
 		PBKDF2WithHmacSHA1("PBKDF2withHMACSHA1", 20),
 		PBKDF2WithHmacSHA384("PBKDF2withHMACSHA224", 28),
 		PBKDF2WithHmacSHA224("PBKDF2withHMACSHA256", 32),
@@ -162,35 +149,7 @@ public final class Pbkdf2Encoder {
 		PBKDF2WithHmacSHA3_512("PBKDF2withHMACSHA3_384", 64);
 		private final String alg;
 		private final int lenBytes;
-		private PRF(final String alg, final int lenBytes) {
-			this.alg = alg;
-			this.lenBytes = lenBytes;
-		}
-		public String prf() {
-			return this.alg;
-		}
-		public int lengthBytes() {
-			return this.lenBytes;
-		}
-	}
-
-    public enum DIGEST {
-		SHA1("SHA-1", 20),
-		SHA224("SHA-224", 28),
-		SHA256("SHA-256", 32),
-		SHA384("SHA-384", 48),
-		SHA512("SHA-512", 64),
-		SHA384_224("SHA-512/224", 48),
-		SHA512_256("SHA-512/255", 64),
-		SHA3_224("SHA3-224", 28),
-		SHA3_256("SHA3-256", 32),
-		SHA3_384("SHA3-384", 48),
-		SHA3_512("SHA3-512", 64),
-		SHA3_384_224("SHA3-512/224", 48),
-		SHA3_512_256("SHA3-512/255", 64);
-		private final String alg;
-		private final int lenBytes;
-		private DIGEST(final String alg, final int lenBytes) {
+		private ALG(final String alg, final int lenBytes) {
 			this.alg = alg;
 			this.lenBytes = lenBytes;
 		}
@@ -203,14 +162,17 @@ public final class Pbkdf2Encoder {
 	}
 
 	private static class Default1 {
+		private static final Base64Util.Encoder BASE64_UTIL_ENCODER = Base64Util.STD_ENCODE;
+		private static final Base64Util.Decoder BASE64_UTIL_DECODER = Base64Util.STD_DECODE;
+
 		private static final Context CONTEXT = new Context(new byte[0], new byte[0]);
-		private static final PRF PRF = Pbkdf2Encoder.PRF.PBKDF2WithHmacSHA256;
+		private static final ALG ALG = Pbkdf2Encoder.ALG.PBKDF2WithHmacSHA256;
 		private static final int RANDOM_SALT_LENGTH = 32;
 		private static final int DERIVED_SALT_LENGTH = 32;
 		private static final byte[] CONSTANT_SALT = "salt".getBytes(StandardCharsets.UTF_8);
 		private static final int ITERATIONS = 600_000;
 		private static final int DK_LEN = 32;
-		private static final DIGEST DERIVED_SALT_DIGEST = Pbkdf2Encoder.DIGEST.SHA256;
+		private static final MacUtil.ALG DERIVED_SALT_MAC = MacUtil.ALG.HmacSHA256;
 		private static final String SEPARATOR_ENCODE_PARAMETERS = ":";
 		private static final String SEPARATOR_DECODE_PARAMETERS = SEPARATOR_ENCODE_PARAMETERS;
 	    private static final String SEPARATOR_ENCODE_HASH = "|";
@@ -218,22 +180,21 @@ public final class Pbkdf2Encoder {
 	}
 
     public static String encodeParameters(final ClearParameters clearParameters) {
-    	return new StringBuilder()
-			.append(Base64Util.STD_ENCODE.string(clearParameters.clearContext()))
-			.append(Default1.SEPARATOR_ENCODE_PARAMETERS)
-			.append(Base64Util.STD_ENCODE.string(clearParameters.salt()))
-			.append(Default1.SEPARATOR_ENCODE_PARAMETERS)
-			.append(clearParameters.iterations())
-			.append(Default1.SEPARATOR_ENCODE_PARAMETERS)
-			.append(clearParameters.dkLenBytes())
-			.append(Default1.SEPARATOR_ENCODE_PARAMETERS)
-			.append(clearParameters.prf())
-   			.toString();
+		return StringUtil.toString("", Default1.SEPARATOR_ENCODE_PARAMETERS, "",
+			List.of(
+				Default1.BASE64_UTIL_ENCODER.string(clearParameters.clearContext()),
+				Default1.BASE64_UTIL_ENCODER.string(clearParameters.salt()),
+				Integer.valueOf(clearParameters.iterations()),
+				Integer.valueOf(clearParameters.dkLenBytes()),
+				clearParameters.alg()
+			)
+		);
     }
+
     public static ClearParameters decodeClearParameters(final String clearEncodedParameters) {
         final String[] parts = clearEncodedParameters.split(Default1.SEPARATOR_DECODE_PARAMETERS);
         int part = 0;
-        return new ClearParameters(Base64Util.STD_DECODE.bytes(parts[part++]), Base64Util.STD_DECODE.bytes(parts[part++]), Integer.parseInt(parts[part++]), Integer.parseInt(parts[part++]), parts[part++]);
+        return new ClearParameters(Default1.BASE64_UTIL_DECODER.bytes(parts[part++]), Default1.BASE64_UTIL_DECODER.bytes(parts[part++]), Integer.parseInt(parts[part++]), Integer.parseInt(parts[part++]), parts[part++]);
     }
 
     public static String encodeParametersAndHash(final ClearParametersAndClearHash clearParametersAndClearHash) {
@@ -245,9 +206,9 @@ public final class Pbkdf2Encoder {
     }
 
     private static String encodeClearHash(final byte[] hash) {
-		return Base64Util.STD_ENCODE.string(hash);
+		return Default1.BASE64_UTIL_ENCODER.string(hash);
 	}
 	private static byte[] decodeClearHash(final String encodedHash) {
-		return Base64Util.STD_DECODE.bytes(encodedHash);
+		return Default1.BASE64_UTIL_DECODER.bytes(encodedHash);
 	}
 }
