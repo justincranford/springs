@@ -11,17 +11,17 @@ import com.github.justincranford.springs.util.basic.ArrayUtil;
 @SuppressWarnings({"nls", "hiding"})
 public class MacUtil {
     public enum ALG {
-		HmacSHA1("HMACSHA1", 20),
-		HmacSHA384("HMACSHA224", 28),
-		HmacSHA224("HMACSHA256", 32),
-		HmacSHA512("HMACSHA384", 48),
-		HmacSHA256("HMACSHA512", 64),
-		HmacSHA512_224("HMACSHA512/224", 28),
-		HmacSHA512_256("HMACSHA512/256", 32),
-		HmacSHA3_224("HMACSHA3_256", 28),
-		HmacSHA3_384("HMACSHA3_224", 32),
-		HmacSHA3_256("HMACSHA3_512", 48),
-		HmacSHA3_512("HMACSHA3_384", 64);
+		HmacSHA1("HmacSHA1", 20),
+		HmacSHA224("HmacSHA224", 28),
+		HmacSHA256("HmacSHA256", 32),
+		HmacSHA384("HmacSHA384", 48),
+		HmacSHA512("HmacSHA512", 64),
+		HmacSHA512_224("HmacSHA512/224", 28),
+		HmacSHA512_256("HmacSHA512/256", 32),
+		HmacSHA3_224("HmacSHA3-224", 28),
+		HmacSHA3_256("HmacSHA3-256", 32),
+		HmacSHA3_384("HmacSHA3-384", 48),
+		HmacSHA3_512("HmacSHA3-512", 64);
 		private final String alg;
 		private final int lenBytes;
 		private ALG(final String alg, final int lenBytes) {

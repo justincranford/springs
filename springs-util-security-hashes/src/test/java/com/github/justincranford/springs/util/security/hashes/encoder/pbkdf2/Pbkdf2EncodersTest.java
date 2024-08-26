@@ -2,16 +2,22 @@ package com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
+import java.security.Security;
 import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.IntStream;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.github.justincranford.springs.util.basic.ThreadUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,6 +46,16 @@ public class Pbkdf2EncodersTest {
 		valueEncodersMap
 	);
 
+	@BeforeAll
+	public static void beforeAll() {
+		Security.addProvider(new BouncyCastleProvider());
+	}
+
+	@AfterAll
+	public static void afterAll() {
+		Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
+	}
+
 	@Order(1)
 	@Test
 	void testTopLevelKeyEncoders() {
@@ -65,23 +81,23 @@ public class Pbkdf2EncodersTest {
 	}
 
 	private static void helper(final PasswordEncoder passwordEncoder, final String idForEncode, final String raw) {
-		// original password is encoded multiple times, each one with different (random) salt, and produces different hash
-		final List<String> encodeds = IntStream.rangeClosed(1, REPEATS).boxed().map(i -> passwordEncoder.encode(raw)).toList();
-//		log.info("encodeds:\n{}", encodeds.stream().map(s -> "\n  "+s).toList().toString().replace("]", "\n]"));
-
-		// original password matches all encoded hashes+parameters
-		for (final String encoded : encodeds) {
-			final String className = passwordEncoder.getClass().getSimpleName();
-			if (passwordEncoder instanceof DelegatingPasswordEncoder) { // DelegatingPasswordEncoder => KeyEncoders, ValueEncoders
-				assertThat(encoded).startsWith("{" + idForEncode + "}");
-			} else { // PasswordEncoder => KeyEncoder, ValueEncoder
-				assertThat(encoded).doesNotStartWith("{");
-			}
-			final boolean matches = passwordEncoder.matches(raw, encoded);
-			final boolean upgradeEncoding = passwordEncoder.upgradeEncoding(encoded);
-			log.info("class: {}, idForEncode: {}, matches: {}, upgradeEncoding: {}, raw: {}, encoded: {}", className, idForEncode, matches, upgradeEncoding, raw, encoded);
-			assertThat(matches).isTrue();
-			assertThat(upgradeEncoding).isFalse();
+		try (ForkJoinPool threadPool = ThreadUtil.threadPool(REPEATS, "Thread-")) {
+			threadPool.submit(
+				() -> IntStream.rangeClosed(1, REPEATS).parallel().forEach((i) -> {
+					final String encoded = passwordEncoder.encode(raw);
+					if (passwordEncoder instanceof DelegatingPasswordEncoder) {
+						assertThat(encoded).startsWith("{" + idForEncode + "}");
+					} else {
+						assertThat(encoded).doesNotStartWith("{");
+					}
+					final boolean matches = passwordEncoder.matches(raw, encoded);
+					final boolean upgradeEncoding = passwordEncoder.upgradeEncoding(encoded);
+					final String className = passwordEncoder.getClass().getSimpleName();
+					log.info("class: {}, idForEncode: {}, matches: {}, upgradeEncoding: {}, raw: {}, encoded: {}", className, idForEncode, matches, upgradeEncoding, raw, encoded);
+					assertThat(matches).isTrue();
+					assertThat(upgradeEncoding).isFalse();
+				})
+			);
 		}
 	}
 }
