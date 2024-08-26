@@ -7,10 +7,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.github.justincranford.springs.util.security.hashes.encoder.argon2.Argon2Encoder;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.KeyEncoder;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.KeyEncoders;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.ValueEncoder;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.ValueEncoders;
+import com.github.justincranford.springs.util.security.hashes.encoder.config.model.KeyEncoder;
+import com.github.justincranford.springs.util.security.hashes.encoder.config.model.KeyEncoders;
+import com.github.justincranford.springs.util.security.hashes.encoder.config.model.ValueEncoder;
+import com.github.justincranford.springs.util.security.hashes.encoder.config.model.ValueEncoders;
 import com.github.justincranford.springs.util.security.hashes.properties.SpringsUtilSecurityHashesProperties;
 import com.github.justincranford.springs.util.security.hashes.properties.SpringsUtilSecurityHashesProperties.Encoders;
 

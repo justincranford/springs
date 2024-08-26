@@ -17,6 +17,10 @@ import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.ByteUtil;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.basic.StringUtil;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.ClearParameters;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.ClearParametersAndClearHash;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.Context;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.SecretParameters;
 import com.github.justincranford.springs.util.security.hashes.util.MacUtil;
 
 import lombok.AccessLevel;
@@ -25,22 +29,6 @@ import lombok.NoArgsConstructor;
 @SuppressWarnings({"nls", "hiding"})
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class Pbkdf2Encoder {
-	public static interface Context {
-		public byte[] clear();
-		public byte[] secret();
-	}
-	public static interface ClearParameters {
-		public byte[] clearContext();
-	}
-	public static interface SecretParameters {
-		public byte[] secretContext();
-		public CharSequence rawInput();
-	}
-	public static interface ClearParametersAndClearHash {
-		public Pbkdf2ClearParameters clearParameters();
-		public byte[] clearHash();
-	}
-
 	private static record Pbkdf2Context(byte[] clear, byte[] secret) implements Context { }
     private static record Pbkdf2ClearParameters(byte[] clearContext, byte[] salt, int iterations, int dkLenBytes, String alg) implements ClearParameters { }
     private static record Pbkdf2SecretParameters(byte[] secretContext, CharSequence rawInput) implements SecretParameters { }

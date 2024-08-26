@@ -11,8 +11,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.github.justincranford.springs.util.security.hashes.config.SpringsUtilSecurityHashesConfiguration;
 import com.github.justincranford.springs.util.security.hashes.encoder.config.EncodersConfiguration;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.KeyEncoders;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.ValueEncoders;
+import com.github.justincranford.springs.util.security.hashes.encoder.config.model.KeyEncoders;
+import com.github.justincranford.springs.util.security.hashes.encoder.config.model.ValueEncoders;
 import com.github.justincranford.springs.util.security.hashes.properties.SpringsUtilSecurityHashesProperties;
 
 import io.micrometer.observation.annotation.Observed;

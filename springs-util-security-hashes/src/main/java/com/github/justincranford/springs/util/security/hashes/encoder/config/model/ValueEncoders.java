@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.security.hashes.encoder.model;
+package com.github.justincranford.springs.util.security.hashes.encoder.config.model;
 
 import java.util.LinkedHashMap;
 

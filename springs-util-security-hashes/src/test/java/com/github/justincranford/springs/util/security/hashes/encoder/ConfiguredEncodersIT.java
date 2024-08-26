@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import com.github.justincranford.springs.util.security.hashes.AbstractIT;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.Encoder;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.EncoderWithIdForEncode;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.Encoders;
+import com.github.justincranford.springs.util.security.hashes.encoder.config.model.Encoder;
+import com.github.justincranford.springs.util.security.hashes.encoder.config.model.EncoderWithIdForEncode;
+import com.github.justincranford.springs.util.security.hashes.encoder.config.model.Encoders;
 
 import lombok.extern.slf4j.Slf4j;
 
