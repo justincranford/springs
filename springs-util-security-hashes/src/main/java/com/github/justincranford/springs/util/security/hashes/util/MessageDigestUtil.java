@@ -3,6 +3,8 @@ package com.github.justincranford.springs.util.security.hashes.util;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.github.justincranford.springs.util.basic.ArrayUtil;
+
 @SuppressWarnings({"nls", "hiding"})
 public class MessageDigestUtil {
     public enum ALG {
@@ -40,4 +42,16 @@ public class MessageDigestUtil {
 			throw new RuntimeException(e);
 		}
 	}
+
+    public static byte[] messageDigest(final String algorithm, final byte[][] dataChunks) {
+        byte[] messageDigest = null;
+        for (final byte[] data : dataChunks) {
+            if (messageDigest == null) {
+                messageDigest = messageDigest(algorithm, data);
+            } else {
+                messageDigest = messageDigest(algorithm, ArrayUtil.concat(messageDigest, data));
+            }
+        }
+        return messageDigest;
+    }
 }

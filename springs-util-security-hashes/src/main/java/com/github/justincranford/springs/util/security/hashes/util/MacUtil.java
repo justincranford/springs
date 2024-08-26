@@ -57,16 +57,4 @@ public class MacUtil {
         }
         return hmac;
     }
-//    public static void main(String[] args) {
-//        try {
-//            byte[] secretKey = "mySecretKey".getBytes(StandardCharsets.UTF_8);
-//            byte[][] messages = {"Message 1".getBytes(StandardCharsets.UTF_8), "Message 2".getBytes(StandardCharsets.UTF_8), "Message 3".getBytes(StandardCharsets.UTF_8)};
-//            final String algorithm = "HmacSHA256";
-//
-//            byte[] finalHmac = hmac(algorithm, secretKey, messages);
-//            System.out.println("Final HMAC: " + finalHmac);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 }
