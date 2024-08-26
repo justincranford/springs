@@ -30,7 +30,7 @@ public class SpringsUtilJsonConfigurationTest {
 
 	@Test
 	void testSerializeDeserializeNonNulls() throws IOException {
-		helper(new Pojo(Integer.valueOf(SecureRandomUtil.SECURE_RANDOM.nextInt()), Base64Util.MIME_ENCODE.string(SecureRandomUtil.randomBytes(32)), DateTimeUtil.nowUtcTruncatedToNanoseconds()));
+		helper(new Pojo(Integer.valueOf(SecureRandomUtil.SECURE_RANDOM.nextInt()), Base64Util.MIME.encodeToString(SecureRandomUtil.randomBytes(32)), DateTimeUtil.nowUtcTruncatedToNanoseconds()));
 	}
 
 	@Test

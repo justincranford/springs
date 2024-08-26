@@ -37,7 +37,7 @@ public class PemUtil {
 	private static String toPem(final String type, final byte[] payload) {
         final StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("-----BEGIN ").append(type).append("-----\n");
-		stringBuilder.append(Base64Util.MIME76_ENCODE.string(payload));
+		stringBuilder.append(Base64Util.MIME76.encodeToString(payload));
 		stringBuilder.append("\n-----END ").append(type).append("-----\n");
         return stringBuilder.toString();
 	}

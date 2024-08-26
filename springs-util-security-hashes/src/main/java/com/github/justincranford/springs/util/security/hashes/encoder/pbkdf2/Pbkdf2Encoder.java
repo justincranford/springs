@@ -131,7 +131,6 @@ public final class Pbkdf2Encoder {
 		return MacUtil.hmac(mac.alg(), key, dataChunks);
 	}
 
-	private static record EncoderDecoder(Base64Util.Encoder encoder, Base64Util.Decoder decoder) { }
 	private static record Context(byte[] clear, byte[] secret) { }
     private static record ClearParameters(byte[] clearContext, byte[] salt, int iterations, int dkLenBytes, String alg) { }
     private static record ClearParametersAndClearHash(ClearParameters clearParameters, byte[] clearHash) { }

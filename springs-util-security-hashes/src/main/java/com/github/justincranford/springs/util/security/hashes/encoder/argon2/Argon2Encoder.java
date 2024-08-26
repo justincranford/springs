@@ -110,7 +110,7 @@ public class Argon2Encoder {
 	}
 
 	private static String encodeHashNoParameters(final byte[] hash) {
-		return Base64Util.STD_ENCODE.string(hash);
+		return Base64Util.STD.encodeToString(hash);
 	}
 
 	public static byte[] derivedSalt(
