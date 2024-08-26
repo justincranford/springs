@@ -9,6 +9,7 @@ public class Base64Util {
 
     private static final byte[] CRLF = new byte[] {'\r', '\n'};
     private static final byte[] LF = new byte[] {'\n'};
+	public static final Encoder MIME32_ENCODE = new Encoder(Base64.getMimeEncoder(32, LF).withoutPadding());
 	public static final Encoder MIME76_ENCODE = new Encoder(Base64.getMimeEncoder(76, CRLF).withoutPadding());
 	public static final Encoder MIME_ENCODE = new Encoder(Base64.getMimeEncoder(Integer.MAX_VALUE, LF).withoutPadding());
 	public static final Decoder MIME_DECODE = new Decoder(Base64.getMimeDecoder());
