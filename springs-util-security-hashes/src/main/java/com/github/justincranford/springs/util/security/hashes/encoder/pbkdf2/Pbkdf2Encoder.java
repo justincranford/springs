@@ -23,7 +23,7 @@ import com.github.justincranford.springs.util.security.hashes.util.MacUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@SuppressWarnings({"nls", "hiding"})
+@SuppressWarnings({"nls"})
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class Pbkdf2Encoder {
 	private static record Pbkdf2Context(byte[] clear, byte[] secret) implements Context { }
@@ -33,7 +33,7 @@ public final class Pbkdf2Encoder {
 
 	public static final class RandomSalt extends IocEncoder {
 		public static final RandomSalt DEFAULT1 = new RandomSalt(Default1.ENCODER_DECODER, Default1.CONTEXT, Default1.ALG, Default1.RANDOM_SALT_LENGTH, Default1.ITERATIONS, Default1.DK_LEN);
-		public RandomSalt(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2Context context, final Pbkdf2Encoder.ALG alg, final int randomSaltLength, final int iterations, final int dkLenBytes) {
+		public RandomSalt(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2Context context, final Pbkdf2Util.ALG alg, final int randomSaltLength, final int iterations, final int dkLenBytes) {
 			this.encode = (rawInput) -> {
 				final Pbkdf2ClearParameters computedClearParameters = new Pbkdf2ClearParameters(context.clear(), SecureRandomUtil.randomBytes(randomSaltLength), iterations, dkLenBytes, alg.alg());
 				final Pbkdf2SecretParameters constructedSecretParameters = new Pbkdf2SecretParameters(context.secret(), rawInput);
@@ -66,7 +66,7 @@ public final class Pbkdf2Encoder {
 
 	public static final class DerivedSalt extends IocEncoder {
 		public static final DerivedSalt DEFAULT1 = new DerivedSalt(Default1.ENCODER_DECODER, Default1.CONTEXT, Default1.ALG, Default1.DERIVED_SALT_LENGTH, Default1.ITERATIONS, Default1.DK_LEN, Default1.DERIVED_SALT_MAC);
-		public DerivedSalt(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2Context context, final Pbkdf2Encoder.ALG alg, final int derivedSaltLength, final int iterations, final int dkLenBytes, final MacUtil.ALG mac) {
+		public DerivedSalt(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2Context context, final Pbkdf2Util.ALG alg, final int derivedSaltLength, final int iterations, final int dkLenBytes, final MacUtil.ALG mac) {
 			this.encode = (rawInput) -> {
 				final byte[] derivedSalt = deriveSalt(mac, new Pbkdf2ClearParameters(context.clear(), new byte[derivedSaltLength], iterations, dkLenBytes, alg.alg()), new Pbkdf2SecretParameters(context.secret(), rawInput));
 				final Pbkdf2ClearParameters computedClearParameters = new Pbkdf2ClearParameters(context.clear(), derivedSalt, iterations, dkLenBytes, alg.alg());
@@ -88,7 +88,7 @@ public final class Pbkdf2Encoder {
 
 	public static final class ConstantSalt extends IocEncoder {
 		public static final ConstantSalt DEFAULT1 = new ConstantSalt(Default1.ENCODER_DECODER, Default1.CONTEXT, Default1.ALG, Default1.CONSTANT_SALT, Default1.ITERATIONS, Default1.DK_LEN);
-		public ConstantSalt(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2Context context, final Pbkdf2Encoder.ALG alg, final byte[] constantSalt, final int iterations, final int dkLenBytes) {
+		public ConstantSalt(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2Context context, final Pbkdf2Util.ALG alg, final byte[] constantSalt, final int iterations, final int dkLenBytes) {
 			final Pbkdf2ClearParameters constantClearParameters = new Pbkdf2ClearParameters(context.clear(), constantSalt, iterations, dkLenBytes, alg.alg());
 			super.encode = (rawInput) ->  {
 				final Pbkdf2SecretParameters constructedSecretParameters = new Pbkdf2SecretParameters(context.secret(), rawInput);
@@ -135,32 +135,6 @@ public final class Pbkdf2Encoder {
 		return MacUtil.hmac(mac.alg(), key, dataChunks);
 	}
 
-    public enum ALG {
-		PBKDF2WithHmacSHA1("PBKDF2withHmacSHA1", 20),
-		PBKDF2WithHmacSHA224("PBKDF2withHmacSHA224", 28),
-		PBKDF2WithHmacSHA256("PBKDF2withHmacSHA256", 32),
-		PBKDF2WithHmacSHA384("PBKDF2withHmacSHA384", 48),
-		PBKDF2WithHmacSHA512("PBKDF2withHmacSHA512", 64),
-		PBKDF2WithHmacSHA512_224("PBKDF2withHmacSHA512/224", 28),
-		PBKDF2WithHmacSHA512_256("PBKDF2withHmacSHA512/256", 32),
-		PBKDF2WithHmacSHA3_224("PBKDF2withHmacSHA3-224", 28),
-		PBKDF2WithHmacSHA3_256("PBKDF2withHmacSHA3-256", 32),
-		PBKDF2WithHmacSHA3_384("PBKDF2withHmacSHA3-384", 48),
-		PBKDF2WithHmacSHA3_512("PBKDF2withHmacSHA3-512", 64),		;
-		private final String alg;
-		private final int lenBytes;
-		private ALG(final String alg, final int lenBytes) {
-			this.alg = alg;
-			this.lenBytes = lenBytes;
-		}
-		public String alg() {
-			return this.alg;
-		}
-		public int lengthBytes() {
-			return this.lenBytes;
-		}
-	}
-
     public static String encodeParameters(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2ClearParameters clearParameters) {
 		return StringUtil.toString("", Default1.SEPARATOR_ENCODE_PARAMETERS, "",
 			List.of(
@@ -197,7 +171,7 @@ public final class Pbkdf2Encoder {
 	private static class Default1 {
 		private static final Base64Util.EncoderDecoder ENCODER_DECODER = Base64Util.MIME;
 		private static final Pbkdf2Context CONTEXT = new Pbkdf2Context(new byte[0], new byte[0]);
-		private static final ALG ALG = Pbkdf2Encoder.ALG.PBKDF2WithHmacSHA256;
+		private static final Pbkdf2Util.ALG ALG = Pbkdf2Util.ALG.PBKDF2WithHmacSHA256;
 		private static final int RANDOM_SALT_LENGTH = 32;
 		private static final int DERIVED_SALT_LENGTH = 32;
 		private static final byte[] CONSTANT_SALT = "salt".getBytes(StandardCharsets.UTF_8);
