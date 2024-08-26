@@ -25,21 +25,42 @@ import lombok.NoArgsConstructor;
 @SuppressWarnings({"nls", "hiding"})
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class Pbkdf2Encoder {
+	public static interface Context {
+		public byte[] clear();
+		public byte[] secret();
+	}
+	public static interface ClearParameters {
+		public byte[] clearContext();
+	}
+	public static interface SecretParameters {
+		public byte[] secretContext();
+		public CharSequence rawInput();
+	}
+	public static interface ClearParametersAndClearHash {
+		public Pbkdf2ClearParameters clearParameters();
+		public byte[] clearHash();
+	}
+
+	private static record Pbkdf2Context(byte[] clear, byte[] secret) implements Context { }
+    private static record Pbkdf2ClearParameters(byte[] clearContext, byte[] salt, int iterations, int dkLenBytes, String alg) implements ClearParameters { }
+    private static record Pbkdf2SecretParameters(byte[] secretContext, CharSequence rawInput) implements SecretParameters { }
+    private static record Pbkdf2ClearParametersAndClearHash(Pbkdf2ClearParameters clearParameters, byte[] clearHash) implements ClearParametersAndClearHash { }
+
 	public static final class RandomSalt extends FlexiblePbkdf2Encoder {
 		public static final RandomSalt DEFAULT1 = new RandomSalt(Default1.ENCODER_DECODER, Default1.CONTEXT, Default1.ALG, Default1.RANDOM_SALT_LENGTH, Default1.ITERATIONS, Default1.DK_LEN);
-		public RandomSalt(final Base64Util.EncoderDecoder encoderDecoder, final Context context, final Pbkdf2Encoder.ALG alg, final int randomSaltLength, final int iterations, final int dkLenBytes) {
+		public RandomSalt(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2Context context, final Pbkdf2Encoder.ALG alg, final int randomSaltLength, final int iterations, final int dkLenBytes) {
 			super(RandomSalt.class, encoderDecoder, context, alg, (rawInput) -> SecureRandomUtil.randomBytes(randomSaltLength), iterations, dkLenBytes);
 		}
 	}
 	public static final class DerivedSalt extends FlexiblePbkdf2Encoder {
 		public static final DerivedSalt DEFAULT1 = new DerivedSalt(Default1.ENCODER_DECODER, Default1.CONTEXT, Default1.ALG, Default1.DERIVED_SALT_LENGTH, Default1.ITERATIONS, Default1.DK_LEN, Default1.DERIVED_SALT_MAC);
-		public DerivedSalt(final Base64Util.EncoderDecoder encoderDecoder, final Context context, final Pbkdf2Encoder.ALG alg, final int derivedSaltLength, final int iterations, final int dkLenBytes, final MacUtil.ALG mac) {
-			super(DerivedSalt.class, encoderDecoder, context, alg, (rawInput) -> derivedSalt(mac, new ClearParameters(context.clear(), new byte[derivedSaltLength], iterations, dkLenBytes, alg.alg()), new SecretParameters(context.secret(), rawInput)), iterations, dkLenBytes);
+		public DerivedSalt(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2Context context, final Pbkdf2Encoder.ALG alg, final int derivedSaltLength, final int iterations, final int dkLenBytes, final MacUtil.ALG mac) {
+			super(DerivedSalt.class, encoderDecoder, context, alg, (rawInput) -> derivedSalt(mac, new Pbkdf2ClearParameters(context.clear(), new byte[derivedSaltLength], iterations, dkLenBytes, alg.alg()), new Pbkdf2SecretParameters(context.secret(), rawInput)), iterations, dkLenBytes);
 		}
 	}
 	public static final class ConstantSalt extends FlexiblePbkdf2Encoder {
 		public static final ConstantSalt DEFAULT1 = new ConstantSalt(Default1.ENCODER_DECODER, Default1.CONTEXT, Default1.ALG, Default1.CONSTANT_SALT, Default1.ITERATIONS, Default1.DK_LEN);
-		public ConstantSalt(final Base64Util.EncoderDecoder encoderDecoder, final Context context, final Pbkdf2Encoder.ALG alg, final byte[] constantSalt, final int iterations, final int dkLenBytes) {
+		public ConstantSalt(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2Context context, final Pbkdf2Encoder.ALG alg, final byte[] constantSalt, final int iterations, final int dkLenBytes) {
 			super(ConstantSalt.class, encoderDecoder, context, alg, (rawInput) -> constantSalt, iterations, dkLenBytes);
 		}
 	}
@@ -51,25 +72,25 @@ public final class Pbkdf2Encoder {
 		public FlexiblePbkdf2Encoder(
 			final Class<? extends FlexiblePbkdf2Encoder> clazz,
 			final Base64Util.EncoderDecoder encoderDecoder,
-			final Context context,
+			final Pbkdf2Context context,
 			final Pbkdf2Encoder.ALG alg,
 			final Function<CharSequence, byte[]> saltSupplier,
 			final int iterations,
 			final int dkLenBytes
 		) {
-			final BiFunction<ClearParameters, CharSequence, byte[]> computeClearHash = (clearParameters, rawInput) -> computeClearHash(clearParameters, new SecretParameters(context.secret(), rawInput));
+			final BiFunction<Pbkdf2ClearParameters, CharSequence, byte[]> computeClearHash = (clearParameters, rawInput) -> computeClearHash(clearParameters, new Pbkdf2SecretParameters(context.secret(), rawInput));
 			if (clazz.equals(ConstantSalt.class) || clazz.equals(DerivedSalt.class)) {
-				final ClearParameters clearParameters = new ClearParameters(context.clear(), saltSupplier.apply(""), iterations, dkLenBytes, alg.name());
+				final Pbkdf2ClearParameters clearParameters = new Pbkdf2ClearParameters(context.clear(), saltSupplier.apply(""), iterations, dkLenBytes, alg.name());
 				this.encode = (rawInput) ->  encodeClearHash(encoderDecoder, computeClearHash.apply(clearParameters, rawInput)); // omit  clear parameters
 				this.matches = (rawInput, encodedClearHash) -> Boolean.valueOf(MessageDigest.isEqual(decodeClearHash(encoderDecoder, encodedClearHash), computeClearHash.apply(clearParameters, rawInput)));
 				this.upgradeEncoding = (encodedClearParametersAndClearHash) -> Boolean.FALSE; // never upgrade encoding when using constant salt
 			} else if (clazz.equals(RandomSalt.class)) {
 				this.encode = (rawInput) -> {
-					final ClearParameters clearParameters = new ClearParameters(context.clear(), saltSupplier.apply(rawInput), iterations, dkLenBytes, alg.name());
-					return encodeParametersAndHash(encoderDecoder, new ClearParametersAndClearHash(clearParameters, computeClearHash.apply(clearParameters, rawInput))); // include parameters in output
+					final Pbkdf2ClearParameters clearParameters = new Pbkdf2ClearParameters(context.clear(), saltSupplier.apply(rawInput), iterations, dkLenBytes, alg.name());
+					return encodeParametersAndHash(encoderDecoder, new Pbkdf2ClearParametersAndClearHash(clearParameters, computeClearHash.apply(clearParameters, rawInput))); // include parameters in output
 				};
 				this.matches = (rawInput, encodedClearParametersAndClearHash) -> {
-					final ClearParametersAndClearHash clearParametersAndClearHash = decodeClearParametersAndClearHash(encoderDecoder, encodedClearParametersAndClearHash);
+					final Pbkdf2ClearParametersAndClearHash clearParametersAndClearHash = decodeClearParametersAndClearHash(encoderDecoder, encodedClearParametersAndClearHash);
 					final byte[] clearHashChallenge = computeClearHash.apply(clearParametersAndClearHash.clearParameters(), rawInput);
 					return Boolean.valueOf(MessageDigest.isEqual(clearParametersAndClearHash.clearHash(), clearHashChallenge));
 				};
@@ -77,8 +98,8 @@ public final class Pbkdf2Encoder {
 					if (encodedClearParametersAndClearHash == null || encodedClearParametersAndClearHash.length() == 0) {
 						return Boolean.FALSE;
 					}
-					final ClearParametersAndClearHash clearParametersAndClearHash = decodeClearParametersAndClearHash(encoderDecoder, encodedClearParametersAndClearHash);
-					final ClearParameters clearParameters = clearParametersAndClearHash.clearParameters();
+					final Pbkdf2ClearParametersAndClearHash clearParametersAndClearHash = decodeClearParametersAndClearHash(encoderDecoder, encodedClearParametersAndClearHash);
+					final Pbkdf2ClearParameters clearParameters = clearParametersAndClearHash.clearParameters();
 					final byte[] clearHash = clearParametersAndClearHash.clearHash();
 					return Boolean.valueOf(clearHash.length < dkLenBytes || clearParameters.iterations() < iterations);
 				};
@@ -101,7 +122,7 @@ public final class Pbkdf2Encoder {
 		}
 	}
 
-	private static byte[] computeClearHash(final ClearParameters clearParameters, final SecretParameters secretParameters) {
+	private static byte[] computeClearHash(final Pbkdf2ClearParameters clearParameters, final Pbkdf2SecretParameters secretParameters) {
 		try {
 			final PBEKeySpec spec = new PBEKeySpec(
 				secretParameters.rawInput().toString().toCharArray(),
@@ -116,7 +137,7 @@ public final class Pbkdf2Encoder {
 		}
 	}
 
-    public static byte[] derivedSalt(final MacUtil.ALG mac, final ClearParameters clearParameters, final SecretParameters secretParameters) {
+    public static byte[] derivedSalt(final MacUtil.ALG mac, final Pbkdf2ClearParameters clearParameters, final Pbkdf2SecretParameters secretParameters) {
 		final byte[] key = ArrayUtil.concat(
 			secretParameters.rawInput().toString().getBytes(StandardCharsets.UTF_8),
 			secretParameters.secretContext().toString().getBytes(StandardCharsets.UTF_8)
@@ -130,11 +151,6 @@ public final class Pbkdf2Encoder {
 		);
 		return MacUtil.hmac(mac.alg(), key, dataChunks);
 	}
-
-	private static record Context(byte[] clear, byte[] secret) { }
-    private static record ClearParameters(byte[] clearContext, byte[] salt, int iterations, int dkLenBytes, String alg) { }
-    private static record ClearParametersAndClearHash(ClearParameters clearParameters, byte[] clearHash) { }
-    private static record SecretParameters(byte[] secretContext, CharSequence rawInput) { }
 
     public enum ALG {
 		PBKDF2WithHmacSHA1("PBKDF2withHMACSHA1", 20),
@@ -164,7 +180,7 @@ public final class Pbkdf2Encoder {
 
 	private static class Default1 {
 		private static final Base64Util.EncoderDecoder ENCODER_DECODER = Base64Util.MIME;
-		private static final Context CONTEXT = new Context(new byte[0], new byte[0]);
+		private static final Pbkdf2Context CONTEXT = new Pbkdf2Context(new byte[0], new byte[0]);
 		private static final ALG ALG = Pbkdf2Encoder.ALG.PBKDF2WithHmacSHA256;
 		private static final int RANDOM_SALT_LENGTH = 32;
 		private static final int DERIVED_SALT_LENGTH = 32;
@@ -178,7 +194,7 @@ public final class Pbkdf2Encoder {
 	    private static final String SEPARATOR_DECODE_HASH = "\\" + SEPARATOR_ENCODE_HASH;
 	}
 
-    public static String encodeParameters(final Base64Util.EncoderDecoder encoderDecoder, final ClearParameters clearParameters) {
+    public static String encodeParameters(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2ClearParameters clearParameters) {
 		return StringUtil.toString("", Default1.SEPARATOR_ENCODE_PARAMETERS, "",
 			List.of(
 				encoderDecoder.encodeToString(clearParameters.clearContext()),
@@ -190,18 +206,18 @@ public final class Pbkdf2Encoder {
 		);
     }
 
-    public static ClearParameters decodeClearParameters(final Base64Util.EncoderDecoder encoderDecoder, final String clearEncodedParameters) {
+    public static Pbkdf2ClearParameters decodeClearParameters(final Base64Util.EncoderDecoder encoderDecoder, final String clearEncodedParameters) {
         final String[] parts = clearEncodedParameters.split(Default1.SEPARATOR_DECODE_PARAMETERS);
         int part = 0;
-        return new ClearParameters(encoderDecoder.decodeFromString(parts[part++]), encoderDecoder.decodeFromString(parts[part++]), Integer.parseInt(parts[part++]), Integer.parseInt(parts[part++]), parts[part++]);
+        return new Pbkdf2ClearParameters(encoderDecoder.decodeFromString(parts[part++]), encoderDecoder.decodeFromString(parts[part++]), Integer.parseInt(parts[part++]), Integer.parseInt(parts[part++]), parts[part++]);
     }
 
-    public static String encodeParametersAndHash(final Base64Util.EncoderDecoder encoderDecoder, final ClearParametersAndClearHash clearParametersAndClearHash) {
+    public static String encodeParametersAndHash(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2ClearParametersAndClearHash clearParametersAndClearHash) {
 		return encodeParameters(encoderDecoder, clearParametersAndClearHash.clearParameters()) + Default1.SEPARATOR_ENCODE_HASH +  encodeClearHash(encoderDecoder, clearParametersAndClearHash.clearHash());
     }
-    public static ClearParametersAndClearHash decodeClearParametersAndClearHash(final Base64Util.EncoderDecoder encoderDecoder, final String clearParametersAndClearHash) {
+    public static Pbkdf2ClearParametersAndClearHash decodeClearParametersAndClearHash(final Base64Util.EncoderDecoder encoderDecoder, final String clearParametersAndClearHash) {
         final String[] parts = clearParametersAndClearHash.split(Default1.SEPARATOR_DECODE_HASH);
-        return new ClearParametersAndClearHash(decodeClearParameters(encoderDecoder, parts[0]), decodeClearHash(encoderDecoder, parts[1]));
+        return new Pbkdf2ClearParametersAndClearHash(decodeClearParameters(encoderDecoder, parts[0]), decodeClearHash(encoderDecoder, parts[1]));
     }
 
     private static String encodeClearHash(final Base64Util.EncoderDecoder encoderDecoder, final byte[] hash) {
