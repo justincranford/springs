@@ -32,7 +32,8 @@ public final class Pbkdf2Encoder {
     private static record Pbkdf2SecretParameters(byte[] context, CharSequence rawInput) implements SecretParameters { }
     private static record Pbkdf2ClearParametersAndClearHash(Pbkdf2ClearParameters clearParameters, byte[] clearHash) implements ClearParametersAndClearHash { }
     private static record Pbkdf2EncodeDecodeFlags(boolean context, boolean salt, boolean iterations, boolean dkLen, boolean alg) { }
-    private static record Pbkdf2EncodeDecode(Base64Util.EncoderDecoder encoderDecoder, Pbkdf2EncodeDecodeFlags flags) { }
+    private static record Pbkdf2EncodeDecodeSeparators(String encodeParameters, String decodeParameters, String encodeHash, String decodeHash) { }
+    private static record Pbkdf2EncodeDecode(Base64Util.EncoderDecoder encoderDecoder, Pbkdf2EncodeDecodeSeparators separators, Pbkdf2EncodeDecodeFlags flags) { }
 
 
 	public static final class RandomSaltV1 extends IocEncoder {
@@ -164,11 +165,11 @@ public final class Pbkdf2Encoder {
 		if (encodeDecode.flags().alg()) {
 			parameters.add(defaults.alg());
 		}
-		return StringUtil.toString("", Default1.ENCODE_SEPARATOR_PARAMETERS, "", parameters);
+		return StringUtil.toString("", encodeDecode.separators().encodeParameters(), "", parameters);
     }
 
     public static Pbkdf2ClearParameters decodeClearParameters(final Pbkdf2EncodeDecode encodeDecode, final String clearEncodedParameters, final Pbkdf2ClearParameters defaults) {
-        final String[] parts = clearEncodedParameters.split(Default1.DECODE_SEPARATOR_PARAMETERS);
+        final String[] parts = clearEncodedParameters.split(encodeDecode.separators().decodeParameters());
         int part = 0;
         final byte[]  context    = (encodeDecode.flags().context())    ? encodeDecode.encoderDecoder().decodeFromString(parts[part++]) : defaults.context();
 		final byte[]  salt       = (encodeDecode.flags().salt())       ? encodeDecode.encoderDecoder().decodeFromString(parts[part++]) : defaults.salt();
@@ -184,10 +185,10 @@ public final class Pbkdf2Encoder {
 		if (encodeClearParameters.isEmpty()) {
 			return encodeClearHash;
 		}
-		return encodeClearParameters + Default1.ENCODE_SEPARATOR_HASH +  encodeClearHash;
+		return encodeClearParameters + encodeDecode.separators().encodeHash() +  encodeClearHash;
     }
     public static Pbkdf2ClearParametersAndClearHash decodeClearParametersAndClearHash(final Pbkdf2EncodeDecode encodeDecode, final String clearParametersAndClearHash, final Pbkdf2ClearParameters defaults) {
-        final String[] parts = clearParametersAndClearHash.split(Default1.DECODE_SEPARATOR_HASH);
+        final String[] parts = clearParametersAndClearHash.split(encodeDecode.separators().decodeHash());
         int part = 0;
 		return new Pbkdf2ClearParametersAndClearHash(decodeClearParameters(encodeDecode, (parts.length == 1) ? "" : parts[part++], defaults), decodeClearHash(encodeDecode, parts[part++]));
     }
@@ -214,23 +215,24 @@ public final class Pbkdf2Encoder {
 		private static final String DECODE_SEPARATOR_PARAMETERS = ENCODE_SEPARATOR_PARAMETERS;
 	    private static final String ENCODE_SEPARATOR_HASH = "|";
 	    private static final String DECODE_SEPARATOR_HASH = "\\" + ENCODE_SEPARATOR_HASH;
+	    private static final Pbkdf2EncodeDecodeSeparators ENCODE_DECODE_SEPARATORS = new Pbkdf2EncodeDecodeSeparators(ENCODE_SEPARATOR_PARAMETERS, DECODE_SEPARATOR_PARAMETERS, ENCODE_SEPARATOR_HASH, DECODE_SEPARATOR_HASH);
 
 		// always omit clearContext because default is empty, always encode random salt, always align iterations/dkLen/alg with min vs max
 		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_RANDOM_SALT_MIN_FLAGS   = new Pbkdf2EncodeDecodeFlags(false, true,  false, false, false);
 		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_RANDOM_SALT_MAX_FLAGS   = new Pbkdf2EncodeDecodeFlags(false,  true,  true,  true,  true);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_RANDOM_SALT_MIN         = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_RANDOM_SALT_MIN_FLAGS);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_RANDOM_SALT_MAX         = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_RANDOM_SALT_MAX_FLAGS);
+		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_RANDOM_SALT_MIN         = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_RANDOM_SALT_MIN_FLAGS);
+		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_RANDOM_SALT_MAX         = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_RANDOM_SALT_MAX_FLAGS);
 
 		// always omit clearContext because default is empty, optionally encode derived salt, always align iterations/dkLen/alg with min vs max
 		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_DERIVED_SALT_MIN_FLAGS  = new Pbkdf2EncodeDecodeFlags(false, false, false, false, false);
 		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_DERIVED_SALT_MAX_FLAGS  = new Pbkdf2EncodeDecodeFlags(false,  true,  true,  true,  true);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_DERIVED_SALT_MIN        = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_DERIVED_SALT_MIN_FLAGS);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_DERIVED_SALT_MAX        = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_DERIVED_SALT_MAX_FLAGS);
+		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_DERIVED_SALT_MIN        = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_DERIVED_SALT_MIN_FLAGS);
+		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_DERIVED_SALT_MAX        = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_DERIVED_SALT_MAX_FLAGS);
 
 		// always omit clearContext because default is empty, never encode constant salt, always align iterations/dkLen/alg with min vs max
 		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_CONSTANT_SALT_MIN_FLAGS = new Pbkdf2EncodeDecodeFlags(false, false, false, false, false);
 		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_CONSTANT_SALT_MAX_FLAGS = new Pbkdf2EncodeDecodeFlags(false,  false,  true,  true,  true);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_CONSTANT_SALT_MIN       = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_CONSTANT_SALT_MIN_FLAGS);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_CONSTANT_SALT_MAX       = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_CONSTANT_SALT_MAX_FLAGS);
+		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_CONSTANT_SALT_MIN       = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_CONSTANT_SALT_MIN_FLAGS);
+		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_CONSTANT_SALT_MAX       = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_CONSTANT_SALT_MAX_FLAGS);
 	}
 }
