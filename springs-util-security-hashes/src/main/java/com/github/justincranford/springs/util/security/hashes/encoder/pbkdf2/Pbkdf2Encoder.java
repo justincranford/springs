@@ -164,11 +164,11 @@ public final class Pbkdf2Encoder {
 		if (encodeDecode.flags().alg()) {
 			parameters.add(defaults.alg());
 		}
-		return StringUtil.toString("", Default1.SEPARATOR_ENCODE_PARAMETERS, "", parameters);
+		return StringUtil.toString("", Default1.ENCODE_SEPARATOR_PARAMETERS, "", parameters);
     }
 
     public static Pbkdf2ClearParameters decodeClearParameters(final Pbkdf2EncodeDecode encodeDecode, final String clearEncodedParameters, final Pbkdf2ClearParameters defaults) {
-        final String[] parts = clearEncodedParameters.split(Default1.SEPARATOR_DECODE_PARAMETERS);
+        final String[] parts = clearEncodedParameters.split(Default1.DECODE_SEPARATOR_PARAMETERS);
         int part = 0;
         final byte[]  context    = (encodeDecode.flags().context())    ? encodeDecode.encoderDecoder().decodeFromString(parts[part++]) : defaults.context();
 		final byte[]  salt       = (encodeDecode.flags().salt())       ? encodeDecode.encoderDecoder().decodeFromString(parts[part++]) : defaults.salt();
@@ -184,10 +184,10 @@ public final class Pbkdf2Encoder {
 		if (encodeClearParameters.isEmpty()) {
 			return encodeClearHash;
 		}
-		return encodeClearParameters + Default1.SEPARATOR_ENCODE_HASH +  encodeClearHash;
+		return encodeClearParameters + Default1.ENCODE_SEPARATOR_HASH +  encodeClearHash;
     }
     public static Pbkdf2ClearParametersAndClearHash decodeClearParametersAndClearHash(final Pbkdf2EncodeDecode encodeDecode, final String clearParametersAndClearHash, final Pbkdf2ClearParameters defaults) {
-        final String[] parts = clearParametersAndClearHash.split(Default1.SEPARATOR_DECODE_HASH);
+        final String[] parts = clearParametersAndClearHash.split(Default1.DECODE_SEPARATOR_HASH);
         int part = 0;
 		return new Pbkdf2ClearParametersAndClearHash(decodeClearParameters(encodeDecode, (parts.length == 1) ? "" : parts[part++], defaults), decodeClearHash(encodeDecode, parts[part++]));
     }
@@ -200,7 +200,20 @@ public final class Pbkdf2Encoder {
 	}
 
 	private static class Default1 {
-		private static final Base64Util.EncoderDecoder ENCODER_DECODER = Base64Util.MIME;
+		private static final Pbkdf2Context CONTEXT = new Pbkdf2Context(new byte[0], new byte[0]);
+		private static final Pbkdf2Util.ALG ALG = Pbkdf2Util.ALG.PBKDF2WithHmacSHA256;
+		private static final int RANDOM_SALT_LENGTH = 32;
+		private static final int DERIVED_SALT_LENGTH = 32;
+		private static final byte[] CONSTANT_SALT = "salt".getBytes(StandardCharsets.UTF_8);
+		private static final int ITERATIONS = 600_000;
+		private static final int DK_LEN = 32;
+		private static final MacUtil.ALG DERIVED_SALT_MAC = MacUtil.ALG.HmacSHA256;
+
+	    private static final Base64Util.EncoderDecoder ENCODER_DECODER = Base64Util.MIME;
+		private static final String ENCODE_SEPARATOR_PARAMETERS = ":";
+		private static final String DECODE_SEPARATOR_PARAMETERS = ENCODE_SEPARATOR_PARAMETERS;
+	    private static final String ENCODE_SEPARATOR_HASH = "|";
+	    private static final String DECODE_SEPARATOR_HASH = "\\" + ENCODE_SEPARATOR_HASH;
 
 		// always omit clearContext because default is empty, always encode random salt, always align iterations/dkLen/alg with min vs max
 		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_RANDOM_SALT_MIN_FLAGS   = new Pbkdf2EncodeDecodeFlags(false, true,  false, false, false);
@@ -219,18 +232,5 @@ public final class Pbkdf2Encoder {
 		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_CONSTANT_SALT_MAX_FLAGS = new Pbkdf2EncodeDecodeFlags(false,  false,  true,  true,  true);
 		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_CONSTANT_SALT_MIN       = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_CONSTANT_SALT_MIN_FLAGS);
 		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_CONSTANT_SALT_MAX       = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_CONSTANT_SALT_MAX_FLAGS);
-
-		private static final Pbkdf2Context CONTEXT = new Pbkdf2Context(new byte[0], new byte[0]);
-		private static final Pbkdf2Util.ALG ALG = Pbkdf2Util.ALG.PBKDF2WithHmacSHA256;
-		private static final int RANDOM_SALT_LENGTH = 32;
-		private static final int DERIVED_SALT_LENGTH = 32;
-		private static final byte[] CONSTANT_SALT = "salt".getBytes(StandardCharsets.UTF_8);
-		private static final int ITERATIONS = 600_000;
-		private static final int DK_LEN = 32;
-		private static final MacUtil.ALG DERIVED_SALT_MAC = MacUtil.ALG.HmacSHA256;
-		private static final String SEPARATOR_ENCODE_PARAMETERS = ":";
-		private static final String SEPARATOR_DECODE_PARAMETERS = SEPARATOR_ENCODE_PARAMETERS;
-	    private static final String SEPARATOR_ENCODE_HASH = "|";
-	    private static final String SEPARATOR_DECODE_HASH = "\\" + SEPARATOR_ENCODE_HASH;
 	}
 }
