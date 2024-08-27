@@ -1,5 +1,5 @@
 package com.github.justincranford.springs.util.security.hashes.encoder.model;
 
 public interface ClearParameters {
-	public byte[] clearContext();
+	public byte[] context();
 }

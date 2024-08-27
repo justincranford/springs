@@ -3,8 +3,10 @@ package com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.security.Security;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -22,25 +24,28 @@ import com.github.justincranford.springs.util.basic.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls", "boxing", "static-method"})
+@SuppressWarnings({"nls", "boxing", "static-method", "serial"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class Pbkdf2EncodersTest {
 	private static final int REPEATS = 3;
 
-	private static final String keyEncodersDefault = "derived";
-	private static final Map<String, PasswordEncoder> keyEncodersMap = Map.of(
-		"derived", Pbkdf2Encoder.DerivedSalt.DEFAULT1,
-		"constant", Pbkdf2Encoder.ConstantSalt.DEFAULT1
-	);
+	private static final String keyEncodersDefault = "derived_min";
+	private static final Map<String, PasswordEncoder> keyEncodersMap = new LinkedHashMap<>() {{
+		put("derived_min", Pbkdf2Encoder.DerivedSaltV1.DEFAULT1_MIN);
+		put("derived_max", Pbkdf2Encoder.DerivedSaltV1.DEFAULT1_MAX);
+		put("constant_min", Pbkdf2Encoder.ConstantSaltV1.DEFAULT1_MIN);
+		put("constant_max", Pbkdf2Encoder.ConstantSaltV1.DEFAULT1_MAX);
+	}};
 	private static final DelegatingPasswordEncoder keyEncoders = new DelegatingPasswordEncoder(
 		keyEncodersDefault,
 		keyEncodersMap
 	);
 
-	private static final String valueEncodersDefault = "random";
-	private static final Map<String, PasswordEncoder> valueEncodersMap = Map.of(
-		"random", Pbkdf2Encoder.RandomSalt.DEFAULT1
-	);
+	private static final String valueEncodersDefault = "random_min";
+	private static final Map<String, PasswordEncoder> valueEncodersMap = new LinkedHashMap<>() {{
+		put("random_min", Pbkdf2Encoder.RandomSaltV1.DEFAULT1_MIN);
+		put("random_max", Pbkdf2Encoder.RandomSaltV1.DEFAULT1_MAX);
+	}};
 	private static final DelegatingPasswordEncoder valueEncoders = new DelegatingPasswordEncoder(
 		valueEncodersDefault,
 		valueEncodersMap
@@ -81,23 +86,30 @@ public class Pbkdf2EncodersTest {
 	}
 
 	private static void helper(final PasswordEncoder passwordEncoder, final String idForEncode, final String raw) {
+		final String className = passwordEncoder.getClass().getSimpleName();
+		final AtomicInteger numFailures = new AtomicInteger(0);
 		try (ForkJoinPool threadPool = ThreadUtil.threadPool(REPEATS, "Thread-")) {
 			threadPool.submit(
 				() -> IntStream.rangeClosed(1, REPEATS).parallel().forEach((i) -> {
-					final String encoded = passwordEncoder.encode(raw);
-					if (passwordEncoder instanceof DelegatingPasswordEncoder) {
-						assertThat(encoded).startsWith("{" + idForEncode + "}");
-					} else {
-						assertThat(encoded).doesNotStartWith("{");
+					try {
+						final String encoded = passwordEncoder.encode(raw);
+						if (passwordEncoder instanceof DelegatingPasswordEncoder) {
+							assertThat(encoded).startsWith("{" + idForEncode + "}");
+						} else {
+							assertThat(encoded).doesNotStartWith("{");
+						}
+						final boolean matches = passwordEncoder.matches(raw, encoded);
+						final boolean upgradeEncoding = passwordEncoder.upgradeEncoding(encoded);
+						log.info("class: {}, idForEncode: {}, matches: {}, upgradeEncoding: {}, raw: {}, encoded: {}", className, idForEncode, matches, upgradeEncoding, raw, encoded);
+						assertThat(matches).isTrue();
+						assertThat(upgradeEncoding).isFalse();
+					} catch(Throwable t) {
+						log.info("class: {}, idForEncode: {}, raw: {}", className, idForEncode, raw, t);
+						numFailures.incrementAndGet();
 					}
-					final boolean matches = passwordEncoder.matches(raw, encoded);
-					final boolean upgradeEncoding = passwordEncoder.upgradeEncoding(encoded);
-					final String className = passwordEncoder.getClass().getSimpleName();
-					log.info("class: {}, idForEncode: {}, matches: {}, upgradeEncoding: {}, raw: {}, encoded: {}", className, idForEncode, matches, upgradeEncoding, raw, encoded);
-					assertThat(matches).isTrue();
-					assertThat(upgradeEncoding).isFalse();
 				})
 			);
 		}
+		assertThat(numFailures.get()).isEqualTo(0);
 	}
 }

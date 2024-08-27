@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.util.security.hashes.encoder.model;
 
 public interface SecretParameters {
-	public byte[] secretContext();
+	public byte[] context();
 	public CharSequence rawInput();
 }
