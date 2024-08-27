@@ -17,6 +17,9 @@ import com.github.justincranford.springs.util.basic.StringUtil;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.ClearParameters;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.ClearParametersAndClearHash;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.Context;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.EncodeDecode;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.EncodeDecodeFlags;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.EncodeDecodeSeparators;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.IocEncoder;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.SecretParameters;
 import com.github.justincranford.springs.util.security.hashes.util.MacUtil;
@@ -31,9 +34,9 @@ public final class Pbkdf2Encoder {
     private static record Pbkdf2ClearParameters(byte[] context, byte[] salt, int iterations, int dkLenBytes, String alg) implements ClearParameters { }
     private static record Pbkdf2SecretParameters(byte[] context, CharSequence rawInput) implements SecretParameters { }
     private static record Pbkdf2ClearParametersAndClearHash(Pbkdf2ClearParameters clearParameters, byte[] clearHash) implements ClearParametersAndClearHash { }
-    private static record Pbkdf2EncodeDecodeFlags(boolean context, boolean salt, boolean iterations, boolean dkLen, boolean alg) { }
-    private static record Pbkdf2EncodeDecodeSeparators(String encodeParameters, String decodeParameters, String encodeHash, String decodeHash) { }
-    private static record Pbkdf2EncodeDecode(Base64Util.EncoderDecoder encoderDecoder, Pbkdf2EncodeDecodeSeparators separators, Pbkdf2EncodeDecodeFlags flags) { }
+    private static record Pbkdf2EncodeDecodeSeparators(String encodeParameters, String decodeParameters, String encodeHash, String decodeHash) implements EncodeDecodeSeparators { }
+    private static record Pbkdf2EncodeDecodeFlags(boolean context, boolean salt, boolean iterations, boolean dkLen, boolean alg) implements EncodeDecodeFlags { }
+    private static record Pbkdf2EncodeDecode(Base64Util.EncoderDecoder encoderDecoder, Pbkdf2EncodeDecodeSeparators separators, Pbkdf2EncodeDecodeFlags flags) implements EncodeDecode { }
 
 
 	public static final class RandomSaltV1 extends IocEncoder {
