@@ -135,7 +135,7 @@ public final class Pbkdf2Encoder {
 		return MacUtil.hmac(mac.alg(), key, dataChunks);
 	}
 
-    public static String encodeParameters(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2ClearParameters clearParameters) {
+    public static String encodeClearParameters(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2ClearParameters clearParameters) {
 		return StringUtil.toString("", Default1.SEPARATOR_ENCODE_PARAMETERS, "",
 			List.of(
 				encoderDecoder.encodeToString(clearParameters.clearContext()),
@@ -154,7 +154,7 @@ public final class Pbkdf2Encoder {
     }
 
     public static String encodeClearParametersAndClearHash(final Base64Util.EncoderDecoder encoderDecoder, final Pbkdf2ClearParametersAndClearHash clearParametersAndClearHash) {
-		return encodeParameters(encoderDecoder, clearParametersAndClearHash.clearParameters()) + Default1.SEPARATOR_ENCODE_HASH +  encodeClearHash(encoderDecoder, clearParametersAndClearHash.clearHash());
+		return encodeClearParameters(encoderDecoder, clearParametersAndClearHash.clearParameters()) + Default1.SEPARATOR_ENCODE_HASH +  encodeClearHash(encoderDecoder, clearParametersAndClearHash.clearHash());
     }
     public static Pbkdf2ClearParametersAndClearHash decodeClearParametersAndClearHash(final Base64Util.EncoderDecoder encoderDecoder, final String clearParametersAndClearHash) {
         final String[] parts = clearParametersAndClearHash.split(Default1.SEPARATOR_DECODE_HASH);
