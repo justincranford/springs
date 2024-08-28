@@ -33,38 +33,38 @@ public class Pbkdf2EncodersTest {
 	private static final Map<String, PasswordEncoder> keyEncodersMap = new LinkedHashMap<>() {{
 		final AtomicInteger i = new AtomicInteger(0);
 		List.of(
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS_CONTEXT,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS_OTHERS,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS_CONTEXT_OTHERS,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS_SALT,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS_CONTEXT_SALT,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS_SALT_OTHERS,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS_CONTEXT_SALT_OTHERS,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED_CONTEXT,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED_OTHERS,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED_CONTEXT_OTHERS,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED_SALT,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED_CONTEXT_SALT,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED_SALT_OTHERS,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED_CONTEXT_SALT_OTHERS,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS_CONTEXT,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS_OTHERS,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS_CONTEXT_OTHERS,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS_SALT,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS_CONTEXT_SALT,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS_SALT_OTHERS,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS_CONTEXT_SALT_OTHERS,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED_CONTEXT,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED_OTHERS,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED_CONTEXT_OTHERS,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED_SALT,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED_CONTEXT_SALT,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED_SALT_OTHERS,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED_CONTEXT_SALT_OTHERS
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_NONE,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_CTX,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_OTH,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_CTX_OTH,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_SALT,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_CTX_SALT,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_SALT_OTH,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_CTX_SALT_OTH,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY_CTX,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY_OTH,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY_CTX_OTH,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY_SALT,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY_CTX_SALT,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY_SALT_OTH,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY_CTX_SALT_OTH,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_NONE,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_CTX,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_OTH,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_CTX_OTH,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_SALT,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_CTX_SALT,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_SALT_OTH,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_CTX_SALT_OTH,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY_CTX,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY_OTH,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY_CTX_OTH,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY_SALT,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY_CTX_SALT,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY_SALT_OTH,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY_CTX_SALT_OTH
 		).forEach(valueEncoder -> put(Integer.toString(i.incrementAndGet()), valueEncoder));
 	}};
 	private static final String keyEncodersDefault = keyEncodersMap.keySet().iterator().next();
@@ -76,14 +76,14 @@ public class Pbkdf2EncodersTest {
 	private static final Map<String, PasswordEncoder> valueEncodersMap = new LinkedHashMap<>() {{
 		final AtomicInteger i = new AtomicInteger(0);
 		List.of(
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYLESS_SALT,
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYLESS_CONTEXT_SALT,
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYLESS_SALT_OTHERS,
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYLESS_CONTEXT_SALT_OTHERS,
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYED_SALT,
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYED_CONTEXT_SALT,
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYED_SALT_OTHERS,
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYED_CONTEXT_SALT_OTHERS
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_SALT,
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_CTX_SALT,
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_SALT_OTH,
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_CTX_SALT_OTH,
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEY_SALT,
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEY_CTX_SALT,
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEY_SALT_OTH,
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEY_CTX_SALT_OTH
 		).forEach(valueEncoder -> put(Integer.toString(i.incrementAndGet()), valueEncoder));
 	}};
 	private static final String valueEncodersDefault = valueEncodersMap.keySet().iterator().next();
