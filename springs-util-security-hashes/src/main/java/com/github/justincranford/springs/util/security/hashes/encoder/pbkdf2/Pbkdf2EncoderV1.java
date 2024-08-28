@@ -37,12 +37,13 @@ import lombok.NoArgsConstructor;
 @SuppressWarnings({"nls"})
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class Pbkdf2EncoderV1 {
-    private static record Pbkdf2Context(@Null SecretKey key, @NotNull byte[] secret, @NotNull byte[] clear) implements Context { }
+    public static record Pbkdf2EncodeDecode(@NotNull EncoderDecoderAndSeparators encoderDecoderAndSeparators, @NotNull Pbkdf2EncodeDecodeFlags flags) implements EncodeDecode { }
+    public static record Pbkdf2EncodeDecodeFlags(boolean context, boolean salt, boolean iter, boolean dkLen, boolean alg) implements EncodeDecodeFlags { }
+    public static record Pbkdf2Context(@Null SecretKey key, @NotNull byte[] secret, @NotNull byte[] clear) implements Context { }
+
     private static record Pbkdf2ClearParameters(@Null byte[] context, @NotEmpty byte[] salt, @Min(C.MIN_ITERATIONS) int iter, @Min(C.MIN_DK_BYTES_LEN) int dkLenBytes, @NotEmpty String alg) implements ClearParameters { }
     private static record Pbkdf2SecretParameters(@Null SecretKey key, @Null byte[] context, @NotEmpty CharSequence rawInput) implements SecretParameters { }
     private static record Pbkdf2ClearParametersAndClearHash(@NotNull Pbkdf2ClearParameters clearParameters, @NotEmpty byte[] clearHash) implements ClearParametersAndClearHash { }
-    private static record Pbkdf2EncodeDecodeFlags(boolean context, boolean salt, boolean iter, boolean dkLen, boolean alg) implements EncodeDecodeFlags { }
-    private static record Pbkdf2EncodeDecode(@NotNull EncoderDecoderAndSeparators encoderDecoderAndSeparators, @NotNull Pbkdf2EncodeDecodeFlags flags) implements EncodeDecode { }
 
 	public static final class RandomSalt extends IocEncoder {
 		public static final RandomSalt DEFAULT_SALT             = new RandomSalt(D.RAND_SALT,         D.NONE,    D.PRF_ALG, D.RAND_LEN_BYTES, D.ITER, D.DK_LEN);
@@ -79,7 +80,7 @@ public final class Pbkdf2EncoderV1 {
 				@NotNull final Pbkdf2ClearParameters parsedClearParameters = parsedClearParametersAndClearHash.clearParameters();
 				final byte[] parsedClearHash = parsedClearParametersAndClearHash.clearHash();
 				return Boolean.valueOf(
-					(!MessageDigest.isEqual(context.clear(), parsedClearParameters.context()))
+					   (!MessageDigest.isEqual(context.clear(), parsedClearParameters.context()))
 					|| (randomSaltLen != parsedClearParameters.salt().length)
 					|| (iter != parsedClearParameters.iter())
 					|| (dkLenBytes != parsedClearHash.length)
