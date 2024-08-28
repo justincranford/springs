@@ -43,8 +43,8 @@ public final class Pbkdf2EncoderV1 {
     private static record Pbkdf2EncodeDecode(@NotNull Base64Util.EncoderDecoder encoderDecoder, @NotNull Pbkdf2EncodeDecodeSeparators separators, @NotNull Pbkdf2EncodeDecodeFlags flags) implements EncodeDecode { }
 
 	public static final class RandomSalt extends IocEncoder {
-		public static final RandomSalt DEFAULT1_MIN = new RandomSalt(Default.ENCODE_DECODE_RANDOM_SALT_MIN, Default.CONTEXT, Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
-		public static final RandomSalt DEFAULT1_MAX = new RandomSalt(Default.ENCODE_DECODE_RANDOM_SALT_MAX, Default.CONTEXT, Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
+		public static final RandomSalt DEFAULT_MIN = new RandomSalt(Default.ENCODE_DECODE_RANDOM_SALT_MIN, Default.CONTEXT, Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
+		public static final RandomSalt DEFAULT_MAX = new RandomSalt(Default.ENCODE_DECODE_RANDOM_SALT_MAX, Default.CONTEXT, Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
 		public RandomSalt(@NotNull final Pbkdf2EncodeDecode encodeDecode, @NotNull final Pbkdf2Context context, @NotNull final Pbkdf2Util.ALG alg, @Min(Default.MIN_RANDOM_SALT_BYTES_LENGTH) final int randomSaltLength, @Min(Default.MIN_ITERATIONS) final int iterations, @Min(Default.MIN_DK_BYTES_LENGTH) final int dkLenBytes) {
 			this.encode = (rawInput) -> {
 				final byte[] randomSaltForEncode = SecureRandomUtil.randomBytes(randomSaltLength);
@@ -82,8 +82,8 @@ public final class Pbkdf2EncoderV1 {
 	}
 
 	public static final class DerivedSalt extends IocEncoder {
-		public static final DerivedSalt DEFAULT1_MIN = new DerivedSalt(Default.ENCODE_DECODE_DERIVED_SALT_MIN, Default.CONTEXT, Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVED_SALT_MAC);
-		public static final DerivedSalt DEFAULT1_MAX = new DerivedSalt(Default.ENCODE_DECODE_DERIVED_SALT_MAX, Default.CONTEXT, Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVED_SALT_MAC);
+		public static final DerivedSalt DEFAULT_MIN = new DerivedSalt(Default.ENCODE_DECODE_DERIVED_SALT_MIN, Default.CONTEXT, Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVED_SALT_MAC);
+		public static final DerivedSalt DEFAULT_MAX = new DerivedSalt(Default.ENCODE_DECODE_DERIVED_SALT_MAX, Default.CONTEXT, Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVED_SALT_MAC);
 		public DerivedSalt(@NotNull final Pbkdf2EncodeDecode encodeDecode, @NotNull final Pbkdf2Context context, @NotNull final Pbkdf2Util.ALG alg, @Min(Default.MIN_DERIVED_SALT_BYTES_LENGTH) final int derivedSaltLength, @Min(Default.MIN_ITERATIONS) final int iterations, @Min(Default.MIN_DK_BYTES_LENGTH) final int dkLenBytes, @NotNull final MacUtil.ALG mac) {
 			this.encode = (rawInput) -> {
 				final byte[] derivedSaltForEncode = deriveSalt(mac, new Pbkdf2ClearParameters(context.clear(), new byte[derivedSaltLength], iterations, dkLenBytes, alg.alg()), new Pbkdf2SecretParameters(context.secret(), rawInput));
@@ -105,8 +105,8 @@ public final class Pbkdf2EncoderV1 {
 	}
 
 	public static final class ConstantSalt extends IocEncoder {
-		public static final ConstantSalt DEFAULT1_MIN = new ConstantSalt(Default.ENCODE_DECODE_CONSTANT_SALT_MIN, Default.CONTEXT, Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
-		public static final ConstantSalt DEFAULT1_MAX = new ConstantSalt(Default.ENCODE_DECODE_CONSTANT_SALT_MAX, Default.CONTEXT, Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_MIN = new ConstantSalt(Default.ENCODE_DECODE_CONSTANT_SALT_MIN, Default.CONTEXT, Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_MAX = new ConstantSalt(Default.ENCODE_DECODE_CONSTANT_SALT_MAX, Default.CONTEXT, Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
 		public ConstantSalt(@NotNull final Pbkdf2EncodeDecode encodeDecode, @NotNull final Pbkdf2Context context, @NotNull final Pbkdf2Util.ALG alg, @NotEmpty final byte[] constantSalt, @Min(Default.MIN_ITERATIONS) final int iterations, @Min(Default.MIN_DK_BYTES_LENGTH) final int dkLenBytes) {
 			@NotNull final Pbkdf2ClearParameters computedClearParameters = new Pbkdf2ClearParameters(context.clear(), constantSalt, iterations, dkLenBytes, alg.alg());
 			super.encode = (rawInput) ->  {

@@ -31,10 +31,10 @@ public class Pbkdf2EncodersTest {
 
 	private static final String keyEncodersDefault = "derived_min";
 	private static final Map<String, PasswordEncoder> keyEncodersMap = new LinkedHashMap<>() {{
-		put("derived_min", Pbkdf2EncoderV1.DerivedSalt.DEFAULT1_MIN);
-		put("derived_max", Pbkdf2EncoderV1.DerivedSalt.DEFAULT1_MAX);
-		put("constant_min", Pbkdf2EncoderV1.ConstantSalt.DEFAULT1_MIN);
-		put("constant_max", Pbkdf2EncoderV1.ConstantSalt.DEFAULT1_MAX);
+		put("derived_min", Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MIN);
+		put("derived_max", Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MAX);
+		put("constant_min", Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MIN);
+		put("constant_max", Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MAX);
 	}};
 	private static final DelegatingPasswordEncoder keyEncoders = new DelegatingPasswordEncoder(
 		keyEncodersDefault,
@@ -43,8 +43,8 @@ public class Pbkdf2EncodersTest {
 
 	private static final String valueEncodersDefault = "random_min";
 	private static final Map<String, PasswordEncoder> valueEncodersMap = new LinkedHashMap<>() {{
-		put("random_min", Pbkdf2EncoderV1.RandomSalt.DEFAULT1_MIN);
-		put("random_max", Pbkdf2EncoderV1.RandomSalt.DEFAULT1_MAX);
+		put("random_min", Pbkdf2EncoderV1.RandomSalt.DEFAULT_MIN);
+		put("random_max", Pbkdf2EncoderV1.RandomSalt.DEFAULT_MAX);
 	}};
 	private static final DelegatingPasswordEncoder valueEncoders = new DelegatingPasswordEncoder(
 		valueEncodersDefault,
