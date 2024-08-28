@@ -2,7 +2,7 @@ package com.github.justincranford.springs.util.security.hashes.encoder.model;
 
 import jakarta.validation.constraints.NotEmpty;
 
-public record EncodeDecodeSeparators(
+public record EncoderDecodeSeparators(
 	@NotEmpty String encodeParameters,
 	@NotEmpty String decodeParameters,
 	@NotEmpty String encodeHash,
@@ -10,3 +10,4 @@ public record EncodeDecodeSeparators(
 ) {
 	// do nothing
 }
+
