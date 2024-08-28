@@ -279,9 +279,9 @@ public final class Pbkdf2EncoderV1 {
 		private static final int ITER = 600_000;
 		private static final int DK_LEN = 32;
 		private static final SecretKey DER_KEY = new SecretKeySpec("hmacsecretkeybytesvariablelength".getBytes(StandardCharsets.UTF_8), PRF_ALG.alg());
-		private static final Pbkdf2Context NONE        = new Pbkdf2Context(null, new byte[0], new byte[0]);
+		private static final Pbkdf2Context NONE    = new Pbkdf2Context(null, new byte[0], new byte[0]);
 		private static final Pbkdf2Context CTX     = new Pbkdf2Context(null, new byte[23], new byte[13]);
-		private static final Pbkdf2Context KEY         = new Pbkdf2Context(DER_KEY, new byte[0], new byte[0]);
+		private static final Pbkdf2Context KEY     = new Pbkdf2Context(DER_KEY, new byte[0], new byte[0]);
 		private static final Pbkdf2Context KEY_CTX = new Pbkdf2Context(DER_KEY, new byte[23], new byte[13]);
 
 	    private static final Base64Util.EncoderDecoder ENC_DEC = Base64Util.MIME;
