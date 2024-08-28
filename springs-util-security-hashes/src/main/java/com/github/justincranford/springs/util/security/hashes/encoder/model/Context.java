@@ -5,8 +5,10 @@ import javax.crypto.SecretKey;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 
-public interface Context {
-	@Null public SecretKey key();
-	@NotNull public byte[] secret();
-	@NotNull public byte[] clear();
+public record Context(
+	@Null SecretKey key,
+	@NotNull byte[] secret,
+	@NotNull byte[] clear
+) {
+	// do nothing
 }
