@@ -4,7 +4,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.SecretKey;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 
@@ -36,17 +36,17 @@ public class MacUtil {
 		}
 	}
 
-    public static byte[] hmac(final String algorithm, final byte[] key, final byte[] data) {
+    public static byte[] hmac(final String algorithm, final SecretKey key, final byte[] data) {
 		try {
 	        final Mac mac = Mac.getInstance(algorithm);
-	        mac.init(new SecretKeySpec(key, algorithm));
+	        mac.init(key);
 	        return mac.doFinal(data);
 		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
 			throw new RuntimeException(e);
 		}
     }
 
-    public static byte[] hmac(final String algorithm, final byte[] key, final byte[][] dataChunks) {
+    public static byte[] hmac(final String algorithm, final SecretKey key, final byte[][] dataChunks) {
         byte[] hmac = null;
         for (final byte[] data : dataChunks) {
             if (hmac == null) {

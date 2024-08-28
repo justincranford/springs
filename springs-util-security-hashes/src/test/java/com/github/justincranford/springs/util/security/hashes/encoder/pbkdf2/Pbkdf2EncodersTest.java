@@ -29,22 +29,36 @@ import lombok.extern.slf4j.Slf4j;
 public class Pbkdf2EncodersTest {
 	private static final int REPEATS = 3;
 
-	private static final String keyEncodersDefault = "derived_min";
+	private static final String keyEncodersDefault = "DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT";
 	private static final Map<String, PasswordEncoder> keyEncodersMap = new LinkedHashMap<>() {{
-		put("derived_min", Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MIN);
-		put("derived_max", Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MAX);
-		put("constant_min", Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MIN);
-		put("constant_max", Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MAX);
+		put("DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT",     Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT);
+		put("DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT",     Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT);
+		put("DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT",     Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT);
+		put("DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT",     Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT);
+		put("DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT", Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT);
+		put("DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT", Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT);
+		put("DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT", Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT);
+		put("DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT", Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT);
+		put("DEFAULT_MIN_ENCODED_KEYED_EMPTY_CONTEXT",       Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MIN_ENCODED_KEYED_EMPTY_CONTEXT);
+		put("DEFAULT_MAX_ENCODED_KEYED_EMPTY_CONTEXT",       Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MAX_ENCODED_KEYED_EMPTY_CONTEXT);
+		put("DEFAULT_MIN_ENCODED_KEYED_EMPTY_CONTEXT",       Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MIN_ENCODED_KEYED_EMPTY_CONTEXT);
+		put("DEFAULT_MAX_ENCODED_KEYED_EMPTY_CONTEXT",       Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MAX_ENCODED_KEYED_EMPTY_CONTEXT);
+		put("DEFAULT_MIN_ENCODED_KEYED_NON_EMPTY_CONTEXT",   Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MIN_ENCODED_KEYED_NON_EMPTY_CONTEXT);
+		put("DEFAULT_MAX_ENCODED_KEYED_NON_EMPTY_CONTEXT",   Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MAX_ENCODED_KEYED_NON_EMPTY_CONTEXT);
+		put("DEFAULT_MIN_ENCODED_KEYED_NON_EMPTY_CONTEXT",   Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MIN_ENCODED_KEYED_NON_EMPTY_CONTEXT);
+		put("DEFAULT_MAX_ENCODED_KEYED_NON_EMPTY_CONTEXT",   Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MAX_ENCODED_KEYED_NON_EMPTY_CONTEXT);
 	}};
 	private static final DelegatingPasswordEncoder keyEncoders = new DelegatingPasswordEncoder(
 		keyEncodersDefault,
 		keyEncodersMap
 	);
 
-	private static final String valueEncodersDefault = "random_min";
+	private static final String valueEncodersDefault = "DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT";
 	private static final Map<String, PasswordEncoder> valueEncodersMap = new LinkedHashMap<>() {{
-		put("random_min", Pbkdf2EncoderV1.RandomSalt.DEFAULT_MIN);
-		put("random_max", Pbkdf2EncoderV1.RandomSalt.DEFAULT_MAX);
+		put("DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT", Pbkdf2EncoderV1.RandomSalt.DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT);
+		put("DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT", Pbkdf2EncoderV1.RandomSalt.DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT);
+		put("DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT", Pbkdf2EncoderV1.RandomSalt.DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT);
+		put("DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT", Pbkdf2EncoderV1.RandomSalt.DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT);
 	}};
 	private static final DelegatingPasswordEncoder valueEncoders = new DelegatingPasswordEncoder(
 		valueEncodersDefault,
