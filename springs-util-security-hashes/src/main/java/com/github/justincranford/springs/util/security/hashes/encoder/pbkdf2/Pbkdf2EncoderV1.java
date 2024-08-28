@@ -37,7 +37,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class Pbkdf2EncoderV1 {
 	private static record Pbkdf2Context(@Null SecretKey key, @NotNull byte[] secret, @NotNull byte[] clear) implements Context { }
-    private static record Pbkdf2ClearParameters(@Null byte[] context, @NotEmpty byte[] salt, @Min(Default.MIN_ITERATIONS) int iterations, @Min(Default.MIN_DK_BYTES_LENGTH) int dkLenBytes, @NotEmpty String alg) implements ClearParameters { }
+    private static record Pbkdf2ClearParameters(@Null byte[] context, @NotEmpty byte[] salt, @Min(Constraint.MIN_ITERATIONS) int iterations, @Min(Constraint.MIN_DK_BYTES_LENGTH) int dkLenBytes, @NotEmpty String alg) implements ClearParameters { }
     private static record Pbkdf2SecretParameters(@Null SecretKey key, @Null byte[] context, @NotEmpty CharSequence rawInput) implements SecretParameters { }
     private static record Pbkdf2ClearParametersAndClearHash(@NotNull Pbkdf2ClearParameters clearParameters, @NotEmpty byte[] clearHash) implements ClearParametersAndClearHash { }
     private static record Pbkdf2EncodeDecodeSeparators(@NotEmpty String encodeParameters, @NotEmpty String decodeParameters, @NotEmpty String encodeHash, @NotEmpty String decodeHash) implements EncodeDecodeSeparators { }
@@ -45,11 +45,15 @@ public final class Pbkdf2EncoderV1 {
     private static record Pbkdf2EncodeDecode(@NotNull Base64Util.EncoderDecoder encoderDecoder, @NotNull Pbkdf2EncodeDecodeSeparators separators, @NotNull Pbkdf2EncodeDecodeFlags flags) implements EncodeDecode { }
 
 	public static final class RandomSalt extends IocEncoder {
-		public static final RandomSalt DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT     = new RandomSalt(Default.ENCODE_DECODE_RANDOM_SALT_MIN_ENCODE_EMPTY_CONTEXT,     Default.KEYLESS_EMPTY_CONTEXT,     Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
-		public static final RandomSalt DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT     = new RandomSalt(Default.ENCODE_DECODE_RANDOM_SALT_MAX_ENCODE_EMPTY_CONTEXT,     Default.KEYLESS_EMPTY_CONTEXT,     Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
-		public static final RandomSalt DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT = new RandomSalt(Default.ENCODE_DECODE_RANDOM_SALT_MIN_ENCODE_NON_EMPTY_CONTEXT, Default.KEYLESS_NON_EMPTY_CONTEXT, Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
-		public static final RandomSalt DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT = new RandomSalt(Default.ENCODE_DECODE_RANDOM_SALT_MAX_ENCODE_NON_EMPTY_CONTEXT, Default.KEYLESS_NON_EMPTY_CONTEXT, Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
-		public RandomSalt(@NotNull final Pbkdf2EncodeDecode encodeDecode, @NotNull final Pbkdf2Context context, @NotNull final Pbkdf2Util.ALG alg, @Min(Default.MIN_RANDOM_SALT_BYTES_LENGTH) final int randomSaltLength, @Min(Default.MIN_ITERATIONS) final int iterations, @Min(Default.MIN_DK_BYTES_LENGTH) final int dkLenBytes) {
+		public static final RandomSalt DEFAULT_KEYLESS_SALT                = new RandomSalt(Default.RANDOM_SALT_ENCODE_SALT,                Default.KEYLESS,         Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
+		public static final RandomSalt DEFAULT_KEYLESS_CONTEXT_SALT        = new RandomSalt(Default.RANDOM_SALT_ENCODE_CONTEXT_SALT,        Default.KEYLESS_CONTEXT, Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
+		public static final RandomSalt DEFAULT_KEYLESS_SALT_OTHERS         = new RandomSalt(Default.RANDOM_SALT_ENCODE_SALT_OTHERS,         Default.KEYLESS,         Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
+		public static final RandomSalt DEFAULT_KEYLESS_CONTEXT_SALT_OTHERS = new RandomSalt(Default.RANDOM_SALT_ENCODE_CONTEXT_SALT_OTHERS, Default.KEYLESS_CONTEXT, Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
+		public static final RandomSalt DEFAULT_KEYED_SALT                  = new RandomSalt(Default.RANDOM_SALT_ENCODE_SALT,                Default.KEYED,           Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
+		public static final RandomSalt DEFAULT_KEYED_CONTEXT_SALT          = new RandomSalt(Default.RANDOM_SALT_ENCODE_CONTEXT_SALT,        Default.KEYED_CONTEXT,   Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
+		public static final RandomSalt DEFAULT_KEYED_SALT_OTHERS           = new RandomSalt(Default.RANDOM_SALT_ENCODE_SALT_OTHERS,         Default.KEYED,           Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
+		public static final RandomSalt DEFAULT_KEYED_CONTEXT_SALT_OTHERS   = new RandomSalt(Default.RANDOM_SALT_ENCODE_CONTEXT_SALT_OTHERS, Default.KEYED_CONTEXT,   Default.ALG, Default.RANDOM_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN);
+		public RandomSalt(@NotNull final Pbkdf2EncodeDecode encodeDecode, @NotNull final Pbkdf2Context context, @NotNull final Pbkdf2Util.ALG alg, @Min(Constraint.MIN_RANDOM_SALT_BYTES_LENGTH) final int randomSaltLength, @Min(Constraint.MIN_ITERATIONS) final int iterations, @Min(Constraint.MIN_DK_BYTES_LENGTH) final int dkLenBytes) {
 			this.encode = (rawInput) -> {
 				final byte[] randomSaltForEncode = SecureRandomUtil.randomBytes(randomSaltLength);
 				@NotNull final Pbkdf2ClearParameters computedClearParameters = new Pbkdf2ClearParameters(context.clear(), randomSaltForEncode, iterations, dkLenBytes, alg.alg());
@@ -86,15 +90,23 @@ public final class Pbkdf2EncoderV1 {
 	}
 
 	public static final class DerivedSalt extends IocEncoder {
-		public static final DerivedSalt DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT     = new DerivedSalt(Default.ENCODE_DECODE_DERIVED_SALT_MIN_ENCODE_EMPTY_CONTEXT,     Default.KEYLESS_EMPTY_CONTEXT,     Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVED_SALT_MAC);
-		public static final DerivedSalt DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT     = new DerivedSalt(Default.ENCODE_DECODE_DERIVED_SALT_MAX_ENCODE_EMPTY_CONTEXT,     Default.KEYLESS_EMPTY_CONTEXT,     Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVED_SALT_MAC);
-		public static final DerivedSalt DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT = new DerivedSalt(Default.ENCODE_DECODE_DERIVED_SALT_MIN_ENCODE_NON_EMPTY_CONTEXT, Default.KEYLESS_NON_EMPTY_CONTEXT, Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVED_SALT_MAC);
-		public static final DerivedSalt DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT = new DerivedSalt(Default.ENCODE_DECODE_DERIVED_SALT_MAX_ENCODE_NON_EMPTY_CONTEXT, Default.KEYLESS_NON_EMPTY_CONTEXT, Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVED_SALT_MAC);
-		public static final DerivedSalt DEFAULT_MIN_ENCODED_KEYED_EMPTY_CONTEXT       = new DerivedSalt(Default.ENCODE_DECODE_DERIVED_SALT_MIN_ENCODE_EMPTY_CONTEXT,     Default.KEYED_EMPTY_CONTEXT,       Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVED_SALT_MAC);
-		public static final DerivedSalt DEFAULT_MAX_ENCODED_KEYED_EMPTY_CONTEXT       = new DerivedSalt(Default.ENCODE_DECODE_DERIVED_SALT_MAX_ENCODE_EMPTY_CONTEXT,     Default.KEYED_EMPTY_CONTEXT,       Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVED_SALT_MAC);
-		public static final DerivedSalt DEFAULT_MIN_ENCODED_KEYED_NON_EMPTY_CONTEXT   = new DerivedSalt(Default.ENCODE_DECODE_DERIVED_SALT_MIN_ENCODE_NON_EMPTY_CONTEXT, Default.KEYED_NON_EMPTY_CONTEXT,   Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVED_SALT_MAC);
-		public static final DerivedSalt DEFAULT_MAX_ENCODED_KEYED_NON_EMPTY_CONTEXT   = new DerivedSalt(Default.ENCODE_DECODE_DERIVED_SALT_MAX_ENCODE_NON_EMPTY_CONTEXT, Default.KEYED_NON_EMPTY_CONTEXT,   Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVED_SALT_MAC);
-		public DerivedSalt(@NotNull final Pbkdf2EncodeDecode encodeDecode, @NotNull final Pbkdf2Context context, @NotNull final Pbkdf2Util.ALG alg, @Min(Default.MIN_DERIVED_SALT_BYTES_LENGTH) final int derivedSaltLength, @Min(Default.MIN_ITERATIONS) final int iterations, @Min(Default.MIN_DK_BYTES_LENGTH) final int dkLenBytes, @NotNull final MacUtil.ALG mac) {
+		public static final DerivedSalt DEFAULT_KEYLESS                     = new DerivedSalt(Default.DERIVED_SALT_ENCODE_NONE,                Default.KEYLESS,         Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYLESS_CONTEXT             = new DerivedSalt(Default.DERIVED_SALT_ENCODE_CONTEXT,             Default.KEYLESS_CONTEXT, Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYLESS_OTHERS              = new DerivedSalt(Default.DERIVED_SALT_ENCODE_OTHERS,              Default.KEYLESS,         Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYLESS_CONTEXT_OTHERS      = new DerivedSalt(Default.DERIVED_SALT_ENCODE_CONTEXT_OTHERS,      Default.KEYLESS_CONTEXT, Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYLESS_SALT                = new DerivedSalt(Default.DERIVED_SALT_ENCODE_SALT,                Default.KEYLESS,         Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYLESS_CONTEXT_SALT        = new DerivedSalt(Default.DERIVED_SALT_ENCODE_CONTEXT_SALT,        Default.KEYLESS_CONTEXT, Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYLESS_SALT_OTHERS         = new DerivedSalt(Default.DERIVED_SALT_ENCODE_SALT_OTHERS,         Default.KEYLESS,         Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYLESS_CONTEXT_SALT_OTHERS = new DerivedSalt(Default.DERIVED_SALT_ENCODE_CONTEXT_SALT_OTHERS, Default.KEYLESS_CONTEXT, Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYED                       = new DerivedSalt(Default.DERIVED_SALT_ENCODE_NONE,                Default.KEYED,           Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYED_CONTEXT               = new DerivedSalt(Default.DERIVED_SALT_ENCODE_CONTEXT,             Default.KEYED_CONTEXT,   Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYED_OTHERS                = new DerivedSalt(Default.DERIVED_SALT_ENCODE_OTHERS,              Default.KEYED,           Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYED_CONTEXT_OTHERS        = new DerivedSalt(Default.DERIVED_SALT_ENCODE_CONTEXT_OTHERS,      Default.KEYED_CONTEXT,   Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYED_SALT                  = new DerivedSalt(Default.DERIVED_SALT_ENCODE_SALT,                Default.KEYED,           Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYED_CONTEXT_SALT          = new DerivedSalt(Default.DERIVED_SALT_ENCODE_CONTEXT_SALT,        Default.KEYED_CONTEXT,   Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYED_SALT_OTHERS           = new DerivedSalt(Default.DERIVED_SALT_ENCODE_SALT_OTHERS,         Default.KEYED,           Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public static final DerivedSalt DEFAULT_KEYED_CONTEXT_SALT_OTHERS   = new DerivedSalt(Default.DERIVED_SALT_ENCODE_CONTEXT_SALT_OTHERS, Default.KEYED_CONTEXT,   Default.ALG, Default.DERIVED_SALT_LENGTH, Default.ITERATIONS, Default.DK_LEN, Default.DERIVE_ALG);
+		public DerivedSalt(@NotNull final Pbkdf2EncodeDecode encodeDecode, @NotNull final Pbkdf2Context context, @NotNull final Pbkdf2Util.ALG alg, @Min(Constraint.MIN_DERIVED_SALT_BYTES_LENGTH) final int derivedSaltLength, @Min(Constraint.MIN_ITERATIONS) final int iterations, @Min(Constraint.MIN_DK_BYTES_LENGTH) final int dkLenBytes, @NotNull final MacUtil.ALG mac) {
 			this.encode = (rawInput) -> {
 				final byte[] derivedSaltForEncode = deriveSalt(mac, new Pbkdf2ClearParameters(context.clear(), new byte[derivedSaltLength], iterations, dkLenBytes, alg.alg()), new Pbkdf2SecretParameters(context.key(), context.secret(), rawInput));
 				@NotNull final Pbkdf2ClearParameters computedClearParameters = new Pbkdf2ClearParameters(context.clear(), derivedSaltForEncode, iterations, dkLenBytes, alg.alg());
@@ -115,15 +127,23 @@ public final class Pbkdf2EncoderV1 {
 	}
 
 	public static final class ConstantSalt extends IocEncoder {
-		public static final ConstantSalt DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT     = new ConstantSalt(Default.ENCODE_DECODE_CONSTANT_SALT_MIN_ENCODE_EMPTY_CONTEXT,     Default.KEYLESS_EMPTY_CONTEXT,     Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
-		public static final ConstantSalt DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT     = new ConstantSalt(Default.ENCODE_DECODE_CONSTANT_SALT_MAX_ENCODE_EMPTY_CONTEXT,     Default.KEYLESS_EMPTY_CONTEXT,     Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
-		public static final ConstantSalt DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT = new ConstantSalt(Default.ENCODE_DECODE_CONSTANT_SALT_MIN_ENCODE_NON_EMPTY_CONTEXT, Default.KEYLESS_NON_EMPTY_CONTEXT, Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
-		public static final ConstantSalt DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT = new ConstantSalt(Default.ENCODE_DECODE_CONSTANT_SALT_MAX_ENCODE_NON_EMPTY_CONTEXT, Default.KEYLESS_NON_EMPTY_CONTEXT, Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
-		public static final ConstantSalt DEFAULT_MIN_ENCODED_KEYED_EMPTY_CONTEXT       = new ConstantSalt(Default.ENCODE_DECODE_CONSTANT_SALT_MIN_ENCODE_EMPTY_CONTEXT,     Default.KEYED_EMPTY_CONTEXT,       Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
-		public static final ConstantSalt DEFAULT_MAX_ENCODED_KEYED_EMPTY_CONTEXT       = new ConstantSalt(Default.ENCODE_DECODE_CONSTANT_SALT_MAX_ENCODE_EMPTY_CONTEXT,     Default.KEYED_EMPTY_CONTEXT,       Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
-		public static final ConstantSalt DEFAULT_MIN_ENCODED_KEYED_NON_EMPTY_CONTEXT   = new ConstantSalt(Default.ENCODE_DECODE_CONSTANT_SALT_MIN_ENCODE_NON_EMPTY_CONTEXT, Default.KEYED_NON_EMPTY_CONTEXT,   Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
-		public static final ConstantSalt DEFAULT_MAX_ENCODED_KEYED_NON_EMPTY_CONTEXT   = new ConstantSalt(Default.ENCODE_DECODE_CONSTANT_SALT_MAX_ENCODE_NON_EMPTY_CONTEXT, Default.KEYED_NON_EMPTY_CONTEXT,   Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
-		public ConstantSalt(@NotNull final Pbkdf2EncodeDecode encodeDecode, @NotNull final Pbkdf2Context context, @NotNull final Pbkdf2Util.ALG alg, @NotEmpty final byte[] constantSalt, @Min(Default.MIN_ITERATIONS) final int iterations, @Min(Default.MIN_DK_BYTES_LENGTH) final int dkLenBytes) {
+		public static final ConstantSalt DEFAULT_KEYLESS                     = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_NONE,                Default.KEYLESS,         Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYLESS_CONTEXT             = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_CONTEXT,             Default.KEYLESS_CONTEXT, Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYLESS_OTHERS              = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_OTHERS,              Default.KEYLESS,         Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYLESS_CONTEXT_OTHERS      = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_CONTEXT_OTHERS,      Default.KEYLESS_CONTEXT, Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYLESS_SALT                = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_SALT,                Default.KEYLESS,         Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYLESS_CONTEXT_SALT        = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_CONTEXT_SALT,        Default.KEYLESS_CONTEXT, Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYLESS_SALT_OTHERS         = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_SALT_OTHERS,         Default.KEYLESS,         Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYLESS_CONTEXT_SALT_OTHERS = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_CONTEXT_SALT_OTHERS, Default.KEYLESS_CONTEXT, Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYED                       = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_NONE,                Default.KEYED,           Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYED_CONTEXT               = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_CONTEXT,             Default.KEYED_CONTEXT,   Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYED_OTHERS                = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_OTHERS,              Default.KEYED,           Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYED_CONTEXT_OTHERS        = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_CONTEXT_OTHERS,      Default.KEYED_CONTEXT,   Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYED_SALT                  = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_SALT,                Default.KEYED,           Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYED_CONTEXT_SALT          = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_CONTEXT_SALT,        Default.KEYED_CONTEXT,   Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYED_SALT_OTHERS           = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_SALT_OTHERS,         Default.KEYED,           Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public static final ConstantSalt DEFAULT_KEYED_CONTEXT_SALT_OTHERS   = new ConstantSalt(Default.CONSTANT_SALT_ENCODE_CONTEXT_SALT_OTHERS, Default.KEYED_CONTEXT,   Default.ALG, Default.CONSTANT_SALT, Default.ITERATIONS, Default.DK_LEN);
+		public ConstantSalt(@NotNull final Pbkdf2EncodeDecode encodeDecode, @NotNull final Pbkdf2Context context, @NotNull final Pbkdf2Util.ALG alg, @NotEmpty final byte[] constantSalt, @Min(Constraint.MIN_ITERATIONS) final int iterations, @Min(Constraint.MIN_DK_BYTES_LENGTH) final int dkLenBytes) {
 			@NotNull final Pbkdf2ClearParameters computedClearParameters = new Pbkdf2ClearParameters(context.clear(), constantSalt, iterations, dkLenBytes, alg.alg());
 			super.encode = (rawInput) ->  {
 				@NotNull final Pbkdf2SecretParameters constructedSecretParameters = new Pbkdf2SecretParameters(context.key(), context.secret(), rawInput);
@@ -234,64 +254,67 @@ public final class Pbkdf2EncoderV1 {
 		return encodeDecode.encoderDecoder().decodeFromString(encodedHash);
 	}
 
+	private static class Constraint {
+		private static final int MIN_RANDOM_SALT_BYTES_LENGTH = 8;
+		private static final int MIN_DERIVED_SALT_BYTES_LENGTH = 8;
+		private static final int MIN_ITERATIONS = 1;
+		private static final int MIN_DK_BYTES_LENGTH = 16;
+	}
+
 	private static class Default {
 		private static final Pbkdf2Util.ALG ALG = Pbkdf2Util.ALG.PBKDF2WithHmacSHA256;
-		private static final Pbkdf2Context KEYLESS_EMPTY_CONTEXT = new Pbkdf2Context(null, new byte[0], new byte[0]);
-		private static final Pbkdf2Context KEYLESS_NON_EMPTY_CONTEXT = new Pbkdf2Context(null, new byte[23], new byte[13]);
-		private static final Pbkdf2Context KEYED_EMPTY_CONTEXT = new Pbkdf2Context(new SecretKeySpec("hmacsecretkeybytesvariablelength".getBytes(StandardCharsets.UTF_8), ALG.alg()), new byte[0], new byte[0]);
-		private static final Pbkdf2Context KEYED_NON_EMPTY_CONTEXT = new Pbkdf2Context(new SecretKeySpec("hmacsecretkeybytesvariablelength".getBytes(StandardCharsets.UTF_8), ALG.alg()), new byte[23], new byte[13]);
+		private static final MacUtil.ALG DERIVE_ALG = MacUtil.ALG.HmacSHA256;
 		private static final int RANDOM_SALT_LENGTH = 32;
-		private static final int MIN_RANDOM_SALT_BYTES_LENGTH = 8;
 		private static final int DERIVED_SALT_LENGTH = 32;
-		private static final int MIN_DERIVED_SALT_BYTES_LENGTH = 8;
 		private static final byte[] CONSTANT_SALT = "salt".getBytes(StandardCharsets.UTF_8);
 		private static final int ITERATIONS = 600_000;
-		private static final int MIN_ITERATIONS = 1;
 		private static final int DK_LEN = 32;
-		private static final int MIN_DK_BYTES_LENGTH = 16;
-		private static final MacUtil.ALG DERIVED_SALT_MAC = MacUtil.ALG.HmacSHA256;
+		private static final SecretKey DERIVE_KEY = new SecretKeySpec("hmacsecretkeybytesvariablelength".getBytes(StandardCharsets.UTF_8), ALG.alg());
+		private static final Pbkdf2Context KEYLESS         = new Pbkdf2Context(null, new byte[0], new byte[0]);
+		private static final Pbkdf2Context KEYLESS_CONTEXT = new Pbkdf2Context(null, new byte[23], new byte[13]);
+		private static final Pbkdf2Context KEYED           = new Pbkdf2Context(DERIVE_KEY, new byte[0], new byte[0]);
+		private static final Pbkdf2Context KEYED_CONTEXT   = new Pbkdf2Context(DERIVE_KEY, new byte[23], new byte[13]);
 
 	    private static final Base64Util.EncoderDecoder ENCODER_DECODER = Base64Util.MIME;
 		private static final String ENCODE_SEPARATOR_PARAMETERS = ":";
 		private static final String DECODE_SEPARATOR_PARAMETERS = ENCODE_SEPARATOR_PARAMETERS;
 	    private static final String ENCODE_SEPARATOR_HASH = "|";
 	    private static final String DECODE_SEPARATOR_HASH = "\\" + ENCODE_SEPARATOR_HASH;
-	    private static final Pbkdf2EncodeDecodeSeparators ENCODE_DECODE_SEPARATORS = new Pbkdf2EncodeDecodeSeparators(ENCODE_SEPARATOR_PARAMETERS, DECODE_SEPARATOR_PARAMETERS, ENCODE_SEPARATOR_HASH, DECODE_SEPARATOR_HASH);
+	    private static final Pbkdf2EncodeDecodeSeparators SEPARATORS = new Pbkdf2EncodeDecodeSeparators(ENCODE_SEPARATOR_PARAMETERS, DECODE_SEPARATOR_PARAMETERS, ENCODE_SEPARATOR_HASH, DECODE_SEPARATOR_HASH);
 
-		// empty context, always encode random salt, always align iterations/dkLen/alg with min vs max
-		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_RANDOM_SALT_MIN_ENCODE_EMPTY_CONTEXT_FLAGS   = new Pbkdf2EncodeDecodeFlags(false, true,  false, false, false);
-		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_RANDOM_SALT_MAX_ENCODE_EMPTY_CONTEXT_FLAGS   = new Pbkdf2EncodeDecodeFlags(false,  true,  true,  true,  true);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_RANDOM_SALT_MIN_ENCODE_EMPTY_CONTEXT         = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_RANDOM_SALT_MIN_ENCODE_EMPTY_CONTEXT_FLAGS);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_RANDOM_SALT_MAX_ENCODE_EMPTY_CONTEXT         = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_RANDOM_SALT_MAX_ENCODE_EMPTY_CONTEXT_FLAGS);
+		private static final Pbkdf2EncodeDecodeFlags FLAGS_NONE                = new Pbkdf2EncodeDecodeFlags(false, false,  false, false, false);
+		private static final Pbkdf2EncodeDecodeFlags FLAGS_CONTEXT             = new Pbkdf2EncodeDecodeFlags(true,  false,  false, false, false);
+		private static final Pbkdf2EncodeDecodeFlags FLAGS_SALT                = new Pbkdf2EncodeDecodeFlags(false, true,   false, false, false);
+		private static final Pbkdf2EncodeDecodeFlags FLAGS_OTHERS              = new Pbkdf2EncodeDecodeFlags(false, false,  true,  true,  true);
+		private static final Pbkdf2EncodeDecodeFlags FLAGS_CONTEXT_SALT        = new Pbkdf2EncodeDecodeFlags(true,  true,   false, false, false);
+		private static final Pbkdf2EncodeDecodeFlags FLAGS_CONTEXT_OTHERS      = new Pbkdf2EncodeDecodeFlags(true,  false,  true,  true,  true);
+		private static final Pbkdf2EncodeDecodeFlags FLAGS_SALT_OTHERS         = new Pbkdf2EncodeDecodeFlags(false, true,   true,  true,  true);
+		private static final Pbkdf2EncodeDecodeFlags FLAGS_CONTEXT_SALT_OTHERS = new Pbkdf2EncodeDecodeFlags(true,  true,   true,  true,  true);
 
-		// non-empty context, always encode random salt, always align iterations/dkLen/alg with min vs max
-		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_RANDOM_SALT_MIN_ENCODE_NON_EMPTY_CONTEXT_FLAGS   = new Pbkdf2EncodeDecodeFlags(true, true,  false, false, false);
-		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_RANDOM_SALT_MAX_ENCODE_NON_EMPTY_CONTEXT_FLAGS   = new Pbkdf2EncodeDecodeFlags(true,  true,  true,  true,  true);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_RANDOM_SALT_MIN_ENCODE_NON_EMPTY_CONTEXT         = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_RANDOM_SALT_MIN_ENCODE_NON_EMPTY_CONTEXT_FLAGS);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_RANDOM_SALT_MAX_ENCODE_NON_EMPTY_CONTEXT         = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_RANDOM_SALT_MAX_ENCODE_NON_EMPTY_CONTEXT_FLAGS);
+		// RandomSalt => EncoderDecoder + Separators + EncodeDecodeFlags
+		private static final Pbkdf2EncodeDecode      RANDOM_SALT_ENCODE_SALT                  = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_SALT);
+		private static final Pbkdf2EncodeDecode      RANDOM_SALT_ENCODE_CONTEXT_SALT          = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_CONTEXT_SALT);
+		private static final Pbkdf2EncodeDecode      RANDOM_SALT_ENCODE_SALT_OTHERS           = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_SALT_OTHERS);
+		private static final Pbkdf2EncodeDecode      RANDOM_SALT_ENCODE_CONTEXT_SALT_OTHERS   = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_CONTEXT_SALT_OTHERS);
 
-		// empty context, optionally encode derived salt, always align iterations/dkLen/alg with min vs max
-		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_DERIVED_SALT_MIN_ENCODE_EMPTY_CONTEXT_FLAGS  = new Pbkdf2EncodeDecodeFlags(false, false, false, false, false);
-		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_DERIVED_SALT_MAX_ENCODE_EMPTY_CONTEXT_FLAGS  = new Pbkdf2EncodeDecodeFlags(false,  true,  true,  true,  true);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_DERIVED_SALT_MIN_ENCODE_EMPTY_CONTEXT        = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_DERIVED_SALT_MIN_ENCODE_EMPTY_CONTEXT_FLAGS);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_DERIVED_SALT_MAX_ENCODE_EMPTY_CONTEXT        = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_DERIVED_SALT_MAX_ENCODE_EMPTY_CONTEXT_FLAGS);
+		// DerivedSalt => EncoderDecoder + Separators + EncodeDecodeFlags
+		private static final Pbkdf2EncodeDecode      DERIVED_SALT_ENCODE_NONE                 = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_NONE);
+		private static final Pbkdf2EncodeDecode      DERIVED_SALT_ENCODE_CONTEXT              = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_CONTEXT);
+		private static final Pbkdf2EncodeDecode      DERIVED_SALT_ENCODE_SALT                 = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_SALT);
+		private static final Pbkdf2EncodeDecode      DERIVED_SALT_ENCODE_OTHERS               = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_OTHERS);
+		private static final Pbkdf2EncodeDecode      DERIVED_SALT_ENCODE_CONTEXT_SALT         = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_CONTEXT_SALT);
+		private static final Pbkdf2EncodeDecode      DERIVED_SALT_ENCODE_CONTEXT_OTHERS       = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_CONTEXT_OTHERS);
+		private static final Pbkdf2EncodeDecode      DERIVED_SALT_ENCODE_SALT_OTHERS          = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_SALT_OTHERS);
+		private static final Pbkdf2EncodeDecode      DERIVED_SALT_ENCODE_CONTEXT_SALT_OTHERS  = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_CONTEXT_SALT_OTHERS);
 
-		// empty context, optionally encode derived salt, always align iterations/dkLen/alg with min vs max
-		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_DERIVED_SALT_MIN_ENCODE_NON_EMPTY_CONTEXT_FLAGS  = new Pbkdf2EncodeDecodeFlags(true, false, false, false, false);
-		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_DERIVED_SALT_MAX_ENCODE_NON_EMPTY_CONTEXT_FLAGS  = new Pbkdf2EncodeDecodeFlags(true,  true,  true,  true,  true);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_DERIVED_SALT_MIN_ENCODE_NON_EMPTY_CONTEXT        = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_DERIVED_SALT_MIN_ENCODE_NON_EMPTY_CONTEXT_FLAGS);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_DERIVED_SALT_MAX_ENCODE_NON_EMPTY_CONTEXT        = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_DERIVED_SALT_MAX_ENCODE_NON_EMPTY_CONTEXT_FLAGS);
-
-		// empty context, never encode constant salt, always align iterations/dkLen/alg with min vs max
-		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_CONSTANT_SALT_MIN_ENCODE_EMPTY_CONTEXT_FLAGS = new Pbkdf2EncodeDecodeFlags(false, false, false, false, false);
-		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_CONSTANT_SALT_MAX_ENCODE_EMPTY_CONTEXT_FLAGS = new Pbkdf2EncodeDecodeFlags(false,  false,  true,  true,  true);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_CONSTANT_SALT_MIN_ENCODE_EMPTY_CONTEXT       = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_CONSTANT_SALT_MIN_ENCODE_EMPTY_CONTEXT_FLAGS);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_CONSTANT_SALT_MAX_ENCODE_EMPTY_CONTEXT       = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_CONSTANT_SALT_MAX_ENCODE_EMPTY_CONTEXT_FLAGS);
-
-		// empty context, never encode constant salt, always align iterations/dkLen/alg with min vs max
-		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_CONSTANT_SALT_MIN_ENCODE_NON_EMPTY_CONTEXT_FLAGS = new Pbkdf2EncodeDecodeFlags(true, false, false, false, false);
-		private static final Pbkdf2EncodeDecodeFlags ENCODE_DECODE_CONSTANT_SALT_MAX_ENCODE_NON_EMPTY_CONTEXT_FLAGS = new Pbkdf2EncodeDecodeFlags(true,  false,  true,  true,  true);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_CONSTANT_SALT_MIN_ENCODE_NON_EMPTY_CONTEXT       = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_CONSTANT_SALT_MIN_ENCODE_NON_EMPTY_CONTEXT_FLAGS);
-		private static final Pbkdf2EncodeDecode      ENCODE_DECODE_CONSTANT_SALT_MAX_ENCODE_NON_EMPTY_CONTEXT       = new Pbkdf2EncodeDecode(ENCODER_DECODER, ENCODE_DECODE_SEPARATORS, ENCODE_DECODE_CONSTANT_SALT_MAX_ENCODE_NON_EMPTY_CONTEXT_FLAGS);
+		// ConstantSalt => EncoderDecoder + Separators + EncodeDecodeFlags
+		private static final Pbkdf2EncodeDecode      CONSTANT_SALT_ENCODE_NONE                = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_NONE);
+		private static final Pbkdf2EncodeDecode      CONSTANT_SALT_ENCODE_CONTEXT             = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_CONTEXT);
+		private static final Pbkdf2EncodeDecode      CONSTANT_SALT_ENCODE_SALT                = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_SALT);
+		private static final Pbkdf2EncodeDecode      CONSTANT_SALT_ENCODE_OTHERS              = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_OTHERS);
+		private static final Pbkdf2EncodeDecode      CONSTANT_SALT_ENCODE_CONTEXT_SALT        = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_CONTEXT_SALT);
+		private static final Pbkdf2EncodeDecode      CONSTANT_SALT_ENCODE_CONTEXT_OTHERS      = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_CONTEXT_OTHERS);
+		private static final Pbkdf2EncodeDecode      CONSTANT_SALT_ENCODE_SALT_OTHERS         = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_SALT_OTHERS);
+		private static final Pbkdf2EncodeDecode      CONSTANT_SALT_ENCODE_CONTEXT_SALT_OTHERS = new Pbkdf2EncodeDecode(ENCODER_DECODER, SEPARATORS, FLAGS_CONTEXT_SALT_OTHERS);
 	}
 }

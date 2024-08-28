@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.security.Security;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,39 +30,65 @@ import lombok.extern.slf4j.Slf4j;
 public class Pbkdf2EncodersTest {
 	private static final int REPEATS = 3;
 
-	private static final String keyEncodersDefault = "DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT";
 	private static final Map<String, PasswordEncoder> keyEncodersMap = new LinkedHashMap<>() {{
-		put("DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT",     Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT);
-		put("DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT",     Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT);
-		put("DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT",     Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT);
-		put("DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT",     Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT);
-		put("DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT", Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT);
-		put("DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT", Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT);
-		put("DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT", Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT);
-		put("DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT", Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT);
-		put("DEFAULT_MIN_ENCODED_KEYED_EMPTY_CONTEXT",       Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MIN_ENCODED_KEYED_EMPTY_CONTEXT);
-		put("DEFAULT_MAX_ENCODED_KEYED_EMPTY_CONTEXT",       Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MAX_ENCODED_KEYED_EMPTY_CONTEXT);
-		put("DEFAULT_MIN_ENCODED_KEYED_EMPTY_CONTEXT",       Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MIN_ENCODED_KEYED_EMPTY_CONTEXT);
-		put("DEFAULT_MAX_ENCODED_KEYED_EMPTY_CONTEXT",       Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MAX_ENCODED_KEYED_EMPTY_CONTEXT);
-		put("DEFAULT_MIN_ENCODED_KEYED_NON_EMPTY_CONTEXT",   Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MIN_ENCODED_KEYED_NON_EMPTY_CONTEXT);
-		put("DEFAULT_MAX_ENCODED_KEYED_NON_EMPTY_CONTEXT",   Pbkdf2EncoderV1.DerivedSalt.DEFAULT_MAX_ENCODED_KEYED_NON_EMPTY_CONTEXT);
-		put("DEFAULT_MIN_ENCODED_KEYED_NON_EMPTY_CONTEXT",   Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MIN_ENCODED_KEYED_NON_EMPTY_CONTEXT);
-		put("DEFAULT_MAX_ENCODED_KEYED_NON_EMPTY_CONTEXT",   Pbkdf2EncoderV1.ConstantSalt.DEFAULT_MAX_ENCODED_KEYED_NON_EMPTY_CONTEXT);
+		final AtomicInteger i = new AtomicInteger(0);
+		List.of(
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS_CONTEXT,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS_OTHERS,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS_CONTEXT_OTHERS,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS_SALT,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS_CONTEXT_SALT,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS_SALT_OTHERS,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYLESS_CONTEXT_SALT_OTHERS,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED_CONTEXT,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED_OTHERS,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED_CONTEXT_OTHERS,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED_SALT,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED_CONTEXT_SALT,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED_SALT_OTHERS,
+			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEYED_CONTEXT_SALT_OTHERS,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS_CONTEXT,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS_OTHERS,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS_CONTEXT_OTHERS,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS_SALT,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS_CONTEXT_SALT,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS_SALT_OTHERS,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYLESS_CONTEXT_SALT_OTHERS,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED_CONTEXT,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED_OTHERS,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED_CONTEXT_OTHERS,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED_SALT,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED_CONTEXT_SALT,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED_SALT_OTHERS,
+			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEYED_CONTEXT_SALT_OTHERS
+		).forEach(valueEncoder -> put(Integer.toString(i.incrementAndGet()), valueEncoder));
 	}};
+	private static final String keyEncodersDefault = keyEncodersMap.keySet().iterator().next();
 	private static final DelegatingPasswordEncoder keyEncoders = new DelegatingPasswordEncoder(
-		keyEncodersDefault,
+			keyEncodersMap.keySet().iterator().next(),
 		keyEncodersMap
 	);
 
-	private static final String valueEncodersDefault = "DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT";
 	private static final Map<String, PasswordEncoder> valueEncodersMap = new LinkedHashMap<>() {{
-		put("DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT", Pbkdf2EncoderV1.RandomSalt.DEFAULT_MIN_ENCODED_KEYLESS_EMPTY_CONTEXT);
-		put("DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT", Pbkdf2EncoderV1.RandomSalt.DEFAULT_MAX_ENCODED_KEYLESS_EMPTY_CONTEXT);
-		put("DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT", Pbkdf2EncoderV1.RandomSalt.DEFAULT_MIN_ENCODED_KEYLESS_NON_EMPTY_CONTEXT);
-		put("DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT", Pbkdf2EncoderV1.RandomSalt.DEFAULT_MAX_ENCODED_KEYLESS_NON_EMPTY_CONTEXT);
+		final AtomicInteger i = new AtomicInteger(0);
+		List.of(
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYLESS_SALT,
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYLESS_CONTEXT_SALT,
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYLESS_SALT_OTHERS,
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYLESS_CONTEXT_SALT_OTHERS,
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYED_SALT,
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYED_CONTEXT_SALT,
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYED_SALT_OTHERS,
+			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEYED_CONTEXT_SALT_OTHERS
+		).forEach(valueEncoder -> put(Integer.toString(i.incrementAndGet()), valueEncoder));
 	}};
+	private static final String valueEncodersDefault = valueEncodersMap.keySet().iterator().next();
 	private static final DelegatingPasswordEncoder valueEncoders = new DelegatingPasswordEncoder(
-		valueEncodersDefault,
+		valueEncodersMap.keySet().iterator().next(),
 		valueEncodersMap
 	);
 
@@ -90,13 +117,13 @@ public class Pbkdf2EncodersTest {
 	@Order(3)
 	@Test
 	void testEachIndividualKeyEncoder() {
-		keyEncodersMap.values().forEach(keyEncoder -> helper(keyEncoder, "n/a",  "Hello.World@example.com"));
+		keyEncodersMap.entrySet().forEach(entry -> helper(entry.getValue(), entry.getKey(),  "Hello.World@example.com"));
 	}
 
 	@Order(4)
 	@Test
 	void testEachIndividualValueEncoder() {
-		valueEncodersMap.values().forEach(valueEncoder -> helper(valueEncoder, "n/a", "P@ssw0rd"));
+		valueEncodersMap.entrySet().forEach(entry -> helper(entry.getValue(), entry.getKey(), "P@ssw0rd"));
 	}
 
 	private static void helper(final PasswordEncoder passwordEncoder, final String idForEncode, final String raw) {
