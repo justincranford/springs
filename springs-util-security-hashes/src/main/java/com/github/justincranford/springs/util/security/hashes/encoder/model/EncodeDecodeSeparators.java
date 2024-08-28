@@ -1,8 +1,10 @@
 package com.github.justincranford.springs.util.security.hashes.encoder.model;
 
+import jakarta.validation.constraints.NotEmpty;
+
 public interface EncodeDecodeSeparators {
-	public String encodeParameters();
-	public String decodeParameters();
-	public String encodeHash();
-	public String decodeHash();
+	@NotEmpty public String encodeParameters();
+	@NotEmpty public String decodeParameters();
+	@NotEmpty public String encodeHash();
+	@NotEmpty public String decodeHash();
 }
