@@ -175,20 +175,14 @@ public final class Pbkdf2EncoderV1 {
 		}
 	}
 
-    public static byte[] deriveSalt(final MacUtil.ALG mac, @NotNull final Pbkdf2ClearParameters clearParameters, @NotNull final Pbkdf2SecretParameters secretParameters) {
-    	if (secretParameters.key() != null) {
-        	final byte[] dataChunks = ArrayUtil.concat(
-    			secretParameters.rawInput().toString().getBytes(StandardCharsets.UTF_8),
-    			secretParameters.context().toString().getBytes(StandardCharsets.UTF_8),
-    			ByteUtil.byteArray(clearParameters.salt().length), // length, not the actual value, because this method derives the actual value
-    			clearParameters.context(),
-    			ByteUtil.byteArray(clearParameters.iterations()),
-    			ByteUtil.byteArray(clearParameters.dkLenBytes()),
-    			clearParameters.alg().getBytes(StandardCharsets.UTF_8)
-    		);
-    		return MacUtil.hmac(mac.alg(), secretParameters.key(), dataChunks);
-    	}
-    	final byte[] keyBytes = ArrayUtil.concat(
+    public static byte[] deriveSalt(@NotNull final MacUtil.ALG mac, @NotNull final Pbkdf2ClearParameters clearParameters, @NotNull final Pbkdf2SecretParameters secretParameters) {
+    	return (secretParameters.key() == null)
+			? deriveSaltWithConstructedHmacKey(mac, clearParameters, secretParameters)
+			: derivedSaltWithInputHmacKey(mac, clearParameters, secretParameters);
+	}
+
+	private static byte[] deriveSaltWithConstructedHmacKey(@NotNull final MacUtil.ALG mac, @NotNull final Pbkdf2ClearParameters clearParameters, @NotNull final Pbkdf2SecretParameters secretParameters) {
+		final byte[] keyBytes = ArrayUtil.concat(
 			secretParameters.rawInput().toString().getBytes(StandardCharsets.UTF_8),
 			secretParameters.context().toString().getBytes(StandardCharsets.UTF_8)
 		);
@@ -200,6 +194,19 @@ public final class Pbkdf2EncoderV1 {
 			clearParameters.alg().getBytes(StandardCharsets.UTF_8)
 		);
 		return MacUtil.hmac(mac.alg(), new SecretKeySpec(keyBytes, clearParameters.alg()), dataChunks);
+	}
+
+	private static byte[] derivedSaltWithInputHmacKey(@NotNull final MacUtil.ALG mac, @NotNull final Pbkdf2ClearParameters clearParameters, @NotNull final Pbkdf2SecretParameters secretParameters) {
+		final byte[] dataChunks = ArrayUtil.concat(
+			secretParameters.rawInput().toString().getBytes(StandardCharsets.UTF_8),
+			secretParameters.context().toString().getBytes(StandardCharsets.UTF_8),
+			ByteUtil.byteArray(clearParameters.salt().length), // length, not the actual value, because this method derives the actual value
+			clearParameters.context(),
+			ByteUtil.byteArray(clearParameters.iterations()),
+			ByteUtil.byteArray(clearParameters.dkLenBytes()),
+			clearParameters.alg().getBytes(StandardCharsets.UTF_8)
+		);
+		return MacUtil.hmac(mac.alg(), secretParameters.key(), dataChunks);
 	}
 
     public static String encodeClearParameters(@NotNull final Pbkdf2EncodeDecode encodeDecode, @NotNull final Pbkdf2ClearParameters defaults) {
