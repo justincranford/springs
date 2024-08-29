@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 
 public record Context(
-	@Null SecretKey key,
+	@Null SecretKey macKeyDeriveSalt,
 	@NotNull byte[] secret,
 	@NotNull byte[] clear
 ) {
