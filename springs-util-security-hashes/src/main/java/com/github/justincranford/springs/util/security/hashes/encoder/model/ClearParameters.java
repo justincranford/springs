@@ -6,7 +6,9 @@ import jakarta.validation.constraints.Null;
 public record ClearParameters(
 	@Null byte[] context,
 	@NotEmpty byte[] salt,
-	@Null ClearParametersOther other
+	@Null ClearParameters.Other other
 ) {
-	// do nothing
+	public interface Other {
+		// do nothing
+	}
 }

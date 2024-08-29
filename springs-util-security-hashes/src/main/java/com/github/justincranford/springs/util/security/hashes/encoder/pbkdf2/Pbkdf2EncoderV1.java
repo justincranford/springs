@@ -18,11 +18,8 @@ import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.basic.StringUtil;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.ClearParameters;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.ClearParametersAndClearHash;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.ClearParametersOther;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.Context;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.EncodeDecodeFlags;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashEncodeDecode;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashEncodeDecodeSeparators;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.IocEncoder;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.SecretParameters;
 import com.github.justincranford.springs.util.security.hashes.util.MacUtil;
@@ -36,7 +33,7 @@ import lombok.NoArgsConstructor;
 @SuppressWarnings({"nls"})
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class Pbkdf2EncoderV1 {
-	private static record Pbkdf2ClearParametersOther(@Min(C.MIN_ITER) int iter, @Min(C.MIN_DK_BYTES_LEN) int dkLenBytes, @NotEmpty String alg) implements ClearParametersOther { }
+	private static record Pbkdf2ClearParametersOther(@Min(C.MIN_ITER) int iter, @Min(C.MIN_DK_BYTES_LEN) int dkLenBytes, @NotEmpty String alg) implements ClearParameters.Other { }
 
 	public static final class RandomSalt extends IocEncoder {
 		public static final RandomSalt DEFAULT_SALT             = new RandomSalt(ED.RAND_SALT,         KC.NONE,    KC.PRF_ALG, KC.RAND_LEN_BYTES, KC.ITER, KC.DK_LEN);
@@ -289,29 +286,29 @@ public final class Pbkdf2EncoderV1 {
 	private static class ED {
 
 		// RandomSalt => EncoderDecoder + Separators + EncodeDecodeFlags
-		private static final HashEncodeDecode RAND_SALT           = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_SALT);
-		private static final HashEncodeDecode RAND_CTX_SALT       = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_CTX_SALT);
-		private static final HashEncodeDecode RAND_SALT_OTH       = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_SALT_OTH);
-		private static final HashEncodeDecode RAND_CTX_SALT_OTH   = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_CTX_SALT_OTH);
+		private static final HashEncodeDecode RAND_SALT           = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_SALT);
+		private static final HashEncodeDecode RAND_CTX_SALT       = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_CTX_SALT);
+		private static final HashEncodeDecode RAND_SALT_OTH       = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_SALT_OTH);
+		private static final HashEncodeDecode RAND_CTX_SALT_OTH   = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_CTX_SALT_OTH);
 
 		// DerivedSalt => EncoderDecoder + Separators + EncodeDecodeFlags
-		private static final HashEncodeDecode DER_NONE            = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_NONE);
-		private static final HashEncodeDecode DER_CTX             = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_CTX);
-		private static final HashEncodeDecode DER_SALT            = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_SALT);
-		private static final HashEncodeDecode DER_OTH             = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_OTH);
-		private static final HashEncodeDecode DER_CTX_SALT        = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_CTX_SALT);
-		private static final HashEncodeDecode DER_CTX_OTH         = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_CTX_OTH);
-		private static final HashEncodeDecode DER_SALT_OTH        = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_SALT_OTH);
-		private static final HashEncodeDecode DER_CTX_SALT_OTH    = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_CTX_SALT_OTH);
+		private static final HashEncodeDecode DER_NONE            = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_NONE);
+		private static final HashEncodeDecode DER_CTX             = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_CTX);
+		private static final HashEncodeDecode DER_SALT            = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_SALT);
+		private static final HashEncodeDecode DER_OTH             = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_OTH);
+		private static final HashEncodeDecode DER_CTX_SALT        = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_CTX_SALT);
+		private static final HashEncodeDecode DER_CTX_OTH         = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_CTX_OTH);
+		private static final HashEncodeDecode DER_SALT_OTH        = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_SALT_OTH);
+		private static final HashEncodeDecode DER_CTX_SALT_OTH    = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_CTX_SALT_OTH);
 
 		// ConstantSalt => EncoderDecoder + Separators + EncodeDecodeFlags
-		private static final HashEncodeDecode CONST_NONE          = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_NONE);
-		private static final HashEncodeDecode CONST_CTX           = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_CTX);
-		private static final HashEncodeDecode CONST_SALT          = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_SALT);
-		private static final HashEncodeDecode CONST_OTH           = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_OTH);
-		private static final HashEncodeDecode CONST_CTX_SALT      = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_CTX_SALT);
-		private static final HashEncodeDecode CONST_CTX_OTH       = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_CTX_OTH);
-		private static final HashEncodeDecode CONST_SALT_OTH      = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_SALT_OTH);
-		private static final HashEncodeDecode CONST_CTX_SALT_OTH  = new HashEncodeDecode(Base64Util.STD, HashEncodeDecodeSeparators.CB, EncodeDecodeFlags.FL_CTX_SALT_OTH);
+		private static final HashEncodeDecode CONST_NONE          = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_NONE);
+		private static final HashEncodeDecode CONST_CTX           = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_CTX);
+		private static final HashEncodeDecode CONST_SALT          = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_SALT);
+		private static final HashEncodeDecode CONST_OTH           = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_OTH);
+		private static final HashEncodeDecode CONST_CTX_SALT      = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_CTX_SALT);
+		private static final HashEncodeDecode CONST_CTX_OTH       = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_CTX_OTH);
+		private static final HashEncodeDecode CONST_SALT_OTH      = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_SALT_OTH);
+		private static final HashEncodeDecode CONST_CTX_SALT_OTH  = new HashEncodeDecode(Base64Util.STD, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_CTX_SALT_OTH);
 	}
 }
