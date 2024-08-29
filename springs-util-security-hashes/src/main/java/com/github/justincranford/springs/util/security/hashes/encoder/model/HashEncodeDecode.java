@@ -4,9 +4,10 @@ import com.github.justincranford.springs.util.basic.Base64Util;
 
 import jakarta.validation.constraints.NotNull;
 
-public record EncoderDecoderAndSeparators(
+public record HashEncodeDecode(
 	@NotNull Base64Util.EncoderDecoder encoderDecoder,
-	@NotNull EncodeDecodeSeparators separators
+	@NotNull HashEncodeDecodeSeparators separators,
+	@NotNull EncodeDecodeFlags flags
 ) {
 	// do nothing
 }
