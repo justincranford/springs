@@ -26,17 +26,25 @@ public record HashEncodeDecode(
 	}
 
 	public record Flags(
-		boolean context,
 		boolean salt,
-		boolean other
+		boolean parameters
 	) {
-		public static final Flags FL_NONE         = new Flags(false, false,  false);
-		public static final Flags FL_CTX          = new Flags(true,  false,  false);
-		public static final Flags FL_SALT         = new Flags(false, true,   false);
-		public static final Flags FL_OTH          = new Flags(false, false,  true);
-		public static final Flags FL_CTX_SALT     = new Flags(true,  true,   false);
-		public static final Flags FL_CTX_OTH      = new Flags(true,  false,  true);
-		public static final Flags FL_SALT_OTH     = new Flags(false, true,   true);
-		public static final Flags FL_CTX_SALT_OTH = new Flags(true,  true,   true);
+		public static final Flags FL_NONE     = new Flags(false,  false);
+		public static final Flags FL_SALT     = new Flags(true,   false);
+		public static final Flags FL_OTH      = new Flags(false,  true);
+		public static final Flags FL_SALT_OTH = new Flags(true,   true);
 	}
+
+	public static final HashEncodeDecode STD_CB_NONE          = new HashEncodeDecode(Base64Util.STD,  HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_NONE);
+	public static final HashEncodeDecode STD_CB_SALT          = new HashEncodeDecode(Base64Util.STD,  HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_SALT);
+	public static final HashEncodeDecode STD_CB_OTH           = new HashEncodeDecode(Base64Util.STD,  HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_OTH);
+	public static final HashEncodeDecode STD_CB_SALT_OTH      = new HashEncodeDecode(Base64Util.STD,  HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_SALT_OTH);
+	public static final HashEncodeDecode URL_CB_NONE          = new HashEncodeDecode(Base64Util.URL,  HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_NONE);
+	public static final HashEncodeDecode URL_CB_SALT          = new HashEncodeDecode(Base64Util.URL,  HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_SALT);
+	public static final HashEncodeDecode URL_CB_OTH           = new HashEncodeDecode(Base64Util.URL,  HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_OTH);
+	public static final HashEncodeDecode URL_CB_SALT_OTH      = new HashEncodeDecode(Base64Util.URL,  HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_SALT_OTH);
+	public static final HashEncodeDecode MIME_CB_NONE         = new HashEncodeDecode(Base64Util.MIME, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_NONE);
+	public static final HashEncodeDecode MIME_CB_SALT         = new HashEncodeDecode(Base64Util.MIME, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_SALT);
+	public static final HashEncodeDecode MIME_CB_OTH          = new HashEncodeDecode(Base64Util.MIME, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_OTH);
+	public static final HashEncodeDecode MIME_CB_SALT_OTH     = new HashEncodeDecode(Base64Util.MIME, HashEncodeDecode.Separators.CB, HashEncodeDecode.Flags.FL_SALT_OTH);
 }

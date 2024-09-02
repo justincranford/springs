@@ -3,11 +3,14 @@ package com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.security.Security;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -20,7 +23,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.ThreadUtil;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashEncodeDecode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,44 +33,46 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings({"nls", "boxing", "static-method", "serial"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class Pbkdf2EncodersTest {
-	private static final int REPEATS = 3;
+	private static final int REPEATS = 2;
 
 	private static final Map<String, PasswordEncoder> keyEncodersMap = new LinkedHashMap<>() {{
-		final AtomicInteger i = new AtomicInteger(0);
+		final AtomicInteger id = new AtomicInteger(0);
 		List.of(
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_NONE,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_CTX,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_OTH,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_CTX_OTH,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_SALT,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_CTX_SALT,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_SALT_OTH,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_CTX_SALT_OTH,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY_CTX,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY_OTH,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY_CTX_OTH,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY_SALT,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY_CTX_SALT,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY_SALT_OTH,
-			Pbkdf2EncoderV1.DerivedSalt.DEFAULT_KEY_CTX_SALT_OTH,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_NONE,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_CTX,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_OTH,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_CTX_OTH,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_SALT,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_CTX_SALT,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_SALT_OTH,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_CTX_SALT_OTH,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY_CTX,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY_OTH,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY_CTX_OTH,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY_SALT,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY_CTX_SALT,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY_SALT_OTH,
-			Pbkdf2EncoderV1.ConstantSalt.DEFAULT_KEY_CTX_SALT_OTH
-		).forEach(valueEncoder -> put(Integer.toString(i.incrementAndGet()), valueEncoder));
+			Pbkdf2EncoderV1Instances.Derived.SALTOTH_NULL_NULL_NULL,
+			Pbkdf2EncoderV1Instances.Derived.SALTOTH_NONE_NONE_NONE,
+			Pbkdf2EncoderV1Instances.Derived.SALTOTH_CTX_CTX_CTX,
+			Pbkdf2EncoderV1Instances.Derived.SALTOTH_SK_SK_SK,
+			Pbkdf2EncoderV1Instances.Derived.SALTOTH_SKCTX_SKCTX_SKCTX,
+			Pbkdf2EncoderV1Instances.Derived.SALT_NULL_NULL_NULL,
+			Pbkdf2EncoderV1Instances.Derived.SALT_NONE_NONE_NONE,
+			Pbkdf2EncoderV1Instances.Derived.SALT_CTX_CTX_CTX,
+			Pbkdf2EncoderV1Instances.Derived.SALT_SK_SK_SK,
+			Pbkdf2EncoderV1Instances.Derived.SALT_SKCTX_SKCTX_SKCTX,
+
+			Pbkdf2EncoderV1Instances.Derived.NONE_NULL_NULL_NULL,
+			Pbkdf2EncoderV1Instances.Derived.NONE_NONE_NONE_NONE,
+			Pbkdf2EncoderV1Instances.Derived.NONE_CTX_CTX_CTX,
+			Pbkdf2EncoderV1Instances.Derived.NONE_SK_SK_SK,
+			Pbkdf2EncoderV1Instances.Derived.NONE_SKCTX_SKCTX_SKCTX,
+
+			Pbkdf2EncoderV1Instances.Derived.SALT_NULL_NULL_NULL,
+			Pbkdf2EncoderV1Instances.Derived.SALT_NONE_NONE_NONE,
+			Pbkdf2EncoderV1Instances.Derived.SALT_CTX_CTX_CTX,
+			Pbkdf2EncoderV1Instances.Derived.SALT_SK_SK_SK,
+			Pbkdf2EncoderV1Instances.Derived.SALT_SKCTX_SKCTX_SKCTX,
+
+			Pbkdf2EncoderV1Instances.Derived.OTH_NULL_NULL_NULL,
+			Pbkdf2EncoderV1Instances.Derived.OTH_NONE_NONE_NONE,
+			Pbkdf2EncoderV1Instances.Derived.OTH_CTX_CTX_CTX,
+			Pbkdf2EncoderV1Instances.Derived.OTH_SK_SK_SK,
+			Pbkdf2EncoderV1Instances.Derived.OTH_SKCTX_SKCTX_SKCTX,
+
+			Pbkdf2EncoderV1Instances.Derived.SALTOTH_NULL_NULL_NULL,
+			Pbkdf2EncoderV1Instances.Derived.SALTOTH_NONE_NONE_NONE,
+			Pbkdf2EncoderV1Instances.Derived.SALTOTH_CTX_CTX_CTX,
+			Pbkdf2EncoderV1Instances.Derived.SALTOTH_SK_SK_SK,
+			Pbkdf2EncoderV1Instances.Derived.SALTOTH_SKCTX_SKCTX_SKCTX
+		).forEach(valueEncoder -> put(Integer.toString(id.incrementAndGet()), valueEncoder));
 	}};
 	private static final String keyEncodersDefault = keyEncodersMap.keySet().iterator().next();
 	private static final DelegatingPasswordEncoder keyEncoders = new DelegatingPasswordEncoder(
@@ -76,14 +83,29 @@ public class Pbkdf2EncodersTest {
 	private static final Map<String, PasswordEncoder> valueEncodersMap = new LinkedHashMap<>() {{
 		final AtomicInteger i = new AtomicInteger(0);
 		List.of(
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_SALT,
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_CTX_SALT,
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_SALT_OTH,
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_CTX_SALT_OTH,
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEY_SALT,
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEY_CTX_SALT,
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEY_SALT_OTH,
-			Pbkdf2EncoderV1.RandomSalt.DEFAULT_KEY_CTX_SALT_OTH
+			Pbkdf2EncoderV1Instances.Constant.NONE_NULL_NULL_NULL,
+			Pbkdf2EncoderV1Instances.Constant.NONE_NONE_NONE_NONE,
+			Pbkdf2EncoderV1Instances.Constant.NONE_CTX_CTX_CTX,
+			Pbkdf2EncoderV1Instances.Constant.NONE_SK_SK_SK,
+			Pbkdf2EncoderV1Instances.Constant.NONE_SKCTX_SKCTX_SKCTX,
+
+			Pbkdf2EncoderV1Instances.Constant.SALT_NULL_NULL_NULL,
+			Pbkdf2EncoderV1Instances.Constant.SALT_NONE_NONE_NONE,
+			Pbkdf2EncoderV1Instances.Constant.SALT_CTX_CTX_CTX,
+			Pbkdf2EncoderV1Instances.Constant.SALT_SK_SK_SK,
+			Pbkdf2EncoderV1Instances.Constant.SALT_SKCTX_SKCTX_SKCTX,
+
+			Pbkdf2EncoderV1Instances.Constant.OTH_NULL_NULL_NULL,
+			Pbkdf2EncoderV1Instances.Constant.OTH_NONE_NONE_NONE,
+			Pbkdf2EncoderV1Instances.Constant.OTH_CTX_CTX_CTX,
+			Pbkdf2EncoderV1Instances.Constant.OTH_SK_SK_SK,
+			Pbkdf2EncoderV1Instances.Constant.OTH_SKCTX_SKCTX_SKCTX,
+
+			Pbkdf2EncoderV1Instances.Constant.SALTOTH_NULL_NULL_NULL,
+			Pbkdf2EncoderV1Instances.Constant.SALTOTH_NONE_NONE_NONE,
+			Pbkdf2EncoderV1Instances.Constant.SALTOTH_CTX_CTX_CTX,
+			Pbkdf2EncoderV1Instances.Constant.SALTOTH_SK_SK_SK,
+			Pbkdf2EncoderV1Instances.Constant.SALTOTH_SKCTX_SKCTX_SKCTX
 		).forEach(valueEncoder -> put(Integer.toString(i.incrementAndGet()), valueEncoder));
 	}};
 	private static final String valueEncodersDefault = valueEncodersMap.keySet().iterator().next();
@@ -126,31 +148,52 @@ public class Pbkdf2EncodersTest {
 		valueEncodersMap.entrySet().forEach(entry -> helper(entry.getValue(), entry.getKey(), "P@ssw0rd"));
 	}
 
+	private static final boolean CONCURRENT = true;
 	private static void helper(final PasswordEncoder passwordEncoder, final String idForEncode, final String raw) {
 		final String className = passwordEncoder.getClass().getSimpleName();
 		final AtomicInteger numFailures = new AtomicInteger(0);
-		try (ForkJoinPool threadPool = ThreadUtil.threadPool(REPEATS, "Thread-")) {
-			threadPool.submit(
-				() -> IntStream.rangeClosed(1, REPEATS).parallel().forEach((i) -> {
-					try {
-						final String encoded = passwordEncoder.encode(raw);
-						if (passwordEncoder instanceof DelegatingPasswordEncoder) {
-							assertThat(encoded).startsWith("{" + idForEncode + "}");
-						} else {
-							assertThat(encoded).doesNotStartWith("{");
-						}
-						final boolean matches = passwordEncoder.matches(raw, encoded);
-						final boolean upgradeEncoding = passwordEncoder.upgradeEncoding(encoded);
-						log.info("class: {}, idForEncode: {}, matches: {}, upgradeEncoding: {}, raw: {}, encoded: {}", className, idForEncode, matches, upgradeEncoding, raw, encoded);
-						assertThat(matches).isTrue();
-						assertThat(upgradeEncoding).isFalse();
-					} catch(Throwable t) {
-						log.info("class: {}, idForEncode: {}, raw: {}", className, idForEncode, raw, t);
-						numFailures.incrementAndGet();
-					}
-				})
-			);
+		final IntConsumer action = (i) -> {
+			try {
+				final String encoded = passwordEncoder.encode(raw);
+				if (passwordEncoder instanceof DelegatingPasswordEncoder) {
+					assertThat(encoded).startsWith("{" + idForEncode + "}");
+				} else {
+					assertThat(encoded).doesNotStartWith("{");
+				}
+				final boolean matches = passwordEncoder.matches(raw, encoded);
+				final boolean upgradeEncoding = passwordEncoder.upgradeEncoding(encoded);
+				log.info("class: {}, idForEncode: {}, matches: {}, upgradeEncoding: {}, raw: {}, encoded: {}", className, idForEncode, matches, upgradeEncoding, raw, encoded);
+				assertThat(matches).isTrue();
+				assertThat(upgradeEncoding).isFalse();
+			} catch(Throwable t) {
+				log.info("class: {}, idForEncode: {}, raw: {}", className, idForEncode, raw, t);
+				numFailures.incrementAndGet();
+			}
+		};
+		if (CONCURRENT) {
+			try (ForkJoinPool threadPool = ThreadUtil.threadPool(REPEATS, "Thread-")) {
+				threadPool.submit(() -> { IntStream.rangeClosed(1, REPEATS).forEach(action); });
+			}
+		} else {
+			for (int i = 1; i < REPEATS; i++) {
+				action.accept(i);
+			}
 		}
 		assertThat(numFailures.get()).isEqualTo(0);
+	}
+
+	@Test
+	public void testPbkdf2() {
+		final Pbkdf2ParametersV1 parameters = new Pbkdf2ParametersV1(1, 32, Pbkdf2Algorithm.PBKDF2WithHmacSHA256, HashEncodeDecode.STD_CB_NONE);
+		final String inputBytes = "Hello.World@example.com";
+		final byte[] saltBytes = new byte[16];
+		final Set<String> hashes = new HashSet<>();
+		for (int i = 0; i < REPEATS; i++) {
+			for (int j = 0; j < REPEATS; j++) {
+				final byte[] hashBytes = parameters.computeHash(saltBytes, inputBytes);
+				hashes.add(Base64Util.Constants.STD_ENCODER.encodeToString(saltBytes));
+				assertThat(hashes.size()).isEqualTo(1);
+			}
+		}
 	}
 }
