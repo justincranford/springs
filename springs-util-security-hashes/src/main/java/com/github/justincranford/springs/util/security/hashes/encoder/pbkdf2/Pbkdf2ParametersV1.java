@@ -10,7 +10,7 @@ import javax.crypto.spec.PBEKeySpec;
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.basic.ByteUtil;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashEncodeDecode;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.Parameters;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashParameters;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -24,7 +24,7 @@ public record Pbkdf2ParametersV1 (
 	@Min(Constraints.MIN_HASH_BYTES_LEN) int hashBytesLen,
 	@NotNull Pbkdf2Algorithm algorithm,
 	@NotNull HashEncodeDecode hashEncodeDecode
-) implements Parameters {
+) implements HashParameters {
 	@Override
 	public byte[] canonicalEncodedBytes() {
 		return ArrayUtil.concat(
@@ -56,7 +56,7 @@ public record Pbkdf2ParametersV1 (
 	public Boolean upgradeEncoding(
 		@Min(Constraints.MIN_SALT_BYTES_LEN)  final int defaultSaltBytesLen,
 		@Min(Constraints.MIN_SALT_BYTES_LEN)  final int decodedSaltBytesLen,
-		@NotNull final Parameters decodedParameters,
+		@NotNull final HashParameters decodedParameters,
 		@Min(Constraints.MIN_HASH_BYTES_LEN)  final int decodedHashLength
 	) {
 		final Pbkdf2ParametersV1 decodedParametersPbkdf2 = (Pbkdf2ParametersV1) decodedParameters;
@@ -79,11 +79,11 @@ public record Pbkdf2ParametersV1 (
 	}
 
 	@Override
-	@NotEmpty public Parameters decode(@NotNull final String[] parts, @Min(0) int partIndex, @NotNull final HashEncodeDecode hashEncodeDecode0) {
+	@NotEmpty public HashParameters decode(@NotNull final String[] parts, @Min(0) int partIndex, @NotNull final HashEncodeDecode hashEncodeDecode0) {
         int part = partIndex;
-		final int                iterDecoded         = (hashEncodeDecode0.flags().parameters()) ? Integer.parseInt(parts[part++])        : this.iter();
-		final int                hashBytesLenDecoded = (hashEncodeDecode0.flags().parameters()) ? Integer.parseInt(parts[part++])        : this.hashBytesLen();
-		final Pbkdf2Algorithm    algorithmDecoded    = (hashEncodeDecode0.flags().parameters()) ? Pbkdf2Algorithm.valueOf(parts[part++]) : this.algorithm();
+		final int                iterDecoded         = (hashEncodeDecode0.flags().hashParameters()) ? Integer.parseInt(parts[part++])        : this.iter();
+		final int                hashBytesLenDecoded = (hashEncodeDecode0.flags().hashParameters()) ? Integer.parseInt(parts[part++])        : this.hashBytesLen();
+		final Pbkdf2Algorithm    algorithmDecoded    = (hashEncodeDecode0.flags().hashParameters()) ? Pbkdf2Algorithm.valueOf(parts[part++]) : this.algorithm();
 		final Pbkdf2ParametersV1 parametersDecoded   = new Pbkdf2ParametersV1(iterDecoded, hashBytesLenDecoded, algorithmDecoded, hashEncodeDecode0);
 		return parametersDecoded;
 	}

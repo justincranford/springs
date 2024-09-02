@@ -7,12 +7,15 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashEncodeDecode;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.Mac;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.Macs;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.ParametersAndMacs;
-import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.Pbkdf2EncoderV1.ConstantSalt;
-import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.Pbkdf2EncoderV1.DerivedSalt;
-import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.Pbkdf2EncoderV1.RandomSalt;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.PepperMac;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPeppers;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPostHashPepper;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPreHashPepper;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashSaltPepper;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashParametersAndHashPeppers;
+import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.ConstantSalt;
+import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.DerivedSalt;
+import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.RandomSalt;
 import com.github.justincranford.springs.util.security.hashes.util.MacAlgorithm;
 
 import lombok.AccessLevel;
@@ -20,7 +23,7 @@ import lombok.NoArgsConstructor;
 
 @SuppressWarnings({"nls"})
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
-public final class Pbkdf2EncoderV1Instances {
+public final class PepperedPbkdf2EncoderV1Instances {
 	public static final class Random {
 		public static final RandomSalt SALTOTH_NULL_NULL_NULL    = new RandomSalt(ParametersAndPeppers.SALTOTH_NULL_NULL_NULL,       Defaults.RAND_LEN_BYTES);
 		public static final RandomSalt SALTOTH_NONE_NONE_NONE    = new RandomSalt(ParametersAndPeppers.SALTOTH_NONE_NONE_NONE,       Defaults.RAND_LEN_BYTES);
@@ -111,63 +114,63 @@ public final class Pbkdf2EncoderV1Instances {
 	public static class PreSalt {
 		public static final SecretKey KEY = new SecretKeySpec("pre-salt-key".getBytes(StandardCharsets.UTF_8), PepperOptions.MAC_ALG.alg());
 
-		public static final Mac NONE  = new Mac(null, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final Mac CTX   = new Mac(null, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final Mac SK    = new Mac(KEY,  new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final Mac SKCTX = new Mac(KEY,  new byte[3], new byte[2], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac NONE  = new PepperMac(null, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac CTX   = new PepperMac(null, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac SK    = new PepperMac(KEY,  new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac SKCTX = new PepperMac(KEY,  new byte[3], new byte[2], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
 	}
 
 	public static class PreHash {
 		public static final SecretKey KEY = new SecretKeySpec("pre-hash-key".getBytes(StandardCharsets.UTF_8), PepperOptions.MAC_ALG.alg());
 
-		public static final Mac NONE  = new Mac(null, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final Mac CTX   = new Mac(null, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final Mac SK    = new Mac(KEY,  new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final Mac SKCTX = new Mac(KEY,  new byte[3], new byte[2], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac NONE  = new PepperMac(null, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac CTX   = new PepperMac(null, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac SK    = new PepperMac(KEY,  new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac SKCTX = new PepperMac(KEY,  new byte[3], new byte[2], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
 	}
 
 	public static class PostHash {
 		public static final SecretKey KEY = new SecretKeySpec("post-hash-key".getBytes(StandardCharsets.UTF_8), PepperOptions.MAC_ALG.alg());
 
-		public static final Mac NONE  = new Mac(null, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final Mac CTX   = new Mac(null, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final Mac SK    = new Mac(KEY,  new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final Mac SKCTX = new Mac(KEY,  new byte[3], new byte[2], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac NONE  = new PepperMac(null, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac CTX   = new PepperMac(null, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac SK    = new PepperMac(KEY,  new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac SKCTX = new PepperMac(KEY,  new byte[3], new byte[2], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
 	}
 
 	// 125 Tuples of Peppers => PeppperPreSalt{NULL,NONE,CTX,SK,SKCTX} x PeppperPreHash{NULL,NONE,CTX,SK,SKCTX} x PeppperPostHash{NULL,NONE,CTX,SK,SKCTX})
 	public static class Peppers {
-		public static final Macs NULL_NULL_NULL    = new Macs(new Mac.PepperPreSalt(null),          new Mac.PepperPreHash(null),          new Mac.PepperPostHash(null));
-		public static final Macs NONE_NONE_NONE    = new Macs(new Mac.PepperPreSalt(PreSalt.NONE),  new Mac.PepperPreHash(PreHash.NONE),  new Mac.PepperPostHash(PostHash.NONE));
-		public static final Macs CTX_CTX_CTX       = new Macs(new Mac.PepperPreSalt(PreSalt.CTX),   new Mac.PepperPreHash(PreHash.CTX),   new Mac.PepperPostHash(PostHash.CTX));
-		public static final Macs SK_SK_SK          = new Macs(new Mac.PepperPreSalt(PreSalt.SK),    new Mac.PepperPreHash(PreHash.SK),    new Mac.PepperPostHash(PostHash.SK));
-		public static final Macs SKCTX_SKCTX_SKCTX = new Macs(new Mac.PepperPreSalt(PreSalt.SKCTX), new Mac.PepperPreHash(PreHash.SKCTX), new Mac.PepperPostHash(PostHash.SKCTX));
+		public static final HashPeppers NULL_NULL_NULL    = new HashPeppers(new HashSaltPepper(null),          new HashPreHashPepper(null),          new HashPostHashPepper(null));
+		public static final HashPeppers NONE_NONE_NONE    = new HashPeppers(new HashSaltPepper(PreSalt.NONE),  new HashPreHashPepper(PreHash.NONE),  new HashPostHashPepper(PostHash.NONE));
+		public static final HashPeppers CTX_CTX_CTX       = new HashPeppers(new HashSaltPepper(PreSalt.CTX),   new HashPreHashPepper(PreHash.CTX),   new HashPostHashPepper(PostHash.CTX));
+		public static final HashPeppers SK_SK_SK          = new HashPeppers(new HashSaltPepper(PreSalt.SK),    new HashPreHashPepper(PreHash.SK),    new HashPostHashPepper(PostHash.SK));
+		public static final HashPeppers SKCTX_SKCTX_SKCTX = new HashPeppers(new HashSaltPepper(PreSalt.SKCTX), new HashPreHashPepper(PreHash.SKCTX), new HashPostHashPepper(PostHash.SKCTX));
 	}
 
 	// Key+Context pairs for Macs
 	public static class ParametersAndPeppers {
-		public static final ParametersAndMacs NONE_NULL_NULL_NULL    = new ParametersAndMacs(Parameters.STD_CB_NONE, Peppers.NULL_NULL_NULL);
-		public static final ParametersAndMacs NONE_NONE_NONE_NONE    = new ParametersAndMacs(Parameters.STD_CB_NONE, Peppers.NONE_NONE_NONE);
-		public static final ParametersAndMacs NONE_CTX_CTX_CTX       = new ParametersAndMacs(Parameters.STD_CB_NONE, Peppers.CTX_CTX_CTX);
-		public static final ParametersAndMacs NONE_SK_SK_SK          = new ParametersAndMacs(Parameters.STD_CB_NONE, Peppers.SK_SK_SK);
-		public static final ParametersAndMacs NONE_SKCTX_SKCTX_SKCTX = new ParametersAndMacs(Parameters.STD_CB_NONE, Peppers.SKCTX_SKCTX_SKCTX);
+		public static final HashParametersAndHashPeppers NONE_NULL_NULL_NULL    = new HashParametersAndHashPeppers(Parameters.STD_CB_NONE, Peppers.NULL_NULL_NULL);
+		public static final HashParametersAndHashPeppers NONE_NONE_NONE_NONE    = new HashParametersAndHashPeppers(Parameters.STD_CB_NONE, Peppers.NONE_NONE_NONE);
+		public static final HashParametersAndHashPeppers NONE_CTX_CTX_CTX       = new HashParametersAndHashPeppers(Parameters.STD_CB_NONE, Peppers.CTX_CTX_CTX);
+		public static final HashParametersAndHashPeppers NONE_SK_SK_SK          = new HashParametersAndHashPeppers(Parameters.STD_CB_NONE, Peppers.SK_SK_SK);
+		public static final HashParametersAndHashPeppers NONE_SKCTX_SKCTX_SKCTX = new HashParametersAndHashPeppers(Parameters.STD_CB_NONE, Peppers.SKCTX_SKCTX_SKCTX);
 
-		public static final ParametersAndMacs SALT_NULL_NULL_NULL    = new ParametersAndMacs(Parameters.STD_CB_SALT, Peppers.NULL_NULL_NULL);
-		public static final ParametersAndMacs SALT_NONE_NONE_NONE    = new ParametersAndMacs(Parameters.STD_CB_SALT, Peppers.NONE_NONE_NONE);
-		public static final ParametersAndMacs SALT_CTX_CTX_CTX       = new ParametersAndMacs(Parameters.STD_CB_SALT, Peppers.CTX_CTX_CTX);
-		public static final ParametersAndMacs SALT_SK_SK_SK          = new ParametersAndMacs(Parameters.STD_CB_SALT, Peppers.SK_SK_SK);
-		public static final ParametersAndMacs SALT_SKCTX_SKCTX_SKCTX = new ParametersAndMacs(Parameters.STD_CB_SALT, Peppers.SKCTX_SKCTX_SKCTX);
+		public static final HashParametersAndHashPeppers SALT_NULL_NULL_NULL    = new HashParametersAndHashPeppers(Parameters.STD_CB_SALT, Peppers.NULL_NULL_NULL);
+		public static final HashParametersAndHashPeppers SALT_NONE_NONE_NONE    = new HashParametersAndHashPeppers(Parameters.STD_CB_SALT, Peppers.NONE_NONE_NONE);
+		public static final HashParametersAndHashPeppers SALT_CTX_CTX_CTX       = new HashParametersAndHashPeppers(Parameters.STD_CB_SALT, Peppers.CTX_CTX_CTX);
+		public static final HashParametersAndHashPeppers SALT_SK_SK_SK          = new HashParametersAndHashPeppers(Parameters.STD_CB_SALT, Peppers.SK_SK_SK);
+		public static final HashParametersAndHashPeppers SALT_SKCTX_SKCTX_SKCTX = new HashParametersAndHashPeppers(Parameters.STD_CB_SALT, Peppers.SKCTX_SKCTX_SKCTX);
 
-		public static final ParametersAndMacs OTH_NULL_NULL_NULL    = new ParametersAndMacs(Parameters.STD_CB_OTH, Peppers.NULL_NULL_NULL);
-		public static final ParametersAndMacs OTH_NONE_NONE_NONE    = new ParametersAndMacs(Parameters.STD_CB_OTH, Peppers.NONE_NONE_NONE);
-		public static final ParametersAndMacs OTH_CTX_CTX_CTX       = new ParametersAndMacs(Parameters.STD_CB_OTH, Peppers.CTX_CTX_CTX);
-		public static final ParametersAndMacs OTH_SK_SK_SK          = new ParametersAndMacs(Parameters.STD_CB_OTH, Peppers.SK_SK_SK);
-		public static final ParametersAndMacs OTH_SKCTX_SKCTX_SKCTX = new ParametersAndMacs(Parameters.STD_CB_OTH, Peppers.SKCTX_SKCTX_SKCTX);
+		public static final HashParametersAndHashPeppers OTH_NULL_NULL_NULL    = new HashParametersAndHashPeppers(Parameters.STD_CB_OTH, Peppers.NULL_NULL_NULL);
+		public static final HashParametersAndHashPeppers OTH_NONE_NONE_NONE    = new HashParametersAndHashPeppers(Parameters.STD_CB_OTH, Peppers.NONE_NONE_NONE);
+		public static final HashParametersAndHashPeppers OTH_CTX_CTX_CTX       = new HashParametersAndHashPeppers(Parameters.STD_CB_OTH, Peppers.CTX_CTX_CTX);
+		public static final HashParametersAndHashPeppers OTH_SK_SK_SK          = new HashParametersAndHashPeppers(Parameters.STD_CB_OTH, Peppers.SK_SK_SK);
+		public static final HashParametersAndHashPeppers OTH_SKCTX_SKCTX_SKCTX = new HashParametersAndHashPeppers(Parameters.STD_CB_OTH, Peppers.SKCTX_SKCTX_SKCTX);
 
-		public static final ParametersAndMacs SALTOTH_NULL_NULL_NULL    = new ParametersAndMacs(Parameters.STD_CB_SALT_OTH, Peppers.NULL_NULL_NULL);
-		public static final ParametersAndMacs SALTOTH_NONE_NONE_NONE    = new ParametersAndMacs(Parameters.STD_CB_SALT_OTH, Peppers.NONE_NONE_NONE);
-		public static final ParametersAndMacs SALTOTH_CTX_CTX_CTX       = new ParametersAndMacs(Parameters.STD_CB_SALT_OTH, Peppers.CTX_CTX_CTX);
-		public static final ParametersAndMacs SALTOTH_SK_SK_SK          = new ParametersAndMacs(Parameters.STD_CB_SALT_OTH, Peppers.SK_SK_SK);
-		public static final ParametersAndMacs SALTOTH_SKCTX_SKCTX_SKCTX = new ParametersAndMacs(Parameters.STD_CB_SALT_OTH, Peppers.SKCTX_SKCTX_SKCTX);
+		public static final HashParametersAndHashPeppers SALTOTH_NULL_NULL_NULL    = new HashParametersAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.NULL_NULL_NULL);
+		public static final HashParametersAndHashPeppers SALTOTH_NONE_NONE_NONE    = new HashParametersAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.NONE_NONE_NONE);
+		public static final HashParametersAndHashPeppers SALTOTH_CTX_CTX_CTX       = new HashParametersAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.CTX_CTX_CTX);
+		public static final HashParametersAndHashPeppers SALTOTH_SK_SK_SK          = new HashParametersAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.SK_SK_SK);
+		public static final HashParametersAndHashPeppers SALTOTH_SKCTX_SKCTX_SKCTX = new HashParametersAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.SKCTX_SKCTX_SKCTX);
 	}
 }

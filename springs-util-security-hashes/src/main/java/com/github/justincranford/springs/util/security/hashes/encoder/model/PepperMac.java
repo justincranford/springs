@@ -12,17 +12,15 @@ import com.github.justincranford.springs.util.security.hashes.util.MacAlgorithm;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 
-public record Mac(
+public record PepperMac(
 	@Null SecretKey secretKey, // may be null (e.g. high-entropy 256-bit random key)
 	@NotNull byte[] secretContext, // may be empty (e.g. any-entropy N-byte value)
 	@NotNull byte[] clearContext, // may be empty (e.g. "application1".getBytes(), "feature1".getBytes(), any-entropy N-byte value)
 	@NotNull  MacAlgorithm algorithm, // required (e.g. HmacSHA256, CMAC256); used as Mac digest, as well as for deriving low-entropy hmacKey if secretKey=null
 	@NotNull  Base64Util.EncoderDecoder encoderDecoder // required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
-) {
+) implements Pepper {
+	@Override
 	public byte[] compute(@NotEmpty final byte[] rawInput, @NotNull final byte[] additionalData) {
 		// Assumption: Mac algorithm will Mac chain all of the inputs
 		final byte[][] dataChunks = List.of(
@@ -37,42 +35,7 @@ public record Mac(
 		// Use high-entropy secretKey (i.e. optimal), or low-entropy concatData-derived secretKey (i.e. fallback)
 		final SecretKey hmacKey = (this.secretKey != null) ? this.secretKey : new SecretKeySpec(ArrayUtil.concat(dataChunks), this.algorithm.alg());
 
-		final byte[] mac = this.algorithm.compute(hmacKey, dataChunks);
-		return this.encoderDecoder.encodeToBytes(mac);
+		final byte[] pepperMac = this.algorithm.compute(hmacKey, dataChunks);
+		return this.encoderDecoder.encodeToBytes(pepperMac);	// required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
 	}
-
-	@RequiredArgsConstructor
-	@Getter
-	@Accessors(fluent=true)
-	public static class PepperPreSalt {
-		private final Mac mac;
-	}
-
-	@RequiredArgsConstructor
-	@Getter
-	@Accessors(fluent=true)
-	public static class PepperPreHash {
-		private final Mac mac;
-	}
-
-	@RequiredArgsConstructor
-	@Getter
-	@Accessors(fluent=true)
-	public static class PepperPostHash {
-		private final Mac mac;
-	}
-
-	@RequiredArgsConstructor
-	@Getter
-	@Accessors(fluent=true)
-	public static class PepperPreNonce {
-		private final Mac mac;
-	}
-
-//	@RequiredArgsConstructor
-//	@Getter
-//	@Accessors(fluent=true)
-//	public static class PepperPrePlaintext {
-//		private final Mac mac;
-//	}
 }

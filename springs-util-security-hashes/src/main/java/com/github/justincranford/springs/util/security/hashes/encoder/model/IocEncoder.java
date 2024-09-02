@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,7 +15,7 @@ public abstract class IocEncoder implements PasswordEncoder {
 	protected Function<String, Boolean> upgradeEncoding;
 
 	@Override
-	public String encode(@NotNull final CharSequence rawPassword) {
+	@NotBlank public String encode(@NotNull final CharSequence rawPassword) {
 		return this.encode.apply(rawPassword);
 	}
 
