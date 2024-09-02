@@ -1,6 +1,5 @@
 package com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2;
 
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public record Pbkdf2ParametersV1 (
 	@Min(Constraints.MIN_ITER) int iter,
 	@Min(Constraints.MIN_HASH_BYTES_LEN) int hashBytesLen,
-	@NotEmpty Pbkdf2Algorithm algorithm,
+	@NotNull Pbkdf2Algorithm algorithm,
 	@NotNull HashEncodeDecode hashEncodeDecode
 ) implements Parameters {
 	@Override
@@ -31,13 +30,13 @@ public record Pbkdf2ParametersV1 (
 		return ArrayUtil.concat(
 			ByteUtil.byteArray(this.iter()),
 			ByteUtil.byteArray(this.hashBytesLen()),
-			this.algorithm().canonicalIdBytes(),
-			this.hashEncodeDecode().encoderDecoder().canonicalIdBytes()
+			this.algorithm().canonicalEncode(),
+			this.hashEncodeDecode().encoderDecoder().canonicalEncode()
 		);
 	}
 
 	@Override
-	public byte[] computeHash(@NotNull final byte[] saltBytes, @NotNull final CharSequence rawInput) {
+	public byte[] computeHash(@NotNull @Min(Constraints.MIN_SALT_BYTES_LEN) final byte[] saltBytes, @NotNull @Min(Constraints.MIN_INPUT_SIZE) final CharSequence rawInput) {
 		try {
 			final PBEKeySpec spec = new PBEKeySpec(
 				rawInput.toString().toCharArray(),
@@ -55,10 +54,10 @@ public record Pbkdf2ParametersV1 (
 
 	@Override
 	public Boolean upgradeEncoding(
-		@Min(0)  final int defaultSaltBytesLen,
-		@Min(0)  final int decodedSaltBytesLen,
+		@Min(Constraints.MIN_SALT_BYTES_LEN)  final int defaultSaltBytesLen,
+		@Min(Constraints.MIN_SALT_BYTES_LEN)  final int decodedSaltBytesLen,
 		@NotNull final Parameters decodedParameters,
-		@Min(0)  final int decodedHashLength
+		@Min(Constraints.MIN_HASH_BYTES_LEN)  final int decodedHashLength
 	) {
 		final Pbkdf2ParametersV1 decodedParametersPbkdf2 = (Pbkdf2ParametersV1) decodedParameters;
 		return Boolean.valueOf(
@@ -71,7 +70,7 @@ public record Pbkdf2ParametersV1 (
 	}
 
 	@Override
-	@NotEmpty public List<Object> encodeParameters() {
+	@NotEmpty public List<Object> encode() {
 		final List<Object> parametersToBeEncoded = new ArrayList<>(3);
 		parametersToBeEncoded.add(Integer.valueOf(this.iter()));
 		parametersToBeEncoded.add(Integer.valueOf(this.hashBytesLen()));
@@ -80,7 +79,7 @@ public record Pbkdf2ParametersV1 (
 	}
 
 	@Override
-	@NotEmpty public Parameters decodeParameters(@NotNull final String[] parts, @Min(0) int partIndex, @NotNull final HashEncodeDecode hashEncodeDecode0) {
+	@NotEmpty public Parameters decode(@NotNull final String[] parts, @Min(0) int partIndex, @NotNull final HashEncodeDecode hashEncodeDecode0) {
         int part = partIndex;
 		final int                iterDecoded         = (hashEncodeDecode0.flags().parameters()) ? Integer.parseInt(parts[part++])        : this.iter();
 		final int                hashBytesLenDecoded = (hashEncodeDecode0.flags().parameters()) ? Integer.parseInt(parts[part++])        : this.hashBytesLen();
@@ -90,9 +89,9 @@ public record Pbkdf2ParametersV1 (
 	}
 
 	public static class Constraints {
-		public static final int MIN_RAND_BYTES_LEN = 8;		// Absolute Min: 64-bit,  Recommended Min: 256-bit/32-bytes
-		public static final int MIN_DER_BYTES_LEN = 8;		// Absolute Min: 64-bit,  Recommended Min: 256-bit/32-bytes
-		public static final int MIN_ITER = 1;				// Absolute Min: 1,       Recommended Min: 600_000
-		public static final int MIN_HASH_BYTES_LEN = 16;	// Absolute Min: 128-bit, Recommended Min: 256-bit/32-bytes
+		public static final int MIN_INPUT_SIZE = 0;		// Absolute Min (Testing): 0-bit,  Recommended Min (Production): 0-bit/0-bytes
+		public static final int MIN_SALT_BYTES_LEN = 0;	// Absolute Min (Testing): 0-bit,  Recommended Min (Production): 256-bit/32-bytes
+		public static final int MIN_ITER = 1;			// Absolute Min (Testing): 1,      Recommended Min (Production): 600_000
+		public static final int MIN_HASH_BYTES_LEN = 8;	// Absolute Min (Testing): 64-bit, Recommended Min (Production): 256-bit/32-bytes
 	}
 }

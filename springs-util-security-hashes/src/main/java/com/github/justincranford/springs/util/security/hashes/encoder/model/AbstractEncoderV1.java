@@ -98,7 +98,7 @@ public abstract class AbstractEncoderV1 extends IocEncoder {
 			parametersToBeEncoded.add(hashEncodeDecode.encoderDecoder().encodeToString(parametersAndSalt.saltBytes()));
 		}
 		if (hashEncodeDecode.flags().parameters()) {
-			parametersToBeEncoded.addAll(parameters.encodeParameters());
+			parametersToBeEncoded.addAll(parameters.encode());
 		}
 		return StringUtil.toString("", hashEncodeDecode.separators().encodeParameters(), "", parametersToBeEncoded);
 	}
@@ -108,7 +108,7 @@ public abstract class AbstractEncoderV1 extends IocEncoder {
 		final String[]         parts             = encodedParameters.split(hashEncodeDecode.separators().decodeParameters());
 	    int part = 0;
 		final byte[]           saltBytesDecoded  = (hashEncodeDecode.flags().salt())  ? hashEncodeDecode.encoderDecoder().decodeFromString(parts[part++]) : saltBytes;
-		final Parameters       parametersDecoded = parameters.decodeParameters(parts, part, hashEncodeDecode);
+		final Parameters       parametersDecoded = parameters.decode(parts, part, hashEncodeDecode);
 		return new ParametersAndSalt(parametersDecoded, saltBytesDecoded);
 	}
 	

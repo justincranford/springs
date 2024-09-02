@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class Pbkdf2EncoderV1 {
 	public static final class RandomSalt extends AbstractEncoderV1 {
-		public RandomSalt(@NotNull ParametersAndMacs parametersAndMacs, @Min(Pbkdf2ParametersV1.Constraints.MIN_RAND_BYTES_LEN) int saltBytesLen) {
+		public RandomSalt(@NotNull ParametersAndMacs parametersAndMacs, @Min(Constraints.MIN_RAND_BYTES_LEN) int saltBytesLen) {
 			super(parametersAndMacs, (rawInput) -> SecureRandomUtil.randomBytes(saltBytesLen));
 		}
 	}
 
 	public static final class DerivedSalt extends AbstractEncoderV1 {
-		public DerivedSalt(@NotNull ParametersAndMacs parametersAndMacs, @Min(Pbkdf2ParametersV1.Constraints.MIN_DER_BYTES_LEN) int saltBytesLen) {
+		public DerivedSalt(@NotNull ParametersAndMacs parametersAndMacs, @Min(Constraints.MIN_DER_BYTES_LEN) int saltBytesLen) {
 			super(parametersAndMacs, (rawInput) -> {
 				if (parametersAndMacs.macs().preSalt() == null) {
 					throw new RuntimeException("PreSalt Mac required to guarantee unique, deterministic salt will be derived per unique input");
@@ -34,5 +34,10 @@ public final class Pbkdf2EncoderV1 {
 		public ConstantSalt(@NotNull ParametersAndMacs parametersAndMacs, @NotEmpty byte[] saltBytes) {
 			super(parametersAndMacs, (rawInput) -> saltBytes);
 		}
+	}
+
+	public static final class Constraints {
+		public static final int MIN_RAND_BYTES_LEN = 8;		// Absolute Min: 64-bit,  Recommended Min: 256-bit/32-bytes
+		public static final int MIN_DER_BYTES_LEN = 8;		// Absolute Min: 64-bit,  Recommended Min: 256-bit/32-bytes
 	}
 }

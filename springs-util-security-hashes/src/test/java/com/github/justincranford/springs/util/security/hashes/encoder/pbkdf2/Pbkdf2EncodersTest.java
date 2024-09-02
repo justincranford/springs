@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -148,36 +147,30 @@ public class Pbkdf2EncodersTest {
 		valueEncodersMap.entrySet().forEach(entry -> helper(entry.getValue(), entry.getKey(), "P@ssw0rd"));
 	}
 
-	private static final boolean CONCURRENT = true;
 	private static void helper(final PasswordEncoder passwordEncoder, final String idForEncode, final String raw) {
 		final String className = passwordEncoder.getClass().getSimpleName();
 		final AtomicInteger numFailures = new AtomicInteger(0);
-		final IntConsumer action = (i) -> {
-			try {
-				final String encoded = passwordEncoder.encode(raw);
-				if (passwordEncoder instanceof DelegatingPasswordEncoder) {
-					assertThat(encoded).startsWith("{" + idForEncode + "}");
-				} else {
-					assertThat(encoded).doesNotStartWith("{");
-				}
-				final boolean matches = passwordEncoder.matches(raw, encoded);
-				final boolean upgradeEncoding = passwordEncoder.upgradeEncoding(encoded);
-				log.info("class: {}, idForEncode: {}, matches: {}, upgradeEncoding: {}, raw: {}, encoded: {}", className, idForEncode, matches, upgradeEncoding, raw, encoded);
-				assertThat(matches).isTrue();
-				assertThat(upgradeEncoding).isFalse();
-			} catch(Throwable t) {
-				log.info("class: {}, idForEncode: {}, raw: {}", className, idForEncode, raw, t);
-				numFailures.incrementAndGet();
-			}
-		};
-		if (CONCURRENT) {
-			try (ForkJoinPool threadPool = ThreadUtil.threadPool(REPEATS, "Thread-")) {
-				threadPool.submit(() -> { IntStream.rangeClosed(1, REPEATS).forEach(action); });
-			}
-		} else {
-			for (int i = 1; i < REPEATS; i++) {
-				action.accept(i);
-			}
+		try (ForkJoinPool threadPool = ThreadUtil.threadPool(REPEATS, "Thread-")) {
+			threadPool.submit(() -> {
+				IntStream.rangeClosed(1, REPEATS).forEach((i) -> {
+					try {
+						final String encoded = passwordEncoder.encode(raw);
+						if (passwordEncoder instanceof DelegatingPasswordEncoder) {
+							assertThat(encoded).startsWith("{" + idForEncode + "}");
+						} else {
+							assertThat(encoded).doesNotStartWith("{");
+						}
+						final boolean matches = passwordEncoder.matches(raw, encoded);
+						final boolean upgradeEncoding = passwordEncoder.upgradeEncoding(encoded);
+						log.info("class: {}, idForEncode: {}, matches: {}, upgradeEncoding: {}, raw: {}, encoded: {}", className, idForEncode, matches, upgradeEncoding, raw, encoded);
+						assertThat(matches).isTrue();
+						assertThat(upgradeEncoding).isFalse();
+					} catch(Throwable t) {
+						log.info("class: {}, idForEncode: {}, raw: {}", className, idForEncode, raw, t);
+						numFailures.incrementAndGet();
+					}
+				});
+			});
 		}
 		assertThat(numFailures.get()).isEqualTo(0);
 	}
@@ -185,15 +178,15 @@ public class Pbkdf2EncodersTest {
 	@Test
 	public void testPbkdf2() {
 		final Pbkdf2ParametersV1 parameters = new Pbkdf2ParametersV1(1, 32, Pbkdf2Algorithm.PBKDF2WithHmacSHA256, HashEncodeDecode.STD_CB_NONE);
-		final String inputBytes = "Hello.World@example.com";
-		final byte[] saltBytes = new byte[16];
+		extracted(parameters, "Hello.World@example.com", new byte[16]);
+	}
+
+	private void extracted(final Pbkdf2ParametersV1 parameters, final String inputBytes, final byte[] saltBytes) {
 		final Set<String> hashes = new HashSet<>();
 		for (int i = 0; i < REPEATS; i++) {
-			for (int j = 0; j < REPEATS; j++) {
-				final byte[] hashBytes = parameters.computeHash(saltBytes, inputBytes);
-				hashes.add(Base64Util.Constants.STD_ENCODER.encodeToString(saltBytes));
-				assertThat(hashes.size()).isEqualTo(1);
-			}
+			final byte[] hashBytes = parameters.computeHash(saltBytes, inputBytes);
+			hashes.add(Base64Util.Constants.STD_ENCODER.encodeToString(hashBytes));
+			assertThat(hashes.size()).isEqualTo(1);
 		}
 	}
 }

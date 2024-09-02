@@ -31,7 +31,7 @@ public record Mac(
 			this.clearContext,									// Priority 3: optional, clear entropy; useful if secretKey=null (or reused) and secretContext=null (or reused)
 			additionalData,										// Priority 4: optional, data binding (e.g. Pbkdf2 => salt+iter+dkLen+alg, Argon2 => salt+lanes+mem+alg)
 			this.algorithm.canonicalIdBytes(),					// Priority 5: required, Mac canonical algorithm identifier
-			this.encoderDecoder.canonicalIdBytes()				// Priority 6: optional, text encoder algorithm identifier 
+			this.encoderDecoder.canonicalEncode()				// Priority 6: optional, text encoder algorithm identifier 
 		).toArray(new byte[0][]);
 
 		// Use high-entropy secretKey (i.e. optimal), or low-entropy concatData-derived secretKey (i.e. fallback)

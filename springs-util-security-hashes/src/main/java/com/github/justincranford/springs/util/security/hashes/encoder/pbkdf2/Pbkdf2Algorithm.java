@@ -2,7 +2,7 @@ package com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2;
 
 import java.nio.charset.StandardCharsets;
 
-@SuppressWarnings({"nls", "hiding"})
+@SuppressWarnings({"nls"})
 public enum Pbkdf2Algorithm {
 	PBKDF2WithHmacMD5       ("PBKDF2withHmacMD5",        16, "PBKDF2withHmacMD5"),
 	PBKDF2WithHmacSHA1      ("PBKDF2withHmacSHA1",       20, "PBKDF2withHmacSHA1"),
@@ -19,11 +19,11 @@ public enum Pbkdf2Algorithm {
 	;
 	private final String value;
 	private final int bytesLen;
-	private final byte[] canonicalIdBytes;
-	private Pbkdf2Algorithm(final String algorithm, final int lenBytes, final String canonicalId) {
+	private final byte[] canonicalEncodeBytes;
+	private Pbkdf2Algorithm(final String algorithm, final int lenBytes, final String canonicalEncode) {
 		this.value = algorithm;
 		this.bytesLen = lenBytes;
-		this.canonicalIdBytes = canonicalId.getBytes(StandardCharsets.UTF_8);
+		this.canonicalEncodeBytes = canonicalEncode.getBytes(StandardCharsets.UTF_8);
 	}
 	public String value() {
 		return this.value;
@@ -31,7 +31,7 @@ public enum Pbkdf2Algorithm {
 	public int bytesLen() {
 		return this.bytesLen;
 	}
-	public byte[] canonicalIdBytes() {
-		return this.canonicalIdBytes;
+	public byte[] canonicalEncode() {
+		return this.canonicalEncodeBytes;
 	}
 }

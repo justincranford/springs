@@ -15,14 +15,14 @@ public class Base64Util {
 	public static class EncoderDecoder {
     	private final Base64.Encoder encoder;
     	private final Base64.Decoder decoder;
-    	private final byte[] canonicalIdBytes;
+    	private final byte[] canonicalEncode;
     	public EncoderDecoder(final Base64.Encoder encoder0, final Base64.Decoder decoder0, final String canonicalId) {
     		this.encoder = encoder0;
     		this.decoder = decoder0;
-    		this.canonicalIdBytes = canonicalId.getBytes(StandardCharsets.UTF_8);
+    		this.canonicalEncode = canonicalId.getBytes(StandardCharsets.UTF_8);
     	}
-		public byte[] canonicalIdBytes() {
-			return this.canonicalIdBytes;
+		public byte[] canonicalEncode() {
+			return this.canonicalEncode;
 		}
         public String encodeToString(final byte[] bytes) {
     		final byte[] base64 = encodeToBytes(bytes);
