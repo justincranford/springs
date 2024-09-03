@@ -20,9 +20,9 @@ public enum Pbkdf2Algorithm {
 	private final String value;
 	private final int bytesLen;
 	private final byte[] canonicalEncodeBytes;
-	private Pbkdf2Algorithm(final String algorithm, final int lenBytes, final String canonicalEncode) {
-		this.value = algorithm;
-		this.bytesLen = lenBytes;
+	private Pbkdf2Algorithm(final String value0, final int bytesLen0, final String canonicalEncode) {
+		this.value = value0;
+		this.bytesLen = bytesLen0;
 		this.canonicalEncodeBytes = canonicalEncode.getBytes(StandardCharsets.UTF_8);
 	}
 	public String value() {

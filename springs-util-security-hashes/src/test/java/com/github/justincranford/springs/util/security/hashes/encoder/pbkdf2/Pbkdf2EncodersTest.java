@@ -181,7 +181,7 @@ public class Pbkdf2EncodersTest {
 	@Test
 	public void testPbkdf2ConstantSalt() {
 		final Supplier<byte[]> saltSupplier = () -> new byte[16];
-		final Pbkdf2ParametersV1 parameters = new Pbkdf2ParametersV1(1, 32, Pbkdf2Algorithm.PBKDF2WithHmacSHA256, HashEncodeDecode.STD_CB_NONE);
+		final Pbkdf2EncoderV1 parameters = new Pbkdf2EncoderV1(1, 32, Pbkdf2Algorithm.PBKDF2WithHmacSHA256, HashEncodeDecode.STD_CB_NONE);
 		Set<String> encodedHashes = computePbkdf2(REPEATS, parameters, "Hello.World@example.com", saltSupplier);
 		assertThat(encodedHashes.size()).isEqualTo(1);
 	}
@@ -189,12 +189,12 @@ public class Pbkdf2EncodersTest {
 	@Test
 	public void testPbkdf2RandomSalt() {
 		final Supplier<byte[]> saltSupplier = () -> SecureRandomUtil.randomBytes(16);
-		final Pbkdf2ParametersV1 parameters = new Pbkdf2ParametersV1(1, 32, Pbkdf2Algorithm.PBKDF2WithHmacSHA256, HashEncodeDecode.STD_CB_NONE);
+		final Pbkdf2EncoderV1 parameters = new Pbkdf2EncoderV1(1, 32, Pbkdf2Algorithm.PBKDF2WithHmacSHA256, HashEncodeDecode.STD_CB_NONE);
 		Set<String> encodedHashes = computePbkdf2(REPEATS, parameters, "P@ssw0rd", saltSupplier);
 		assertThat(encodedHashes.size()).isEqualTo(REPEATS);
 	}
 
-	private Set<String> computePbkdf2(final int repeats, final Pbkdf2ParametersV1 parameters, final String inputBytes, final Supplier<byte[]> saltSupplier) {
+	private Set<String> computePbkdf2(final int repeats, final Pbkdf2EncoderV1 parameters, final String inputBytes, final Supplier<byte[]> saltSupplier) {
 		final Set<String> encodedHashes = new HashSet<>();
 		for (int i = 0; i < repeats; i++) {
 			final byte[] hashBytes = parameters.computeHash(saltSupplier.get(), inputBytes);

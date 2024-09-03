@@ -100,10 +100,10 @@ public final class PepperedPbkdf2EncoderV1Instances {
 	}
 
 	public static class Parameters {
-		public static final Pbkdf2ParametersV1 STD_CB_NONE     = new Pbkdf2ParametersV1(Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.PRF_ALG, HashEncodeDecode.STD_CB_NONE);
-		public static final Pbkdf2ParametersV1 STD_CB_SALT     = new Pbkdf2ParametersV1(Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.PRF_ALG, HashEncodeDecode.STD_CB_SALT);
-		public static final Pbkdf2ParametersV1 STD_CB_OTH      = new Pbkdf2ParametersV1(Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.PRF_ALG, HashEncodeDecode.STD_CB_OTH);
-		public static final Pbkdf2ParametersV1 STD_CB_SALT_OTH = new Pbkdf2ParametersV1(Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.PRF_ALG, HashEncodeDecode.STD_CB_SALT_OTH);
+		public static final Pbkdf2EncoderV1 STD_CB_NONE     = new Pbkdf2EncoderV1(Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.PRF_ALG, HashEncodeDecode.STD_CB_NONE);
+		public static final Pbkdf2EncoderV1 STD_CB_SALT     = new Pbkdf2EncoderV1(Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.PRF_ALG, HashEncodeDecode.STD_CB_SALT);
+		public static final Pbkdf2EncoderV1 STD_CB_OTH      = new Pbkdf2EncoderV1(Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.PRF_ALG, HashEncodeDecode.STD_CB_OTH);
+		public static final Pbkdf2EncoderV1 STD_CB_SALT_OTH = new Pbkdf2EncoderV1(Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.PRF_ALG, HashEncodeDecode.STD_CB_SALT_OTH);
 	}
 
 	public static class PepperOptions {
