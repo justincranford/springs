@@ -49,30 +49,37 @@ public class Pbkdf2EncodersTest {
 			PepperedPbkdf2EncoderV1Instances.Derived.SALT_CTX_CTX_CTX,
 			PepperedPbkdf2EncoderV1Instances.Derived.SALT_SK_SK_SK,
 			PepperedPbkdf2EncoderV1Instances.Derived.SALT_SKCTX_SKCTX_SKCTX,
-
+			PepperedPbkdf2EncoderV1Instances.Derived.OTH_NULL_NULL_NULL,
+			PepperedPbkdf2EncoderV1Instances.Derived.OTH_NONE_NONE_NONE,
+			PepperedPbkdf2EncoderV1Instances.Derived.OTH_CTX_CTX_CTX,
+			PepperedPbkdf2EncoderV1Instances.Derived.OTH_SK_SK_SK,
+			PepperedPbkdf2EncoderV1Instances.Derived.OTH_SKCTX_SKCTX_SKCTX,
 			PepperedPbkdf2EncoderV1Instances.Derived.NONE_NULL_NULL_NULL,
 			PepperedPbkdf2EncoderV1Instances.Derived.NONE_NONE_NONE_NONE,
 			PepperedPbkdf2EncoderV1Instances.Derived.NONE_CTX_CTX_CTX,
 			PepperedPbkdf2EncoderV1Instances.Derived.NONE_SK_SK_SK,
 			PepperedPbkdf2EncoderV1Instances.Derived.NONE_SKCTX_SKCTX_SKCTX,
 
-			PepperedPbkdf2EncoderV1Instances.Derived.SALT_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1Instances.Derived.SALT_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1Instances.Derived.SALT_CTX_CTX_CTX,
-			PepperedPbkdf2EncoderV1Instances.Derived.SALT_SK_SK_SK,
-			PepperedPbkdf2EncoderV1Instances.Derived.SALT_SKCTX_SKCTX_SKCTX,
-
-			PepperedPbkdf2EncoderV1Instances.Derived.OTH_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1Instances.Derived.OTH_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1Instances.Derived.OTH_CTX_CTX_CTX,
-			PepperedPbkdf2EncoderV1Instances.Derived.OTH_SK_SK_SK,
-			PepperedPbkdf2EncoderV1Instances.Derived.OTH_SKCTX_SKCTX_SKCTX,
-
-			PepperedPbkdf2EncoderV1Instances.Derived.SALTOTH_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1Instances.Derived.SALTOTH_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1Instances.Derived.SALTOTH_CTX_CTX_CTX,
-			PepperedPbkdf2EncoderV1Instances.Derived.SALTOTH_SK_SK_SK,
-			PepperedPbkdf2EncoderV1Instances.Derived.SALTOTH_SKCTX_SKCTX_SKCTX
+			PepperedPbkdf2EncoderV1Instances.Constant.SALTOTH_NULL_NULL_NULL,
+			PepperedPbkdf2EncoderV1Instances.Constant.SALTOTH_NONE_NONE_NONE,
+			PepperedPbkdf2EncoderV1Instances.Constant.SALTOTH_CTX_CTX_CTX,
+			PepperedPbkdf2EncoderV1Instances.Constant.SALTOTH_SK_SK_SK,
+			PepperedPbkdf2EncoderV1Instances.Constant.SALTOTH_SKCTX_SKCTX_SKCTX,
+			PepperedPbkdf2EncoderV1Instances.Constant.SALT_NULL_NULL_NULL,
+			PepperedPbkdf2EncoderV1Instances.Constant.SALT_NONE_NONE_NONE,
+			PepperedPbkdf2EncoderV1Instances.Constant.SALT_CTX_CTX_CTX,
+			PepperedPbkdf2EncoderV1Instances.Constant.SALT_SK_SK_SK,
+			PepperedPbkdf2EncoderV1Instances.Constant.SALT_SKCTX_SKCTX_SKCTX,
+			PepperedPbkdf2EncoderV1Instances.Constant.OTH_NULL_NULL_NULL,
+			PepperedPbkdf2EncoderV1Instances.Constant.OTH_NONE_NONE_NONE,
+			PepperedPbkdf2EncoderV1Instances.Constant.OTH_CTX_CTX_CTX,
+			PepperedPbkdf2EncoderV1Instances.Constant.OTH_SK_SK_SK,
+			PepperedPbkdf2EncoderV1Instances.Constant.OTH_SKCTX_SKCTX_SKCTX,
+			PepperedPbkdf2EncoderV1Instances.Constant.NONE_NULL_NULL_NULL,
+			PepperedPbkdf2EncoderV1Instances.Constant.NONE_NONE_NONE_NONE,
+			PepperedPbkdf2EncoderV1Instances.Constant.NONE_CTX_CTX_CTX,
+			PepperedPbkdf2EncoderV1Instances.Constant.NONE_SK_SK_SK,
+			PepperedPbkdf2EncoderV1Instances.Constant.NONE_SKCTX_SKCTX_SKCTX
 		).forEach(valueEncoder -> put("k" + id.incrementAndGet(), valueEncoder));
 	}};
 	private static final String keyEncodersDefault = keyEncodersMap.keySet().iterator().next();
@@ -82,32 +89,19 @@ public class Pbkdf2EncodersTest {
 	);
 
 	private static final Map<String, PasswordEncoder> valueEncodersMap = new LinkedHashMap<>() {{
-		final AtomicInteger i = new AtomicInteger(0);
+		final AtomicInteger id = new AtomicInteger(0);
 		List.of(
-			PepperedPbkdf2EncoderV1Instances.Constant.NONE_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1Instances.Constant.NONE_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1Instances.Constant.NONE_CTX_CTX_CTX,
-			PepperedPbkdf2EncoderV1Instances.Constant.NONE_SK_SK_SK,
-			PepperedPbkdf2EncoderV1Instances.Constant.NONE_SKCTX_SKCTX_SKCTX,
-
-			PepperedPbkdf2EncoderV1Instances.Constant.SALT_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1Instances.Constant.SALT_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1Instances.Constant.SALT_CTX_CTX_CTX,
-			PepperedPbkdf2EncoderV1Instances.Constant.SALT_SK_SK_SK,
-			PepperedPbkdf2EncoderV1Instances.Constant.SALT_SKCTX_SKCTX_SKCTX,
-
-			PepperedPbkdf2EncoderV1Instances.Constant.OTH_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1Instances.Constant.OTH_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1Instances.Constant.OTH_CTX_CTX_CTX,
-			PepperedPbkdf2EncoderV1Instances.Constant.OTH_SK_SK_SK,
-			PepperedPbkdf2EncoderV1Instances.Constant.OTH_SKCTX_SKCTX_SKCTX,
-
-			PepperedPbkdf2EncoderV1Instances.Constant.SALTOTH_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1Instances.Constant.SALTOTH_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1Instances.Constant.SALTOTH_CTX_CTX_CTX,
-			PepperedPbkdf2EncoderV1Instances.Constant.SALTOTH_SK_SK_SK,
-			PepperedPbkdf2EncoderV1Instances.Constant.SALTOTH_SKCTX_SKCTX_SKCTX
-		).forEach(valueEncoder -> put("v" + i.incrementAndGet(), valueEncoder));
+			PepperedPbkdf2EncoderV1Instances.Random.SALTOTH_NULL_NULL_NULL,
+			PepperedPbkdf2EncoderV1Instances.Random.SALTOTH_NONE_NONE_NONE,
+			PepperedPbkdf2EncoderV1Instances.Random.SALTOTH_CTX_CTX_CTX,
+			PepperedPbkdf2EncoderV1Instances.Random.SALTOTH_SK_SK_SK,
+			PepperedPbkdf2EncoderV1Instances.Random.SALTOTH_SKCTX_SKCTX_SKCTX,
+			PepperedPbkdf2EncoderV1Instances.Random.SALT_NULL_NULL_NULL,
+			PepperedPbkdf2EncoderV1Instances.Random.SALT_NONE_NONE_NONE,
+			PepperedPbkdf2EncoderV1Instances.Random.SALT_CTX_CTX_CTX,
+			PepperedPbkdf2EncoderV1Instances.Random.SALT_SK_SK_SK,
+			PepperedPbkdf2EncoderV1Instances.Random.SALT_SKCTX_SKCTX_SKCTX
+		).forEach(valueEncoder -> put("v" + id.incrementAndGet(), valueEncoder));
 	}};
 	private static final String valueEncodersDefault = valueEncodersMap.keySet().iterator().next();
 	private static final DelegatingPasswordEncoder valueEncoders = new DelegatingPasswordEncoder(
