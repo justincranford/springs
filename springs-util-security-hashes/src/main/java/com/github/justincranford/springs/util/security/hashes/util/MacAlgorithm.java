@@ -1,11 +1,12 @@
 package com.github.justincranford.springs.util.security.hashes.util;
 
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
+
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 
@@ -13,42 +14,51 @@ import jakarta.validation.constraints.NotNull;
 
 @SuppressWarnings({"nls"})
 public enum MacAlgorithm {
-	CMAC128       ("CMAC",           16, "CMAC128"), // TODO
-	CMAC192       ("CMAC",           24, "CMAC192"), // TODO
-	CMAC256       ("CMAC",           32, "CMAC256"), // TODO
-	HmacMD5       ("HmacMD5",        16, "HmacMD5"),
-	HmacSHA1      ("HmacSHA1",       20, "HmacSHA1"),
-	HmacSHA224    ("HmacSHA224",     28, "HmacSHA224"),
-	HmacSHA256    ("HmacSHA256",     32, "HmacSHA256"),
-	HmacSHA384    ("HmacSHA384",     48, "HmacSHA384"),
-	HmacSHA512    ("HmacSHA512",     64, "HmacSHA512"),
-	HmacSHA512_224("HmacSHA512/224", 28, "HmacSHA512_224"),
-	HmacSHA512_256("HmacSHA512/256", 32, "HmacSHA512_256"),
-	HmacSHA3_224  ("HmacSHA3-224",   28, "HmacSHA3_224"),
-	HmacSHA3_256  ("HmacSHA3-256",   32, "HmacSHA3_256"),
-	HmacSHA3_384  ("HmacSHA3-384",   48, "HmacSHA3_384"),
-	HmacSHA3_512  ("HmacSHA3-512",   64, "HmacSHA3_512");
-	private final String algorithm;
+	CMAC128       ("CMAC",           16, Constants.CMAC_128_OID), // TODO
+	CMAC192       ("CMAC",           24, Constants.CMAC_128_OID), // TODO
+	CMAC256       ("CMAC",           32, Constants.CMAC_128_OID), // TODO
+	HmacMD5       ("HmacMD5",        16, Constants.HMAC_MD5_OID),
+	HmacSHA1      ("HmacSHA1",       20, Constants.HMAC_SHA1_OID),
+	HmacSHA224    ("HmacSHA224",     28, Constants.HMAC_SHA224_OID),
+	HmacSHA256    ("HmacSHA256",     32, Constants.HMAC_SHA256_OID),
+	HmacSHA384    ("HmacSHA384",     48, Constants.HMAC_SHA384_OID),
+	HmacSHA512    ("HmacSHA512",     64, Constants.HMAC_SHA512_OID),
+	HmacSHA512_224("HmacSHA512/224", 28, Constants.HMAC_SHA512_224_OID),
+	HmacSHA512_256("HmacSHA512/256", 32, Constants.HMAC_SHA512_256_OID),
+	HmacSHA3_224  ("HmacSHA3-224",   28, Constants.HMAC_SHA3_224_OID),
+	HmacSHA3_256  ("HmacSHA3-256",   32, Constants.HMAC_SHA3_256_OID),
+	HmacSHA3_384  ("HmacSHA3-384",   48, Constants.HMAC_SHA3_384_OID),
+	HmacSHA3_512  ("HmacSHA3-512",   64, Constants.HMAC_SHA3_512_OID),
+	;
+	private final String value;
 	private final int bytesLen;
-	private final byte[] canonicalIdBytes;
-	private MacAlgorithm(final String algorithm0, final int bytesLen0, final String canonicalId) {
-		this.algorithm        = algorithm0;
-		this.bytesLen         = bytesLen0;
-		this.canonicalIdBytes = canonicalId.getBytes(StandardCharsets.UTF_8);
+	private final ASN1ObjectIdentifier oid;
+	private final byte[] oidBytes;
+	private MacAlgorithm(final String value0, final int bytesLen0, final ASN1ObjectIdentifier oid0) {
+		this.value    = value0;
+		this.bytesLen = bytesLen0;
+		this.oid      = oid0;
+		this.oidBytes = Asn1Util.oidDerBytes(oid0);
 	}
 	public String alg() {
-		return this.algorithm;
+		return this.value;
 	}
 	public int len() {
 		return this.bytesLen;
 	}
+	public ASN1ObjectIdentifier oid() {
+		return this.oid;
+	}
+	public byte[] oidBytes() {
+		return this.oidBytes;
+	}
 	public byte[] canonicalIdBytes() {
-		return this.canonicalIdBytes;
+		return this.oidBytes;
 	}
 
     public byte[] compute(@NotNull final SecretKey key, @NotNull final byte[] data) {
 		try {
-	        final Mac mac = Mac.getInstance(this.algorithm);
+	        final Mac mac = Mac.getInstance(this.value);
 	        mac.init(key);
 	        return mac.doFinal(data);
 		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
@@ -67,4 +77,28 @@ public enum MacAlgorithm {
         }
         return mac;
     }
+
+	public static class Constants {
+		// TODO
+		public static final ASN1ObjectIdentifier CMAC_128_OID        = new ASN1ObjectIdentifier("1.2.840.113549.2.5");
+		public static final ASN1ObjectIdentifier CMAC_192_OID        = new ASN1ObjectIdentifier("1.2.840.113549.2.5");
+		public static final ASN1ObjectIdentifier CMAC_256_OID        = new ASN1ObjectIdentifier("1.2.840.113549.2.5");
+
+		// See org.bouncycastle.asn1.nist.NistObjectIdentifiers.java for these Hmac OIDs
+		public static final ASN1ObjectIdentifier HMAC_MD5_OID        = new ASN1ObjectIdentifier("1.2.840.113549.2.5");
+		public static final ASN1ObjectIdentifier HMAC_SHA1_OID       = new ASN1ObjectIdentifier("1.2.840.113549.2.7");
+		public static final ASN1ObjectIdentifier HMAC_SHA224_OID     = new ASN1ObjectIdentifier("1.2.840.113549.2.8");
+		public static final ASN1ObjectIdentifier HMAC_SHA256_OID     = new ASN1ObjectIdentifier("1.2.840.113549.2.9");
+		public static final ASN1ObjectIdentifier HMAC_SHA384_OID     = new ASN1ObjectIdentifier("1.2.840.113549.2.10");
+		public static final ASN1ObjectIdentifier HMAC_SHA512_OID     = new ASN1ObjectIdentifier("1.2.840.113549.2.11");
+		public static final ASN1ObjectIdentifier HMAC_SHA512_224_OID = new ASN1ObjectIdentifier("1.2.840.113549.2.12");
+		public static final ASN1ObjectIdentifier HMAC_SHA512_256_OID = new ASN1ObjectIdentifier("1.2.840.113549.2.13");
+
+		// See org.bouncycastle.asn1.nist.NistObjectIdentifiers.java for these HMAC OIDs
+		public static final ASN1ObjectIdentifier HMAC_SHA3_224_OID = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.13");
+		public static final ASN1ObjectIdentifier HMAC_SHA3_256_OID = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.14");
+		public static final ASN1ObjectIdentifier HMAC_SHA3_384_OID = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.15");
+		public static final ASN1ObjectIdentifier HMAC_SHA3_512_OID = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.16");
+
+	}
 }

@@ -19,17 +19,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @SuppressWarnings({"nls"})
 public record Pbkdf2EncoderV1 (
-	@Min(Constraints.MIN_ITER) int iter,
-	@Min(Constraints.MIN_HASH_BYTES_LEN) int hashBytesLen,
 	@NotNull Pbkdf2Algorithm algorithm,
+	@Min(Constraints.MIN_ITER) int iterations,
+	@Min(Constraints.MIN_HASH_BYTES_LEN) int hashBytesLen,
 	@NotNull HashEncodeDecode hashEncodeDecode
 ) implements HashParameters {
 	@Override
 	public byte[] canonicalEncodedBytes() {
 		return ArrayUtil.concat(
-			ByteUtil.byteArray(this.iter()),
+			this.algorithm().canonicalIdBytes(),
+			ByteUtil.byteArray(this.iterations()),
 			ByteUtil.byteArray(this.hashBytesLen()),
-			this.algorithm().canonicalEncode(),
 			this.hashEncodeDecode().encoderDecoder().canonicalEncode()
 		);
 	}
@@ -37,9 +37,9 @@ public record Pbkdf2EncoderV1 (
 	@Override
 	@NotEmpty public List<Object> encode() {
 		return List.of(
-			Integer.valueOf(this.iter()),
-			Integer.valueOf(this.hashBytesLen()),
-			this.algorithm()
+			this.algorithm(),
+			Integer.valueOf(this.iterations()),
+			Integer.valueOf(this.hashBytesLen())
 		);
 	}
 
@@ -50,10 +50,10 @@ public record Pbkdf2EncoderV1 (
 		@NotNull final HashEncodeDecode hashEncodeDecode0
 	) {
         int part = partIndex;
-		final int             iterDecoded         = (hashEncodeDecode0.flags().hashParameters()) ? Integer.parseInt(parts[part++])        : this.iter();
-		final int             hashBytesLenDecoded = (hashEncodeDecode0.flags().hashParameters()) ? Integer.parseInt(parts[part++])        : this.hashBytesLen();
 		final Pbkdf2Algorithm algorithmDecoded    = (hashEncodeDecode0.flags().hashParameters()) ? Pbkdf2Algorithm.valueOf(parts[part++]) : this.algorithm();
-		final Pbkdf2EncoderV1 parametersDecoded   = new Pbkdf2EncoderV1(iterDecoded, hashBytesLenDecoded, algorithmDecoded, hashEncodeDecode0);
+		final int             iterationsDecoded   = (hashEncodeDecode0.flags().hashParameters()) ? Integer.parseInt(parts[part++])        : this.iterations();
+		final int             hashBytesLenDecoded = (hashEncodeDecode0.flags().hashParameters()) ? Integer.parseInt(parts[part++])        : this.hashBytesLen();
+		final Pbkdf2EncoderV1 parametersDecoded   = new Pbkdf2EncoderV1(algorithmDecoded, iterationsDecoded, hashBytesLenDecoded, hashEncodeDecode0);
 		return parametersDecoded;
 	}
 
@@ -66,7 +66,7 @@ public record Pbkdf2EncoderV1 (
 			final PBEKeySpec spec = new PBEKeySpec(
 				rawInput.toString().toCharArray(),
 				saltBytes.clone(),
-				this.iter(),
+				this.iterations(),
 				this.hashBytesLen() * 8
 			);
 			final SecretKeyFactory skf = SecretKeyFactory.getInstance(this.algorithm().value());
@@ -87,10 +87,10 @@ public record Pbkdf2EncoderV1 (
 		final Pbkdf2EncoderV1 decodedParametersPbkdf2 = (Pbkdf2EncoderV1) decodedParameters;
 		return Boolean.valueOf(
 			   (defaultSaltBytesLen     != decodedSaltBytesLen)
-			|| (this.iter()             != decodedParametersPbkdf2.iter())
 			|| (this.algorithm()        != decodedParametersPbkdf2.algorithm())
-			|| (this.hashEncodeDecode() != decodedParametersPbkdf2.hashEncodeDecode())
+			|| (this.iterations()       != decodedParametersPbkdf2.iterations())
 			|| (this.hashBytesLen()     != decodedHashLength)
+			|| (this.hashEncodeDecode() != decodedParametersPbkdf2.hashEncodeDecode())
 		);
 	}
 
