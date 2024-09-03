@@ -14,9 +14,10 @@ import jakarta.validation.constraints.NotNull;
 
 @SuppressWarnings({"nls"})
 public enum MacAlgorithm {
-	CMAC128       ("CMAC",           16, Constants.CMAC_128_OID), // TODO
-	CMAC192       ("CMAC",           24, Constants.CMAC_128_OID), // TODO
-	CMAC256       ("CMAC",           32, Constants.CMAC_128_OID), // TODO
+	AesCmac       ("AesCmac",        16, Constants.AES_CMAC_OID),
+	AesCmac128    ("AesCmac128",     16, Constants.AES_CMAC_128_OID),
+	AesCmac192    ("AesCmac192",     16, Constants.AES_CMAC_192_OID),
+	AesCmac256    ("AesCmac256",     16, Constants.AES_CMAC_256_OID),
 	HmacMD5       ("HmacMD5",        16, Constants.HMAC_MD5_OID),
 	HmacSHA1      ("HmacSHA1",       20, Constants.HMAC_SHA1_OID),
 	HmacSHA224    ("HmacSHA224",     28, Constants.HMAC_SHA224_OID),
@@ -79,26 +80,26 @@ public enum MacAlgorithm {
     }
 
 	public static class Constants {
-		// TODO
-		public static final ASN1ObjectIdentifier CMAC_128_OID        = new ASN1ObjectIdentifier("1.2.840.113549.2.5");
-		public static final ASN1ObjectIdentifier CMAC_192_OID        = new ASN1ObjectIdentifier("1.2.840.113549.2.5");
-		public static final ASN1ObjectIdentifier CMAC_256_OID        = new ASN1ObjectIdentifier("1.2.840.113549.2.5");
+		// See NIST cryptographic algorithms family "hash functions"
+		public static final ASN1ObjectIdentifier AES_CMAC_OID            = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.24");
+		public static final ASN1ObjectIdentifier AES_CMAC_128_OID        = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.25");
+		public static final ASN1ObjectIdentifier AES_CMAC_192_OID        = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.26");
+		public static final ASN1ObjectIdentifier AES_CMAC_256_OID        = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.27");
 
 		// See org.bouncycastle.asn1.nist.NistObjectIdentifiers.java for these Hmac OIDs
 		public static final ASN1ObjectIdentifier HMAC_MD5_OID        = new ASN1ObjectIdentifier("1.2.840.113549.2.5");
 		public static final ASN1ObjectIdentifier HMAC_SHA1_OID       = new ASN1ObjectIdentifier("1.2.840.113549.2.7");
-		public static final ASN1ObjectIdentifier HMAC_SHA224_OID     = new ASN1ObjectIdentifier("1.2.840.113549.2.8");
-		public static final ASN1ObjectIdentifier HMAC_SHA256_OID     = new ASN1ObjectIdentifier("1.2.840.113549.2.9");
-		public static final ASN1ObjectIdentifier HMAC_SHA384_OID     = new ASN1ObjectIdentifier("1.2.840.113549.2.10");
-		public static final ASN1ObjectIdentifier HMAC_SHA512_OID     = new ASN1ObjectIdentifier("1.2.840.113549.2.11");
-		public static final ASN1ObjectIdentifier HMAC_SHA512_224_OID = new ASN1ObjectIdentifier("1.2.840.113549.2.12");
-		public static final ASN1ObjectIdentifier HMAC_SHA512_256_OID = new ASN1ObjectIdentifier("1.2.840.113549.2.13");
+		public static final ASN1ObjectIdentifier HMAC_SHA224_OID     = new ASN1ObjectIdentifier("1.2.840.113549.2.8"); // 2.16.840.1.101.3.4.2.14
+		public static final ASN1ObjectIdentifier HMAC_SHA256_OID     = new ASN1ObjectIdentifier("1.2.840.113549.2.9"); // 2.16.840.1.101.3.4.2.15
+		public static final ASN1ObjectIdentifier HMAC_SHA384_OID     = new ASN1ObjectIdentifier("1.2.840.113549.2.10"); // 2.16.840.1.101.3.4.2.16
+		public static final ASN1ObjectIdentifier HMAC_SHA512_OID     = new ASN1ObjectIdentifier("1.2.840.113549.2.11"); // 2.16.840.1.101.3.4.2.17
+		public static final ASN1ObjectIdentifier HMAC_SHA512_224_OID = new ASN1ObjectIdentifier("1.2.840.113549.2.12"); // 2.16.840.1.101.3.4.2.18
+		public static final ASN1ObjectIdentifier HMAC_SHA512_256_OID = new ASN1ObjectIdentifier("1.2.840.113549.2.13"); // 2.16.840.1.101.3.4.2.19
 
 		// See org.bouncycastle.asn1.nist.NistObjectIdentifiers.java for these HMAC OIDs
-		public static final ASN1ObjectIdentifier HMAC_SHA3_224_OID = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.13");
-		public static final ASN1ObjectIdentifier HMAC_SHA3_256_OID = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.14");
-		public static final ASN1ObjectIdentifier HMAC_SHA3_384_OID = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.15");
-		public static final ASN1ObjectIdentifier HMAC_SHA3_512_OID = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.16");
-
+		public static final ASN1ObjectIdentifier HMAC_SHA3_224_OID = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.13"); // 2.16.840.1.101.3.4.2.20
+		public static final ASN1ObjectIdentifier HMAC_SHA3_256_OID = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.14"); // 2.16.840.1.101.3.4.2.21
+		public static final ASN1ObjectIdentifier HMAC_SHA3_384_OID = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.15"); // 2.16.840.1.101.3.4.2.22
+		public static final ASN1ObjectIdentifier HMAC_SHA3_512_OID = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.16"); // 2.16.840.1.101.3.4.2.23
 	}
 }
