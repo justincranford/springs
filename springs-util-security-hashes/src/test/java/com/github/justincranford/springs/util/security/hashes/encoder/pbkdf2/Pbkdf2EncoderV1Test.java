@@ -36,13 +36,13 @@ public class Pbkdf2EncoderV1Test {
 	@Nested
 	public class EncodePwd {
 		private static final String PWD = "P@ssw0rd";
+		private static final Function<CharSequence, byte[]> RANDOM_SALT_SUPPLIER =
+			(charSequence) -> SecureRandomUtil.randomBytes(16); // independent of input value
 
 		// saltBytes => randomSaltBytes
 		@Test
 		public void testRandomSalt_saltHasHighEntropy() {
-			final Function<CharSequence, byte[]> saltSupplier = (charSequence) -> SecureRandomUtil.randomBytes(16);
-			final Set<String> hashes = computePbkdf2s(REPEATS, FAST_PBKDF2, PWD, saltSupplier);
-			assertNonDeterministic(hashes);
+			assertNonDeterministic(computePbkdf2s(REPEATS, FAST_PBKDF2, PWD, RANDOM_SALT_SUPPLIER));
 		}
 	}
 
@@ -53,41 +53,41 @@ public class Pbkdf2EncoderV1Test {
 		@Nested
 		public class ConstantSalt {
 			private static final byte[] CONSTANT_SALT_BYTES = SecureRandomUtil.randomBytes(16);
+			final Function<CharSequence, byte[]> CONSTANT_SALT_SUPPLIER =
+				(charSequence) -> CONSTANT_SALT_BYTES; // independent of input value
+
 			// saltBytes => constantSaltBytes
 			@Test
 			public void testConstantSalt_saltHasNoEntropy() {
-				final Function<CharSequence, byte[]> saltSupplier = (charSequence) -> CONSTANT_SALT_BYTES;
-				final Set<String> hashes = computePbkdf2s(REPEATS, FAST_PBKDF2, PII, saltSupplier);
-				assertDeterministic(hashes);
+				assertDeterministic(computePbkdf2s(REPEATS, FAST_PBKDF2, PII, CONSTANT_SALT_SUPPLIER));
 			}
 		}
 
 		@Nested
 		public class SaltDerivedFromPii {
 			private static final MacAlgorithm DERIVE_MAC = MacAlgorithm.HmacSHA256; // only used for derive, not for random||constant tests
-			private static final byte[] SALT_CONSTANT_SEED_BYTES = SecureRandomUtil.randomBytes(16);
+			private static final byte[] CONSTANT_SEED_BYTES = SecureRandomUtil.randomBytes(16); // treat input salt as a seed
 
 			// saltBytes => HmacSha256(SecretKey(piiBytes), piiBytes+constantSeedBytes)
 			@Test
 			public void testDerivedSalt_saltHasLowEntropy() {
-				final Function<CharSequence, byte[]> saltSupplier = (charSequence) -> {
-					final SecretKeySpec lowEntropyKey = new SecretKeySpec(charSequence.toString().getBytes(), "PepperTheSalt");
-					final byte[] concatBytes = ArrayUtil.concat(charSequence.toString().getBytes(), SALT_CONSTANT_SEED_BYTES);
-					return DERIVE_MAC.compute(lowEntropyKey, concatBytes);
+				final Function<CharSequence, byte[]> deriveSaltFromPasswordSeed = (charSequence) -> {
+					final byte[] charSequenceBytes = charSequence.toString().getBytes();
+					final SecretKeySpec lowEntropyKey = new SecretKeySpec(charSequenceBytes, "PepperTheSalt");
+					return DERIVE_MAC.compute(lowEntropyKey, ArrayUtil.concat(charSequenceBytes, CONSTANT_SEED_BYTES));
 				};
-				final Set<String> hashes = computePbkdf2s(REPEATS, FAST_PBKDF2, PII, saltSupplier);
-				assertDeterministic(hashes);
+				assertDeterministic(computePbkdf2s(REPEATS, FAST_PBKDF2, PII, deriveSaltFromPasswordSeed));
 			}
 
-			// saltBytes => HmacSha256(SecretKey(randomBytes), piiBytes+constantSeedBytes)
+			// saltBytes => HmacSha256(SecretKey(randomKeyBytes), piiBytes+constantSeedBytes)
 			@Test
 			public void testDerivedSalt_saltHasHighEntropy() {
 				final SecretKeySpec highEntropyKey = new SecretKeySpec(SecureRandomUtil.randomBytes(32), "PepperTheSalt");
-				final Function<CharSequence, byte[]> saltSupplier = (charSequence) -> {
-					final byte[] concatBytes = ArrayUtil.concat(charSequence.toString().getBytes(), SALT_CONSTANT_SEED_BYTES);
-					return DERIVE_MAC.compute(highEntropyKey, concatBytes);
+				final Function<CharSequence, byte[]> deriveSaltFromKeyPasswordSeed = (charSequence) -> {
+					final byte[] charSequenceBytes = charSequence.toString().getBytes();
+					return DERIVE_MAC.compute(highEntropyKey, ArrayUtil.concat(charSequenceBytes, CONSTANT_SEED_BYTES));
 				};
-				assertDeterministic(computePbkdf2s(REPEATS, FAST_PBKDF2, PII, saltSupplier));
+				assertDeterministic(computePbkdf2s(REPEATS, FAST_PBKDF2, PII, deriveSaltFromKeyPasswordSeed));
 			}
 		}
 	}
