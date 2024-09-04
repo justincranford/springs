@@ -42,7 +42,7 @@ public enum MacAlgorithm {
 		this.oid      = oid0;
 		this.oidBytes = Asn1Util.oidDerBytes(oid0);
 	}
-	public String alg() {
+	public String value() {
 		return this.value;
 	}
 	public int len() {

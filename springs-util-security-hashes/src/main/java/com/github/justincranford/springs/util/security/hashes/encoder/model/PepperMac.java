@@ -33,7 +33,7 @@ public record PepperMac(
 		).toArray(new byte[0][]);
 
 		// Use high-entropy secretKey (i.e. optimal), or low-entropy concatData-derived secretKey (i.e. fallback)
-		final SecretKey hmacKey = (this.secretKey != null) ? this.secretKey : new SecretKeySpec(ArrayUtil.concat(dataChunks), this.algorithm.alg());
+		final SecretKey hmacKey = (this.secretKey != null) ? this.secretKey : new SecretKeySpec(ArrayUtil.concat(dataChunks), this.algorithm.value());
 
 		final byte[] pepperMac = this.algorithm.compute(hmacKey, dataChunks);
 		return this.encoderDecoder.encodeToBytes(pepperMac);	// required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
