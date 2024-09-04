@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @SuppressWarnings({"nls"})
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public class Argon2Encoder {
-	private static final String DERIVED_SALT_MESSAGE_DIGEST_ALGORITHM = "SHA-512"; // 512b/64B
+	private static final MessageDigestUtil.ALG MESSAGE_DIGEST_ALG = MessageDigestUtil.ALG.SHA256; // 512b/64B
 	private static final int ARGON2_ALGORITHM_TYPE = Argon2Parameters.ARGON2_id;
 	private static final int ARGON2_VERSION = Argon2Parameters.ARGON2_VERSION_13;
 
@@ -122,10 +122,7 @@ public class Argon2Encoder {
 		final int memory,
 		final int iterations
 	) {
-		return MessageDigestUtil.messageDigest(
-			DERIVED_SALT_MESSAGE_DIGEST_ALGORITHM,
-			canonicalEncodeDerivedSaltParameters(rawPassword, derivedSaltLength, associatedData, hashLength, parallelism, memory, iterations)
-		);
+		return MESSAGE_DIGEST_ALG.compute(canonicalEncodeDerivedSaltParameters(rawPassword, derivedSaltLength, associatedData, hashLength, parallelism, memory, iterations));
 	}
 
 	private static byte[] canonicalEncodeDerivedSaltParameters(
