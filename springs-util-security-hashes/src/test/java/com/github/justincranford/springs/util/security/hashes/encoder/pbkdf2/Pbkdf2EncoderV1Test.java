@@ -29,9 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class Pbkdf2EncoderV1Test {
 	private static final int REPEATS = 3; // repeat hashing within a test to verify if hashes are determinstic vs non-deterministic
-	private static final Pbkdf2Algorithm PRF = Pbkdf2Algorithm.PBKDF2WithHmacSHA256;
-	private static final HashEncodeDecode HED = HashEncodeDecode.STD_CB_SALT_OTH; // encode options: Base64, colon+bar separators, salt+other parameters included
-	private static final Pbkdf2EncoderV1 FAST_PBKDF2 = new Pbkdf2EncoderV1(PRF, 1, 32, HED);
+	private static final Pbkdf2EncoderV1 FAST_PBKDF2 = new Pbkdf2EncoderV1(Pbkdf2Algorithm.PBKDF2WithHmacSHA256, 1, 32, HashEncodeDecode.STD_CB_SALT_OTH);
 
 	@Nested
 	public class EncodePwd {
