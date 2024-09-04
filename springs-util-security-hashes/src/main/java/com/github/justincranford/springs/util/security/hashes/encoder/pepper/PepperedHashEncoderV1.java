@@ -87,10 +87,10 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 		if (encodedHashParametersAndHashSalt.isEmpty()) {
 			return encodedHash;
 		}
-		return encodedHashParametersAndHashSalt + hashParametersAndHashSalt.hashParameters().hashEncodeDecode().separators().hash() + encodedHash;
+		return encodedHashParametersAndHashSalt + hashParametersAndHashSalt.hashParameters().hashEncodeDecode().separators().parametersVsHash() + encodedHash;
 	}
 	public static HashParametersAndHashSaltAndHash decodeHashParametersAndHashSaltAndHash(@NotNull final String hashParametersAndHashSaltAndHash, @NotNull final HashParameters defaultHashParameters, @NotNull final byte[] hashSaltBytes) {
-	    final List<String> parts = StringUtil.split(hashParametersAndHashSaltAndHash, defaultHashParameters.hashEncodeDecode().separators().hash());
+	    final List<String> parts = StringUtil.split(hashParametersAndHashSaltAndHash, defaultHashParameters.hashEncodeDecode().separators().parametersVsHash());
 		final HashParametersAndHashSalt hashParametersAndHashSalt = decodeHashParametersAndHashSalt((parts.size() == 1) ? "" : parts.removeFirst(), defaultHashParameters, hashSaltBytes);
 		final byte[] hashBytes = decodeHash(defaultHashParameters, parts.removeFirst());
 		if (parts.isEmpty()) {
@@ -108,12 +108,12 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 		if (hashEncodeDecode.flags().hashParameters()) {
 			hashParametersToBeEncoded.addAll(hashParameters.encode());
 		}
-		return StringUtil.toString("", hashEncodeDecode.separators().parameters(), "", hashParametersToBeEncoded);
+		return StringUtil.toString("", hashEncodeDecode.separators().intraParameters(), "", hashParametersToBeEncoded);
 	}
 
 	private static HashParametersAndHashSalt decodeHashParametersAndHashSalt(final String encodedParameters, @NotNull final HashParameters defaultHashParameters, @NotNull final byte[] hashSaltBytes) {
 		final HashEncodeDecode hashEncodeDecode      = defaultHashParameters.hashEncodeDecode();
-		final List<String>     parts                 = StringUtil.split(encodedParameters, hashEncodeDecode.separators().parameters());
+		final List<String>     parts                 = StringUtil.split(encodedParameters, hashEncodeDecode.separators().intraParameters());
 		final byte[]           hashSaltBytesDecoded  = (hashEncodeDecode.flags().hashSalt())  ? hashEncodeDecode.encoderDecoder().decodeFromString(parts.removeFirst()) : hashSaltBytes;
 		final HashParameters   hashParametersDecoded = defaultHashParameters.decode(parts, hashEncodeDecode);
 		if (parts.isEmpty()) {

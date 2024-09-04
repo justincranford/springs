@@ -12,8 +12,8 @@ public record HashEncodeDecode(
 	@NotNull HashEncodeDecode.Flags flags
 ) {
 	public record Separators(
-		@NotEmpty String parameters,
-		@NotEmpty String hash
+		@NotEmpty String intraParameters,
+		@NotEmpty String parametersVsHash
 	) {
 	    public static final Separators CB = new Separators(":", "|");
 	}
