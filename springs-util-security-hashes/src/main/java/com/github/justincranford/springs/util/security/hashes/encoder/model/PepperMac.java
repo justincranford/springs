@@ -7,7 +7,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.basic.Base64Util;
-import com.github.justincranford.springs.util.security.hashes.util.MacAlgorithm;
+import com.github.justincranford.springs.util.security.hashes.mac.MacAlgorithm;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

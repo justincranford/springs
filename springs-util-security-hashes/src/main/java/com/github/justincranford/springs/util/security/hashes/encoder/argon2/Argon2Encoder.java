@@ -15,7 +15,7 @@ import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.security.hashes.encoder.argon2.Argon2EncodingUtils.Argon2Hash;
-import com.github.justincranford.springs.util.security.hashes.util.MessageDigestUtil;
+import com.github.justincranford.springs.util.security.hashes.digest.MessageDigestUtil;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

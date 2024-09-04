@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.security.hashes.util;
+package com.github.justincranford.springs.util.security.hashes.digest;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

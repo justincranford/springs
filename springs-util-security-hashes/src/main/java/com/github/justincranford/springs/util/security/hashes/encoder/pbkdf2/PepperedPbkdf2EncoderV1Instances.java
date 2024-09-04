@@ -16,7 +16,7 @@ import com.github.justincranford.springs.util.security.hashes.encoder.model.Hash
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.ConstantSalt;
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.DerivedSalt;
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.RandomSalt;
-import com.github.justincranford.springs.util.security.hashes.util.MacAlgorithm;
+import com.github.justincranford.springs.util.security.hashes.mac.MacAlgorithm;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

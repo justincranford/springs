@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.security.hashes.util;
+package com.github.justincranford.springs.util.security.hashes.mac;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -9,6 +9,7 @@ import javax.crypto.SecretKey;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
+import com.github.justincranford.springs.util.security.hashes.asn1.Asn1Util;
 
 import jakarta.validation.constraints.NotNull;
 
