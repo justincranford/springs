@@ -1,7 +1,7 @@
 package com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2;
 
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.PepperedHashEncoderV1;
+import com.github.justincranford.springs.util.security.hashes.encoder.pepper.PepperedHashEncoderV1;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashParametersAndHashPeppers;
 
 import jakarta.validation.constraints.Min;
