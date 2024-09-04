@@ -36,14 +36,13 @@ public class Pbkdf2EncoderV1Test {
 	@Nested
 	public class EncodePwd {
 		private static final String PWD = "P@ssw0rd";
-		private static final int NON_DETERMINISTIC_COUNT = REPEATS;
 
 		// saltBytes => randomSaltBytes
 		@Test
 		public void testRandomSalt_saltHasHighEntropy() {
 			final Function<CharSequence, byte[]> saltSupplier = (charSequence) -> SecureRandomUtil.randomBytes(16);
-			assertThat(computePbkdf2s(REPEATS, FAST_PBKDF2, PWD, saltSupplier).size())
-				.isEqualTo(NON_DETERMINISTIC_COUNT); // assert hash outputs are non-deterministic for same input charSequence
+			final Set<String> hashes = computePbkdf2s(REPEATS, FAST_PBKDF2, PWD, saltSupplier);
+			assertNonDeterministic(hashes);
 		}
 	}
 
