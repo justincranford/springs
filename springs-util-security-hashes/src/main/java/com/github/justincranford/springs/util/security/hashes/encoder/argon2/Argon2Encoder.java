@@ -15,7 +15,7 @@ import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.security.hashes.encoder.argon2.Argon2EncodingUtils.Argon2Hash;
-import com.github.justincranford.springs.util.security.hashes.digest.MessageDigestUtil;
+import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @SuppressWarnings({"nls"})
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public class Argon2Encoder {
-	private static final MessageDigestUtil.ALG MESSAGE_DIGEST_ALG = MessageDigestUtil.ALG.SHA256; // 512b/64B
+	private static final DigestAlgorithm.ALG MESSAGE_DIGEST_ALG = DigestAlgorithm.ALG.SHA256; // 512b/64B
 	private static final int ARGON2_ALGORITHM_TYPE = Argon2Parameters.ARGON2_id;
 	private static final int ARGON2_VERSION = Argon2Parameters.ARGON2_VERSION_13;
 

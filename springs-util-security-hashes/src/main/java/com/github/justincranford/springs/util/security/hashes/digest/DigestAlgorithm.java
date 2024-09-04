@@ -9,7 +9,7 @@ import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.security.hashes.asn1.Asn1Util;
 
 @SuppressWarnings({"nls", "hiding"})
-public class MessageDigestUtil {
+public class DigestAlgorithm {
     public enum ALG {
 		MD2       ("MD2",         16, Oids.MD2),
 		MD4       ("MD4",         16, Oids.MD4),
