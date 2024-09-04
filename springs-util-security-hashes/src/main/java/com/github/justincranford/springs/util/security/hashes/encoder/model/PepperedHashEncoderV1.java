@@ -79,36 +79,39 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 		if (encodedHashParametersAndHashSalt.isEmpty()) {
 			return encodedHash;
 		}
-		return encodedHashParametersAndHashSalt + hashParametersAndHashSalt.hashParameters().hashEncodeDecode().separators().encodeHash() + encodedHash;
+		return encodedHashParametersAndHashSalt + hashParametersAndHashSalt.hashParameters().hashEncodeDecode().separators().hash() + encodedHash;
 	}
 	public static HashParametersAndHashSaltAndHash decodeHashParametersAndHashSaltAndHash(@NotNull final String hashParametersAndHashSaltAndHash, @NotNull final HashParameters defaultHashParameters, @NotNull final byte[] hashSaltBytes) {
-	    final String[] parts = hashParametersAndHashSaltAndHash.split(defaultHashParameters.hashEncodeDecode().separators().decodeHash());
-	    int part = 0;
-		final HashParametersAndHashSalt hashParametersAndHashSalt = decodeHashParametersAndHashSalt((parts.length == 1) ? "" : parts[part++], defaultHashParameters, hashSaltBytes);
-		final byte[] hashBytes = decodeHash(defaultHashParameters, parts[part++]);
-		return new HashParametersAndHashSaltAndHash(hashParametersAndHashSalt, hashBytes);
-	
+	    final List<String> parts = StringUtil.split(hashParametersAndHashSaltAndHash, defaultHashParameters.hashEncodeDecode().separators().hash());
+		final HashParametersAndHashSalt hashParametersAndHashSalt = decodeHashParametersAndHashSalt((parts.size() == 1) ? "" : parts.removeFirst(), defaultHashParameters, hashSaltBytes);
+		final byte[] hashBytes = decodeHash(defaultHashParameters, parts.removeFirst());
+		if (parts.isEmpty()) {
+			return new HashParametersAndHashSaltAndHash(hashParametersAndHashSalt, hashBytes);
+		}
+		throw new RuntimeException("Leftover parts");
 	}
 	private static String encodeHashParametersAndHashSalt(@NotNull final HashParametersAndHashSalt hashParametersAndHashSalt) {
-		final HashParameters hashParameters            = hashParametersAndHashSalt.hashParameters();
-		final List<Object>   hashParametersToBeEncoded = new ArrayList<>();
-		final HashEncodeDecode hashEncodeDecode = hashParameters.hashEncodeDecode();
+		final HashParameters   hashParameters            = hashParametersAndHashSalt.hashParameters();
+		final List<Object>     hashParametersToBeEncoded = new ArrayList<>();
+		final HashEncodeDecode hashEncodeDecode          = hashParameters.hashEncodeDecode();
 		if (hashEncodeDecode.flags().hashSalt()) {
 			hashParametersToBeEncoded.add(hashEncodeDecode.encoderDecoder().encodeToString(hashParametersAndHashSalt.hashSaltBytes()));
 		}
 		if (hashEncodeDecode.flags().hashParameters()) {
 			hashParametersToBeEncoded.addAll(hashParameters.encode());
 		}
-		return StringUtil.toString("", hashEncodeDecode.separators().encodeParameters(), "", hashParametersToBeEncoded);
+		return StringUtil.toString("", hashEncodeDecode.separators().parameters(), "", hashParametersToBeEncoded);
 	}
 
 	private static HashParametersAndHashSalt decodeHashParametersAndHashSalt(final String encodedParameters, @NotNull final HashParameters defaultHashParameters, @NotNull final byte[] hashSaltBytes) {
-		final HashEncodeDecode hashEncodeDecode  = defaultHashParameters.hashEncodeDecode();
-		final String[]         parts             = encodedParameters.split(hashEncodeDecode.separators().decodeParameters());
-	    int part = 0;
-		final byte[]           hashSaltBytesDecoded  = (hashEncodeDecode.flags().hashSalt())  ? hashEncodeDecode.encoderDecoder().decodeFromString(parts[part++]) : hashSaltBytes;
-		final HashParameters       hashParametersDecoded = defaultHashParameters.decode(parts, part, hashEncodeDecode);
-		return new HashParametersAndHashSalt(hashParametersDecoded, hashSaltBytesDecoded);
+		final HashEncodeDecode hashEncodeDecode      = defaultHashParameters.hashEncodeDecode();
+		final List<String>     parts                 = StringUtil.split(encodedParameters, hashEncodeDecode.separators().parameters());
+		final byte[]           hashSaltBytesDecoded  = (hashEncodeDecode.flags().hashSalt())  ? hashEncodeDecode.encoderDecoder().decodeFromString(parts.removeFirst()) : hashSaltBytes;
+		final HashParameters   hashParametersDecoded = defaultHashParameters.decode(parts, hashEncodeDecode);
+		if (parts.isEmpty()) {
+			return new HashParametersAndHashSalt(hashParametersDecoded, hashSaltBytesDecoded);
+		}
+		throw new RuntimeException("Leftover parts");
 	}
 
 	private static String encodeHash(@NotNull final HashParameters hashParameters, @NotEmpty final byte[] hash) {

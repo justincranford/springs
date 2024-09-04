@@ -17,5 +17,5 @@ public interface HashParameters {
 		@Min(0)  final int decodedHashLength
 	);
 	@NotEmpty public List<Object> encode();
-	@NotEmpty public HashParameters decode(@NotNull String[] parts, @Min(0) int partIndex, @NotNull HashEncodeDecode hashEncodeDecode);
+	@NotEmpty public HashParameters decode(@NotNull List<String> parts, @NotNull HashEncodeDecode hashEncodeDecode);
 }

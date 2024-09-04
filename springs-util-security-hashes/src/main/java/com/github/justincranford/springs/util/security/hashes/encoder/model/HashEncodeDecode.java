@@ -12,17 +12,10 @@ public record HashEncodeDecode(
 	@NotNull HashEncodeDecode.Flags flags
 ) {
 	public record Separators(
-		@NotEmpty String encodeParameters,
-		@NotEmpty String decodeParameters,
-		@NotEmpty String encodeHash,
-		@NotEmpty String decodeHash
+		@NotEmpty String parameters,
+		@NotEmpty String hash
 	) {
-		private static final String ENC_PARAM = ":";
-		private static final String DEC_PARAM = ENC_PARAM;
-	    private static final String ENC_HASH = "|";
-	    private static final String DEC_HASH = "\\" + ENC_HASH;
-
-	    public static final Separators CB = new Separators(ENC_PARAM, DEC_PARAM, ENC_HASH, DEC_HASH);
+	    public static final Separators CB = new Separators(":", "|");
 	}
 
 	public record Flags(
