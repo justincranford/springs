@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 
 @SuppressWarnings({"nls"})
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
-public final class PepperedPbkdf2EncoderV1Instances {
+public final class PepperedPbkdf2EncoderV1TestInstances {
 	public static final class Random {
 		public static final RandomSalt SALTOTH_NULL_NULL_NULL    = new RandomSalt(ParametersAndPeppers.SALTOTH_NULL_NULL_NULL,       Defaults.RAND_LEN_BYTES);
 		public static final RandomSalt SALTOTH_NONE_NONE_NONE    = new RandomSalt(ParametersAndPeppers.SALTOTH_NONE_NONE_NONE,       Defaults.RAND_LEN_BYTES);
