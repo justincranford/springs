@@ -22,74 +22,101 @@ import com.github.justincranford.springs.util.security.hashes.mac.MacAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Demo concept of random salt, constant salt, and derived salts.
+ * Demo concept of random salt, constant salt, and two types of derived salts.
+ * Strength of each algorithm depends on Rainbox table sizing; Quadratic is good, Linear is bad. 
+ *  - Rainbox table size = NumUnique(Salt) * NumUnique(PWD)
  */
 @Slf4j
 @SuppressWarnings({"nls", "static-method"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class Pbkdf2EncoderV1Test {
-	private static final int REPEATS = 3; // repeat hashing within a test to verify if hashes are determinstic vs non-deterministic
+	private static final int HASH_REPEATS = 3; // repeat hashing in each test; 1 unique hash means deterministic, N different hashes means non-deterministic
 	private static final Pbkdf2EncoderV1 FAST_PBKDF2 = new Pbkdf2EncoderV1(Pbkdf2Algorithm.PBKDF2WithHmacSHA256, 1, 32, HashEncodeDecode.STD_CB_SALT_OTH);
 	private static final String PII = "Hello.World@example.com";
 	private static final String PWD = "P@ssw0rd";
 
+	
 	@Nested
-	public class EncodePwd { // classic Pbkdf2 usage with random salt
-		private static final Function<CharSequence, byte[]> RANDOM_SALT_SUPPLIER =
-			(charSequence) -> SecureRandomUtil.randomBytes(16); // independent of input value
+	public class EncodePwd {
+		/**
+		 * Ideal Pbkdf2 usage with random salt. Rainbox table size is quadratic; NumUnique(Salt) * NumUnique(PWD).
+		 */
+		@Nested
+		public class RandomSalt {
+			private static final Function<CharSequence, byte[]> RANDOM_SALT_SUPPLIER = (charSequence) -> SecureRandomUtil.randomBytes(64); // doesn't need to be secret
 
-		@Test
-		public void testRandomSalt_saltHasHighEntropy() {
-			final Set<String> hashes = computePbkdf2s(REPEATS, FAST_PBKDF2, PWD, RANDOM_SALT_SUPPLIER);
-			log.info("hashes: {}", hashes);
-			assertThat(hashes.size()).isEqualTo(REPEATS); // non-deterministic
+			@Test
+			public void testRandomSalt_randomSalt_quadraticSearchSpaceForSalt() {
+				final Set<String> hashes = computePbkdf2s(HASH_REPEATS, FAST_PBKDF2, PWD, RANDOM_SALT_SUPPLIER);
+				log.info("hashes: {}", hashes);
+				assertThat(hashes.size()).isEqualTo(HASH_REPEATS); // non-deterministic
+			}
 		}
 	}
 
 	@Nested
 	public class EncodePii {
+		/**
+		 * Weak Pbkdf2 usage with constant salt. Rainbox table size is linear; 1 * NumUnique(PWD).
+		 * Constant salt needs to be kept secret.
+		 */
 		@Nested
-		public class ConstantSalt { // naive Pbkdf2 usage with constant salt (vulnerable to rainbow table attack)
-			private static final byte[] CONSTANT_SALT_BYTES = SecureRandomUtil.randomBytes(16);
-			private static final Function<CharSequence, byte[]> CONSTANT_SALT_SUPPLIER =
-				(charSequence) -> CONSTANT_SALT_BYTES; // independent of input value
+		public class ConstantSalt {
+			private static final byte[] CONSTANT_SALT_BYTES = SecureRandomUtil.randomBytes(64); // needs to be secret
+			private static final Function<CharSequence, byte[]> CONSTANT_SALT_SUPPLIER = (charSequence) -> CONSTANT_SALT_BYTES;
 
 			@Test
-			public void testConstantSalt_saltHasNoEntropy() {
-				final Set<String> hashes = computePbkdf2s(REPEATS, FAST_PBKDF2, PII, CONSTANT_SALT_SUPPLIER);
+			public void testConstantSalt_constantSalt_linearSearchSpaceForSalt() {
+				final Set<String> hashes = computePbkdf2s(HASH_REPEATS, FAST_PBKDF2, PII, CONSTANT_SALT_SUPPLIER);
 				log.info("hashes: {}", hashes);
-				assertThat(hashes.size()).isEqualTo(1); // deterministic
+				assertThat(hashes.size()).isEqualTo(1); // verify outputs are non-deterministic
 			}
 		}
 
-		// advanced Pbkdf2 usage with derived salt (entropy correlated to passwords (no key) or key+passwords)
+		/**
+		 * Weak Pbkdf2 usage with derived salt, using PII as Hmac key. Rainbox table size is still linear; 1 * NumUnique(PWD).
+		 * Constant salt still needs to be kept secret. Security strength is basically equivalent to using the constant salt. 
+		 */
 		@Nested
-		public class SaltDerivedFromPii {
-			private static final MacAlgorithm DERIVE_MAC = MacAlgorithm.HmacSHA256; // only used for derive, not for random||constant tests
-			private static final byte[] CONSTANT_SEED_BYTES = SecureRandomUtil.randomBytes(16); // treat input salt as a seed
+		public class DerivedSaltWithPiiAsKey {
+			private static final byte[] CONSTANT_SALT_BYTES = SecureRandomUtil.randomBytes(64); // needs to be secret
+			private static final MacAlgorithm PEPPER_ALG = MacAlgorithm.HmacSHA256;
+			private static final Function<CharSequence, byte[]> DERIVED_SALT_SUPPLIER = (charSequence) -> {
+				final byte[] charSequenceBytes = charSequence.toString().getBytes();
+				final SecretKeySpec piiAsKey = new SecretKeySpec(charSequenceBytes, "PepperTheSalt"); // no key => use PII input as the key
+				return PEPPER_ALG.compute(piiAsKey, ArrayUtil.concat(charSequenceBytes, CONSTANT_SALT_BYTES));
+			};
 
 			@Test
-			public void testDerivedSalt_saltHasLowEntropy() { // saltBytes => HmacSha256(SecretKey(piiBytes), piiBytes+constantSeedBytes)
-				final Function<CharSequence, byte[]> deriveSaltFromPasswordSeed = (charSequence) -> {
-					final byte[] charSequenceBytes = charSequence.toString().getBytes(); // no key => use password as the key
-					final SecretKeySpec lowEntropyKey = new SecretKeySpec(charSequenceBytes, "PepperTheSalt");
-					return DERIVE_MAC.compute(lowEntropyKey, ArrayUtil.concat(charSequenceBytes, CONSTANT_SEED_BYTES));
-				};
-				final Set<String> hashes = computePbkdf2s(REPEATS, FAST_PBKDF2, PII, deriveSaltFromPasswordSeed);
+			public void testDerivedSalt_derivedHmacKey_linearSearchSpaceForSalt() { // saltBytes => HmacSha256(SecretKey(piiBytes), piiBytes+constantSeedBytes)
+				final Set<String> hashes = computePbkdf2s(HASH_REPEATS, FAST_PBKDF2, PII, DERIVED_SALT_SUPPLIER);
 				log.info("hashes: {}", hashes);
-				assertThat(hashes.size()).isEqualTo(1); // deterministic
+				assertThat(hashes.size()).isEqualTo(1); // verify outputs are deterministic
 			}
+		}
+
+		/**
+		 * Excellent Pbkdf2 usage with derived salt, using random Hmac key. Rainbox table size is quadratic; NumUnique(Salt) * NumUnique(PWD).
+		 * NumUnique(Salt) correlates to Hmac output search space; that depends on the Hmac key size and the Hmac algorithm.
+		 *  - Example: HmacWithSha256 with minimum 32-byte key => approxiamate 32-byte search space (i.e. similar to 32-byte random search space) 
+		 *  - Example: HmacWithSha512 with minimum 64-byte key => approxiamate 64-byte search space (i.e. similar to 64-byte random search space)
+		 * Hashing introduces a slightly higher chance of collisions versus random bytes, but not anticipated to be significant.
+		 */
+		@Nested
+		public class DerivedSaltWithKey {
+			private static final byte[] CONSTANT_SALT_BYTES = SecureRandomUtil.randomBytes(64); // doesn't need to be secret
+			private static final MacAlgorithm PEPPER_ALG = MacAlgorithm.HmacSHA256;
+			private static final SecretKeySpec RANDOM_HMAC_KEY = new SecretKeySpec(SecureRandomUtil.randomBytes(64), "PepperTheSalt"); // needs to be secret
+			private static final  Function<CharSequence, byte[]> DERIVED_SALT_SUPPLIER = (charSequence) -> {
+				final byte[] charSequenceBytes = charSequence.toString().getBytes();
+				return PEPPER_ALG.compute(RANDOM_HMAC_KEY, ArrayUtil.concat(charSequenceBytes, CONSTANT_SALT_BYTES));
+			};
 
 			@Test
-			public void testDerivedSalt_saltHasHighEntropy() { // saltBytes => HmacSha256(SecretKey(randomKeyBytes), piiBytes+constantSeedBytes)
-				final SecretKeySpec highEntropyKey = new SecretKeySpec(SecureRandomUtil.randomBytes(32), "PepperTheSalt");
-				final Function<CharSequence, byte[]> deriveSaltFromKeyPasswordSeed = (charSequence) -> {
-					final byte[] charSequenceBytes = charSequence.toString().getBytes();
-					return DERIVE_MAC.compute(highEntropyKey, ArrayUtil.concat(charSequenceBytes, CONSTANT_SEED_BYTES));
-				};
-				final Set<String> hashes = computePbkdf2s(REPEATS, FAST_PBKDF2, PII, deriveSaltFromKeyPasswordSeed);
+			public void testDerivedSalt_randomHmacKey_quadraticSearchSpaceForSalt() { // saltBytes => HmacSha256(SecretKey(randomKeyBytes), piiBytes+constantSeedBytes)
+				final Set<String> hashes = computePbkdf2s(HASH_REPEATS, FAST_PBKDF2, PII, DERIVED_SALT_SUPPLIER);
 				log.info("hashes: {}", hashes);
-				assertThat(hashes.size()).isEqualTo(1); // deterministic
+				assertThat(hashes.size()).isEqualTo(1); // verify outputs are deterministic
 			}
 		}
 	}
