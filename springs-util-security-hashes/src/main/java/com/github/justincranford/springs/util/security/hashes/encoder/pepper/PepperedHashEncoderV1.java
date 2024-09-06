@@ -60,7 +60,7 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 	private static byte[] computeHash(final CharSequence rawInput, final HashParametersAndHashSalt hashParametersAndHashSalt, final HashPeppers peppersForHash) {
 		final HashParameters hashParameters      = hashParametersAndHashSalt.hashParameters();
 		final byte[]         plainSaltBytes      = hashParametersAndHashSalt.hashSaltBytes();
-		final byte[]         additionalDataBytes = hashParametersAndHashSalt.canonicalEncodedBytes();
+		final byte[]         additionalDataBytes = hashParametersAndHashSalt.canonicalBytes();
 		final byte[]         pepperedSaltBytes   = optionalPepperAndEncode(peppersForHash.hashSaltPepper().pepper(), plainSaltBytes, additionalDataBytes); // pre-salt step
 		final byte[]         plainInputBytes     = rawInput.toString().getBytes(StandardCharsets.UTF_8);
 		final byte[]         pepperedInputBytes  = optionalPepperAndEncode(peppersForHash.hashPreHashPepper().pepper(), plainInputBytes, additionalDataBytes); // pre-hash step
@@ -106,7 +106,7 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 			hashParametersToBeEncoded.add(encodeDecode.encoderDecoder().encodeToString(hashParametersAndHashSalt.hashSaltBytes()));
 		}
 		if (encodeDecode.flags().hashParameters()) {
-			hashParametersToBeEncoded.addAll(hashParameters.canonicalEncodeObjects());
+			hashParametersToBeEncoded.addAll(hashParameters.canonicalObjects());
 		}
 		return StringUtil.toString("", encodeDecode.separators().intraParameters(), "", hashParametersToBeEncoded);
 	}

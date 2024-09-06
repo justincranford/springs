@@ -11,28 +11,29 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.security.hashes.asn1.Asn1Util;
+import com.github.justincranford.springs.util.security.hashes.cipher.CipherAlgorithm;
 import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
 
 import jakarta.validation.constraints.NotNull;
 
 @SuppressWarnings({"nls"})
 public enum MacAlgorithm {
-	AesCmac       ("AesCmac",        null,                     16, Constants.AES_CMAC_OID),
-	AesCmac128    ("AesCmac128",     null,                     16, Constants.AES_CMAC_128_OID),
-	AesCmac192    ("AesCmac192",     null,                     16, Constants.AES_CMAC_192_OID),
-	AesCmac256    ("AesCmac256",     null,                     16, Constants.AES_CMAC_256_OID),
-	HmacMD5       ("HmacMD5",        DigestAlgorithm.MD5,      16, Constants.HMAC_MD5_OID),
-	HmacSHA1      ("HmacSHA1",       DigestAlgorithm.SHA1,     20, Constants.HMAC_SHA1_OID),
-	HmacSHA224    ("HmacSHA224",     DigestAlgorithm.SHA224,   28, Constants.HMAC_SHA224_OID),
-	HmacSHA256    ("HmacSHA256",     DigestAlgorithm.SHA256,   32, Constants.HMAC_SHA256_OID),
-	HmacSHA384    ("HmacSHA384",     DigestAlgorithm.SHA384,   48, Constants.HMAC_SHA384_OID),
-	HmacSHA512    ("HmacSHA512",     DigestAlgorithm.SHA512,   64, Constants.HMAC_SHA512_OID),
-	HmacSHA512_224("HmacSHA512/224", DigestAlgorithm.SHA512,   28, Constants.HMAC_SHA512_224_OID),
-	HmacSHA512_256("HmacSHA512/256", DigestAlgorithm.SHA512,   32, Constants.HMAC_SHA512_256_OID),
-	HmacSHA3_224  ("HmacSHA3-224",   DigestAlgorithm.SHA3_224, 28, Constants.HMAC_SHA3_224_OID),
-	HmacSHA3_256  ("HmacSHA3-256",   DigestAlgorithm.SHA3_256, 32, Constants.HMAC_SHA3_256_OID),
-	HmacSHA3_384  ("HmacSHA3-384",   DigestAlgorithm.SHA3_384, 48, Constants.HMAC_SHA3_384_OID),
-	HmacSHA3_512  ("HmacSHA3-512",   DigestAlgorithm.SHA3_512, 64, Constants.HMAC_SHA3_512_OID),
+	AesCmac       ("AesCmac",        null,                     null, 16, Constants.AES_CMAC_OID),
+	AesCmac128    ("AesCmac128",     null,                     null, 16, Constants.AES_CMAC_128_OID),
+	AesCmac192    ("AesCmac192",     null,                     null, 16, Constants.AES_CMAC_192_OID),
+	AesCmac256    ("AesCmac256",     null,                     null, 16, Constants.AES_CMAC_256_OID),
+	HmacMD5       ("HmacMD5",        null,      DigestAlgorithm.MD5, 16, Constants.HMAC_MD5_OID),
+	HmacSHA1      ("HmacSHA1",       null,     DigestAlgorithm.SHA1, 20, Constants.HMAC_SHA1_OID),
+	HmacSHA224    ("HmacSHA224",     null,   DigestAlgorithm.SHA224, 28, Constants.HMAC_SHA224_OID),
+	HmacSHA256    ("HmacSHA256",     null,   DigestAlgorithm.SHA256, 32, Constants.HMAC_SHA256_OID),
+	HmacSHA384    ("HmacSHA384",     null,   DigestAlgorithm.SHA384, 48, Constants.HMAC_SHA384_OID),
+	HmacSHA512    ("HmacSHA512",     null,   DigestAlgorithm.SHA512, 64, Constants.HMAC_SHA512_OID),
+	HmacSHA512_224("HmacSHA512/224", null,   DigestAlgorithm.SHA512, 28, Constants.HMAC_SHA512_224_OID),
+	HmacSHA512_256("HmacSHA512/256", null,   DigestAlgorithm.SHA512, 32, Constants.HMAC_SHA512_256_OID),
+	HmacSHA3_224  ("HmacSHA3-224",   null, DigestAlgorithm.SHA3_224, 28, Constants.HMAC_SHA3_224_OID),
+	HmacSHA3_256  ("HmacSHA3-256",   null, DigestAlgorithm.SHA3_256, 32, Constants.HMAC_SHA3_256_OID),
+	HmacSHA3_384  ("HmacSHA3-384",   null, DigestAlgorithm.SHA3_384, 48, Constants.HMAC_SHA3_384_OID),
+	HmacSHA3_512  ("HmacSHA3-512",   null, DigestAlgorithm.SHA3_512, 64, Constants.HMAC_SHA3_512_OID),
 	;
 
 	public static MacAlgorithm canonicalString(String canonicalString) {
@@ -43,14 +44,16 @@ public enum MacAlgorithm {
 	}
 
 	private final String algorithm;
+	private final CipherAlgorithm cipherAlgorithm;
 	private final DigestAlgorithm digestAlgorithm;
 	private final int bytesLen;
 	private final ASN1ObjectIdentifier asn1Oid;
 	private final byte[] derBytes;
 	private final String canonicalString;
 	private final String toString;
-	private MacAlgorithm(final String algorithm0, final DigestAlgorithm digestAlgorithm0, final int bytesLen0, final ASN1ObjectIdentifier asn1Oid0) {
+	private MacAlgorithm(final String algorithm0, CipherAlgorithm cipherAlgorithm0, final DigestAlgorithm digestAlgorithm0, final int bytesLen0, final ASN1ObjectIdentifier asn1Oid0) {
 		this.algorithm        = algorithm0;
+		this.cipherAlgorithm  = cipherAlgorithm0;
 		this.digestAlgorithm  = digestAlgorithm0;
 		this.bytesLen         = bytesLen0;
 		this.asn1Oid          = asn1Oid0;
@@ -60,6 +63,9 @@ public enum MacAlgorithm {
 	}
 	public String algorithm() {
 		return this.algorithm;
+	}
+	public CipherAlgorithm cipherAlgorithm() {
+		return this.cipherAlgorithm;
 	}
 	public DigestAlgorithm digestAlgorithm() {
 		return this.digestAlgorithm;

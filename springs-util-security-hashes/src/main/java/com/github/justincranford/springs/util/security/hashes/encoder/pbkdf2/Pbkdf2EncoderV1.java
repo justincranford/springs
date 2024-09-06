@@ -34,7 +34,7 @@ public record Pbkdf2EncoderV1 (
 	}
 
 	@Override
-	@NotEmpty public List<Object> canonicalEncodeObjects() {
+	@NotEmpty public List<Object> canonicalObjects() {
 		return List.of(
 			this.algorithm().canonicalString(),
 			Integer.valueOf(this.iterations()),

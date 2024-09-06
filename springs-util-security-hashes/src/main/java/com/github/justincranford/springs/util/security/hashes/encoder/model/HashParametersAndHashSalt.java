@@ -9,7 +9,7 @@ public record HashParametersAndHashSalt(
 	@NotNull HashParameters hashParameters,
 	@NotEmpty byte[] hashSaltBytes
 ) {
-	public byte[] canonicalEncodedBytes() {
+	public byte[] canonicalBytes() {
 		return ArrayUtil.concat(this.hashSaltBytes, this.hashParameters().canonicalBytes());
 	}
 }

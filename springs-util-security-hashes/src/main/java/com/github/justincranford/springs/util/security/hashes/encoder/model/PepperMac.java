@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 
+@SuppressWarnings({"nls"})
 public record PepperMac(
 	@Null SecretKey secretKey, // may be null (e.g. high-entropy 256-bit random key)
 	@NotNull byte[] secretContext, // may be empty (e.g. any-entropy N-byte value)
@@ -33,9 +34,21 @@ public record PepperMac(
 		).toArray(new byte[0][]);
 
 		// Use high-entropy secretKey (i.e. optimal), or low-entropy concatData-derived secretKey (i.e. fallback)
-		final SecretKey hmacKey = (this.secretKey != null) ? this.secretKey : new SecretKeySpec(ArrayUtil.concat(dataChunks), this.mac.algorithm());
+		final SecretKey macKey = (this.secretKey != null) ? this.secretKey : secretKeyFromPii(mac, dataChunks);
 
-		final byte[] pepperMac = this.mac.compute(hmacKey, dataChunks);
+		final byte[] pepperMac = this.mac.compute(macKey, dataChunks);
 		return this.encoderDecoder.encodeToBytes(pepperMac);	// required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
+	}
+
+	private SecretKeySpec secretKeyFromPii(final MacAlgorithm mac, final byte[][] dataChunks) {
+		final byte[] keyBytes;
+		if (mac.digestAlgorithm() != null) {
+			keyBytes = ArrayUtil.concat(dataChunks); // use all of the bytes as the key
+		} else if (mac.cipherAlgorithm() != null) {
+			keyBytes = ArrayUtil.concat(dataChunks); // TODO reduce bytes to key size allowed by the algorithm
+		} else {
+			throw new RuntimeException("Unsupported pepper mac algorithm");
+		}
+		return new SecretKeySpec(keyBytes, this.mac.algorithm());
 	}
 }

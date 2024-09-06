@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 public interface HashParameters {
 	@NotNull public EncodeDecode encodeDecode();
 	@NotNull public byte[] canonicalBytes();
+	@NotEmpty public List<Object> canonicalObjects();
 	@NotNull public byte[] compute(@NotNull final byte[] saltBytes, @NotNull final CharSequence inputString);
 	@NotNull public Boolean recompute(
 		@Min(0)  final int defaultSaltBytesLen,
@@ -16,6 +17,5 @@ public interface HashParameters {
 		@NotNull final HashParameters decodedParameters,
 		@Min(0)  final int decodedComputeLength
 	);
-	@NotEmpty public List<Object> canonicalEncodeObjects();
-	@NotEmpty public HashParameters decode(@NotNull List<String> parts, @NotNull EncodeDecode encodeDecode);
+	@NotEmpty public HashParameters decode(@NotEmpty List<String> parts, @NotNull EncodeDecode encodeDecode);
 }
