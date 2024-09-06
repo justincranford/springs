@@ -8,7 +8,7 @@ import javax.crypto.spec.PBEKeySpec;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.basic.ByteUtil;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashEncodeDecode;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.EncodeDecode;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashParameters;
 
 import jakarta.validation.constraints.Min;
@@ -22,10 +22,10 @@ public record Pbkdf2EncoderV1 (
 	@NotNull Pbkdf2Algorithm algorithm,
 	@Min(Constraints.MIN_ITER) int iterations,
 	@Min(Constraints.MIN_HASH_BYTES_LEN) int hashBytesLen,
-	@NotNull HashEncodeDecode hashEncodeDecode
+	@NotNull EncodeDecode encodeDecode
 ) implements HashParameters {
 	@Override
-	public byte[] canonicalEncodedBytes() {
+	public byte[] canonicalBytes() {
 		return ArrayUtil.concat(
 			this.algorithm().asn1DerBytes(),
 			ByteUtil.byteArray(this.iterations()),
@@ -45,7 +45,7 @@ public record Pbkdf2EncoderV1 (
 	@Override
 	@NotEmpty public HashParameters decode(
 		@NotNull final List<String> parts,
-		@NotNull final HashEncodeDecode hashEncodeDecode0
+		@NotNull final EncodeDecode hashEncodeDecode0
 	) {
 		final Pbkdf2Algorithm algorithmDecoded    = (hashEncodeDecode0.flags().hashParameters()) ? Pbkdf2Algorithm.canonicalString(parts.removeFirst()) : this.algorithm();
 		final int             iterationsDecoded   = (hashEncodeDecode0.flags().hashParameters()) ? Integer.parseInt(parts.removeFirst())                : this.iterations();
@@ -55,7 +55,7 @@ public record Pbkdf2EncoderV1 (
 	}
 
 	@Override
-	public byte[] computeHash(
+	public byte[] compute(
 		@NotNull @Min(Constraints.MIN_SALT_BYTES_LEN) final byte[]       saltBytes,
 		@NotNull @Min(Constraints.MIN_RAW_INPUT_SIZE) final CharSequence rawInput
 	) {
@@ -75,19 +75,19 @@ public record Pbkdf2EncoderV1 (
 	}
 
 	@Override
-	public Boolean upgradeEncoding(
+	public Boolean recompute(
 		@Min(Constraints.MIN_SALT_BYTES_LEN) final int defaultSaltBytesLen,
 		@Min(Constraints.MIN_SALT_BYTES_LEN) final int decodedSaltBytesLen,
 		@NotNull                             final HashParameters decodedParameters,
-		@Min(Constraints.MIN_HASH_BYTES_LEN) final int decodedHashLength
+		@Min(Constraints.MIN_HASH_BYTES_LEN) final int decodedComputeLength
 	) {
 		final Pbkdf2EncoderV1 decodedParametersPbkdf2 = (Pbkdf2EncoderV1) decodedParameters;
 		return Boolean.valueOf(
 			   (defaultSaltBytesLen     != decodedSaltBytesLen)
 			|| (this.algorithm()        != decodedParametersPbkdf2.algorithm())
 			|| (this.iterations()       != decodedParametersPbkdf2.iterations())
-			|| (this.hashBytesLen()     != decodedHashLength)
-			|| (this.hashEncodeDecode() != decodedParametersPbkdf2.hashEncodeDecode())
+			|| (this.hashBytesLen()     != decodedComputeLength)
+			|| (this.encodeDecode() != decodedParametersPbkdf2.encodeDecode())
 		);
 	}
 

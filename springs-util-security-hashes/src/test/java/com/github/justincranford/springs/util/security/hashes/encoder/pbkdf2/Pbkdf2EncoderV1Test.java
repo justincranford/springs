@@ -16,7 +16,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashEncodeDecode;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.EncodeDecode;
 import com.github.justincranford.springs.util.security.hashes.mac.MacAlgorithm;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class Pbkdf2EncoderV1Test {
 	private static final int HASH_REPEATS = 3; // repeat hashing in each test; 1 unique output means deterministic, N different outputs means non-deterministic
-	private static final Pbkdf2EncoderV1 FAST_PBKDF2 = new Pbkdf2EncoderV1(Pbkdf2Algorithm.PBKDF2WithHmacSHA256, 1, 32, HashEncodeDecode.STD_CB_SALT_OTH);
+	private static final Pbkdf2EncoderV1 FAST_PBKDF2 = new Pbkdf2EncoderV1(Pbkdf2Algorithm.PBKDF2WithHmacSHA256, 1, 32, EncodeDecode.STD_CB_SALT_OTH);
 	private static final String PII = "Hello.World@example.com";
 	private static final String PWD = "P@ssw0rd";
 
@@ -122,7 +122,7 @@ public class Pbkdf2EncoderV1Test {
 		final Set<String> encodedHashes = new HashSet<>();
 		for (int i = 0; i < repeats; i++) {
 			final byte[] saltBytes = saltSupplier.apply(charSequence); // derive salt from charSequence (or not)
-			final byte[] hashBytes = parameters.computeHash(saltBytes, charSequence);
+			final byte[] hashBytes = parameters.compute(saltBytes, charSequence);
 			encodedHashes.add(HexFormat.of().formatHex(hashBytes)); // byte[].toString() not very helful, so use something else
 		}
 		return encodedHashes;

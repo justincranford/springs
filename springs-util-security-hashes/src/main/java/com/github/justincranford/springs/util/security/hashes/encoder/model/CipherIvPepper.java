@@ -8,6 +8,6 @@ import lombok.experimental.Accessors;
 @RequiredArgsConstructor
 @Getter
 @Accessors(fluent=true)
-public class ConvergentEncryptionInitializationVectorPepper {
+public class CipherIvPepper {
 	@NotNull private final Pepper pepper;
 }

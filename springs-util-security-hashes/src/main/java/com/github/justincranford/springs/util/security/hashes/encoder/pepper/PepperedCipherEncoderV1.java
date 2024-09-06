@@ -23,8 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings({"nls"})
-public abstract class PepperedHashEncoderV1 extends IocEncoder {
-	public PepperedHashEncoderV1(
+public abstract class PepperedCipherEncoderV1 extends IocEncoder {
+	public PepperedCipherEncoderV1(
 		@NotNull final HashParametersAndHashPeppers hashParametersAndPeppersForHash,
 		@NotNull final Function<CharSequence, byte[]> hashSaltSupplier
 	) {

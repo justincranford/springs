@@ -5,11 +5,12 @@ import com.github.justincranford.springs.util.basic.ArrayUtil;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-public record HashParametersAndHashSalt(
-	@NotNull HashParameters hashParameters,
-	@NotEmpty byte[] hashSaltBytes
+public record CipherParametersAndCipherNonceAndCipherAad(
+	@NotNull CipherParameters cipherParameters,
+	@NotEmpty byte[] cipherNonceBytes,
+	@NotEmpty byte[] cipherAadBytes
 ) {
 	public byte[] canonicalEncodedBytes() {
-		return ArrayUtil.concat(this.hashSaltBytes, this.hashParameters().canonicalBytes());
+		return ArrayUtil.concat(this.cipherNonceBytes, this.cipherAadBytes, this.cipherParameters().canonicalBytes());
 	}
 }

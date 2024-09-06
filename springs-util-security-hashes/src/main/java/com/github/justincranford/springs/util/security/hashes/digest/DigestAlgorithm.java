@@ -8,9 +8,8 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.security.hashes.asn1.Asn1Util;
-import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.Pbkdf2Algorithm;
 
-@SuppressWarnings({"nls"})
+@SuppressWarnings({"nls", "hiding"})
 public enum DigestAlgorithm {
 	MD2       ("MD2",         16, Oids.MD2),
 	MD4       ("MD4",         16, Oids.MD4),
