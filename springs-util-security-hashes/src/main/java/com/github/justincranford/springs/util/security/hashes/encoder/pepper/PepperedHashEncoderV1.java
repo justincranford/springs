@@ -106,7 +106,7 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 			hashParametersToBeEncoded.add(hashEncodeDecode.encoderDecoder().encodeToString(hashParametersAndHashSalt.hashSaltBytes()));
 		}
 		if (hashEncodeDecode.flags().hashParameters()) {
-			hashParametersToBeEncoded.addAll(hashParameters.encode());
+			hashParametersToBeEncoded.addAll(hashParameters.canonicalEncodeObjects());
 		}
 		return StringUtil.toString("", hashEncodeDecode.separators().intraParameters(), "", hashParametersToBeEncoded);
 	}

@@ -17,7 +17,7 @@ public record PepperMac(
 	@Null SecretKey secretKey, // may be null (e.g. high-entropy 256-bit random key)
 	@NotNull byte[] secretContext, // may be empty (e.g. any-entropy N-byte value)
 	@NotNull byte[] clearContext, // may be empty (e.g. "application1".getBytes(), "feature1".getBytes(), any-entropy N-byte value)
-	@NotNull  MacAlgorithm algorithm, // required (e.g. HmacSHA256, CMAC256); used as Mac digest, as well as for deriving low-entropy hmacKey if secretKey=null
+	@NotNull  MacAlgorithm mac, // required (e.g. HmacSHA256, CMAC256); used as Mac digest, as well as for deriving low-entropy hmacKey if secretKey=null
 	@NotNull  Base64Util.EncoderDecoder encoderDecoder // required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
 ) implements Pepper {
 	@Override
@@ -28,14 +28,14 @@ public record PepperMac(
 			this.secretContext,									// Priority 2: optional, secret entropy; useful if secretKey=null (or reused)
 			this.clearContext,									// Priority 3: optional, clear entropy; useful if secretKey=null (or reused) and secretContext=null (or reused)
 			additionalData,										// Priority 4: optional, data binding (e.g. Pbkdf2 => salt+iter+dkLen+alg, Argon2 => salt+lanes+mem+alg)
-			this.algorithm.canonicalIdBytes(),					// Priority 5: required, Mac canonical algorithm identifier
+			this.mac.derBytes(),					// Priority 5: required, Mac canonical algorithm identifier
 			this.encoderDecoder.canonicalEncode()				// Priority 6: optional, text encoder algorithm identifier 
 		).toArray(new byte[0][]);
 
 		// Use high-entropy secretKey (i.e. optimal), or low-entropy concatData-derived secretKey (i.e. fallback)
-		final SecretKey hmacKey = (this.secretKey != null) ? this.secretKey : new SecretKeySpec(ArrayUtil.concat(dataChunks), this.algorithm.value());
+		final SecretKey hmacKey = (this.secretKey != null) ? this.secretKey : new SecretKeySpec(ArrayUtil.concat(dataChunks), this.mac.algorithm());
 
-		final byte[] pepperMac = this.algorithm.compute(hmacKey, dataChunks);
+		final byte[] pepperMac = this.mac.compute(hmacKey, dataChunks);
 		return this.encoderDecoder.encodeToBytes(pepperMac);	// required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
 	}
 }

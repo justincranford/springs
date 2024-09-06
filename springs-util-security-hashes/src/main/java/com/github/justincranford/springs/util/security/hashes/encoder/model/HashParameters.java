@@ -16,6 +16,6 @@ public interface HashParameters {
 		@NotNull final HashParameters decodedParameters,
 		@Min(0)  final int decodedHashLength
 	);
-	@NotEmpty public List<Object> encode();
+	@NotEmpty public List<Object> canonicalEncodeObjects();
 	@NotEmpty public HashParameters decode(@NotNull List<String> parts, @NotNull HashEncodeDecode hashEncodeDecode);
 }

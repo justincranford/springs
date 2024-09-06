@@ -112,7 +112,7 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 	}
 
 	public static class PreSalt {
-		public static final SecretKey KEY = new SecretKeySpec("pre-salt-key".getBytes(StandardCharsets.UTF_8), PepperOptions.MAC_ALG.value());
+		public static final SecretKey KEY = new SecretKeySpec("pre-salt-key".getBytes(StandardCharsets.UTF_8), PepperOptions.MAC_ALG.algorithm());
 
 		public static final PepperMac NONE  = new PepperMac(null, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
 		public static final PepperMac CTX   = new PepperMac(null, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
@@ -121,7 +121,7 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 	}
 
 	public static class PreHash {
-		public static final SecretKey KEY = new SecretKeySpec("pre-hash-key".getBytes(StandardCharsets.UTF_8), PepperOptions.MAC_ALG.value());
+		public static final SecretKey KEY = new SecretKeySpec("pre-hash-key".getBytes(StandardCharsets.UTF_8), PepperOptions.MAC_ALG.algorithm());
 
 		public static final PepperMac NONE  = new PepperMac(null, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
 		public static final PepperMac CTX   = new PepperMac(null, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
@@ -130,7 +130,7 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 	}
 
 	public static class PostHash {
-		public static final SecretKey KEY = new SecretKeySpec("post-hash-key".getBytes(StandardCharsets.UTF_8), PepperOptions.MAC_ALG.value());
+		public static final SecretKey KEY = new SecretKeySpec("post-hash-key".getBytes(StandardCharsets.UTF_8), PepperOptions.MAC_ALG.algorithm());
 
 		public static final PepperMac NONE  = new PepperMac(null, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
 		public static final PepperMac CTX   = new PepperMac(null, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);

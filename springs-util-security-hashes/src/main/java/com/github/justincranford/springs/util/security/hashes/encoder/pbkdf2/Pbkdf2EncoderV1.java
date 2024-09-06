@@ -27,17 +27,16 @@ public record Pbkdf2EncoderV1 (
 	@Override
 	public byte[] canonicalEncodedBytes() {
 		return ArrayUtil.concat(
-			this.algorithm().canonicalIdBytes(),
+			this.algorithm().asn1DerBytes(),
 			ByteUtil.byteArray(this.iterations()),
-			ByteUtil.byteArray(this.hashBytesLen()),
-			this.hashEncodeDecode().encoderDecoder().canonicalEncode()
+			ByteUtil.byteArray(this.hashBytesLen())
 		);
 	}
 
 	@Override
-	@NotEmpty public List<Object> encode() {
+	@NotEmpty public List<Object> canonicalEncodeObjects() {
 		return List.of(
-			this.algorithm(),
+			this.algorithm().canonicalString(),
 			Integer.valueOf(this.iterations()),
 			Integer.valueOf(this.hashBytesLen())
 		);
@@ -48,9 +47,9 @@ public record Pbkdf2EncoderV1 (
 		@NotNull final List<String> parts,
 		@NotNull final HashEncodeDecode hashEncodeDecode0
 	) {
-		final Pbkdf2Algorithm algorithmDecoded    = (hashEncodeDecode0.flags().hashParameters()) ? Pbkdf2Algorithm.valueOf(parts.removeFirst()) : this.algorithm();
-		final int             iterationsDecoded   = (hashEncodeDecode0.flags().hashParameters()) ? Integer.parseInt(parts.removeFirst())        : this.iterations();
-		final int             hashBytesLenDecoded = (hashEncodeDecode0.flags().hashParameters()) ? Integer.parseInt(parts.removeFirst())        : this.hashBytesLen();
+		final Pbkdf2Algorithm algorithmDecoded    = (hashEncodeDecode0.flags().hashParameters()) ? Pbkdf2Algorithm.canonicalString(parts.removeFirst()) : this.algorithm();
+		final int             iterationsDecoded   = (hashEncodeDecode0.flags().hashParameters()) ? Integer.parseInt(parts.removeFirst())                : this.iterations();
+		final int             hashBytesLenDecoded = (hashEncodeDecode0.flags().hashParameters()) ? Integer.parseInt(parts.removeFirst())                : this.hashBytesLen();
 		final Pbkdf2EncoderV1 parametersDecoded   = new Pbkdf2EncoderV1(algorithmDecoded, iterationsDecoded, hashBytesLenDecoded, hashEncodeDecode0);
 		return parametersDecoded;
 	}
@@ -58,7 +57,7 @@ public record Pbkdf2EncoderV1 (
 	@Override
 	public byte[] computeHash(
 		@NotNull @Min(Constraints.MIN_SALT_BYTES_LEN) final byte[]       saltBytes,
-		@NotNull @Min(Constraints.MIN_RAW_INPUT_SIZE)     final CharSequence rawInput
+		@NotNull @Min(Constraints.MIN_RAW_INPUT_SIZE) final CharSequence rawInput
 	) {
 		try {
 			final PBEKeySpec spec = new PBEKeySpec(
@@ -67,7 +66,7 @@ public record Pbkdf2EncoderV1 (
 				this.iterations(),
 				this.hashBytesLen() * 8
 			);
-			final SecretKeyFactory skf = SecretKeyFactory.getInstance(this.algorithm().value());
+			final SecretKeyFactory skf = SecretKeyFactory.getInstance(this.algorithm().algorithm());
 			final byte[] hashBytes = skf.generateSecret(spec).getEncoded();
 			return hashBytes;
 		} catch (GeneralSecurityException ex) {

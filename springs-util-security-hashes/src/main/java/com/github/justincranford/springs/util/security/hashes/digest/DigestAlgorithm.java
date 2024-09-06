@@ -2,78 +2,97 @@ package com.github.justincranford.springs.util.security.hashes.digest;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.security.hashes.asn1.Asn1Util;
+import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.Pbkdf2Algorithm;
 
-@SuppressWarnings({"nls", "hiding"})
-public class DigestAlgorithm {
-    public enum ALG {
-		MD2       ("MD2",         16, Oids.MD2),
-		MD4       ("MD4",         16, Oids.MD4),
-		MD5       ("MD5",         16, Oids.MD5),
-		SHA1      ("SHA-1",       20, Oids.SHA1),
-		SHA224    ("SHA-224",     28, Oids.SHA224),
-		SHA256    ("SHA-256",     32, Oids.SHA256),
-		SHA384    ("SHA-384",     48, Oids.SHA384),
-		SHA512    ("SHA-512",     64, Oids.SHA512),
-		SHA384_224("SHA-512/224", 48, Oids.SHA512_224),
-		SHA512_256("SHA-512/255", 64, Oids.SHA512_256),
-		SHA3_224  ("SHA3-224",    28, Oids.SHA3_224),
-		SHA3_256  ("SHA3-256",    32, Oids.SHA3_256),
-		SHA3_384  ("SHA3-384",    48, Oids.SHA3_384),
-		SHA3_512  ("SHA3-512",    64, Oids.SHA3_512),
-		SHAKE128  ("SHAKE128",    16, Oids.SHAKE128),
-		SHAKE256  ("SHAKE256",    32, Oids.SHAKE256),
-		;
-		private final String value;
-		private final int bytesLen;
-		private final ASN1ObjectIdentifier oid;
-		private final byte[] oidBytes;
-		private ALG(final String value, final int bytesLen, final ASN1ObjectIdentifier oid0) {
-			this.value    = value;
-			this.bytesLen = bytesLen;
-			this.oid      = oid0;
-			this.oidBytes = Asn1Util.oidDerBytes(oid0);
-		}
-		public String value() {
-			return this.value;
-		}
-		public int lengthBytes() {
-			return this.bytesLen;
-		}
-		public ASN1ObjectIdentifier oid() {
-			return this.oid;
-		}
-		public byte[] oidBytes() {
-			return this.oidBytes;
-		}
-		public byte[] canonicalIdBytes() {
-			return this.oidBytes;
-		}
+@SuppressWarnings({"nls"})
+public enum DigestAlgorithm {
+	MD2       ("MD2",         16, Oids.MD2),
+	MD4       ("MD4",         16, Oids.MD4),
+	MD5       ("MD5",         16, Oids.MD5),
+	SHA1      ("SHA-1",       20, Oids.SHA1),
+	SHA224    ("SHA-224",     28, Oids.SHA224),
+	SHA256    ("SHA-256",     32, Oids.SHA256),
+	SHA384    ("SHA-384",     48, Oids.SHA384),
+	SHA512    ("SHA-512",     64, Oids.SHA512),
+	SHA384_224("SHA-512/224", 48, Oids.SHA512_224),
+	SHA512_256("SHA-512/255", 64, Oids.SHA512_256),
+	SHA3_224  ("SHA3-224",    28, Oids.SHA3_224),
+	SHA3_256  ("SHA3-256",    32, Oids.SHA3_256),
+	SHA3_384  ("SHA3-384",    48, Oids.SHA3_384),
+	SHA3_512  ("SHA3-512",    64, Oids.SHA3_512),
+	SHAKE128  ("SHAKE128",    16, Oids.SHAKE128),
+	SHAKE256  ("SHAKE256",    32, Oids.SHAKE256),
+	;
 
-	    public byte[] compute(final byte[] bytes) {
-			try {
-				return MessageDigest.getInstance(this.value).digest(bytes);
-			} catch (NoSuchAlgorithmException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-	    public byte[] compute(final byte[][] dataChunks) {
-	        byte[] messageDigest = null;
-	        for (final byte[] data : dataChunks) {
-	            if (messageDigest == null) {
-	                messageDigest = this.compute(data);
-	            } else {
-	                messageDigest = this.compute(ArrayUtil.concat(messageDigest, data));
-	            }
-	        }
-	        return messageDigest;
-	    }
+	public static DigestAlgorithm canonicalString(String canonicalString) {
+		return Arrays.stream(DigestAlgorithm.values())
+			.filter(value -> value.canonicalString().equals(canonicalString))
+			.findFirst()
+			.orElseThrow(() -> new RuntimeException("canonicalString not found"));
 	}
+
+	private final String algorithm;
+	private final int bytesLen;
+	private final ASN1ObjectIdentifier asn1Oid;
+	private final byte[] asn1OidBytes;
+	private final String canonicalString;
+	private final String toString;
+	private DigestAlgorithm(final String algorithm0, final int bytesLen0, final ASN1ObjectIdentifier asnOid0) {
+		this.algorithm       = algorithm0;
+		this.bytesLen        = bytesLen0;
+		this.asn1Oid         = asnOid0;
+		this.asn1OidBytes    = Asn1Util.derBytes(asnOid0);
+		this.canonicalString = this.asn1Oid.getId();
+		this.toString        = this.algorithm + "[" + this.canonicalString + "]";
+	}
+	public String algorithm() {
+		return this.algorithm;
+	}
+	public int lengthBytes() {
+		return this.bytesLen;
+	}
+	public ASN1ObjectIdentifier asn1Oid() {
+		return this.asn1Oid;
+	}
+	public byte[] oidDerBytes() {
+		return this.asn1OidBytes;
+	}
+	public byte[] canonicalIdBytes() {
+		return this.asn1OidBytes;
+	}
+	public String canonicalString() {
+		return this.canonicalString;
+	}
+	@Override
+	public String toString() {
+		return this.toString;
+	}
+
+    public byte[] compute(final byte[] bytes) {
+		try {
+			return MessageDigest.getInstance(this.algorithm).digest(bytes);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+    public byte[] compute(final byte[][] dataChunks) {
+        byte[] messageDigest = null;
+        for (final byte[] data : dataChunks) {
+            if (messageDigest == null) {
+                messageDigest = this.compute(data);
+            } else {
+                messageDigest = this.compute(ArrayUtil.concat(messageDigest, data));
+            }
+        }
+        return messageDigest;
+    }
 
     public static class Oids {
 		public static final ASN1ObjectIdentifier MD2        = new ASN1ObjectIdentifier("1.2.840.113549.2.2");

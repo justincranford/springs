@@ -2,6 +2,7 @@ package com.github.justincranford.springs.util.security.hashes.mac;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -10,57 +11,80 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.security.hashes.asn1.Asn1Util;
+import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
+import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.Pbkdf2Algorithm;
 
 import jakarta.validation.constraints.NotNull;
 
 @SuppressWarnings({"nls"})
 public enum MacAlgorithm {
-	AesCmac       ("AesCmac",        16, Constants.AES_CMAC_OID),
-	AesCmac128    ("AesCmac128",     16, Constants.AES_CMAC_128_OID),
-	AesCmac192    ("AesCmac192",     16, Constants.AES_CMAC_192_OID),
-	AesCmac256    ("AesCmac256",     16, Constants.AES_CMAC_256_OID),
-	HmacMD5       ("HmacMD5",        16, Constants.HMAC_MD5_OID),
-	HmacSHA1      ("HmacSHA1",       20, Constants.HMAC_SHA1_OID),
-	HmacSHA224    ("HmacSHA224",     28, Constants.HMAC_SHA224_OID),
-	HmacSHA256    ("HmacSHA256",     32, Constants.HMAC_SHA256_OID),
-	HmacSHA384    ("HmacSHA384",     48, Constants.HMAC_SHA384_OID),
-	HmacSHA512    ("HmacSHA512",     64, Constants.HMAC_SHA512_OID),
-	HmacSHA512_224("HmacSHA512/224", 28, Constants.HMAC_SHA512_224_OID),
-	HmacSHA512_256("HmacSHA512/256", 32, Constants.HMAC_SHA512_256_OID),
-	HmacSHA3_224  ("HmacSHA3-224",   28, Constants.HMAC_SHA3_224_OID),
-	HmacSHA3_256  ("HmacSHA3-256",   32, Constants.HMAC_SHA3_256_OID),
-	HmacSHA3_384  ("HmacSHA3-384",   48, Constants.HMAC_SHA3_384_OID),
-	HmacSHA3_512  ("HmacSHA3-512",   64, Constants.HMAC_SHA3_512_OID),
+	AesCmac       ("AesCmac",        null,                     16, Constants.AES_CMAC_OID),
+	AesCmac128    ("AesCmac128",     null,                     16, Constants.AES_CMAC_128_OID),
+	AesCmac192    ("AesCmac192",     null,                     16, Constants.AES_CMAC_192_OID),
+	AesCmac256    ("AesCmac256",     null,                     16, Constants.AES_CMAC_256_OID),
+	HmacMD5       ("HmacMD5",        DigestAlgorithm.MD5,      16, Constants.HMAC_MD5_OID),
+	HmacSHA1      ("HmacSHA1",       DigestAlgorithm.SHA1,     20, Constants.HMAC_SHA1_OID),
+	HmacSHA224    ("HmacSHA224",     DigestAlgorithm.SHA224,   28, Constants.HMAC_SHA224_OID),
+	HmacSHA256    ("HmacSHA256",     DigestAlgorithm.SHA256,   32, Constants.HMAC_SHA256_OID),
+	HmacSHA384    ("HmacSHA384",     DigestAlgorithm.SHA384,   48, Constants.HMAC_SHA384_OID),
+	HmacSHA512    ("HmacSHA512",     DigestAlgorithm.SHA512,   64, Constants.HMAC_SHA512_OID),
+	HmacSHA512_224("HmacSHA512/224", DigestAlgorithm.SHA512,   28, Constants.HMAC_SHA512_224_OID),
+	HmacSHA512_256("HmacSHA512/256", DigestAlgorithm.SHA512,   32, Constants.HMAC_SHA512_256_OID),
+	HmacSHA3_224  ("HmacSHA3-224",   DigestAlgorithm.SHA3_224, 28, Constants.HMAC_SHA3_224_OID),
+	HmacSHA3_256  ("HmacSHA3-256",   DigestAlgorithm.SHA3_256, 32, Constants.HMAC_SHA3_256_OID),
+	HmacSHA3_384  ("HmacSHA3-384",   DigestAlgorithm.SHA3_384, 48, Constants.HMAC_SHA3_384_OID),
+	HmacSHA3_512  ("HmacSHA3-512",   DigestAlgorithm.SHA3_512, 64, Constants.HMAC_SHA3_512_OID),
 	;
-	private final String value;
+
+	public static MacAlgorithm canonicalString(String canonicalString) {
+		return Arrays.stream(MacAlgorithm.values())
+			.filter(value -> value.canonicalString().equals(canonicalString))
+			.findFirst()
+			.orElseThrow(() -> new RuntimeException("canonicalString not found"));
+	}
+
+	private final String algorithm;
+	private final DigestAlgorithm digestAlgorithm;
 	private final int bytesLen;
-	private final ASN1ObjectIdentifier oid;
-	private final byte[] oidBytes;
-	private MacAlgorithm(final String value0, final int bytesLen0, final ASN1ObjectIdentifier oid0) {
-		this.value    = value0;
-		this.bytesLen = bytesLen0;
-		this.oid      = oid0;
-		this.oidBytes = Asn1Util.oidDerBytes(oid0);
+	private final ASN1ObjectIdentifier asn1Oid;
+	private final byte[] derBytes;
+	private final String canonicalString;
+	private final String toString;
+	private MacAlgorithm(final String algorithm0, final DigestAlgorithm digestAlgorithm0, final int bytesLen0, final ASN1ObjectIdentifier asn1Oid0) {
+		this.algorithm        = algorithm0;
+		this.digestAlgorithm  = digestAlgorithm0;
+		this.bytesLen         = bytesLen0;
+		this.asn1Oid          = asn1Oid0;
+		this.derBytes         = Asn1Util.derBytes(asn1Oid0);
+		this.canonicalString  = asn1Oid0.getId();
+		this.toString         = this.algorithm + "[" + this.canonicalString + "]";
 	}
-	public String value() {
-		return this.value;
+	public String algorithm() {
+		return this.algorithm;
 	}
-	public int len() {
+	public DigestAlgorithm digestAlgorithm() {
+		return this.digestAlgorithm;
+	}
+	public int bytesLen() {
 		return this.bytesLen;
 	}
-	public ASN1ObjectIdentifier oid() {
-		return this.oid;
+	public ASN1ObjectIdentifier asn1Oid() {
+		return this.asn1Oid;
 	}
-	public byte[] oidBytes() {
-		return this.oidBytes;
+	public byte[] derBytes() {
+		return this.derBytes;
 	}
-	public byte[] canonicalIdBytes() {
-		return this.oidBytes;
+	public String canonicalString() {
+		return this.canonicalString;
+	}
+	@Override
+	public String toString() {
+		return this.toString;
 	}
 
     public byte[] compute(@NotNull final SecretKey key, @NotNull final byte[] data) {
 		try {
-	        final Mac mac = Mac.getInstance(this.value);
+	        final Mac mac = Mac.getInstance(this.algorithm);
 	        mac.init(key);
 	        return mac.doFinal(data);
 		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
