@@ -47,9 +47,9 @@ public record Pbkdf2EncoderV1 (
 		@NotNull final List<String> parts,
 		@NotNull final EncodeDecode hashEncodeDecode0
 	) {
-		final Pbkdf2Algorithm algorithmDecoded    = (hashEncodeDecode0.flags().hashParameters()) ? Pbkdf2Algorithm.canonicalString(parts.removeFirst()) : this.algorithm();
-		final int             iterationsDecoded   = (hashEncodeDecode0.flags().hashParameters()) ? Integer.parseInt(parts.removeFirst())                : this.iterations();
-		final int             hashBytesLenDecoded = (hashEncodeDecode0.flags().hashParameters()) ? Integer.parseInt(parts.removeFirst())                : this.hashBytesLen();
+		final Pbkdf2Algorithm algorithmDecoded    = (hashEncodeDecode0.flags().hashConstantParameters()) ? Pbkdf2Algorithm.canonicalString(parts.removeFirst()) : this.algorithm();
+		final int             iterationsDecoded   = (hashEncodeDecode0.flags().hashConstantParameters()) ? Integer.parseInt(parts.removeFirst())                : this.iterations();
+		final int             hashBytesLenDecoded = (hashEncodeDecode0.flags().hashConstantParameters()) ? Integer.parseInt(parts.removeFirst())                : this.hashBytesLen();
 		final Pbkdf2EncoderV1 parametersDecoded   = new Pbkdf2EncoderV1(algorithmDecoded, iterationsDecoded, hashBytesLenDecoded, hashEncodeDecode0);
 		return parametersDecoded;
 	}

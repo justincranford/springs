@@ -20,7 +20,7 @@ public record EncodeDecode(
 
 	public record Flags(
 		boolean hashSalt,
-		boolean hashParameters
+		boolean hashConstantParameters
 	) {
 		public static final Flags FL_NONE     = new Flags(false,  false);
 		public static final Flags FL_SALT     = new Flags(true,   false);

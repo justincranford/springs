@@ -4,6 +4,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public record HashConstantParametersAndHashSaltAndHash(
-	@NotNull HashConstantParametersAndHashSalt hashParametersAndHashSalt,
+	@NotNull HashConstantParametersAndHashSalt hashConstantParametersAndHashSalt,
 	@NotEmpty byte[] hashBytes
 ) { }

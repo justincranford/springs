@@ -6,10 +6,10 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public record HashConstantParametersAndHashSalt(
-	@NotNull HashConstantParameters hashParameters,
+	@NotNull HashConstantParameters hashConstantParameters,
 	@NotEmpty byte[] hashSaltBytes
 ) {
 	public byte[] canonicalBytes() {
-		return ArrayUtil.concat(this.hashSaltBytes, this.hashParameters().canonicalBytes());
+		return ArrayUtil.concat(this.hashSaltBytes, this.hashConstantParameters().canonicalBytes());
 	}
 }
