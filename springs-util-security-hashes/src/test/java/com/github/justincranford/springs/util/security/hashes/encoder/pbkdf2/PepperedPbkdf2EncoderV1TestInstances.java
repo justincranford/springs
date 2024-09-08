@@ -7,12 +7,12 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.EncodeDecode;
+import com.github.justincranford.springs.util.security.hashes.encoder.EncodeDecode;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.PepperMac;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPeppers;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPostHashPepper;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPreHashPepper;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashSaltPepper;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperPostHash;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperPreHash;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperSalt;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashParametersAndHashPeppers;
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.ConstantSalt;
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.DerivedSalt;
@@ -142,11 +142,11 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 
 	// 125 Tuples of Peppers => PeppperPreSalt{NULL,NONE,CTX,SK,SKCTX} x PeppperPreHash{NULL,NONE,CTX,SK,SKCTX} x PeppperPostHash{NULL,NONE,CTX,SK,SKCTX})
 	public static class Peppers {
-		public static final HashPeppers NULL_NULL_NULL    = new HashPeppers(new HashSaltPepper(null),          new HashPreHashPepper(null),          new HashPostHashPepper(null));
-		public static final HashPeppers NONE_NONE_NONE    = new HashPeppers(new HashSaltPepper(PreSalt.NONE),  new HashPreHashPepper(PreHash.NONE),  new HashPostHashPepper(PostHash.NONE));
-		public static final HashPeppers CTX_CTX_CTX       = new HashPeppers(new HashSaltPepper(PreSalt.CTX),   new HashPreHashPepper(PreHash.CTX),   new HashPostHashPepper(PostHash.CTX));
-		public static final HashPeppers SK_SK_SK          = new HashPeppers(new HashSaltPepper(PreSalt.SK),    new HashPreHashPepper(PreHash.SK),    new HashPostHashPepper(PostHash.SK));
-		public static final HashPeppers SKCTX_SKCTX_SKCTX = new HashPeppers(new HashSaltPepper(PreSalt.SKCTX), new HashPreHashPepper(PreHash.SKCTX), new HashPostHashPepper(PostHash.SKCTX));
+		public static final HashPeppers NULL_NULL_NULL    = new HashPeppers(new HashPepperSalt(null),          new HashPepperPreHash(null),          new HashPepperPostHash(null));
+		public static final HashPeppers NONE_NONE_NONE    = new HashPeppers(new HashPepperSalt(PreSalt.NONE),  new HashPepperPreHash(PreHash.NONE),  new HashPepperPostHash(PostHash.NONE));
+		public static final HashPeppers CTX_CTX_CTX       = new HashPeppers(new HashPepperSalt(PreSalt.CTX),   new HashPepperPreHash(PreHash.CTX),   new HashPepperPostHash(PostHash.CTX));
+		public static final HashPeppers SK_SK_SK          = new HashPeppers(new HashPepperSalt(PreSalt.SK),    new HashPepperPreHash(PreHash.SK),    new HashPepperPostHash(PostHash.SK));
+		public static final HashPeppers SKCTX_SKCTX_SKCTX = new HashPeppers(new HashPepperSalt(PreSalt.SKCTX), new HashPepperPreHash(PreHash.SKCTX), new HashPepperPostHash(PostHash.SKCTX));
 	}
 
 	// Key+Context pairs for Macs

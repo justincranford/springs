@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.security.hashes.encoder.model;
+package com.github.justincranford.springs.util.security.hashes.encoder;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;

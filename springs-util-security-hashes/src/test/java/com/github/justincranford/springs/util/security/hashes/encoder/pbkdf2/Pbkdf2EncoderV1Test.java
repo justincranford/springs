@@ -16,7 +16,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.EncodeDecode;
+import com.github.justincranford.springs.util.security.hashes.encoder.EncodeDecode;
 import com.github.justincranford.springs.util.security.hashes.mac.MacAlgorithm;
 
 import lombok.extern.slf4j.Slf4j;

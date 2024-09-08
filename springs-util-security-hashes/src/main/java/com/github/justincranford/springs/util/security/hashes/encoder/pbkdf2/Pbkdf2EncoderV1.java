@@ -8,7 +8,7 @@ import javax.crypto.spec.PBEKeySpec;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.basic.ByteUtil;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.EncodeDecode;
+import com.github.justincranford.springs.util.security.hashes.encoder.EncodeDecode;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashParameters;
 
 import jakarta.validation.constraints.Min;

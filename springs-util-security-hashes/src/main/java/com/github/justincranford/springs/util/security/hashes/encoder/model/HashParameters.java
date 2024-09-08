@@ -2,6 +2,8 @@ package com.github.justincranford.springs.util.security.hashes.encoder.model;
 
 import java.util.List;
 
+import com.github.justincranford.springs.util.security.hashes.encoder.EncodeDecode;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
