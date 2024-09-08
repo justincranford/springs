@@ -49,7 +49,7 @@ public enum Pbkdf2Algorithm {
 		return this.algorithm;
 	}
 	public int bytesLen() {
-		return this.macAlgorithm.bytesLen();
+		return this.macAlgorithm.outputBytesLen();
 	}
 	public MacAlgorithm macAlgorithm() {
 		return this.macAlgorithm;

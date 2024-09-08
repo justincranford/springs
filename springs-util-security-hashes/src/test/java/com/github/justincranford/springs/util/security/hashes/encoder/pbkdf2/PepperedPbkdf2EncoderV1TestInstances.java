@@ -6,6 +6,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.github.justincranford.springs.util.basic.Base64Util;
+import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.EncodeDecode;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.PepperMac;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPeppers;
@@ -108,34 +109,35 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 
 	public static class PepperOptions {
 		public static final MacAlgorithm MAC_ALG = MacAlgorithm.HmacSHA256;
+		public static final DigestAlgorithm DER_ALG = DigestAlgorithm.SHA256;
 		public static final Base64Util.EncoderDecoder ENC_DEC = Base64Util.STD;
 	}
 
 	public static class PreSalt {
 		public static final SecretKey KEY = new SecretKeySpec("pre-salt-key".getBytes(StandardCharsets.UTF_8), PepperOptions.MAC_ALG.algorithm());
 
-		public static final PepperMac NONE  = new PepperMac(null, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final PepperMac CTX   = new PepperMac(null, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final PepperMac SK    = new PepperMac(KEY,  new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final PepperMac SKCTX = new PepperMac(KEY,  new byte[3], new byte[2], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac NONE  = new PepperMac(null, PepperOptions.DER_ALG, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac CTX   = new PepperMac(null, PepperOptions.DER_ALG, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac SK    = new PepperMac(KEY,  null,                  new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac SKCTX = new PepperMac(KEY,  null,                  new byte[3], new byte[2], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
 	}
 
 	public static class PreHash {
 		public static final SecretKey KEY = new SecretKeySpec("pre-hash-key".getBytes(StandardCharsets.UTF_8), PepperOptions.MAC_ALG.algorithm());
 
-		public static final PepperMac NONE  = new PepperMac(null, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final PepperMac CTX   = new PepperMac(null, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final PepperMac SK    = new PepperMac(KEY,  new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final PepperMac SKCTX = new PepperMac(KEY,  new byte[3], new byte[2], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac NONE  = new PepperMac(null, PepperOptions.DER_ALG, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac CTX   = new PepperMac(null, PepperOptions.DER_ALG, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac SK    = new PepperMac(KEY,  null,                  new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac SKCTX = new PepperMac(KEY,  null,                  new byte[3], new byte[2], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
 	}
 
 	public static class PostHash {
 		public static final SecretKey KEY = new SecretKeySpec("post-hash-key".getBytes(StandardCharsets.UTF_8), PepperOptions.MAC_ALG.algorithm());
 
-		public static final PepperMac NONE  = new PepperMac(null, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final PepperMac CTX   = new PepperMac(null, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final PepperMac SK    = new PepperMac(KEY,  new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
-		public static final PepperMac SKCTX = new PepperMac(KEY,  new byte[3], new byte[2], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac NONE  = new PepperMac(null, PepperOptions.DER_ALG, new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac CTX   = new PepperMac(null, PepperOptions.DER_ALG, new byte[7], new byte[3], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac SK    = new PepperMac(KEY,  null,                  new byte[0], new byte[0], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
+		public static final PepperMac SKCTX = new PepperMac(KEY,  null,                  new byte[3], new byte[2], PepperOptions.MAC_ALG, PepperOptions.ENC_DEC);
 	}
 
 	// 125 Tuples of Peppers => PeppperPreSalt{NULL,NONE,CTX,SK,SKCTX} x PeppperPreHash{NULL,NONE,CTX,SK,SKCTX} x PeppperPostHash{NULL,NONE,CTX,SK,SKCTX})
