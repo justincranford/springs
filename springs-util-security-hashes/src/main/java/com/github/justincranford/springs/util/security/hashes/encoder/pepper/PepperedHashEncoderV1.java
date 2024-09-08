@@ -8,10 +8,10 @@ import java.util.function.Function;
 
 import com.github.justincranford.springs.util.basic.StringUtil;
 import com.github.justincranford.springs.util.security.hashes.encoder.EncodeDecode;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashParameters;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashParametersAndHashPeppers;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashParametersAndHashSalt;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashParametersAndHashSaltAndHash;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashConstantParameters;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashConstantParametersAndHashPeppers;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashConstantParametersAndHashSalt;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashConstantParametersAndHashSaltAndHash;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPeppers;
 import com.github.justincranford.springs.util.security.hashes.encoder.IocEncoder;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.Pepper;
@@ -25,20 +25,20 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings({"nls"})
 public abstract class PepperedHashEncoderV1 extends IocEncoder {
 	public PepperedHashEncoderV1(
-		@NotNull final HashParametersAndHashPeppers hashParametersAndPeppersForHash,
+		@NotNull final HashConstantParametersAndHashPeppers hashParametersAndPeppersForHash,
 		@NotNull final Function<CharSequence, byte[]> hashSaltSupplier
 	) {
-		final HashParameters hashParameters = hashParametersAndPeppersForHash.hashParameters();
+		final HashConstantParameters hashParameters = hashParametersAndPeppersForHash.hashParameters();
 		final HashPeppers    hashPeppers    = hashParametersAndPeppersForHash.peppersForMacs();
 		super.encode = (rawInput) -> {
 			final byte[]                    hashSaltBytes             = hashSaltSupplier.apply(rawInput);
-			final HashParametersAndHashSalt hashParametersAndHashSalt = new HashParametersAndHashSalt(hashParameters, hashSaltBytes);
+			final HashConstantParametersAndHashSalt hashParametersAndHashSalt = new HashConstantParametersAndHashSalt(hashParameters, hashSaltBytes);
 			final byte[]                    hashBytes                 = computeHash(rawInput, hashParametersAndHashSalt, hashPeppers);
 			return encodeHashParametersAndHashSaltAndHash(hashParametersAndHashSalt, hashBytes);
 		};
 		super.matches = (rawInput, encodedHashParametersAndHashSaltAndHash) -> {
 			final byte[]                           hashSaltBytes                    = hashSaltSupplier.apply(rawInput);
-			final HashParametersAndHashSaltAndHash hashParametersAndHashSaltAndHash = decodeHashParametersAndHashSaltAndHash(encodedHashParametersAndHashSaltAndHash, hashParameters, hashSaltBytes);
+			final HashConstantParametersAndHashSaltAndHash hashParametersAndHashSaltAndHash = decodeHashParametersAndHashSaltAndHash(encodedHashParametersAndHashSaltAndHash, hashParameters, hashSaltBytes);
 			final byte[]                           hashBytes                        = computeHash(rawInput, hashParametersAndHashSaltAndHash.hashParametersAndHashSalt(), hashPeppers);
 			return Boolean.valueOf(MessageDigest.isEqual(hashBytes, hashParametersAndHashSaltAndHash.hashBytes()));
 		};
@@ -47,9 +47,9 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 				return Boolean.FALSE;
 			}
 			final byte[]                           hashSaltBytes                    = hashSaltSupplier.apply(""); // value not used, only its length
-			final HashParametersAndHashSaltAndHash hashParametersAndHashSaltAndHash = decodeHashParametersAndHashSaltAndHash(encodedHashParametersAndHashSaltAndHash, hashParameters, hashSaltBytes);
-			final HashParametersAndHashSalt        hashParametersAndSaltDecoded     = hashParametersAndHashSaltAndHash.hashParametersAndHashSalt();
-			final HashParameters                   hashParametersDecoded            = hashParametersAndSaltDecoded.hashParameters();
+			final HashConstantParametersAndHashSaltAndHash hashParametersAndHashSaltAndHash = decodeHashParametersAndHashSaltAndHash(encodedHashParametersAndHashSaltAndHash, hashParameters, hashSaltBytes);
+			final HashConstantParametersAndHashSalt        hashParametersAndSaltDecoded     = hashParametersAndHashSaltAndHash.hashParametersAndHashSalt();
+			final HashConstantParameters                   hashParametersDecoded            = hashParametersAndSaltDecoded.hashParameters();
 			final byte[]                           hashSaltBytesDecoded             = hashParametersAndSaltDecoded.hashSaltBytes();
 			final byte[]                           pepperedHashBytes                = hashParametersAndHashSaltAndHash.hashBytes();
 			final byte[]                           pepperedHashDecodedBytes         = optionalDecodePepper(hashPeppers.hashPostHashPepper().pepper(), pepperedHashBytes);
@@ -57,8 +57,8 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 		};
 	}
 
-	private static byte[] computeHash(final CharSequence rawInput, final HashParametersAndHashSalt hashParametersAndHashSalt, final HashPeppers peppersForHash) {
-		final HashParameters hashParameters      = hashParametersAndHashSalt.hashParameters();
+	private static byte[] computeHash(final CharSequence rawInput, final HashConstantParametersAndHashSalt hashParametersAndHashSalt, final HashPeppers peppersForHash) {
+		final HashConstantParameters hashParameters      = hashParametersAndHashSalt.hashParameters();
 		final byte[]         plainSaltBytes      = hashParametersAndHashSalt.hashSaltBytes();
 		final byte[]         additionalDataBytes = hashParametersAndHashSalt.canonicalBytes();
 		final byte[]         pepperedSaltBytes   = optionalPepperAndEncode(peppersForHash.hashSaltPepper().pepper(), plainSaltBytes, additionalDataBytes); // pre-salt step
@@ -77,11 +77,11 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 		return (pepper == null) ? pepperedHashBytes : pepper.encoderDecoder().decodeFromBytes(pepperedHashBytes);
 	}
 
-	private static byte[] computeHash(@NotNull final HashParameters hashParameters, @NotNull final byte[] hashSaltBytes, @NotNull final CharSequence rawInput) {
+	private static byte[] computeHash(@NotNull final HashConstantParameters hashParameters, @NotNull final byte[] hashSaltBytes, @NotNull final CharSequence rawInput) {
 		return hashParameters.compute(hashSaltBytes, rawInput);
 	}
 
-	private static String encodeHashParametersAndHashSaltAndHash(@NotNull final HashParametersAndHashSalt hashParametersAndHashSalt, @NotEmpty final byte[] hashBytes) {
+	private static String encodeHashParametersAndHashSaltAndHash(@NotNull final HashConstantParametersAndHashSalt hashParametersAndHashSalt, @NotEmpty final byte[] hashBytes) {
 		final String encodedHashParametersAndHashSalt = encodeHashParametersAndHashSalt(hashParametersAndHashSalt);
 		final String encodedHash                      = encodeHash(hashParametersAndHashSalt.hashParameters(), hashBytes);
 		if (encodedHashParametersAndHashSalt.isEmpty()) {
@@ -89,17 +89,17 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 		}
 		return encodedHashParametersAndHashSalt + hashParametersAndHashSalt.hashParameters().encodeDecode().separators().parametersVsHash() + encodedHash;
 	}
-	public static HashParametersAndHashSaltAndHash decodeHashParametersAndHashSaltAndHash(@NotNull final String hashParametersAndHashSaltAndHash, @NotNull final HashParameters defaultHashParameters, @NotNull final byte[] hashSaltBytes) {
+	public static HashConstantParametersAndHashSaltAndHash decodeHashParametersAndHashSaltAndHash(@NotNull final String hashParametersAndHashSaltAndHash, @NotNull final HashConstantParameters defaultHashParameters, @NotNull final byte[] hashSaltBytes) {
 	    final List<String> parts = StringUtil.split(hashParametersAndHashSaltAndHash, defaultHashParameters.encodeDecode().separators().parametersVsHash());
-		final HashParametersAndHashSalt hashParametersAndHashSalt = decodeHashParametersAndHashSalt((parts.size() == 1) ? "" : parts.removeFirst(), defaultHashParameters, hashSaltBytes);
+		final HashConstantParametersAndHashSalt hashParametersAndHashSalt = decodeHashParametersAndHashSalt((parts.size() == 1) ? "" : parts.removeFirst(), defaultHashParameters, hashSaltBytes);
 		final byte[] hashBytes = decodeHash(defaultHashParameters, parts.removeFirst());
 		if (parts.isEmpty()) {
-			return new HashParametersAndHashSaltAndHash(hashParametersAndHashSalt, hashBytes);
+			return new HashConstantParametersAndHashSaltAndHash(hashParametersAndHashSalt, hashBytes);
 		}
 		throw new RuntimeException("Leftover parts");
 	}
-	private static String encodeHashParametersAndHashSalt(@NotNull final HashParametersAndHashSalt hashParametersAndHashSalt) {
-		final HashParameters   hashParameters            = hashParametersAndHashSalt.hashParameters();
+	private static String encodeHashParametersAndHashSalt(@NotNull final HashConstantParametersAndHashSalt hashParametersAndHashSalt) {
+		final HashConstantParameters   hashParameters            = hashParametersAndHashSalt.hashParameters();
 		final List<Object>     hashParametersToBeEncoded = new ArrayList<>();
 		final EncodeDecode encodeDecode          = hashParameters.encodeDecode();
 		if (encodeDecode.flags().hashSalt()) {
@@ -111,21 +111,21 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 		return StringUtil.toString("", encodeDecode.separators().intraParameters(), "", hashParametersToBeEncoded);
 	}
 
-	private static HashParametersAndHashSalt decodeHashParametersAndHashSalt(final String encodedParameters, @NotNull final HashParameters defaultHashParameters, @NotNull final byte[] hashSaltBytes) {
+	private static HashConstantParametersAndHashSalt decodeHashParametersAndHashSalt(final String encodedParameters, @NotNull final HashConstantParameters defaultHashParameters, @NotNull final byte[] hashSaltBytes) {
 		final EncodeDecode encodeDecode      = defaultHashParameters.encodeDecode();
 		final List<String>     parts                 = StringUtil.split(encodedParameters, encodeDecode.separators().intraParameters());
 		final byte[]           hashSaltBytesDecoded  = (encodeDecode.flags().hashSalt())  ? encodeDecode.encoderDecoder().decodeFromString(parts.removeFirst()) : hashSaltBytes;
-		final HashParameters   hashParametersDecoded = defaultHashParameters.decode(parts, encodeDecode);
+		final HashConstantParameters   hashParametersDecoded = defaultHashParameters.decode(parts, encodeDecode);
 		if (parts.isEmpty()) {
-			return new HashParametersAndHashSalt(hashParametersDecoded, hashSaltBytesDecoded);
+			return new HashConstantParametersAndHashSalt(hashParametersDecoded, hashSaltBytesDecoded);
 		}
 		throw new RuntimeException("Leftover parts");
 	}
 
-	private static String encodeHash(@NotNull final HashParameters hashParameters, @NotEmpty final byte[] hash) {
+	private static String encodeHash(@NotNull final HashConstantParameters hashParameters, @NotEmpty final byte[] hash) {
 		return hashParameters.encodeDecode().encoderDecoder().encodeToString(hash);
 	}
-	private static byte[] decodeHash(@NotNull final HashParameters hashParameters, @NotEmpty final String encodedHash) {
+	private static byte[] decodeHash(@NotNull final HashConstantParameters hashParameters, @NotEmpty final String encodedHash) {
 		return hashParameters.encodeDecode().encoderDecoder().decodeFromString(encodedHash);
 	}
 }

@@ -9,7 +9,7 @@ import javax.crypto.spec.PBEKeySpec;
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.basic.ByteUtil;
 import com.github.justincranford.springs.util.security.hashes.encoder.EncodeDecode;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashParameters;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashConstantParameters;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -23,7 +23,7 @@ public record Pbkdf2EncoderV1 (
 	@Min(Constraints.MIN_ITER) int iterations,
 	@Min(Constraints.MIN_HASH_BYTES_LEN) int hashBytesLen,
 	@NotNull EncodeDecode encodeDecode
-) implements HashParameters {
+) implements HashConstantParameters {
 	@Override
 	public byte[] canonicalBytes() {
 		return ArrayUtil.concat(
@@ -43,7 +43,7 @@ public record Pbkdf2EncoderV1 (
 	}
 
 	@Override
-	@NotEmpty public HashParameters decode(
+	@NotEmpty public HashConstantParameters decode(
 		@NotNull final List<String> parts,
 		@NotNull final EncodeDecode hashEncodeDecode0
 	) {
@@ -78,7 +78,7 @@ public record Pbkdf2EncoderV1 (
 	public Boolean recompute(
 		@Min(Constraints.MIN_SALT_BYTES_LEN) final int defaultSaltBytesLen,
 		@Min(Constraints.MIN_SALT_BYTES_LEN) final int decodedSaltBytesLen,
-		@NotNull                             final HashParameters decodedParameters,
+		@NotNull                             final HashConstantParameters decodedParameters,
 		@Min(Constraints.MIN_HASH_BYTES_LEN) final int decodedComputeLength
 	) {
 		final Pbkdf2EncoderV1 decodedParametersPbkdf2 = (Pbkdf2EncoderV1) decodedParameters;

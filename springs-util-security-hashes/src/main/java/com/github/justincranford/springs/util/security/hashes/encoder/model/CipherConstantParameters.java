@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-public interface CipherParameters {
+public interface CipherConstantParameters {
 	@NotNull public EncodeDecode encodeDecode();
 	@NotEmpty public byte[] canonicalBytes();
 	@NotEmpty public List<Object> canonicalObjects();
@@ -18,8 +18,8 @@ public interface CipherParameters {
 		@Min(0)  final int decodedIvBytesLen,
 		@Min(0)  final int defaultAadBytesLen,
 		@Min(0)  final int decodedAadBytesLen,
-		@NotNull final CipherParameters decodedParameters,
+		@NotNull final CipherConstantParameters decodedParameters,
 		@Min(0)  final int decodedComputeLength
 	);
-	@NotEmpty public CipherParameters decode(@NotEmpty List<String> parts, @NotNull EncodeDecode encodeDecode);
+	@NotEmpty public CipherConstantParameters decode(@NotEmpty List<String> parts, @NotNull EncodeDecode encodeDecode);
 }

@@ -5,8 +5,8 @@ import com.github.justincranford.springs.util.basic.ArrayUtil;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-public record CipherParametersAndCipherIvAndCipherAad(
-	@NotNull CipherParameters cipherParameters,
+public record CipherConstantParametersAndCipherIvAndCipherAad(
+	@NotNull CipherConstantParameters cipherParameters,
 	@NotEmpty byte[] cipherIvBytes,
 	@NotEmpty byte[] cipherAadBytes
 ) {
