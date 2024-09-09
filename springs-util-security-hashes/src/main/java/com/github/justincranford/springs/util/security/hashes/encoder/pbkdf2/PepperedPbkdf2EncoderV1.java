@@ -22,7 +22,7 @@ public final class PepperedPbkdf2EncoderV1 {
 	public static final class DerivedSalt extends PepperedHashEncoderV1 {
 		public DerivedSalt(@NotNull HashConstantParametersAndHashPeppers parametersAndMacs, @Min(Constraints.MIN_DER_BYTES_LEN) int saltBytesLen) {
 			super(parametersAndMacs, (rawInput) -> {
-				if (parametersAndMacs.peppersForMacs().hashSaltPepper() == null) {
+				if (parametersAndMacs.hashPeppers().hashSaltPepper() == null) {
 					throw new RuntimeException("PreSalt Mac required to guarantee unique, deterministic salt will be derived per unique input");
 				}
 				return new byte[saltBytesLen]; // equivalent to ConstantSalt with all 0x00 byte array, but PreSalt Mac is required

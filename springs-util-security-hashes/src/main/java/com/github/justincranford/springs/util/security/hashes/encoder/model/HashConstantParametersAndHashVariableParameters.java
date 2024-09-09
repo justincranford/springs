@@ -2,14 +2,13 @@ package com.github.justincranford.springs.util.security.hashes.encoder.model;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-public record HashConstantParametersAndHashSalt(
+public record HashConstantParametersAndHashVariableParameters(
 	@NotNull HashConstantParameters hashConstantParameters,
-	@NotEmpty byte[] hashSaltBytes
+	@NotNull HashVariableParameters hashVariableParameters
 ) {
 	public byte[] canonicalBytes() {
-		return ArrayUtil.concat(this.hashSaltBytes, this.hashConstantParameters().canonicalBytes());
+		return ArrayUtil.concat(this.hashVariableParameters().canonicalBytes(), this.hashConstantParameters().canonicalBytes());
 	}
 }

@@ -4,5 +4,5 @@ import jakarta.validation.constraints.NotNull;
 
 public record HashConstantParametersAndHashPeppers(
 	@NotNull HashConstantParameters hashConstantParameters,
-	@NotNull HashPeppers peppersForMacs
+	@NotNull HashPeppers hashPeppers
 ) { }

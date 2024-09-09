@@ -10,9 +10,10 @@ import com.github.justincranford.springs.util.basic.StringUtil;
 import com.github.justincranford.springs.util.security.hashes.encoder.EncodeDecode;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashConstantParameters;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashConstantParametersAndHashPeppers;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashConstantParametersAndHashSalt;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashConstantParametersAndHashSaltAndHash;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashConstantParametersAndHashVariableParameters;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashConstantParametersAndHashVariableParametersAndHash;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPeppers;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashVariableParameters;
 import com.github.justincranford.springs.util.security.hashes.encoder.IocEncoder;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.Pepper;
 
@@ -26,47 +27,49 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class PepperedHashEncoderV1 extends IocEncoder {
 	public PepperedHashEncoderV1(
 		@NotNull final HashConstantParametersAndHashPeppers hashConstantParametersAndPeppersForHash,
-		@NotNull final Function<CharSequence, byte[]> hashSaltSupplier
+		@NotNull final Function<CharSequence, byte[]>       hashSaltSupplier
 	) {
 		final HashConstantParameters hashConstantParameters = hashConstantParametersAndPeppersForHash.hashConstantParameters();
-		final HashPeppers    hashPeppers    = hashConstantParametersAndPeppersForHash.peppersForMacs();
+		final HashPeppers            hashPeppers            = hashConstantParametersAndPeppersForHash.hashPeppers();
 		super.encode = (rawInput) -> {
-			final byte[]                    hashSaltBytes             = hashSaltSupplier.apply(rawInput);
-			final HashConstantParametersAndHashSalt hashConstantParametersAndHashSalt = new HashConstantParametersAndHashSalt(hashConstantParameters, hashSaltBytes);
-			final byte[]                    hashBytes                 = computeHash(rawInput, hashConstantParametersAndHashSalt, hashPeppers);
-			return encodeHashConstantParametersAndHashSaltAndHash(hashConstantParametersAndHashSalt, hashBytes);
+			final HashVariableParameters                          hashVariableParameters                          = new HashVariableParameters(hashSaltSupplier.apply(rawInput));
+			final HashConstantParametersAndHashVariableParameters hashConstantParametersAndHashVariableParameters = new HashConstantParametersAndHashVariableParameters(hashConstantParameters, hashVariableParameters);
+			final byte[]                                          hashBytes                                       = computeHash(rawInput, hashConstantParametersAndHashVariableParameters, hashPeppers);
+			return encodeHashConstantParametersAndHashVariableParametersAndHash(hashConstantParametersAndHashVariableParameters, hashBytes);
 		};
-		super.matches = (rawInput, encodedHashConstantParametersAndHashSaltAndHash) -> {
-			final byte[]                           hashSaltBytes                    = hashSaltSupplier.apply(rawInput);
-			final HashConstantParametersAndHashSaltAndHash hashConstantParametersAndHashSaltAndHash = decodeHashConstantParametersAndHashSaltAndHash(encodedHashConstantParametersAndHashSaltAndHash, hashConstantParameters, hashSaltBytes);
-			final byte[]                           hashBytes                        = computeHash(rawInput, hashConstantParametersAndHashSaltAndHash.hashConstantParametersAndHashSalt(), hashPeppers);
-			return Boolean.valueOf(MessageDigest.isEqual(hashBytes, hashConstantParametersAndHashSaltAndHash.hashBytes()));
+		super.matches = (rawInput, encodedHashConstantParametersAndHashVariableParametersAndHash) -> {
+			final HashVariableParameters                                 hashVariableParameters                                        = new HashVariableParameters(hashSaltSupplier.apply(rawInput));
+			final HashConstantParametersAndHashVariableParametersAndHash hashConstantParametersAndHashVariableParametersAndHashDecoded = decodeHashConstantParametersAndHashVariableParametersAndHash(encodedHashConstantParametersAndHashVariableParametersAndHash, hashConstantParameters, hashVariableParameters);
+			final byte[]                                                 hashBytes                                                     = computeHash(rawInput, hashConstantParametersAndHashVariableParametersAndHashDecoded.hashConstantParametersAndHashVariableParameters(), hashPeppers);
+			return Boolean.valueOf(MessageDigest.isEqual(hashBytes, hashConstantParametersAndHashVariableParametersAndHashDecoded.hashBytes()));
 		};
-		super.upgradeEncoding = (encodedHashConstantParametersAndHashSaltAndHash) -> {
-			if (encodedHashConstantParametersAndHashSaltAndHash == null || encodedHashConstantParametersAndHashSaltAndHash.length() == 0) {
+		super.upgradeEncoding = (encodedHashConstantParametersAndHashVariableParametersAndHash) -> {
+			if (encodedHashConstantParametersAndHashVariableParametersAndHash == null || encodedHashConstantParametersAndHashVariableParametersAndHash.length() == 0) {
 				return Boolean.FALSE;
 			}
-			final byte[]                           hashSaltBytes                    = hashSaltSupplier.apply(""); // value not used, only its length
-			final HashConstantParametersAndHashSaltAndHash hashConstantParametersAndHashSaltAndHash = decodeHashConstantParametersAndHashSaltAndHash(encodedHashConstantParametersAndHashSaltAndHash, hashConstantParameters, hashSaltBytes);
-			final HashConstantParametersAndHashSalt        hashConstantParametersAndSaltDecoded     = hashConstantParametersAndHashSaltAndHash.hashConstantParametersAndHashSalt();
-			final HashConstantParameters                   hashConstantParametersDecoded            = hashConstantParametersAndSaltDecoded.hashConstantParameters();
-			final byte[]                           hashSaltBytesDecoded             = hashConstantParametersAndSaltDecoded.hashSaltBytes();
-			final byte[]                           pepperedHashBytes                = hashConstantParametersAndHashSaltAndHash.hashBytes();
-			final byte[]                           pepperedHashDecodedBytes         = optionalDecodePepper(hashPeppers.hashPostHashPepper().pepper(), pepperedHashBytes);
-			return hashConstantParameters.recompute(hashSaltBytes.length, hashSaltBytesDecoded.length, hashConstantParametersDecoded, pepperedHashDecodedBytes.length);
+			final int                                                    hashBytesLength                                               = hashSaltSupplier.apply("").length;
+			final HashVariableParameters                                 hashVariableParameters                                        = new HashVariableParameters(new byte[hashBytesLength]);
+			final HashConstantParametersAndHashVariableParametersAndHash hashConstantParametersAndHashVariableParametersAndHashDecoded = decodeHashConstantParametersAndHashVariableParametersAndHash(encodedHashConstantParametersAndHashVariableParametersAndHash, hashConstantParameters, hashVariableParameters);
+			final HashConstantParametersAndHashVariableParameters        hashConstantParametersAndHashVariableParametersDecoded        = hashConstantParametersAndHashVariableParametersAndHashDecoded.hashConstantParametersAndHashVariableParameters();
+			final HashConstantParameters                                 hashConstantParametersDecoded                                 = hashConstantParametersAndHashVariableParametersDecoded.hashConstantParameters();
+			final HashVariableParameters                                 hashVariableParametersDecoded                                 = hashConstantParametersAndHashVariableParametersDecoded.hashVariableParameters();
+			final byte[]                                                 hashSaltBytesDecoded                                          = hashVariableParametersDecoded.hashSaltBytes();
+			final byte[]                                                 pepperedHashBytes                                             = hashConstantParametersAndHashVariableParametersAndHashDecoded.hashBytes();
+			final byte[]                                                 pepperedHashDecodedBytes                                      = optionalDecodePepper(hashPeppers.hashPostHashPepper().pepper(), pepperedHashBytes);
+			return hashConstantParameters.recompute(hashBytesLength, hashSaltBytesDecoded.length, hashConstantParametersDecoded, pepperedHashDecodedBytes.length);
 		};
 	}
 
-	private static byte[] computeHash(final CharSequence rawInput, final HashConstantParametersAndHashSalt hashConstantParametersAndHashSalt, final HashPeppers peppersForHash) {
-		final HashConstantParameters hashConstantParameters      = hashConstantParametersAndHashSalt.hashConstantParameters();
-		final byte[]         plainSaltBytes      = hashConstantParametersAndHashSalt.hashSaltBytes();
-		final byte[]         additionalDataBytes = hashConstantParametersAndHashSalt.canonicalBytes();
-		final byte[]         pepperedSaltBytes   = optionalPepperAndEncode(peppersForHash.hashSaltPepper().pepper(), plainSaltBytes, additionalDataBytes); // pre-salt step
-		final byte[]         plainInputBytes     = rawInput.toString().getBytes(StandardCharsets.UTF_8);
-		final byte[]         pepperedInputBytes  = optionalPepperAndEncode(peppersForHash.hashPreHashPepper().pepper(), plainInputBytes, additionalDataBytes); // pre-hash step
-		final String         pepperedInputString = new String(pepperedInputBytes, StandardCharsets.UTF_8);
-		final byte[]         plainHashBytes      = computeHash(hashConstantParameters, pepperedSaltBytes, pepperedInputString);
-		final byte[]         pepperedHashBytes   = optionalPepperAndEncode(peppersForHash.hashPostHashPepper().pepper(), plainHashBytes, additionalDataBytes); // post-hash step (aka pepper)
+	private static byte[] computeHash(final CharSequence rawInput, final HashConstantParametersAndHashVariableParameters hashConstantParametersAndHashVariableParameters, final HashPeppers peppersForHash) {
+		final HashConstantParameters hashConstantParameters = hashConstantParametersAndHashVariableParameters.hashConstantParameters();
+		final byte[]                 plainSaltBytes         = hashConstantParametersAndHashVariableParameters.hashVariableParameters().hashSaltBytes();
+		final byte[]                 additionalDataBytes    = hashConstantParametersAndHashVariableParameters.canonicalBytes();
+		final byte[]                 pepperedSaltBytes      = optionalPepperAndEncode(peppersForHash.hashSaltPepper().pepper(), plainSaltBytes, additionalDataBytes); // pre-salt step
+		final byte[]                 plainInputBytes        = rawInput.toString().getBytes(StandardCharsets.UTF_8);
+		final byte[]                 pepperedInputBytes     = optionalPepperAndEncode(peppersForHash.hashPreHashPepper().pepper(), plainInputBytes, additionalDataBytes); // pre-hash step
+		final String                 pepperedInputString    = new String(pepperedInputBytes, StandardCharsets.UTF_8);
+		final byte[]                 plainHashBytes         = computeHash(hashConstantParameters, pepperedSaltBytes, pepperedInputString);
+		final byte[]                 pepperedHashBytes      = optionalPepperAndEncode(peppersForHash.hashPostHashPepper().pepper(), plainHashBytes, additionalDataBytes); // post-hash step (aka pepper)
 		return pepperedHashBytes;
 	}
 
@@ -81,29 +84,30 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 		return hashConstantParameters.compute(hashSaltBytes, rawInput);
 	}
 
-	private static String encodeHashConstantParametersAndHashSaltAndHash(@NotNull final HashConstantParametersAndHashSalt hashConstantParametersAndHashSalt, @NotEmpty final byte[] hashBytes) {
-		final String encodedHashConstantParametersAndHashSalt = encodeHashConstantParametersAndHashSalt(hashConstantParametersAndHashSalt);
-		final String encodedHash                      = encodeHash(hashConstantParametersAndHashSalt.hashConstantParameters(), hashBytes);
-		if (encodedHashConstantParametersAndHashSalt.isEmpty()) {
+	private static String encodeHashConstantParametersAndHashVariableParametersAndHash(@NotNull final HashConstantParametersAndHashVariableParameters hashConstantParametersAndHashVariableParameters, @NotEmpty final byte[] hashBytes) {
+		final String encodedHashConstantParametersAndHashVariableParameters = encodeHashConstantParametersAndHashVariableParameters(hashConstantParametersAndHashVariableParameters);
+		final String encodedHash                      = encodeHash(hashConstantParametersAndHashVariableParameters.hashConstantParameters(), hashBytes);
+		if (encodedHashConstantParametersAndHashVariableParameters.isEmpty()) {
 			return encodedHash;
 		}
-		return encodedHashConstantParametersAndHashSalt + hashConstantParametersAndHashSalt.hashConstantParameters().encodeDecode().separators().parametersVsHash() + encodedHash;
+		return encodedHashConstantParametersAndHashVariableParameters + hashConstantParametersAndHashVariableParameters.hashConstantParameters().encodeDecode().separators().parametersVsHash() + encodedHash;
 	}
-	public static HashConstantParametersAndHashSaltAndHash decodeHashConstantParametersAndHashSaltAndHash(@NotNull final String hashConstantParametersAndHashSaltAndHash, @NotNull final HashConstantParameters defaultHashConstantParameters, @NotNull final byte[] hashSaltBytes) {
-	    final List<String> parts = StringUtil.split(hashConstantParametersAndHashSaltAndHash, defaultHashConstantParameters.encodeDecode().separators().parametersVsHash());
-		final HashConstantParametersAndHashSalt hashConstantParametersAndHashSalt = decodeHashConstantParametersAndHashSalt((parts.size() == 1) ? "" : parts.removeFirst(), defaultHashConstantParameters, hashSaltBytes);
+	public static HashConstantParametersAndHashVariableParametersAndHash decodeHashConstantParametersAndHashVariableParametersAndHash(@NotNull final String hashConstantParametersAndHashVariableParametersAndHash, @NotNull final HashConstantParameters defaultHashConstantParameters, @NotNull HashVariableParameters hashVariableParameters) {
+	    final List<String> parts = StringUtil.split(hashConstantParametersAndHashVariableParametersAndHash, defaultHashConstantParameters.encodeDecode().separators().parametersVsHash());
+	    final byte[] hashSaltBytes = hashVariableParameters.hashSaltBytes();
+		final HashConstantParametersAndHashVariableParameters hashConstantParametersAndHashVariableParameters = decodeHashConstantParametersAndHashVariableParameters((parts.size() == 1) ? "" : parts.removeFirst(), defaultHashConstantParameters, hashSaltBytes);
 		final byte[] hashBytes = decodeHash(defaultHashConstantParameters, parts.removeFirst());
 		if (parts.isEmpty()) {
-			return new HashConstantParametersAndHashSaltAndHash(hashConstantParametersAndHashSalt, hashBytes);
+			return new HashConstantParametersAndHashVariableParametersAndHash(hashConstantParametersAndHashVariableParameters, hashBytes);
 		}
 		throw new RuntimeException("Leftover parts");
 	}
-	private static String encodeHashConstantParametersAndHashSalt(@NotNull final HashConstantParametersAndHashSalt hashConstantParametersAndHashSalt) {
-		final HashConstantParameters   hashConstantParameters            = hashConstantParametersAndHashSalt.hashConstantParameters();
-		final List<Object>     hashConstantParametersToBeEncoded = new ArrayList<>();
-		final EncodeDecode encodeDecode          = hashConstantParameters.encodeDecode();
+	private static String encodeHashConstantParametersAndHashVariableParameters(@NotNull final HashConstantParametersAndHashVariableParameters hashConstantParametersAndHashVariableParameters) {
+		final HashConstantParameters hashConstantParameters            = hashConstantParametersAndHashVariableParameters.hashConstantParameters();
+		final List<Object>           hashConstantParametersToBeEncoded = new ArrayList<>();
+		final EncodeDecode           encodeDecode                      = hashConstantParameters.encodeDecode();
 		if (encodeDecode.flags().hashSalt()) {
-			hashConstantParametersToBeEncoded.add(encodeDecode.encoderDecoder().encodeToString(hashConstantParametersAndHashSalt.hashSaltBytes()));
+			hashConstantParametersToBeEncoded.add(encodeDecode.encoderDecoder().encodeToString(hashConstantParametersAndHashVariableParameters.hashVariableParameters().hashSaltBytes()));
 		}
 		if (encodeDecode.flags().hashConstantParameters()) {
 			hashConstantParametersToBeEncoded.addAll(hashConstantParameters.canonicalObjects());
@@ -111,13 +115,14 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 		return StringUtil.toString("", encodeDecode.separators().intraParameters(), "", hashConstantParametersToBeEncoded);
 	}
 
-	private static HashConstantParametersAndHashSalt decodeHashConstantParametersAndHashSalt(final String encodedParameters, @NotNull final HashConstantParameters defaultHashConstantParameters, @NotNull final byte[] hashSaltBytes) {
-		final EncodeDecode encodeDecode      = defaultHashConstantParameters.encodeDecode();
-		final List<String>     parts                 = StringUtil.split(encodedParameters, encodeDecode.separators().intraParameters());
-		final byte[]           hashSaltBytesDecoded  = (encodeDecode.flags().hashSalt())  ? encodeDecode.encoderDecoder().decodeFromString(parts.removeFirst()) : hashSaltBytes;
+	private static HashConstantParametersAndHashVariableParameters decodeHashConstantParametersAndHashVariableParameters(final String encodedParameters, @NotNull final HashConstantParameters defaultHashConstantParameters, @NotNull final byte[] hashSaltBytes) {
+		final EncodeDecode             encodeDecode                  = defaultHashConstantParameters.encodeDecode();
+		final List<String>             parts                         = StringUtil.split(encodedParameters, encodeDecode.separators().intraParameters());
+		final byte[]                   hashSaltBytesDecoded          = (encodeDecode.flags().hashSalt())  ? encodeDecode.encoderDecoder().decodeFromString(parts.removeFirst()) : hashSaltBytes;
+		final HashVariableParameters   hashVariableParametersDecoded = new HashVariableParameters(hashSaltBytesDecoded);
 		final HashConstantParameters   hashConstantParametersDecoded = defaultHashConstantParameters.decode(parts, encodeDecode);
 		if (parts.isEmpty()) {
-			return new HashConstantParametersAndHashSalt(hashConstantParametersDecoded, hashSaltBytesDecoded);
+			return new HashConstantParametersAndHashVariableParameters(hashConstantParametersDecoded, hashVariableParametersDecoded);
 		}
 		throw new RuntimeException("Leftover parts");
 	}
