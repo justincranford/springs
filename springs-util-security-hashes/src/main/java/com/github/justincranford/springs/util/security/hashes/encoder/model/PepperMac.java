@@ -38,7 +38,7 @@ public record PepperMac(
 		// Use high-entropy secretKey (i.e. optimal), or low-entropy concatData-derived secretKey (i.e. fallback)
 		final SecretKey macKey = (this.secretKey != null) ? this.secretKey : secretKeyFromPii(dataChunks);
 
-		final byte[] pepperMac = this.mac.compute(macKey, dataChunks);
+		final byte[] pepperMac = this.mac.chain(macKey, dataChunks);
 		return this.encoderDecoder.encodeToBytes(pepperMac);	// required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
 	}
 

@@ -19,17 +19,18 @@ import com.github.justincranford.springs.util.security.hashes.asn1.Asn1Util;
 
 @SuppressWarnings({"nls", "hiding"})
 public enum CipherAlgorithm {
-	AESCMAC   ("AES-CMAC",   K.ALL, I.U,   null, 16, Oid.AESCMAC),
-	AESCMAC128("AES-CMAC",   K.K16, I.U,   null, 16, Oid.AESCMAC128),
-	AESCMAC192("AES-CMAC",   K.K24, I.U,   null, 16, Oid.AESCMAC192),
-	AESCMAC256("AES-CMAC",   K.K32, I.U,   null, 16, Oid.AESCMAC256),
-	AESGCM    ("AES-GCM",    K.ALL, I.P39, O.U,  16, Oid.AESGCM),
-	AESGCM128 ("AES-GCM128", K.K16, I.P39, O.U,  16, Oid.AESGCM128),
-	AESGCM192 ("AES-GCM192", K.K24, I.P39, O.U,  16, Oid.AESGCM192),
-	AESGCM256 ("AES-GCM256", K.K32, I.P39, O.U,  16, Oid.AESGCM256),
+	AESCMAC   ("AES-CMAC",   false, K.ALL, I.U,   null, 16, Oid.AESCMAC),
+	AESCMAC128("AES-CMAC",   false, K.K16, I.U,   null, 16, Oid.AESCMAC128),
+	AESCMAC192("AES-CMAC",   false, K.K24, I.U,   null, 16, Oid.AESCMAC192),
+	AESCMAC256("AES-CMAC",   false, K.K32, I.U,   null, 16, Oid.AESCMAC256),
+	AESGCM    ("AES-GCM",    true,  K.ALL, I.P39, O.U,  16, Oid.AESGCM),
+	AESGCM128 ("AES-GCM128", true,  K.K16, I.P39, O.U,  16, Oid.AESGCM128),
+	AESGCM192 ("AES-GCM192", true,  K.K24, I.P39, O.U,  16, Oid.AESGCM192),
+	AESGCM256 ("AES-GCM256", true,  K.K32, I.P39, O.U,  16, Oid.AESGCM256),
 	;
 
 	private final String               algorithm;
+	private final boolean              supportsAad;
 	private final Set<Integer>         keyBytesLens;
 	private final BigInteger           maxInputBytesLen;
 	private final BigInteger           outputBytesLen;
@@ -38,8 +39,17 @@ public enum CipherAlgorithm {
 	private final byte[]               asn1OidBytes;
 	private final String               canonicalString;
 	private final String               toString;
-	private CipherAlgorithm(final String algorithm0, final Set<Integer> keyBytesLens0, BigInteger maxInputBytesLen0, final BigInteger outputBytesLen0, final int outputMacBytesLen0, final ASN1ObjectIdentifier asnOid0) {
+	private CipherAlgorithm(
+		final String algorithm0,
+		final boolean supportsAad0,
+		final Set<Integer> keyBytesLens0,
+		final BigInteger maxInputBytesLen0,
+		final BigInteger outputBytesLen0,
+		final int outputMacBytesLen0,
+		final ASN1ObjectIdentifier asnOid0
+	) {
 		this.algorithm         = algorithm0;
+		this.supportsAad       = supportsAad0;
 		this.keyBytesLens      = keyBytesLens0;
 		this.maxInputBytesLen  = maxInputBytesLen0;
 		this.outputBytesLen    = outputBytesLen0;
@@ -51,6 +61,9 @@ public enum CipherAlgorithm {
 	}
 	public String algorithm() {
 		return this.algorithm;
+	}
+	public boolean supportsAad() {
+		return this.supportsAad;
 	}
 	public Set<Integer> keyBytesLens() {
 		return this.keyBytesLens;

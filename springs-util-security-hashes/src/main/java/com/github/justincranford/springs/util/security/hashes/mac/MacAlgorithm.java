@@ -1,11 +1,8 @@
 package com.github.justincranford.springs.util.security.hashes.mac;
 
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -13,6 +10,7 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.security.hashes.asn1.Asn1Util;
 import com.github.justincranford.springs.util.security.hashes.cipher.CipherAlgorithm;
+import com.github.justincranford.springs.util.security.hashes.cipher.CmacUtil;
 import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
 
 import jakarta.validation.constraints.NotNull;
@@ -100,16 +98,16 @@ public enum MacAlgorithm {
 	}
 
     public byte[] compute(@NotNull final SecretKey key, @NotNull final byte[] data) {
-		try {
-	        final Mac mac = Mac.getInstance(this.algorithm);
-	        mac.init(key);
-	        return mac.doFinal(data);
-		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
-			throw new RuntimeException(e);
+		if (this.digestAlgorithm != null) {
+	        return HmacUtil.compute(this.algorithm, key, data);
+		} else if (this.cipherAlgorithm != null) {
+            return CmacUtil.compute(key, data);
+		} else {
+			throw new RuntimeException("No mac specified");
 		}
     }
 
-    public byte[] compute(@NotNull final SecretKey key, @NotNull final byte[][] dataChunks) {
+    public byte[] chain(@NotNull final SecretKey key, @NotNull final byte[][] dataChunks) {
         byte[] mac = null;
         for (final byte[] data : dataChunks) {
             if (mac == null) {
