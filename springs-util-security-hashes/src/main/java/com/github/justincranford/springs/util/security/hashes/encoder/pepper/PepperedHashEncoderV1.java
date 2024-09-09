@@ -47,7 +47,7 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 			if (encodedHashParametersAndHash == null || encodedHashParametersAndHash.length() == 0) {
 				return Boolean.FALSE;
 			}
-			final int                    hashBytesLength               = hashSaltSupplier.apply("").length;
+			final int                    hashBytesLength               = (hashPeppers.hashPostHashPepper().pepper().mac() == null) ? hashSaltSupplier.apply("").length : hashPeppers.hashPostHashPepper().pepper().mac().outputBytesLen();
 			final HashVariableParameters hashVariableParameters        = new HashVariableParameters(new byte[hashBytesLength]);
 			final HashParametersAndHash  hashParametersAndHashDecoded  = decodeHashParametersAndHash(encodedHashParametersAndHash, hashConstantParameters, hashVariableParameters);
 			final HashParameters         hashParametersDecoded         = hashParametersAndHashDecoded.hashParameters();

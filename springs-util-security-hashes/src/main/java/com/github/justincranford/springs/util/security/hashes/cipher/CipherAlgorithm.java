@@ -23,17 +23,17 @@ public enum CipherAlgorithm {
 	AESCMAC128("AES-CMAC",   false, K.K16, I.U,   null, 16, Oid.AESCMAC128),
 	AESCMAC192("AES-CMAC",   false, K.K24, I.U,   null, 16, Oid.AESCMAC192),
 	AESCMAC256("AES-CMAC",   false, K.K32, I.U,   null, 16, Oid.AESCMAC256),
-	AESGCM    ("AES-GCM",    true,  K.ALL, I.P39, O.U,  16, Oid.AESGCM),
-	AESGCM128 ("AES-GCM128", true,  K.K16, I.P39, O.U,  16, Oid.AESGCM128),
-	AESGCM192 ("AES-GCM192", true,  K.K24, I.P39, O.U,  16, Oid.AESGCM192),
-	AESGCM256 ("AES-GCM256", true,  K.K32, I.P39, O.U,  16, Oid.AESGCM256),
+	AESGCM    ("AES-GCM",    true,  K.ALL, I.P39, O.U,  0, Oid.AESGCM),
+	AESGCM128 ("AES-GCM128", true,  K.K16, I.P39, O.U,  0, Oid.AESGCM128),
+	AESGCM192 ("AES-GCM192", true,  K.K24, I.P39, O.U,  0, Oid.AESGCM192),
+	AESGCM256 ("AES-GCM256", true,  K.K32, I.P39, O.U,  0, Oid.AESGCM256),
 	;
 
 	private final String               algorithm;
 	private final boolean              supportsAad;
 	private final Set<Integer>         keyBytesLens;
 	private final BigInteger           maxInputBytesLen;
-	private final BigInteger           outputBytesLen;
+	private final BigInteger           maxOutputBytesLen;
 	private final int                  outputMacBytesLen;
 	private final ASN1ObjectIdentifier asn1Oid;
 	private final byte[]               asn1OidBytes;
@@ -44,7 +44,7 @@ public enum CipherAlgorithm {
 		final boolean supportsAad0,
 		final Set<Integer> keyBytesLens0,
 		final BigInteger maxInputBytesLen0,
-		final BigInteger outputBytesLen0,
+		final BigInteger maxOutputBytesLen0,
 		final int outputMacBytesLen0,
 		final ASN1ObjectIdentifier asnOid0
 	) {
@@ -52,7 +52,7 @@ public enum CipherAlgorithm {
 		this.supportsAad       = supportsAad0;
 		this.keyBytesLens      = keyBytesLens0;
 		this.maxInputBytesLen  = maxInputBytesLen0;
-		this.outputBytesLen    = outputBytesLen0;
+		this.maxOutputBytesLen = maxOutputBytesLen0;
 		this.outputMacBytesLen = outputMacBytesLen0;
 		this.asn1Oid           = asnOid0;
 		this.asn1OidBytes      = Asn1Util.derBytes(asnOid0);
@@ -71,8 +71,8 @@ public enum CipherAlgorithm {
 	public BigInteger maxInputBytesLen() {
 		return this.maxInputBytesLen;
 	}
-	public BigInteger outputBytesLen() {
-		return this.outputBytesLen;
+	public BigInteger maxOutputBytesLen() {
+		return this.maxOutputBytesLen;
 	}
 	public int outputMacBytesLen() {
 		return this.outputMacBytesLen;

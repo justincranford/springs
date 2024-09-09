@@ -48,8 +48,8 @@ public enum MacAlgorithm {
 		this.algorithm        = algorithm0;
 		this.cipherAlgorithm  = cipherAlgorithm0;
 		this.digestAlgorithm  = digestAlgorithm0;
-		this.maxInputBytesLen = (digestAlgorithm0 != null) ? this.digestAlgorithm.maxInputBytesLen() : BigInteger.ZERO;//this.cipherAlgorithm.maxInputBytesLen();
-		this.outputBytesLen   = (digestAlgorithm0 != null) ? this.digestAlgorithm.outputBytesLen()   : 0;//this.cipherAlgorithm.maxInputBytesLen();
+		this.maxInputBytesLen = (digestAlgorithm0 != null) ? this.digestAlgorithm.maxInputBytesLen() : this.cipherAlgorithm.maxInputBytesLen();
+		this.outputBytesLen   = (digestAlgorithm0 != null) ? this.digestAlgorithm.outputBytesLen()   : this.cipherAlgorithm.outputMacBytesLen();
 		this.asn1Oid          = asn1Oid0;
 		this.asn1OidBytes     = Asn1Util.derBytes(asn1Oid0);
 		this.canonicalString  = asn1Oid0.getId();
