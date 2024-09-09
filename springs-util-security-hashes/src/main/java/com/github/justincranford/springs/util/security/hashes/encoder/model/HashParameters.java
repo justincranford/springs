@@ -4,7 +4,7 @@ import com.github.justincranford.springs.util.basic.ArrayUtil;
 
 import jakarta.validation.constraints.NotNull;
 
-public record HashConstantParametersAndHashVariableParameters(
+public record HashParameters(
 	@NotNull HashConstantParameters hashConstantParameters,
 	@NotNull HashVariableParameters hashVariableParameters
 ) {
