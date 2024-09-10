@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-public interface HashConstantParameters {
+public interface HashConstants {
 	@NotNull public EncodeDecode encodeDecode();
 	@NotNull public byte[] canonicalBytes();
 	@NotEmpty public List<Object> canonicalObjects();
@@ -17,9 +17,9 @@ public interface HashConstantParameters {
 	@NotNull public Boolean recompute(
 		@Min(Constraints.MIN_SALT_BYTES_LEN) final int                    expectedSaltBytesLength,
 		@Min(Constraints.MIN_SALT_BYTES_LEN) final int                    actualSaltBytesLength,
-		@NotNull                             final HashConstantParameters actualConstantParameters,
+		@NotNull                             final HashConstants actualConstantParameters,
 		@Min(Constraints.MIN_HASH_BYTES_LEN) final int                    expectedHashBytesLength,
 		@Min(Constraints.MIN_HASH_BYTES_LEN) final int                    actualHashBytesLength
 	);
-	@NotEmpty public HashConstantParameters decode(@NotEmpty List<String> parts, @NotNull EncodeDecode encodeDecode);
+	@NotEmpty public HashConstants decode(@NotEmpty List<String> parts, @NotNull EncodeDecode encodeDecode);
 }

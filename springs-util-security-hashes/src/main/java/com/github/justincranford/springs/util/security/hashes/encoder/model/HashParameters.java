@@ -5,10 +5,10 @@ import com.github.justincranford.springs.util.basic.ArrayUtil;
 import jakarta.validation.constraints.NotNull;
 
 public record HashParameters(
-	@NotNull HashConstantParameters hashConstantParameters,
-	@NotNull HashVariableParameters hashVariableParameters
+	@NotNull HashConstants hashConstants,
+	@NotNull HashVariables hashVariables
 ) {
 	public byte[] canonicalBytes() {
-		return ArrayUtil.concat(this.hashVariableParameters().canonicalBytes(), this.hashConstantParameters().canonicalBytes());
+		return ArrayUtil.concat(this.hashVariables().canonicalBytes(), this.hashConstants().canonicalBytes());
 	}
 }

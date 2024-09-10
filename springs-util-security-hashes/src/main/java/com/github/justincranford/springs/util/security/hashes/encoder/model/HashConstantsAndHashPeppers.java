@@ -2,7 +2,7 @@ package com.github.justincranford.springs.util.security.hashes.encoder.model;
 
 import jakarta.validation.constraints.NotNull;
 
-public record HashConstantParametersAndHashPeppers(
-	@NotNull HashConstantParameters hashConstantParameters,
+public record HashConstantsAndHashPeppers(
+	@NotNull HashConstants hashConstants,
 	@NotNull HashPeppers hashPeppers
 ) { }
