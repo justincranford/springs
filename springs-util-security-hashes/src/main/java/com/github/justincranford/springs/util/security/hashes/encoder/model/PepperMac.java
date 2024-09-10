@@ -49,6 +49,9 @@ public record PepperMac(
 		} else if (this.mac.cipherAlgorithm() != null) {
 			final byte[] keyBytes0 = this.secretKeyDigest.compute(dataChunks); // use all of the bytes to derive the key
 			keyBytes = new byte[this.mac.cipherAlgorithm().keyBytesLens().iterator().next().intValue()];
+			if (keyBytes0.length < keyBytes.length) {
+				throw new RuntimeException("Not enough digested bytes to fill cipher key");
+			}
 			System.arraycopy(keyBytes0, 0, keyBytes, 0, keyBytes.length); // truncate to required key length
 		} else {
 			throw new RuntimeException("Unsupported pepper mac algorithm");
