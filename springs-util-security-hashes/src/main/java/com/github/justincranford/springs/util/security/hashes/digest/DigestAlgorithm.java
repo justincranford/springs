@@ -36,15 +36,15 @@ public enum DigestAlgorithm {
 
 	private final String               algorithm;
 	private final BigInteger           maxInputBytesLen;
-	private final int                  outputBytesLen;
+	private final int                  digestOutputBytesLen;
 	private final ASN1ObjectIdentifier asn1Oid;
 	private final byte[]               asn1OidBytes;
 	private final String               canonicalString;
 	private final String               toString;
-	private DigestAlgorithm(final String algorithm0, final BigInteger maxInputBytesLen0, final int outputBytesLen0, final ASN1ObjectIdentifier asnOid0) {
+	private DigestAlgorithm(final String algorithm0, final BigInteger maxInputBytesLen0, final int digestOutputBytesLen0, final ASN1ObjectIdentifier asnOid0) {
 		this.algorithm        = algorithm0;
 		this.maxInputBytesLen = maxInputBytesLen0;
-		this.outputBytesLen   = outputBytesLen0;
+		this.digestOutputBytesLen   = digestOutputBytesLen0;
 		this.asn1Oid          = asnOid0;
 		this.asn1OidBytes     = Asn1Util.derBytes(asnOid0);
 		this.canonicalString  = this.asn1Oid.getId();
@@ -56,8 +56,8 @@ public enum DigestAlgorithm {
 	public BigInteger maxInputBytesLen() {
 		return this.maxInputBytesLen;
 	}
-	public int outputBytesLen() {
-		return this.outputBytesLen;
+	public int digestOutputBytesLen() {
+		return this.digestOutputBytesLen;
 	}
 	public ASN1ObjectIdentifier asn1Oid() {
 		return this.asn1Oid;

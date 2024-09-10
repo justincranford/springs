@@ -48,7 +48,7 @@ public enum Pbkdf2Algorithm {
 	public String algorithm() {
 		return this.algorithm;
 	}
-	public int bytesLen() {
+	public int outputBytesLen() {
 		return this.macAlgorithm.outputBytesLen();
 	}
 	public MacAlgorithm macAlgorithm() {

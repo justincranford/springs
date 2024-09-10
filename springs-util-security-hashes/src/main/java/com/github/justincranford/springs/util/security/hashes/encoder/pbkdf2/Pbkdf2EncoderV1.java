@@ -76,18 +76,19 @@ public record Pbkdf2EncoderV1 (
 
 	@Override
 	public Boolean recompute(
-		@Min(Constraints.MIN_SALT_BYTES_LEN) final int defaultSaltBytesLen,
-		@Min(Constraints.MIN_SALT_BYTES_LEN) final int decodedSaltBytesLen,
-		@NotNull                             final HashConstantParameters decodedParameters,
-		@Min(Constraints.MIN_HASH_BYTES_LEN) final int decodedComputeLength
+		@Min(Constraints.MIN_SALT_BYTES_LEN) final int                    expectedSaltBytesLength,
+		@Min(Constraints.MIN_SALT_BYTES_LEN) final int                    actualSaltBytesLength,
+		@NotNull                             final HashConstantParameters actualConstantParameters,
+		@Min(Constraints.MIN_HASH_BYTES_LEN) final int                    expectedHashBytesLength,
+		@Min(Constraints.MIN_HASH_BYTES_LEN) final int                    actualHashBytesLength
 	) {
-		final Pbkdf2EncoderV1 decodedParametersPbkdf2 = (Pbkdf2EncoderV1) decodedParameters;
+		final Pbkdf2EncoderV1 actualConstantParametersPbkdf2 = (Pbkdf2EncoderV1) actualConstantParameters;
 		return Boolean.valueOf(
-			   (defaultSaltBytesLen     != decodedSaltBytesLen)
-			|| (this.algorithm()        != decodedParametersPbkdf2.algorithm())
-			|| (this.iterations()       != decodedParametersPbkdf2.iterations())
-			|| (this.hashBytesLen()     != decodedComputeLength)
-			|| (this.encodeDecode() != decodedParametersPbkdf2.encodeDecode())
+			   (expectedSaltBytesLength != actualSaltBytesLength)
+			|| (this.algorithm()        != actualConstantParametersPbkdf2.algorithm())
+			|| (this.iterations()       != actualConstantParametersPbkdf2.iterations())
+			|| (expectedHashBytesLength != actualHashBytesLength)
+			|| (this.encodeDecode()     != actualConstantParametersPbkdf2.encodeDecode())
 		);
 	}
 

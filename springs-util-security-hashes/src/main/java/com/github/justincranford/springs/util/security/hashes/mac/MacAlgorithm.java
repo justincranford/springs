@@ -39,21 +39,21 @@ public enum MacAlgorithm {
 	private final CipherAlgorithm      cipherAlgorithm;
 	private final DigestAlgorithm      digestAlgorithm;
 	private final BigInteger           maxInputBytesLen;
-	private final int                  outputBytesLen;
+	private final int                  macOutputBytesLen;
 	private final ASN1ObjectIdentifier asn1Oid;
 	private final byte[]               asn1OidBytes;
 	private final String               canonicalString;
 	private final String               toString;
 	private MacAlgorithm(final String algorithm0, final CipherAlgorithm cipherAlgorithm0, final DigestAlgorithm digestAlgorithm0, final ASN1ObjectIdentifier asn1Oid0) {
-		this.algorithm        = algorithm0;
-		this.cipherAlgorithm  = cipherAlgorithm0;
-		this.digestAlgorithm  = digestAlgorithm0;
-		this.maxInputBytesLen = (digestAlgorithm0 != null) ? this.digestAlgorithm.maxInputBytesLen() : this.cipherAlgorithm.maxInputBytesLen();
-		this.outputBytesLen   = (digestAlgorithm0 != null) ? this.digestAlgorithm.outputBytesLen()   : this.cipherAlgorithm.outputMacBytesLen();
-		this.asn1Oid          = asn1Oid0;
-		this.asn1OidBytes     = Asn1Util.derBytes(asn1Oid0);
-		this.canonicalString  = asn1Oid0.getId();
-		this.toString         = this.algorithm + "[" + this.canonicalString + "]";
+		this.algorithm         = algorithm0;
+		this.cipherAlgorithm   = cipherAlgorithm0;
+		this.digestAlgorithm   = digestAlgorithm0;
+		this.maxInputBytesLen  = (digestAlgorithm0 != null) ? this.digestAlgorithm.maxInputBytesLen()     : this.cipherAlgorithm.maxInputBytesLen();
+		this.macOutputBytesLen = (digestAlgorithm0 != null) ? this.digestAlgorithm.digestOutputBytesLen() : this.cipherAlgorithm.macOutputBytesLen();
+		this.asn1Oid           = asn1Oid0;
+		this.asn1OidBytes      = Asn1Util.derBytes(asn1Oid0);
+		this.canonicalString   = asn1Oid0.getId();
+		this.toString          = this.algorithm + "[" + this.canonicalString + "]";
 	}
 	public String algorithm() {
 		return this.algorithm;
@@ -68,7 +68,7 @@ public enum MacAlgorithm {
 		return this.maxInputBytesLen;
 	}
 	public int outputBytesLen() {
-		return this.outputBytesLen;
+		return this.macOutputBytesLen;
 	}
 	public ASN1ObjectIdentifier asn1Oid() {
 		return this.asn1Oid;

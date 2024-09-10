@@ -34,7 +34,7 @@ public enum CipherAlgorithm {
 	private final Set<Integer>         keyBytesLens;
 	private final BigInteger           maxInputBytesLen;
 	private final BigInteger           maxOutputBytesLen;
-	private final int                  outputMacBytesLen;
+	private final int                  macOutputBytesLen;
 	private final ASN1ObjectIdentifier asn1Oid;
 	private final byte[]               asn1OidBytes;
 	private final String               canonicalString;
@@ -45,7 +45,7 @@ public enum CipherAlgorithm {
 		final Set<Integer> keyBytesLens0,
 		final BigInteger maxInputBytesLen0,
 		final BigInteger maxOutputBytesLen0,
-		final int outputMacBytesLen0,
+		final int macOutputBytesLen0,
 		final ASN1ObjectIdentifier asnOid0
 	) {
 		this.algorithm         = algorithm0;
@@ -53,7 +53,7 @@ public enum CipherAlgorithm {
 		this.keyBytesLens      = keyBytesLens0;
 		this.maxInputBytesLen  = maxInputBytesLen0;
 		this.maxOutputBytesLen = maxOutputBytesLen0;
-		this.outputMacBytesLen = outputMacBytesLen0;
+		this.macOutputBytesLen = macOutputBytesLen0;
 		this.asn1Oid           = asnOid0;
 		this.asn1OidBytes      = Asn1Util.derBytes(asnOid0);
 		this.canonicalString   = this.asn1Oid.getId();
@@ -74,8 +74,8 @@ public enum CipherAlgorithm {
 	public BigInteger maxOutputBytesLen() {
 		return this.maxOutputBytesLen;
 	}
-	public int outputMacBytesLen() {
-		return this.outputMacBytesLen;
+	public int macOutputBytesLen() {
+		return this.macOutputBytesLen;
 	}
 	public ASN1ObjectIdentifier asn1Oid() {
 		return this.asn1Oid;
