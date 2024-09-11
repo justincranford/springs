@@ -8,6 +8,6 @@ import lombok.experimental.Accessors;
 @RequiredArgsConstructor
 @Getter
 @Accessors(fluent=true)
-public class HashPepperPostHash {
+public class HashPepperPostHash implements HashPepper {
 	@NotNull private final Pepper pepper;
 }

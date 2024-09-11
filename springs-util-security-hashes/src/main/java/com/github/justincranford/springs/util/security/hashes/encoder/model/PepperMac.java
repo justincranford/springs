@@ -3,9 +3,7 @@ package com.github.justincranford.springs.util.security.hashes.encoder.model;
 import java.util.List;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
-import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
 import com.github.justincranford.springs.util.security.hashes.mac.MacAlgorithm;
@@ -14,7 +12,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 
-@SuppressWarnings({"nls"})
 public record PepperMac(
 	@Null SecretKey secretKey,				// high-entropy 256-bit random key; n.b. may be null
 	@Null DigestAlgorithm secretKeyDigest,	// if secretKey omitted, required to derive secretKeyBytes from inputs
@@ -36,26 +33,9 @@ public record PepperMac(
 		).toArray(new byte[0][]);
 
 		// Use high-entropy secretKey (i.e. optimal), or low-entropy concatData-derived secretKey (i.e. fallback)
-		final SecretKey macKey = (this.secretKey != null) ? this.secretKey : secretKeyFromPii(dataChunks);
+		final SecretKey macKey = (this.secretKey != null) ? this.secretKey : this.mac.secretKeyFromDataChunks(this.secretKeyDigest, dataChunks);
 
 		final byte[] pepperMac = this.mac.chain(macKey, dataChunks);
 		return this.encoderDecoder.encodeToBytes(pepperMac);	// required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
-	}
-
-	private SecretKeySpec secretKeyFromPii(final byte[][] dataChunks) {
-		final byte[] keyBytes;
-		if (this.mac.digestAlgorithm() != null) {
-			keyBytes = ArrayUtil.concat(dataChunks); // use all of the bytes as the key
-		} else if (this.mac.cipherAlgorithm() != null) {
-			final byte[] keyBytes0 = this.secretKeyDigest.compute(dataChunks); // use all of the bytes to derive the key
-			keyBytes = new byte[this.mac.cipherAlgorithm().keyBytesLens().iterator().next().intValue()];
-			if (keyBytes0.length < keyBytes.length) {
-				throw new RuntimeException("Not enough digested bytes to fill cipher key");
-			}
-			System.arraycopy(keyBytes0, 0, keyBytes, 0, keyBytes.length); // truncate to required key length
-		} else {
-			throw new RuntimeException("Unsupported pepper mac algorithm");
-		}
-		return new SecretKeySpec(keyBytes, this.mac.algorithm());
 	}
 }

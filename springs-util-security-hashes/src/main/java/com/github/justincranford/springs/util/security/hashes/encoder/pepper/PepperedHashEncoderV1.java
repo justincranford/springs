@@ -50,8 +50,8 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 				return Boolean.FALSE;
 			}
 			final CharSequence          expectedRawInput = "";
-			final int                   expectedSaltBytesLength     = hashPeppers.hashSaltPepper().pepper().outputBytesLength(expectedSaltSupplier.apply(expectedRawInput).length);
-			final int                   expectedHashBytesLength     = hashPeppers.hashPostHashPepper().pepper().outputBytesLength(expectedRawInput.length());
+			final int                   expectedSaltBytesLength     = hashPeppers.hashSaltPepper().outputBytesLength(expectedSaltSupplier.apply(expectedRawInput).length);
+			final int                   expectedHashBytesLength     = hashPeppers.hashPostHashPepper().outputBytesLength(expectedRawInput.length());
 			final HashVariables         expectedHashVariables       = new HashVariables(new byte[expectedSaltBytesLength]);
 			final HashParametersAndHash actualHashParametersAndHash = decodeHashParametersAndHash(actualHashParametersAndHashEncoded, expectedHashConstants, expectedHashVariables);
 			final HashParameters        actualHashParameters        = actualHashParametersAndHash.hashParameters();

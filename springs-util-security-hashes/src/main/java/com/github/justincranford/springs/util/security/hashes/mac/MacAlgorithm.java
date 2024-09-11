@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 
@@ -45,6 +46,7 @@ public enum MacAlgorithm {
 	private final String               canonicalString;
 	private final String               toString;
 	private MacAlgorithm(final String algorithm0, final CipherAlgorithm cipherAlgorithm0, final DigestAlgorithm digestAlgorithm0, final ASN1ObjectIdentifier asn1Oid0) {
+		assert (cipherAlgorithm0 == null) ^ (digestAlgorithm0 == null) : "CipherAlgorithm or DigestAlgorithm must be specified";
 		this.algorithm         = algorithm0;
 		this.cipherAlgorithm   = cipherAlgorithm0;
 		this.digestAlgorithm   = digestAlgorithm0;
@@ -95,6 +97,36 @@ public enum MacAlgorithm {
 			.filter(value -> value.canonicalString().equals(canonicalString))
 			.findFirst()
 			.orElseThrow(() -> new RuntimeException("canonicalString not found"));
+	}
+
+	public boolean isHmac() {
+		return this.digestAlgorithm != null;
+	}
+	public boolean isCmac() {
+		return this.cipherAlgorithm != null;
+	}
+
+	public SecretKeySpec secretKeyFromDataChunks(final DigestAlgorithm cmacSecretKeyDigest, final byte[][] dataChunks) {
+		final byte[] keyBytes;
+		if (this.isHmac()) {
+			if (cmacSecretKeyDigest != null) {
+				throw new RuntimeException("DigestAlgorithm not supported for creating Hmac secretKey");
+			}
+			keyBytes = ArrayUtil.concat(dataChunks); // use all bytes, no need to apply digest
+		} else if (this.isCmac()) {
+			if (cmacSecretKeyDigest == null) {
+				throw new RuntimeException("DigestAlgorithm is required for creating Cmac secretKey");
+			}
+			keyBytes = new byte[this.cipherAlgorithm.keyBytesLens().iterator().next().intValue()]; // use first supported keyBytes length
+			final byte[] cmacDigestBytes = cmacSecretKeyDigest.compute(dataChunks); // digest chain the data chunks
+			if (cmacDigestBytes.length < keyBytes.length) {
+				throw new RuntimeException("Not enough digested bytes to fill Cmac secretKey");
+			}
+			System.arraycopy(cmacDigestBytes, 0, keyBytes, 0, keyBytes.length); // truncate to required key length
+		} else {
+			throw new RuntimeException("Unsupported pepper mac algorithm");
+		}
+		return new SecretKeySpec(keyBytes, this.algorithm);
 	}
 
     public byte[] compute(@NotNull final SecretKey key, @NotNull final byte[] data) {

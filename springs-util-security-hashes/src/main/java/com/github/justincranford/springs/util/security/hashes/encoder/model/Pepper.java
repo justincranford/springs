@@ -14,8 +14,4 @@ public interface Pepper {
 	@NotNull  MacAlgorithm mac();	// required (e.g. HmacSHA256, CMAC256); used as Mac digest, as well as for deriving low-entropy hmacKey if secretKey=null
 	@NotNull public Base64Util.EncoderDecoder encoderDecoder();
 	@NotNull public byte[] compute(@NotEmpty final byte[] rawInput, @NotNull final byte[] additionalData);
-
-	default public int outputBytesLength(final int fallbackLength) {
-		return (this.mac() != null) ? this.mac().outputBytesLen() : fallbackLength;
-	}
 }
