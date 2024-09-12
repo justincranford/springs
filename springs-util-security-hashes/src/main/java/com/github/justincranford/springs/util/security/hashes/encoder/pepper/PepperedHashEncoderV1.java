@@ -50,41 +50,39 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 				return Boolean.FALSE;
 			}
 			final CharSequence          expectedRawInput = "";
-			final int                   expectedSaltBytesLength     = hashPeppers.hashSaltPepper().outputBytesLength(expectedSaltSupplier.apply(expectedRawInput).length);
-			final int                   expectedHashBytesLength     = hashPeppers.hashPostHashPepper().outputBytesLength(expectedRawInput.length());
+			final int                   expectedSaltBytesLength     = safeLength(hashPeppers.salt(), expectedSaltSupplier.apply(expectedRawInput).length);
+			final int                   expectedHashBytesLength     = safeLength(hashPeppers.postHash(), expectedRawInput.length());
 			final HashVariables         expectedHashVariables       = new HashVariables(new byte[expectedSaltBytesLength]);
 			final HashParametersAndHash actualHashParametersAndHash = decodeHashParametersAndHash(actualHashParametersAndHashEncoded, expectedHashConstants, expectedHashVariables);
 			final HashParameters        actualHashParameters        = actualHashParametersAndHash.hashParameters();
 			final HashConstants         actualConstants             = actualHashParameters.hashConstants();
 			final HashVariables         actualVariables             = actualHashParameters.hashVariables();
 			final int                   actualSaltBytesLength       = actualVariables.hashSaltBytes().length;
-			final int                   actualHashBytesLength       = optionalTextDecode(hashPeppers.hashPostHashPepper().pepper(), actualHashParametersAndHash.hashBytes()).length;
+			final int                   actualHashBytesLength       = safeDecode(hashPeppers.postHash(), actualHashParametersAndHash.hashBytes()).length;
 			return expectedHashConstants.recompute(expectedSaltBytesLength, actualSaltBytesLength, actualConstants, expectedHashBytesLength, actualHashBytesLength);
 		};
+	}
+	private static int safeLength(final Pepper pepper, final int defaultLen) {
+		return (pepper != null) ? pepper.outputBytesLength() : defaultLen;
+	}
+	private static byte[] safeDecode(@Null final Pepper pepper, @NotNull final byte[] bytes) {
+		return (pepper == null) ? bytes : pepper.decode(bytes);
 	}
 
 	private static byte[] computeHash(final CharSequence rawInput, final HashParameters hashParameters, final HashPeppers hashPeppers) {
 		final HashConstants hashConstants       = hashParameters.hashConstants();
 		final byte[]        plainSaltBytes      = hashParameters.hashVariables().hashSaltBytes();
 		final byte[]        additionalDataBytes = hashParameters.canonicalBytes();
-		final byte[]        pepperedSaltBytes   = optionalPepperAndTextEncode(hashPeppers.hashSaltPepper().pepper(), plainSaltBytes, additionalDataBytes); // pre-salt step
+		final byte[]        pepperedSaltBytes   = saveComputeAndEncode(hashPeppers.salt(), plainSaltBytes, additionalDataBytes); // pre-salt step
 		final byte[]        plainInputBytes     = rawInput.toString().getBytes(StandardCharsets.UTF_8);
-		final byte[]        pepperedInputBytes  = optionalPepperAndTextEncode(hashPeppers.hashPreHashPepper().pepper(), plainInputBytes, additionalDataBytes); // pre-hash step
+		final byte[]        pepperedInputBytes  = saveComputeAndEncode(hashPeppers.preHash(), plainInputBytes, additionalDataBytes); // pre-hash step
 		final String        pepperedInputString = new String(pepperedInputBytes, StandardCharsets.UTF_8);
-		final byte[]        plainHashBytes      = computeHash(hashConstants, pepperedSaltBytes, pepperedInputString);
-		final byte[]        pepperedHashBytes   = optionalPepperAndTextEncode(hashPeppers.hashPostHashPepper().pepper(), plainHashBytes, additionalDataBytes); // post-hash step (aka pepper)
+		final byte[]        plainHashBytes      = hashConstants.compute(pepperedSaltBytes, pepperedInputString);
+		final byte[]        pepperedHashBytes   = saveComputeAndEncode(hashPeppers.postHash(), plainHashBytes, additionalDataBytes); // post-hash step (aka pepper)
 		return pepperedHashBytes;
 	}
-
-	private static byte[] optionalPepperAndTextEncode(@Null final Pepper pepper, @NotEmpty final byte[] bytes, @NotNull final byte[] additionalData) {
-		return (pepper == null) ? bytes : pepper.compute(bytes, additionalData);
-	}
-	private static byte[] optionalTextDecode(@Null final Pepper pepper, @NotNull final byte[] bytes) {
-		return (pepper == null) ? bytes : pepper.encoderDecoder().decodeFromBytes(bytes);
-	}
-
-	private static byte[] computeHash(@NotNull final HashConstants hashConstants, @NotNull final byte[] saltBytes, @NotNull final CharSequence rawInput) {
-		return hashConstants.compute(saltBytes, rawInput);
+	private static byte[] saveComputeAndEncode(@Null final Pepper pepper, @NotEmpty final byte[] bytes, @NotNull final byte[] additionalData) {
+		return (pepper == null) ? bytes : pepper.computeAndEncode(bytes, additionalData);
 	}
 
 	private static String encodeHashParametersAndHash(@NotNull final HashParameters actualHashParameters, @NotEmpty final byte[] actualHashBytes) {

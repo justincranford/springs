@@ -1,13 +1,11 @@
 package com.github.justincranford.springs.util.security.hashes.encoder.model;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
+import lombok.experimental.Delegate;
 
 @RequiredArgsConstructor
-@Getter
-@Accessors(fluent=true)
-public class HashPepperSalt implements HashPepper {
-	@NotNull private final Pepper pepper;
+public class HashPepperSalt implements Pepper {
+	@Delegate
+	@NotNull private final PepperBase delegate;
 }

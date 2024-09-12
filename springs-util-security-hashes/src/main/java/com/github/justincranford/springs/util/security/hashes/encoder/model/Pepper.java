@@ -1,5 +1,7 @@
 package com.github.justincranford.springs.util.security.hashes.encoder.model;
 
+import java.util.List;
+
 import javax.crypto.SecretKey;
 
 import com.github.justincranford.springs.util.basic.Base64Util;
@@ -17,5 +19,28 @@ public interface Pepper {
 	@NotNull byte[] clearContext();				// may be empty (e.g. "application1".getBytes(), "feature1".getBytes(), any-entropy N-byte value)
 	@NotNull  MacAlgorithm mac();				// required (e.g. HmacSHA256, CMAC256); used as Mac digest, as well as for deriving low-entropy hmacKey if secretKey=null
 	@NotNull  Base64Util.EncoderDecoder encoderDecoder(); // required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
-	@NotNull public byte[] compute(@NotEmpty final byte[] rawInput, @NotNull final byte[] additionalData);
+
+	default public byte[] computeAndEncode(@NotEmpty final byte[] rawInput, @NotNull final byte[] additionalData) {
+		// Assumption: Mac algorithm will Mac chain all of the inputs
+		final byte[][] dataChunks = List.of(
+			rawInput,				// Priority 1: required, unique input (e.g. deterministic hashing of PII)
+			this.secretContext(),	// Priority 2: optional, secret entropy; useful if secretKey=null (or reused)
+			additionalData,			// Priority 3: optional, data binding (e.g. Pbkdf2 => salt+iter+dkLen, Argon2 => salt+lanes+mem)
+			this.clearContext()		// Priority 4: optional, clear entropy; useful if secretKey=null (or reused) and secretContext=null (or reused)
+		).toArray(new byte[0][]);
+
+		// Use high-entropy secretKey (i.e. optimal), or low-entropy concatData-derived secretKey (i.e. fallback)
+		final SecretKey macKey = (this.secretKey() != null) ? this.secretKey() : this.mac().secretKeyFromDataChunks(this.secretKeyDigest(), dataChunks);
+
+		final byte[] pepperMac = this.mac().chain(macKey, dataChunks);
+		return this.encoderDecoder().encodeToBytes(pepperMac);	// required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
+	}
+
+	default public byte[] decode(final byte[] bytes) {
+		return this.encoderDecoder().decodeFromBytes(bytes);
+	}
+
+	default public int outputBytesLength() {
+		return this.mac().outputBytesLen();
+	}
 }
