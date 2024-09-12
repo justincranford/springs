@@ -8,6 +8,7 @@ import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
 import com.github.justincranford.springs.util.security.hashes.mac.MacAlgorithm;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
@@ -20,27 +21,30 @@ public interface Pepper {
 	@NotNull  MacAlgorithm mac();				// required (e.g. HmacSHA256, CMAC256); used as Mac digest, as well as for deriving low-entropy hmacKey if secretKey=null
 	@NotNull  Base64Util.EncoderDecoder encoderDecoder(); // required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
 
-	default public byte[] computeAndEncode(@NotEmpty final byte[] rawInput, @NotNull final byte[] additionalData) {
+	public static byte[] safeComputeAndEncode(@Null final Pepper pepper, @NotEmpty final byte[] rawInput, @NotNull final byte[] additionalData) {
+		if (pepper == null) {
+			return rawInput;
+		}
 		// Assumption: Mac algorithm will Mac chain all of the inputs
 		final byte[][] dataChunks = List.of(
 			rawInput,				// Priority 1: required, unique input (e.g. deterministic hashing of PII)
-			this.secretContext(),	// Priority 2: optional, secret entropy; useful if secretKey=null (or reused)
+			pepper.secretContext(),	// Priority 2: optional, secret entropy; useful if secretKey=null (or reused)
 			additionalData,			// Priority 3: optional, data binding (e.g. Pbkdf2 => salt+iter+dkLen, Argon2 => salt+lanes+mem)
-			this.clearContext()		// Priority 4: optional, clear entropy; useful if secretKey=null (or reused) and secretContext=null (or reused)
+			pepper.clearContext()	// Priority 4: optional, clear entropy; useful if secretKey=null (or reused) and secretContext=null (or reused)
 		).toArray(new byte[0][]);
 
 		// Use high-entropy secretKey (i.e. optimal), or low-entropy concatData-derived secretKey (i.e. fallback)
-		final SecretKey macKey = (this.secretKey() != null) ? this.secretKey() : this.mac().secretKeyFromDataChunks(this.secretKeyDigest(), dataChunks);
+		final SecretKey macKey = (pepper.secretKey() != null) ? pepper.secretKey() : pepper.mac().secretKeyFromDataChunks(pepper.secretKeyDigest(), dataChunks);
 
-		final byte[] pepperMac = this.mac().chain(macKey, dataChunks);
-		return this.encoderDecoder().encodeToBytes(pepperMac);	// required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
+		final byte[] pepperMac = pepper.mac().chain(macKey, dataChunks);
+		return pepper.encoderDecoder().encodeToBytes(pepperMac);	// required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
 	}
 
-	default public byte[] decode(final byte[] bytes) {
-		return this.encoderDecoder().decodeFromBytes(bytes);
+	public static int safeLength(@Null final Pepper pepper, @Min(1) final int defaultLen) {
+		return (pepper != null) ? pepper.mac().outputBytesLen() : defaultLen;
 	}
 
-	default public int outputBytesLength() {
-		return this.mac().outputBytesLen();
+	public static byte[] safeDecode(@Null final Pepper pepper, @Min(1) final byte[] bytes) {
+		return (pepper != null) ? pepper.encoderDecoder().decodeFromBytes(bytes) : bytes;
 	}
 }
