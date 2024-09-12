@@ -13,15 +13,15 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 
-public interface Pepper {
-	@Null SecretKey secretKey();				// high-entropy 256-bit random key; n.b. may be null
-	@Null DigestAlgorithm secretKeyDigest();	// if secretKey omitted, required to derive secretKeyBytes from inputs
-	@NotNull byte[] secretContext();			// may be empty (e.g. any-entropy N-byte value)
-	@NotNull byte[] clearContext();				// may be empty (e.g. "application1".getBytes(), "feature1".getBytes(), any-entropy N-byte value)
-	@NotNull  MacAlgorithm mac();				// required (e.g. HmacSHA256, CMAC256); used as Mac digest, as well as for deriving low-entropy hmacKey if secretKey=null
-	@NotNull  Base64Util.EncoderDecoder encoderDecoder(); // required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
-
-	public static byte[] safeComputeAndEncode(@Null final Pepper pepper, @NotEmpty final byte[] rawInput, @NotNull final byte[] additionalData) {
+public record Pepper(
+	@Null SecretKey secretKey,				// high-entropy 256-bit random key; n.b. may be null
+	@Null DigestAlgorithm secretKeyDigest,	// if secretKey omitted, required to derive secretKeyBytes from inputs
+	@NotNull byte[] secretContext,			// may be empty (e.g. any-entropy N-byte value)
+	@NotNull byte[] clearContext,			// may be empty (e.g. "application1".getBytes(), "feature1".getBytes(), any-entropy N-byte value)
+	@NotNull  MacAlgorithm mac,				// required (e.g. HmacSHA256, CMAC256); used as Mac digest, as well as for deriving low-entropy hmacKey if secretKey=null
+	@NotNull  Base64Util.EncoderDecoder encoderDecoder // required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
+) implements PepperInterface {
+	public static byte[] safeComputeAndEncode(@Null final PepperInterface pepper, @NotEmpty final byte[] rawInput, @NotNull final byte[] additionalData) {
 		if (pepper == null) {
 			return rawInput;
 		}
@@ -40,11 +40,11 @@ public interface Pepper {
 		return pepper.encoderDecoder().encodeToBytes(pepperMac);	// required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
 	}
 
-	public static int safeLength(@Null final Pepper pepper, @Min(1) final int defaultLen) {
+	public static int safeLength(@Null final PepperInterface pepper, @Min(1) final int defaultLen) {
 		return (pepper != null) ? pepper.mac().outputBytesLen() : defaultLen;
 	}
 
-	public static byte[] safeDecode(@Null final Pepper pepper, @Min(1) final byte[] bytes) {
+	public static byte[] safeDecode(@Null final PepperInterface pepper, @Min(1) final byte[] bytes) {
 		return (pepper != null) ? pepper.encoderDecoder().decodeFromBytes(bytes) : bytes;
 	}
 }

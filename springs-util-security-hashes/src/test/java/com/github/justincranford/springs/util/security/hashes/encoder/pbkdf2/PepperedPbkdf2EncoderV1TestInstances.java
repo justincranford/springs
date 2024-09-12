@@ -8,7 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
 import com.github.justincranford.springs.util.security.hashes.encoder.EncodeDecode;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.PepperBase;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.Pepper;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPeppers;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperPostHash;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperPreHash;
@@ -139,12 +139,12 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 		public static final SecretKey HKEY = new SecretKeySpec("pre-salt-key".getBytes(StandardCharsets.UTF_8), PepperOptions.HMAC_ALG.algorithm());
 
 		public static final HashPepperSalt NULL   = null;
-		public static final HashPepperSalt NONE   = new HashPepperSalt(new PepperBase(null, null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperSalt CTX    = new HashPepperSalt(new PepperBase(null, null,                  new byte[7], new byte[3], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperSalt HSK    = new HashPepperSalt(new PepperBase(HKEY, null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperSalt HSKCTX = new HashPepperSalt(new PepperBase(HKEY, null,                  new byte[3], new byte[2], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperSalt CSK    = new HashPepperSalt(new PepperBase(CKEY, PepperOptions.DER_ALG, new byte[0], new byte[0], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperSalt CSKCTX = new HashPepperSalt(new PepperBase(CKEY, PepperOptions.DER_ALG, new byte[3], new byte[2], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperSalt NONE   = new HashPepperSalt(new Pepper(null, null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperSalt CTX    = new HashPepperSalt(new Pepper(null, null,                  new byte[7], new byte[3], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperSalt HSK    = new HashPepperSalt(new Pepper(HKEY, null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperSalt HSKCTX = new HashPepperSalt(new Pepper(HKEY, null,                  new byte[3], new byte[2], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperSalt CSK    = new HashPepperSalt(new Pepper(CKEY, PepperOptions.DER_ALG, new byte[0], new byte[0], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperSalt CSKCTX = new HashPepperSalt(new Pepper(CKEY, PepperOptions.DER_ALG, new byte[3], new byte[2], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
 	}
 
 	public static class PreHash {
@@ -152,12 +152,12 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 		public static final SecretKey HKEY = new SecretKeySpec("pre-hash-key".getBytes(StandardCharsets.UTF_8), PepperOptions.HMAC_ALG.algorithm());
 
 		public static final HashPepperPreHash NULL   = null;
-		public static final HashPepperPreHash NONE   = new HashPepperPreHash(new PepperBase(null,  null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperPreHash CTX    = new HashPepperPreHash(new PepperBase(null,  null,                  new byte[7], new byte[3], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperPreHash HSK    = new HashPepperPreHash(new PepperBase(HKEY,  null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperPreHash HSKCTX = new HashPepperPreHash(new PepperBase(HKEY,  null,                  new byte[3], new byte[2], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperPreHash CSK    = new HashPepperPreHash(new PepperBase(CKEY,  PepperOptions.DER_ALG, new byte[0], new byte[0], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperPreHash CSKCTX = new HashPepperPreHash(new PepperBase(CKEY,  PepperOptions.DER_ALG, new byte[3], new byte[2], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperPreHash NONE   = new HashPepperPreHash(new Pepper(null,  null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperPreHash CTX    = new HashPepperPreHash(new Pepper(null,  null,                  new byte[7], new byte[3], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperPreHash HSK    = new HashPepperPreHash(new Pepper(HKEY,  null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperPreHash HSKCTX = new HashPepperPreHash(new Pepper(HKEY,  null,                  new byte[3], new byte[2], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperPreHash CSK    = new HashPepperPreHash(new Pepper(CKEY,  PepperOptions.DER_ALG, new byte[0], new byte[0], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperPreHash CSKCTX = new HashPepperPreHash(new Pepper(CKEY,  PepperOptions.DER_ALG, new byte[3], new byte[2], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
 	}
 
 	public static class PostHash {
@@ -165,12 +165,12 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 		public static final SecretKey HKEY = new SecretKeySpec("post-hash-key".getBytes(StandardCharsets.UTF_8), PepperOptions.HMAC_ALG.algorithm());
 
 		public static final HashPepperPostHash NULL   = null;
-		public static final HashPepperPostHash NONE   = new HashPepperPostHash(new PepperBase(null,  null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperPostHash CTX    = new HashPepperPostHash(new PepperBase(null,  null,                  new byte[7], new byte[3], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperPostHash HSK    = new HashPepperPostHash(new PepperBase(HKEY,  null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperPostHash HSKCTX = new HashPepperPostHash(new PepperBase(HKEY,  null,                  new byte[3], new byte[2], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperPostHash CSK    = new HashPepperPostHash(new PepperBase(CKEY,  PepperOptions.DER_ALG, new byte[0], new byte[0], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperPostHash CSKCTX = new HashPepperPostHash(new PepperBase(CKEY,  PepperOptions.DER_ALG, new byte[3], new byte[2], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperPostHash NONE   = new HashPepperPostHash(new Pepper(null,  null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperPostHash CTX    = new HashPepperPostHash(new Pepper(null,  null,                  new byte[7], new byte[3], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperPostHash HSK    = new HashPepperPostHash(new Pepper(HKEY,  null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperPostHash HSKCTX = new HashPepperPostHash(new Pepper(HKEY,  null,                  new byte[3], new byte[2], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperPostHash CSK    = new HashPepperPostHash(new Pepper(CKEY,  PepperOptions.DER_ALG, new byte[0], new byte[0], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperPostHash CSKCTX = new HashPepperPostHash(new Pepper(CKEY,  PepperOptions.DER_ALG, new byte[3], new byte[2], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
 	}
 
 	// 125 Tuples of Peppers => PeppperPreSalt{NULL,NONE,CTX,SK,SKCTX} x PeppperPreHash{NULL,NONE,CTX,SK,SKCTX} x PeppperPostHash{NULL,NONE,CTX,SK,SKCTX})
