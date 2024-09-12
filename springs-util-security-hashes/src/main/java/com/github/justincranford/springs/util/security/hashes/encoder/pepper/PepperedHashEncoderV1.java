@@ -77,7 +77,7 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 
 	private static String encodeHashParametersAndHash(@NotNull final HashParameters actualHashParameters, @NotEmpty final byte[] actualHashBytes) {
 		final String actualHashParametersEncoded = encodeHashParameters(actualHashParameters);
-		final String actualHashEncoded           = encodeHash(actualHashParameters.hashConstants(), actualHashBytes);
+		final String actualHashEncoded           = actualHashParameters.hashConstants().encode(actualHashBytes);
 		if (actualHashParametersEncoded.isEmpty()) {
 			return actualHashEncoded;
 		}
@@ -91,7 +91,7 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 			throw new RuntimeException("Leftover parts");
 		}
 		final HashParameters actualHashParameters           = decodeHashParameters(actualParametersEncoded, expectedHashConstants, expectedHashVariables);
-		final byte[]         actualHashBytes                = decodeHash(expectedHashConstants, actualHashEncoded);
+		final byte[]         actualHashBytes                = expectedHashConstants.decode(actualHashEncoded);
 		return new HashParametersAndHash(actualHashParameters, actualHashBytes);
 	}
 	private static String encodeHashParameters(@NotNull final HashParameters actualHashParameters) {
@@ -119,12 +119,5 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 			throw new RuntimeException("Leftover parts");
 		}
 		return new HashParameters(actualHashConstants, actualHashVariables);
-	}
-
-	private static String encodeHash(@NotNull final HashConstants actualHashConstants, @NotEmpty final byte[] actualHashBytes) {
-		return actualHashConstants.encodeDecode().encoderDecoder().encodeToString(actualHashBytes);
-	}
-	private static byte[] decodeHash(@NotNull final HashConstants actualHashConstants, @NotEmpty final String actualHashEncoded) {
-		return actualHashConstants.encodeDecode().encoderDecoder().decodeFromString(actualHashEncoded);
 	}
 }
