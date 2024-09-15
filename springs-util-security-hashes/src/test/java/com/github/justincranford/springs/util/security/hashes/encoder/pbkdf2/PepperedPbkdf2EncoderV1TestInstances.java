@@ -13,7 +13,7 @@ import com.github.justincranford.springs.util.security.hashes.encoder.model.Hash
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperPostHash;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperPreHash;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperSalt;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashConstantsAndHashPeppers;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashInputConstantsAndHashPeppers;
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.ConstantSalt;
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.DerivedSalt;
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.RandomSalt;
@@ -186,36 +186,36 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 
 	// Key+Context pairs for Macs
 	public static class ParametersAndPeppers {
-		public static final HashConstantsAndHashPeppers NONE_NULL_NULL_NULL       = new HashConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.NULL_NULL_NULL);
-		public static final HashConstantsAndHashPeppers NONE_NONE_NONE_NONE       = new HashConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.NONE_NONE_NONE);
-		public static final HashConstantsAndHashPeppers NONE_CTX_CTX_CTX          = new HashConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.CTX_CTX_CTX);
-		public static final HashConstantsAndHashPeppers NONE_HSK_HSK_HSK          = new HashConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.HSK_HSK_HSK);
-		public static final HashConstantsAndHashPeppers NONE_HSKCTX_HSKCTX_HSKCTX = new HashConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.HSKCTX_HSKCTX_HSKCTX);
-		public static final HashConstantsAndHashPeppers NONE_CSK_CSK_CSK          = new HashConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.CSK_CSK_CSK);
-		public static final HashConstantsAndHashPeppers NONE_CSKCTX_CSKCTX_CSKCTX = new HashConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.CSKCTX_CSKCTX_CSKCTX);
+		public static final HashInputConstantsAndHashPeppers NONE_NULL_NULL_NULL       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.NULL_NULL_NULL);
+		public static final HashInputConstantsAndHashPeppers NONE_NONE_NONE_NONE       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.NONE_NONE_NONE);
+		public static final HashInputConstantsAndHashPeppers NONE_CTX_CTX_CTX          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.CTX_CTX_CTX);
+		public static final HashInputConstantsAndHashPeppers NONE_HSK_HSK_HSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.HSK_HSK_HSK);
+		public static final HashInputConstantsAndHashPeppers NONE_HSKCTX_HSKCTX_HSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.HSKCTX_HSKCTX_HSKCTX);
+		public static final HashInputConstantsAndHashPeppers NONE_CSK_CSK_CSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.CSK_CSK_CSK);
+		public static final HashInputConstantsAndHashPeppers NONE_CSKCTX_CSKCTX_CSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.CSKCTX_CSKCTX_CSKCTX);
 
-		public static final HashConstantsAndHashPeppers SALT_NULL_NULL_NULL       = new HashConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.NULL_NULL_NULL);
-		public static final HashConstantsAndHashPeppers SALT_NONE_NONE_NONE       = new HashConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.NONE_NONE_NONE);
-		public static final HashConstantsAndHashPeppers SALT_CTX_CTX_CTX          = new HashConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.CTX_CTX_CTX);
-		public static final HashConstantsAndHashPeppers SALT_HSK_HSK_HSK          = new HashConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.HSK_HSK_HSK);
-		public static final HashConstantsAndHashPeppers SALT_HSKCTX_HSKCTX_HSKCTX = new HashConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.HSKCTX_HSKCTX_HSKCTX);
-		public static final HashConstantsAndHashPeppers SALT_CSK_CSK_CSK          = new HashConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.CSK_CSK_CSK);
-		public static final HashConstantsAndHashPeppers SALT_CSKCTX_CSKCTX_CSKCTX = new HashConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.CSKCTX_CSKCTX_CSKCTX);
+		public static final HashInputConstantsAndHashPeppers SALT_NULL_NULL_NULL       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.NULL_NULL_NULL);
+		public static final HashInputConstantsAndHashPeppers SALT_NONE_NONE_NONE       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.NONE_NONE_NONE);
+		public static final HashInputConstantsAndHashPeppers SALT_CTX_CTX_CTX          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.CTX_CTX_CTX);
+		public static final HashInputConstantsAndHashPeppers SALT_HSK_HSK_HSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.HSK_HSK_HSK);
+		public static final HashInputConstantsAndHashPeppers SALT_HSKCTX_HSKCTX_HSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.HSKCTX_HSKCTX_HSKCTX);
+		public static final HashInputConstantsAndHashPeppers SALT_CSK_CSK_CSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.CSK_CSK_CSK);
+		public static final HashInputConstantsAndHashPeppers SALT_CSKCTX_CSKCTX_CSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.CSKCTX_CSKCTX_CSKCTX);
 
-		public static final HashConstantsAndHashPeppers OTH_NULL_NULL_NULL       = new HashConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.NULL_NULL_NULL);
-		public static final HashConstantsAndHashPeppers OTH_NONE_NONE_NONE       = new HashConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.NONE_NONE_NONE);
-		public static final HashConstantsAndHashPeppers OTH_CTX_CTX_CTX          = new HashConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.CTX_CTX_CTX);
-		public static final HashConstantsAndHashPeppers OTH_HSK_HSK_HSK          = new HashConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.HSK_HSK_HSK);
-		public static final HashConstantsAndHashPeppers OTH_HSKCTX_HSKCTX_HSKCTX = new HashConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.HSKCTX_HSKCTX_HSKCTX);
-		public static final HashConstantsAndHashPeppers OTH_CSK_CSK_CSK          = new HashConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.CSK_CSK_CSK);
-		public static final HashConstantsAndHashPeppers OTH_CSKCTX_CSKCTX_CSKCTX = new HashConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.CSKCTX_CSKCTX_CSKCTX);
+		public static final HashInputConstantsAndHashPeppers OTH_NULL_NULL_NULL       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.NULL_NULL_NULL);
+		public static final HashInputConstantsAndHashPeppers OTH_NONE_NONE_NONE       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.NONE_NONE_NONE);
+		public static final HashInputConstantsAndHashPeppers OTH_CTX_CTX_CTX          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.CTX_CTX_CTX);
+		public static final HashInputConstantsAndHashPeppers OTH_HSK_HSK_HSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.HSK_HSK_HSK);
+		public static final HashInputConstantsAndHashPeppers OTH_HSKCTX_HSKCTX_HSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.HSKCTX_HSKCTX_HSKCTX);
+		public static final HashInputConstantsAndHashPeppers OTH_CSK_CSK_CSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.CSK_CSK_CSK);
+		public static final HashInputConstantsAndHashPeppers OTH_CSKCTX_CSKCTX_CSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.CSKCTX_CSKCTX_CSKCTX);
 
-		public static final HashConstantsAndHashPeppers SALTOTH_NULL_NULL_NULL       = new HashConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.NULL_NULL_NULL);
-		public static final HashConstantsAndHashPeppers SALTOTH_NONE_NONE_NONE       = new HashConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.NONE_NONE_NONE);
-		public static final HashConstantsAndHashPeppers SALTOTH_CTX_CTX_CTX          = new HashConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.CTX_CTX_CTX);
-		public static final HashConstantsAndHashPeppers SALTOTH_HSK_HSK_HSK          = new HashConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.HSK_HSK_HSK);
-		public static final HashConstantsAndHashPeppers SALTOTH_HSKCTX_HSKCTX_HSKCTX = new HashConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.HSKCTX_HSKCTX_HSKCTX);
-		public static final HashConstantsAndHashPeppers SALTOTH_CSK_CSK_CSK          = new HashConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.CSK_CSK_CSK);
-		public static final HashConstantsAndHashPeppers SALTOTH_CSKCTX_CSKCTX_CSKCTX = new HashConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.CSKCTX_CSKCTX_CSKCTX);
+		public static final HashInputConstantsAndHashPeppers SALTOTH_NULL_NULL_NULL       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.NULL_NULL_NULL);
+		public static final HashInputConstantsAndHashPeppers SALTOTH_NONE_NONE_NONE       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.NONE_NONE_NONE);
+		public static final HashInputConstantsAndHashPeppers SALTOTH_CTX_CTX_CTX          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.CTX_CTX_CTX);
+		public static final HashInputConstantsAndHashPeppers SALTOTH_HSK_HSK_HSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.HSK_HSK_HSK);
+		public static final HashInputConstantsAndHashPeppers SALTOTH_HSKCTX_HSKCTX_HSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.HSKCTX_HSKCTX_HSKCTX);
+		public static final HashInputConstantsAndHashPeppers SALTOTH_CSK_CSK_CSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.CSK_CSK_CSK);
+		public static final HashInputConstantsAndHashPeppers SALTOTH_CSKCTX_CSKCTX_CSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.CSKCTX_CSKCTX_CSKCTX);
 	}
 }
