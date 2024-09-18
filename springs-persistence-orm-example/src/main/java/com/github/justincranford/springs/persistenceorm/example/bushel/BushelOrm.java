@@ -36,7 +36,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-@SQLDelete(sql="UPDATE bushel SET delete_date_time=NOW() WHERE internal_id=? AND version=?")
+@SQLDelete(sql="UPDATE bushel SET pre_delete_date_time=NOW() WHERE internal_id=? AND version=?")
 @SQLRestriction(AbstractEntity.WHERE_CLAUSE)
 //@FilterDef(name="isNotDeletedBushelFilter", parameters=@ParamDef(name="deleteDateTime",type=OffsetDateTime.class))
 //@FilterDef(name="isDeletedBushelFilter", parameters=@ParamDef(name="deleteDateTime",type=OffsetDateTime.class))

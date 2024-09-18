@@ -3,6 +3,11 @@ package com.github.justincranford.springs.persistenceorm.base.entity;
 import java.time.OffsetDateTime;
 
 import org.hibernate.envers.Audited;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
@@ -42,11 +47,11 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-@EntityListeners(EntityListener.class)
+@EntityListeners({AuditingEntityListener.class,EntityListener.class})
 @SuppressWarnings("nls")
 @Slf4j
 public class AbstractEntity {
-	protected static final String WHERE_CLAUSE = "delete_date_time IS NULL OR delete_date_time < NOW()";
+	protected static final String WHERE_CLAUSE = "pre_delete_date_time IS NULL OR pre_delete_date_time < NOW()";
 	protected static final int SEQUENCE_ID_INITIAL_VALUE = 1000;
 	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_SMALL = 10;
 	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM = 100;
@@ -70,19 +75,19 @@ public class AbstractEntity {
     private byte[] externalId;
 
 	@Column(updatable=false,nullable=false)
-	private OffsetDateTime createDateTime;
+	private OffsetDateTime prePersistDateTime;
 
 	@Column(insertable=false)
-	private OffsetDateTime postCreateDateTime;
+	private OffsetDateTime postPersistDateTime;
 
 	@Column(insertable=false)
-	private OffsetDateTime updateDateTime;
+	private OffsetDateTime preUpdateDateTime;
 
 	@Column(insertable=false)
 	private OffsetDateTime postUpdateDateTime;
 
 	@Column(insertable=false)
-	private OffsetDateTime deleteDateTime;
+	private OffsetDateTime preDeleteDateTime;
 
 	@Column(insertable=false)
 	private OffsetDateTime postDeleteDateTime;
@@ -90,34 +95,50 @@ public class AbstractEntity {
 	@Column(insertable=false)
 	private OffsetDateTime postLoadDateTime;
 
-	@PrePersist
+	@CreatedDate
+	@Column(nullable=false,updatable=false)
+    private OffsetDateTime createdDate;
+    
+    @CreatedBy
+	@Column(updatable=false)
+    private String createdBy;
+
+	@Column(insertable=false)
+    @LastModifiedDate
+    private OffsetDateTime lastModifiedDate;
+    
+	@Column(insertable=false)
+    @LastModifiedBy
+    private String lastModifiedBy;
+
+    @PrePersist
 	public void prePersist() {
 		this.externalId = SecureRandomUtil.randomBytes(32);
-		this.createDateTime = DateTimeUtil.nowUtcTruncatedToMilliseconds();
+		this.prePersistDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
 	}
 	@PostPersist
 	public void postPersist() {
-		this.postCreateDateTime = DateTimeUtil.nowUtcTruncatedToMilliseconds();
+		this.postPersistDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
 	}
 	@PreUpdate
 	public void preUpdate() {
-		this.updateDateTime = DateTimeUtil.nowUtcTruncatedToMilliseconds();
+		this.preUpdateDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
 	}
 	@PostUpdate
 	public void postUpdate() {
-		this.postUpdateDateTime = DateTimeUtil.nowUtcTruncatedToMilliseconds();
+		this.postUpdateDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
 	}
 	@PreRemove
 	public void preDelete() {
-		this.deleteDateTime = DateTimeUtil.nowUtcTruncatedToMilliseconds();
+		this.preDeleteDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
 	}
 	@PostRemove
 	public void postDelete() {
-		this.postDeleteDateTime = DateTimeUtil.nowUtcTruncatedToMilliseconds();
+		this.postDeleteDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
 	}
 	@PostLoad
 	public void postLoad() {
-		this.postLoadDateTime = DateTimeUtil.nowUtcTruncatedToMilliseconds();
+		this.postLoadDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
 	}
 
 	@Override
