@@ -27,6 +27,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Reserved for future use, for reusable properties across all modules that depend on this one.
+ */
 @Component
 @ConfigurationProperties(prefix="springs.persistenceorm.base",ignoreUnknownFields=false,ignoreInvalidFields=false)
 @PropertySource("classpath:springs-persistence-orm-base.properties")
