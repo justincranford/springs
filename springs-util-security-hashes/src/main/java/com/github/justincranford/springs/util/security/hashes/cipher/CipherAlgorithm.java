@@ -19,14 +19,15 @@ import com.github.justincranford.springs.util.security.hashes.asn1.Asn1Util;
 
 @SuppressWarnings({"nls", "hiding"})
 public enum CipherAlgorithm {
-	AESCMAC   ("AES-CMAC",   false, K.ALL, I.U,   null, 16, Oid.AESCMAC),
-	AESCMAC128("AES-CMAC",   false, K.K16, I.U,   null, 16, Oid.AESCMAC128),
-	AESCMAC192("AES-CMAC",   false, K.K24, I.U,   null, 16, Oid.AESCMAC192),
-	AESCMAC256("AES-CMAC",   false, K.K32, I.U,   null, 16, Oid.AESCMAC256),
-	AESGCM    ("AES-GCM",    true,  K.ALL, I.P39, O.U,  0, Oid.AESGCM),
-	AESGCM128 ("AES-GCM128", true,  K.K16, I.P39, O.U,  0, Oid.AESGCM128),
-	AESGCM192 ("AES-GCM192", true,  K.K24, I.P39, O.U,  0, Oid.AESGCM192),
-	AESGCM256 ("AES-GCM256", true,  K.K32, I.P39, O.U,  0, Oid.AESGCM256),
+	AESGCM256 ("AES/GCM/NoPadding",     true,  K.K32, I.P39, O.U,  0,  Oid.AESGCM256),
+	AESGCM192 ("AES/GCM/NoPadding",     true,  K.K24, I.P39, O.U,  0,  Oid.AESGCM192),
+	AESGCM128 ("AES/GCM/NoPadding",     true,  K.K16, I.P39, O.U,  0,  Oid.AESGCM128),
+	AESCBC256 ("AES/CBC/PKCS5Padding",  false, K.K32, I.P39, O.U,  0,  Oid.AESCBC256),
+	AESCBC192 ("AES/CBC/PKCS5Padding",  false, K.K24, I.P39, O.U,  0,  Oid.AESCBC192),
+	AESCBC128 ("AES/CBC/PKCS5Padding",  false, K.K16, I.P39, O.U,  0,  Oid.AESCBC128),
+	AESCMAC256("AES-CMAC",              false, K.K32, I.U,   null, 16, Oid.AESCMAC256),
+	AESCMAC192("AES-CMAC",              false, K.K24, I.U,   null, 16, Oid.AESCMAC192),
+	AESCMAC128("AES-CMAC",              false, K.K16, I.U,   null, 16, Oid.AESCMAC128),
 	;
 
 	private final String               algorithm;
@@ -133,7 +134,7 @@ public enum CipherAlgorithm {
     }
 
     public static class K {
-    	public static final Set<Integer> ALL  = new LinkedHashSet<>(List.of(Integer.valueOf(32), Integer.valueOf(24), Integer.valueOf(32)));
+    	public static final Set<Integer> ALL  = new LinkedHashSet<>(List.of(Integer.valueOf(32), Integer.valueOf(24), Integer.valueOf(16)));
     	public static final Set<Integer> K32 = new LinkedHashSet<>(List.of(Integer.valueOf(32)));
     	public static final Set<Integer> K24 = new LinkedHashSet<>(List.of(Integer.valueOf(24)));
     	public static final Set<Integer> K16 = new LinkedHashSet<>(List.of(Integer.valueOf(16)));
@@ -150,13 +151,16 @@ public enum CipherAlgorithm {
     }
 
     public static class Oid {
-		public static final ASN1ObjectIdentifier AESCMAC    = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.2");
-		public static final ASN1ObjectIdentifier AESCMAC128 = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.2");
-		public static final ASN1ObjectIdentifier AESCMAC192 = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.3");
-		public static final ASN1ObjectIdentifier AESCMAC256 = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.4");
-		public static final ASN1ObjectIdentifier AESGCM     = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.2");
-		public static final ASN1ObjectIdentifier AESGCM128  = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.2");
-		public static final ASN1ObjectIdentifier AESGCM192  = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.3");
-		public static final ASN1ObjectIdentifier AESGCM256  = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.4");
+		public static final ASN1ObjectIdentifier AESGCM256  = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.46");
+		public static final ASN1ObjectIdentifier AESGCM192  = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.26");
+		public static final ASN1ObjectIdentifier AESGCM128  = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.6");
+
+		public static final ASN1ObjectIdentifier AESCBC256  = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.42");
+		public static final ASN1ObjectIdentifier AESCBC192  = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.22");
+		public static final ASN1ObjectIdentifier AESCBC128  = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.2");
+
+		public static final ASN1ObjectIdentifier AESCMAC256 = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.49");
+		public static final ASN1ObjectIdentifier AESCMAC192 = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.29");
+		public static final ASN1ObjectIdentifier AESCMAC128 = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.9");
     }
 }

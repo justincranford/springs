@@ -75,11 +75,11 @@ public record Pbkdf2EncoderV1 (
 
 	@Override
 	public Boolean recompute(
-		@Min(Constraints.MIN_SALT_BYTES_LEN) final int                    expectedSaltBytesLength,
-		@Min(Constraints.MIN_SALT_BYTES_LEN) final int                    actualSaltBytesLength,
+		@Min(Constraints.MIN_SALT_BYTES_LEN) final int                expectedSaltBytesLength,
+		@Min(Constraints.MIN_SALT_BYTES_LEN) final int                actualSaltBytesLength,
 		@NotNull                             final HashInputConstants actualConstantParameters,
-		@Min(Constraints.MIN_HASH_BYTES_LEN) final int                    expectedHashBytesLength,
-		@Min(Constraints.MIN_HASH_BYTES_LEN) final int                    actualHashBytesLength
+		@Min(Constraints.MIN_HASH_BYTES_LEN) final int                expectedHashBytesLength,
+		@Min(Constraints.MIN_HASH_BYTES_LEN) final int                actualHashBytesLength
 	) {
 		final Pbkdf2EncoderV1 actualConstantParametersPbkdf2 = (Pbkdf2EncoderV1) actualConstantParameters;
 		return Boolean.valueOf(

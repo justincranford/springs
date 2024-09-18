@@ -18,7 +18,6 @@ import jakarta.validation.constraints.NotNull;
 
 @SuppressWarnings({"nls"})
 public enum MacAlgorithm {
-	AesCmac       ("AesCmac",        CipherAlgorithm.AESCMAC,    null,                     Oid.AES_CMAC),
 	AesCmac128    ("AesCmac128",     CipherAlgorithm.AESCMAC128, null,                     Oid.AES_CMAC_128),
 	AesCmac192    ("AesCmac192",     CipherAlgorithm.AESCMAC192, null,                     Oid.AES_CMAC_192),
 	AesCmac256    ("AesCmac256",     CipherAlgorithm.AESCMAC256, null,                     Oid.AES_CMAC_256),
@@ -153,7 +152,6 @@ public enum MacAlgorithm {
 
 	public static class Oid {
 		// See NIST cryptographic algorithms family "hash functions"
-		public static final ASN1ObjectIdentifier AES_CMAC        = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.24");
 		public static final ASN1ObjectIdentifier AES_CMAC_128    = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.25");
 		public static final ASN1ObjectIdentifier AES_CMAC_192    = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.26");
 		public static final ASN1ObjectIdentifier AES_CMAC_256    = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.27");
