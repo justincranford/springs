@@ -12,23 +12,27 @@ public record HashInputVariables(
 		return this.saltBytes;
 	}
 
-
-	@NotEmpty public List<Object> canonicalObjects(@NotNull final HashInputConstants hashInputConstants) {
+	@NotEmpty public List<String> canonicalObjects(@NotNull final HashInputConstants hashInputConstants) {
 		return List.of(
-			hashInputConstants.encodeDecode().encoderDecoder().encodeToString(this.saltBytes)
+			hashInputConstants.encode(this.saltBytes)
 		);
 	}
 
-	public HashInputVariables decode(@NotEmpty final List<String> hashInputsEncoded, @NotNull final HashInputConstants hashInputConstants) {
-		final byte[] expectedSaltBytes = this.saltBytes;
-		final byte[] actualSaltBytes   = (hashInputConstants.encodeDecode().flags().encodeHashInputVariables()) ? hashInputConstants.encodeDecode().encoderDecoder().decodeFromString(hashInputsEncoded.removeFirst()) : expectedSaltBytes;
-		return new HashInputVariables(actualSaltBytes);
+	public static void encode(@NotNull final HashInputConstants expectedHashInputConstants, @NotNull final HashInputVariables expectedHashInputVariables, @NotEmpty final List<String> hashInputsValues) {
+		if (expectedHashInputConstants.encodeDecode().flags().encodeHashInputVariables()) {
+			hashInputsValues.addAll(expectedHashInputVariables.canonicalObjects(expectedHashInputConstants));
+		}
 	}
 
-	public String encode(@NotNull final HashInputConstants hashInputConstants, @NotEmpty final byte[] plain) {
-		return hashInputConstants.encodeDecode().encoderDecoder().encodeToString(plain);
+	public static HashInputVariables decode(final HashInputVariables expectedHashInputVariables, final HashInputConstants expectedHashInputConstants, final List<String> hashInputPartsEncoded) {
+		return expectedHashInputVariables.decode(hashInputPartsEncoded, expectedHashInputConstants);
 	}
-	public byte[] decode(@NotNull final HashInputConstants hashInputConstants, @NotEmpty final String encoded) {
-		return hashInputConstants.encodeDecode().encoderDecoder().decodeFromString(encoded);
+
+	private HashInputVariables decode(@NotEmpty final List<String> hashInputsEncoded, @NotNull final HashInputConstants hashInputConstants) {
+		return new HashInputVariables(
+			hashInputConstants.encodeDecode().flags().encodeHashInputVariables()
+				? hashInputConstants.decode(hashInputsEncoded.removeFirst())
+				: this.saltBytes
+		);
 	}
 }

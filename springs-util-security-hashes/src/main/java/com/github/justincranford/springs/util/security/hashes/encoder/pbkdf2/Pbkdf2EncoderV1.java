@@ -34,11 +34,11 @@ public record Pbkdf2EncoderV1 (
 	}
 
 	@Override
-	@NotEmpty public List<Object> canonicalObjects() {
+	@NotEmpty public List<String> canonicalObjects() {
 		return List.of(
 			this.algorithm().canonicalString(),
-			Integer.valueOf(this.iterations()),
-			Integer.valueOf(this.hashBytesLen())
+			Integer.toString(this.iterations()),
+			Integer.toString(this.hashBytesLen())
 		);
 	}
 

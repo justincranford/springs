@@ -18,23 +18,20 @@ public record HashInputs(
 		return ArrayUtil.concat(this.hashInputVariables().canonicalBytes(), this.hashInputConstants().canonicalBytes());
 	}
 
-	public String encodeHashInputsAndHash(@NotEmpty final byte[] actualHashBytes) {
-		final String actualHashInputsEncoded = this.encodeHashInputs();
-		final String actualHashEncoded       = this.hashInputConstants().encode(actualHashBytes);
-		if (actualHashInputsEncoded.isEmpty()) {
-			return actualHashEncoded;
-		}
-		return actualHashInputsEncoded + this.hashInputConstants().encodeDecode().separators().parametersVsHash() + actualHashEncoded;
+	public static String encodeHashInputs(final HashInputConstants hashInputConstants, final HashInputVariables hashInputVariables) {
+		final List<String> hashInputsEncoded = new ArrayList<>();
+		HashInputVariables.encode(hashInputConstants, hashInputVariables, hashInputsEncoded);
+		HashInputConstants.encode(hashInputConstants, hashInputsEncoded);
+		return StringUtil.toString("", hashInputConstants.encodeDecode().separators().intraParameters(), "", hashInputsEncoded);
 	}
 
-	private String encodeHashInputs() {
-		final List<Object> hashInputsValues = new ArrayList<>();
-		if (this.hashInputConstants.encodeDecode().flags().encodeHashInputVariables()) {
-			hashInputsValues.addAll(this.hashInputVariables.canonicalObjects(this.hashInputConstants));
+	public static HashInputs decodeHashInputs(@NotEmpty final String actualParametersEncoded, @NotNull final HashInputConstants expectedHashInputConstants, @NotNull final HashInputVariables expectedHashInputVariables) {
+		final List<String>       hashInputsEncoded        = expectedHashInputConstants.splitInputs(actualParametersEncoded);
+	    final HashInputVariables actualHashInputVariables = HashInputVariables.decode(expectedHashInputVariables, expectedHashInputConstants, hashInputsEncoded);
+		final HashInputConstants actualHashInputConstants = HashInputConstants.decode(expectedHashInputConstants, hashInputsEncoded);
+		if (!hashInputsEncoded.isEmpty()) {
+			throw new RuntimeException("Leftover parts");
 		}
-		if (this.hashInputConstants.encodeDecode().flags().encodeHashInputConstants()) {
-			hashInputsValues.addAll(this.hashInputConstants.canonicalObjects());
-		}
-		return StringUtil.toString("", this.hashInputConstants.encodeDecode().separators().intraParameters(), "", hashInputsValues);
+		return new HashInputs(actualHashInputConstants, actualHashInputVariables);
 	}
 }

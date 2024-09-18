@@ -17,7 +17,7 @@ public interface HashInputConstants {
 	@Min(Constraints.MIN_HASH_BYTES_LEN) int hashBytesLen();
 	@NotNull public EncodeDecode encodeDecode();
 	@NotNull public byte[] canonicalBytes();
-	@NotEmpty public List<Object> canonicalObjects();
+	@NotEmpty public List<String> canonicalObjects();
 	@NotNull public byte[] compute(@NotNull final byte[] saltBytes, @NotNull final CharSequence inputString);
 	@NotNull public Boolean recompute(
 		@Min(Constraints.MIN_SALT_BYTES_LEN) final int                expectedSaltBytesLength,
@@ -27,10 +27,6 @@ public interface HashInputConstants {
 		@Min(Constraints.MIN_HASH_BYTES_LEN) final int                actualHashBytesLength
 	);
 	@NotEmpty public HashInputConstants decode(@NotEmpty List<String> parts);
-
-	default public List<String> splitInputsVsHash(final String hashInputsAndHashEncoded) {
-		return StringUtil.split(hashInputsAndHashEncoded, this.encodeDecode().separators().parametersVsHash());
-	}
 
 	default public List<String> splitInputs(@NotNull final String hashInputsEncoded) {
 		return StringUtil.split(hashInputsEncoded, this.encodeDecode().separators().intraParameters());
@@ -42,4 +38,14 @@ public interface HashInputConstants {
 	default public byte[] decode(@NotEmpty final String encoded) {
 		return this.encodeDecode().encoderDecoder().decodeFromString(encoded);
 	}
+
+	public static void encode(@NotNull final HashInputConstants expectedHashInputConstants, @NotEmpty final List<String> hashInputsValues) {
+		if (expectedHashInputConstants.encodeDecode().flags().encodeHashInputConstants()) {
+			hashInputsValues.addAll(expectedHashInputConstants.canonicalObjects());
+		}
+	}
+	public static HashInputConstants decode(final HashInputConstants expectedHashInputConstants, final List<String> hashInputPartsEncoded) {
+		return expectedHashInputConstants.decode(hashInputPartsEncoded);
+	}
+
 }
