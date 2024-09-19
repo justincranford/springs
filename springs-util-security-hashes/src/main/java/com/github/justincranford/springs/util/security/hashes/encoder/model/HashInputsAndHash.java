@@ -4,41 +4,39 @@ import java.util.List;
 
 import com.github.justincranford.springs.util.basic.StringUtil;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 @SuppressWarnings({"nls"})
 public record HashInputsAndHash(
 	@NotNull HashInputs hashInputs,
-	@NotNull byte[] hashBytes
+	@NotNull Hash       hash
 ) {
-	public static String encodeHashInputsAndHash(@NotNull final HashInputs hashInputs, @NotEmpty final byte[] actualHashBytes) {
-		final String actualHashInputsEncoded = HashInputs.encodeHashInputs(hashInputs.hashInputConstants(), hashInputs.hashInputVariables());
-		final String actualHashEncoded       = HashInputsAndHash.encodeHash(hashInputs, actualHashBytes);
+	public static String encodeHashInputsAndHash(
+		@NotNull final HashInputs hashInputs,
+		@NotNull final Hash       hash
+	) {
+		final String actualHashInputsEncoded = HashInputs.encode(hashInputs.hashInputConstants(), hashInputs.hashInputVariables());
+		final String actualHashEncoded       = Hash.encode(hash.hashBytes(), hash.hashConstants());
 		if (actualHashInputsEncoded.isEmpty()) {
 			return actualHashEncoded;
 		}
-		return actualHashInputsEncoded + hashInputs.hashInputConstants().encodeDecode().separators().parametersVsHash() + actualHashEncoded;
+		return actualHashInputsEncoded + hash.hashConstants().separator() + actualHashEncoded;
 	}
 
-	private static String encodeHash(final HashInputs hashInputs, final byte[] actualHashBytes) {
-		return hashInputs.hashInputConstants().encode(actualHashBytes);
-	}
-
-	public static HashInputsAndHash decodeHashInputsAndHash(@NotNull final String actualHashInputsAndHashEncoded, @NotNull final HashInputConstants expectedHashInputConstants, @NotNull final HashInputVariables expectedHashInputVariables) {
-	    final List<String> actualInputsAndHashEncoded = HashInputsAndHash.splitInputsVsHash(expectedHashInputConstants, actualHashInputsAndHashEncoded);
+	public static HashInputsAndHash decodeHashInputsAndHash(
+		@NotNull final String             actualHashInputsAndHashEncoded,
+		@NotNull final HashConstants      expectedHashConstants,
+		@NotNull final HashInputConstants expectedHashInputConstants,
+		@NotNull final HashInputVariables expectedHashInputVariables
+	) {
+	    final List<String> actualInputsAndHashEncoded = StringUtil.split(actualHashInputsAndHashEncoded, expectedHashConstants.separator());
 		final String       actualInputsEncoded        = (actualInputsAndHashEncoded.size() == 1) ? "" : actualInputsAndHashEncoded.removeFirst();
 		final String       actualHashEncoded          = actualInputsAndHashEncoded.removeFirst();
 		if (!actualInputsAndHashEncoded.isEmpty()) {
 			throw new RuntimeException("Leftover parts");
 		}
-		final HashInputs actualHashInputs = HashInputs.decodeHashInputs(actualInputsEncoded, expectedHashInputConstants, expectedHashInputVariables);
-		final byte[]     actualHashBytes  = expectedHashInputConstants.decode(actualHashEncoded);
-		return new HashInputsAndHash(actualHashInputs, actualHashBytes);
+		final HashInputs actualHashInputs = HashInputs.decode(actualInputsEncoded, expectedHashInputConstants, expectedHashInputVariables);
+		final Hash       actualHash       = Hash.decode(actualHashEncoded, expectedHashConstants);
+		return new HashInputsAndHash(actualHashInputs, actualHash);
 	}
-
-	private static List<String> splitInputsVsHash(@NotNull final HashInputConstants hashInputConstants, final String hashInputsAndHashEncoded) {
-		return StringUtil.split(hashInputsAndHashEncoded, hashInputConstants.encodeDecode().separators().parametersVsHash());
-	}
-
 }

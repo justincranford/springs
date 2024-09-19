@@ -2,21 +2,15 @@ package com.github.justincranford.springs.util.security.hashes.encoder;
 
 import com.github.justincranford.springs.util.basic.Base64Util;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 @SuppressWarnings("nls")
 public record EncodeDecode(
 	@NotNull Base64Util.EncoderDecoder encoderDecoder,
-	@NotNull EncodeDecode.Separators separators,
+	@NotNull String separator,
 	@NotNull EncodeDecode.Flags flags
 ) {
-	public record Separators(
-		@NotEmpty String intraParameters,
-		@NotEmpty String parametersVsHash
-	) {
-	    public static final Separators CB = new Separators(":", "|");
-	}
+    public static final String C = ":";
 
 	public record Flags(
 		boolean encodeHashInputVariables,
@@ -28,16 +22,16 @@ public record EncodeDecode(
 		public static final Flags FL_SALT_OTH = new Flags(true,   true);
 	}
 
-	public static final EncodeDecode STD_CB_NONE          = new EncodeDecode(Base64Util.STD,  EncodeDecode.Separators.CB, EncodeDecode.Flags.FL_NONE);
-	public static final EncodeDecode STD_CB_SALT          = new EncodeDecode(Base64Util.STD,  EncodeDecode.Separators.CB, EncodeDecode.Flags.FL_SALT);
-	public static final EncodeDecode STD_CB_OTH           = new EncodeDecode(Base64Util.STD,  EncodeDecode.Separators.CB, EncodeDecode.Flags.FL_OTH);
-	public static final EncodeDecode STD_CB_SALT_OTH      = new EncodeDecode(Base64Util.STD,  EncodeDecode.Separators.CB, EncodeDecode.Flags.FL_SALT_OTH);
-	public static final EncodeDecode URL_CB_NONE          = new EncodeDecode(Base64Util.URL,  EncodeDecode.Separators.CB, EncodeDecode.Flags.FL_NONE);
-	public static final EncodeDecode URL_CB_SALT          = new EncodeDecode(Base64Util.URL,  EncodeDecode.Separators.CB, EncodeDecode.Flags.FL_SALT);
-	public static final EncodeDecode URL_CB_OTH           = new EncodeDecode(Base64Util.URL,  EncodeDecode.Separators.CB, EncodeDecode.Flags.FL_OTH);
-	public static final EncodeDecode URL_CB_SALT_OTH      = new EncodeDecode(Base64Util.URL,  EncodeDecode.Separators.CB, EncodeDecode.Flags.FL_SALT_OTH);
-	public static final EncodeDecode MIME_CB_NONE         = new EncodeDecode(Base64Util.MIME, EncodeDecode.Separators.CB, EncodeDecode.Flags.FL_NONE);
-	public static final EncodeDecode MIME_CB_SALT         = new EncodeDecode(Base64Util.MIME, EncodeDecode.Separators.CB, EncodeDecode.Flags.FL_SALT);
-	public static final EncodeDecode MIME_CB_OTH          = new EncodeDecode(Base64Util.MIME, EncodeDecode.Separators.CB, EncodeDecode.Flags.FL_OTH);
-	public static final EncodeDecode MIME_CB_SALT_OTH     = new EncodeDecode(Base64Util.MIME, EncodeDecode.Separators.CB, EncodeDecode.Flags.FL_SALT_OTH);
+	public static final EncodeDecode STD_C_NONE          = new EncodeDecode(Base64Util.STD,  EncodeDecode.C, EncodeDecode.Flags.FL_NONE);
+	public static final EncodeDecode STD_C_SALT          = new EncodeDecode(Base64Util.STD,  EncodeDecode.C, EncodeDecode.Flags.FL_SALT);
+	public static final EncodeDecode STD_C_OTH           = new EncodeDecode(Base64Util.STD,  EncodeDecode.C, EncodeDecode.Flags.FL_OTH);
+	public static final EncodeDecode STD_C_SALT_OTH      = new EncodeDecode(Base64Util.STD,  EncodeDecode.C, EncodeDecode.Flags.FL_SALT_OTH);
+	public static final EncodeDecode URL_C_NONE          = new EncodeDecode(Base64Util.URL,  EncodeDecode.C, EncodeDecode.Flags.FL_NONE);
+	public static final EncodeDecode URL_C_SALT          = new EncodeDecode(Base64Util.URL,  EncodeDecode.C, EncodeDecode.Flags.FL_SALT);
+	public static final EncodeDecode URL_C_OTH           = new EncodeDecode(Base64Util.URL,  EncodeDecode.C, EncodeDecode.Flags.FL_OTH);
+	public static final EncodeDecode URL_C_SALT_OTH      = new EncodeDecode(Base64Util.URL,  EncodeDecode.C, EncodeDecode.Flags.FL_SALT_OTH);
+	public static final EncodeDecode MIME_C_NONE         = new EncodeDecode(Base64Util.MIME, EncodeDecode.C, EncodeDecode.Flags.FL_NONE);
+	public static final EncodeDecode MIME_C_SALT         = new EncodeDecode(Base64Util.MIME, EncodeDecode.C, EncodeDecode.Flags.FL_SALT);
+	public static final EncodeDecode MIME_C_OTH          = new EncodeDecode(Base64Util.MIME, EncodeDecode.C, EncodeDecode.Flags.FL_OTH);
+	public static final EncodeDecode MIME_CB_SALT_OTH     = new EncodeDecode(Base64Util.MIME, EncodeDecode.C, EncodeDecode.Flags.FL_SALT_OTH);
 }

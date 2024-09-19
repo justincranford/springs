@@ -29,7 +29,7 @@ public interface HashInputConstants {
 	@NotEmpty public HashInputConstants decode(@NotEmpty List<String> parts);
 
 	default public List<String> splitInputs(@NotNull final String hashInputsEncoded) {
-		return StringUtil.split(hashInputsEncoded, this.encodeDecode().separators().intraParameters());
+		return StringUtil.split(hashInputsEncoded, this.encodeDecode().separator());
 	}
 
 	default public String encode(@NotEmpty final byte[] plain) {

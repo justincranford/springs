@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class Pbkdf2EncoderV1Test {
 	private static final int HASH_REPEATS = 3; // repeat hashing in each test; 1 unique output means deterministic, N different outputs means non-deterministic
-	private static final Pbkdf2EncoderV1 FAST_PBKDF2 = new Pbkdf2EncoderV1(Pbkdf2Algorithm.PBKDF2WithHmacSHA256, 1, 32, EncodeDecode.STD_CB_SALT_OTH);
+	private static final Pbkdf2EncoderV1 FAST_PBKDF2 = new Pbkdf2EncoderV1(Pbkdf2Algorithm.PBKDF2WithHmacSHA256, 1, 32, EncodeDecode.STD_C_SALT_OTH);
 	private static final String PII = "Hello.World@example.com";
 	private static final String PWD = "P@ssw0rd";
 

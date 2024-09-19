@@ -18,14 +18,14 @@ public record HashInputs(
 		return ArrayUtil.concat(this.hashInputVariables().canonicalBytes(), this.hashInputConstants().canonicalBytes());
 	}
 
-	public static String encodeHashInputs(final HashInputConstants hashInputConstants, final HashInputVariables hashInputVariables) {
+	public static String encode(final HashInputConstants hashInputConstants, final HashInputVariables hashInputVariables) {
 		final List<String> hashInputsEncoded = new ArrayList<>();
 		HashInputVariables.encode(hashInputConstants, hashInputVariables, hashInputsEncoded);
 		HashInputConstants.encode(hashInputConstants, hashInputsEncoded);
-		return StringUtil.toString("", hashInputConstants.encodeDecode().separators().intraParameters(), "", hashInputsEncoded);
+		return StringUtil.toString("", hashInputConstants.encodeDecode().separator(), "", hashInputsEncoded);
 	}
 
-	public static HashInputs decodeHashInputs(@NotEmpty final String actualParametersEncoded, @NotNull final HashInputConstants expectedHashInputConstants, @NotNull final HashInputVariables expectedHashInputVariables) {
+	public static HashInputs decode(@NotEmpty final String actualParametersEncoded, @NotNull final HashInputConstants expectedHashInputConstants, @NotNull final HashInputVariables expectedHashInputVariables) {
 		final List<String>       hashInputsEncoded        = expectedHashInputConstants.splitInputs(actualParametersEncoded);
 	    final HashInputVariables actualHashInputVariables = HashInputVariables.decode(expectedHashInputVariables, expectedHashInputConstants, hashInputsEncoded);
 		final HashInputConstants actualHashInputConstants = HashInputConstants.decode(expectedHashInputConstants, hashInputsEncoded);
