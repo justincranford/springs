@@ -15,4 +15,12 @@
 	<artifactId>springs-util-basic</artifactId>
 	<name>Springs Util Basic</name>
 	<description>Springs Util Basic</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+		</dependency>
+	</dependencies>
+
 </project>
