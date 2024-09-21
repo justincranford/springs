@@ -121,17 +121,17 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 		public static final int DER_LEN_BYTES = 32;
 		public static final byte[] CONST_BYTES = "constant-salt-bytes".getBytes(StandardCharsets.UTF_8);
 
-		public static final HashCodec STD_CB_NONE     = new HashCodec(TextCodec.BASE64_STD, "|", ":", Flags.NONE);
-		public static final HashCodec STD_CB_SALT     = new HashCodec(TextCodec.BASE64_STD, "|", ":", Flags.VARS);
-		public static final HashCodec STD_CB_OTH      = new HashCodec(TextCodec.BASE64_STD, "|", ":", Flags.CONS);
-		public static final HashCodec STD_CB_SALT_OTH = new HashCodec(TextCodec.BASE64_STD, "|", ":", Flags.BOTH);
+		public static final HashCodec B64_STD_CB_NONE     = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.NONE);
+		public static final HashCodec B64_STD_CB_SALT     = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.VARS);
+		public static final HashCodec B64_STD_CB_OTH      = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.CONS);
+		public static final HashCodec B64_STD_CB_SALT_OTH = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.BOTH);
 	}
 
 	public static class Parameters {
-		public static final Pbkdf2InputConstantsV1 STD_CB_NONE     = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.STD_CB_NONE);
-		public static final Pbkdf2InputConstantsV1 STD_CB_SALT     = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.STD_CB_SALT);
-		public static final Pbkdf2InputConstantsV1 STD_CB_OTH      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.STD_CB_OTH);
-		public static final Pbkdf2InputConstantsV1 STD_CB_SALT_OTH = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.STD_CB_SALT_OTH);
+		public static final Pbkdf2InputConstantsV1 STD_CB_NONE     = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_NONE);
+		public static final Pbkdf2InputConstantsV1 STD_CB_SALT     = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_SALT);
+		public static final Pbkdf2InputConstantsV1 STD_CB_OTH      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_OTH);
+		public static final Pbkdf2InputConstantsV1 STD_CB_SALT_OTH = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_SALT_OTH);
 	}
 
 	public static class PepperOptions {

@@ -8,16 +8,16 @@ import static java.util.Objects.requireNonNull;
 @SuppressWarnings({"nls"})
 public interface TextCodec {
 	public static final HexCodec HEX_UC_STRICT  = new HexCodec(true,  true,  "HexUpperCaseStrict");
-	public static final HexCodec HEX_LC_STRICT  = new HexCodec(false, true,  "HexLowerCaseStrict");
 	public static final HexCodec HEX_UC_LENIENT = new HexCodec(true,  false, "HexUpperCaseLenient");
+	public static final HexCodec HEX_LC_STRICT  = new HexCodec(false, true,  "HexLowerCaseStrict");
 	public static final HexCodec HEX_LC_LENIENT = new HexCodec(false, false, "HexLowerCaseLenient");
 
-	public static final Base64Codec BASE64_STD    = new Base64Codec(Constants.STD_ENCODER,    Constants.STD_DECODER,  "Base64");
-	public static final Base64Codec BASE64_URL    = new Base64Codec(Constants.URL_ENCODER,    Constants.URL_DECODER,  "Base64URL");
-	public static final Base64Codec BASE64_MIME32 = new Base64Codec(Constants.MIME32_ENCODER, Constants.MIME_DECODER, "Base64Mime32");
-	public static final Base64Codec BASE64_MIME64 = new Base64Codec(Constants.MIME64_ENCODER, Constants.MIME_DECODER, "Base64Mime64");
-	public static final Base64Codec BASE64_MIME76 = new Base64Codec(Constants.MIME76_ENCODER, Constants.MIME_DECODER, "Base64Mime76");
-	public static final Base64Codec BASE64_MIME   = new Base64Codec(Constants.MIME_ENCODER,   Constants.MIME_DECODER, "Base64Mime");
+	public static final Base64Codec B64_STD    = new Base64Codec(Constants.STD_ENCODER,    Constants.STD_DECODER,  "Base64");
+	public static final Base64Codec B64_URL    = new Base64Codec(Constants.URL_ENCODER,    Constants.URL_DECODER,  "Base64URL");
+	public static final Base64Codec B64_MIME32 = new Base64Codec(Constants.MIME32_ENCODER, Constants.MIME_DECODER, "Base64Mime32");
+	public static final Base64Codec B64_MIME64 = new Base64Codec(Constants.MIME64_ENCODER, Constants.MIME_DECODER, "Base64Mime64");
+	public static final Base64Codec B64_MIME76 = new Base64Codec(Constants.MIME76_ENCODER, Constants.MIME_DECODER, "Base64Mime76");
+	public static final Base64Codec B64_MIME   = new Base64Codec(Constants.MIME_ENCODER,   Constants.MIME_DECODER, "Base64Mime");
 
 	public byte[] canonicalIdBytes();
     public String encodeToString(final byte[] bytes);
