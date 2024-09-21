@@ -16,27 +16,29 @@ public record HashInputsAndHash(
 		@NotNull final Hash       hash
 	) {
 		final String actualHashInputsEncoded = HashInputs.encode(hashInputs.hashInputConstants(), hashInputs.hashInputVariables());
-		final String actualHashEncoded       = Hash.encode(hash.hashBytes(), hash.hashConstants());
+		final String actualHashEncoded       = Hash.encode(hashInputs.hashInputConstants(), hash);
 		if (actualHashInputsEncoded.isEmpty()) {
 			return actualHashEncoded;
 		}
-		return actualHashInputsEncoded + hash.hashConstants().separator() + actualHashEncoded;
+		return actualHashInputsEncoded + hashInputs.hashInputConstants().codec().outerSeparator() + actualHashEncoded;
 	}
 
 	public static HashInputsAndHash decodeHashInputsAndHash(
 		@NotNull final String             actualHashInputsAndHashEncoded,
-		@NotNull final HashConstants      expectedHashConstants,
 		@NotNull final HashInputConstants expectedHashInputConstants,
 		@NotNull final HashInputVariables expectedHashInputVariables
 	) {
-	    final List<String> actualInputsAndHashEncoded = StringUtil.split(actualHashInputsAndHashEncoded, expectedHashConstants.separator());
+	    final List<String> actualInputsAndHashEncoded = StringUtil.split(actualHashInputsAndHashEncoded, expectedHashInputConstants.codec().outerSeparator());
+	    if ((actualInputsAndHashEncoded.size() != 1) && (actualInputsAndHashEncoded.size() != 2)) {
+			throw new RuntimeException("Incorrect size");
+	    }
 		final String       actualInputsEncoded        = (actualInputsAndHashEncoded.size() == 1) ? "" : actualInputsAndHashEncoded.removeFirst();
 		final String       actualHashEncoded          = actualInputsAndHashEncoded.removeFirst();
 		if (!actualInputsAndHashEncoded.isEmpty()) {
 			throw new RuntimeException("Leftover parts");
 		}
 		final HashInputs actualHashInputs = HashInputs.decode(actualInputsEncoded, expectedHashInputConstants, expectedHashInputVariables);
-		final Hash       actualHash       = Hash.decode(actualHashEncoded, expectedHashConstants);
+		final Hash       actualHash       = Hash.decode(expectedHashInputConstants, actualHashEncoded);
 		return new HashInputsAndHash(actualHashInputs, actualHash);
 	}
 }

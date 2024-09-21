@@ -20,9 +20,9 @@ public record HashInputs(
 
 	public static String encode(final HashInputConstants hashInputConstants, final HashInputVariables hashInputVariables) {
 		final List<String> hashInputsEncoded = new ArrayList<>();
-		HashInputVariables.encode(hashInputConstants, hashInputVariables, hashInputsEncoded);
-		HashInputConstants.encode(hashInputConstants, hashInputsEncoded);
-		return StringUtil.toString("", hashInputConstants.encodeDecode().separator(), "", hashInputsEncoded);
+		HashInputVariables.appendEncodeInput(hashInputConstants, hashInputVariables, hashInputsEncoded);
+		HashInputConstants.appendEncodeInput(hashInputConstants, hashInputsEncoded);
+		return StringUtil.toString("", hashInputConstants.codec().innerSeparator(), "", hashInputsEncoded);
 	}
 
 	public static HashInputs decode(@NotEmpty final String actualParametersEncoded, @NotNull final HashInputConstants expectedHashInputConstants, @NotNull final HashInputVariables expectedHashInputVariables) {

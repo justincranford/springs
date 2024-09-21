@@ -1,17 +1,24 @@
 package com.github.justincranford.springs.util.security.hashes.encoder.model;
 
+import java.security.MessageDigest;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public record Hash(
-	@NotNull HashConstants hashConstants,
-	@NotNull byte[] hashBytes
+	@NotEmpty byte[] hashBytes // HmacSHA256 (Mac only), Cmac256 (Mac only), AES/GCM/NoPadding (Mac or Ciphertext+Mac)
 ) {
-	public static String encode(@NotEmpty final byte[] actualHashBytes, @NotNull final HashConstants hashConstants) {
-		return hashConstants.encode(actualHashBytes);
+	public static Boolean isEqual(Hash actual, Hash expected) {
+		return Boolean.valueOf(
+			MessageDigest.isEqual(actual.hashBytes, expected.hashBytes)
+		);
 	}
 
-	public static Hash decode(@NotNull final String actualHashEncoded, @NotNull final HashConstants hashConstants) {
-		return new Hash(hashConstants, hashConstants.decode(actualHashEncoded));
+	public static String encode(@NotNull final HashInputConstants hashInputConstants, @NotNull final Hash hash) {
+		return hashInputConstants.encode(hash.hashBytes);
+	}
+
+	public static Hash decode(@NotNull final HashInputConstants hashInputConstants, @NotNull final String encodedHash) {
+		return new Hash(hashInputConstants.decode(encodedHash));
 	}
 }

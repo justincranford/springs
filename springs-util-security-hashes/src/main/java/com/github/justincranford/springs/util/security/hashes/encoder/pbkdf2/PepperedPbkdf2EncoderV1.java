@@ -2,7 +2,6 @@ package com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2;
 
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashInputConstantsAndHashPeppers;
-import com.github.justincranford.springs.util.security.hashes.encoder.pepper.PepperedHashEncoderV1;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -10,7 +9,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperSalt;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperInputVariables;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.PepperedHashEncoderV1;
 
 @SuppressWarnings({"nls"})
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
@@ -25,7 +25,7 @@ public final class PepperedPbkdf2EncoderV1 {
 	public static final class DerivedSalt extends PepperedHashEncoderV1 {
 		public DerivedSalt(@NotNull HashInputConstantsAndHashPeppers hashInputConstantsAndHashPeppers, @Min(Constraints.MIN_DER_BYTES_LEN) int saltBytesLen) {
 			super(hashInputConstantsAndHashPeppers, (rawInput) -> {
-				final HashPepperSalt hashPepperSalt = hashInputConstantsAndHashPeppers.hashPeppers().salt();
+				final HashPepperInputVariables hashPepperSalt = hashInputConstantsAndHashPeppers.hashPeppers().inputVariables();
 				if (hashPepperSalt == null) {
 					throw new RuntimeException("DerivedSalt.HashSaltPepper cannot be null");
 				}

@@ -8,7 +8,7 @@ import javax.crypto.spec.PBEKeySpec;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.basic.ByteUtil;
-import com.github.justincranford.springs.util.security.hashes.encoder.EncodeDecode;
+import com.github.justincranford.springs.util.security.hashes.encoder.HashCodec;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashInputConstants;
 
 import jakarta.validation.constraints.Min;
@@ -18,11 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings({"nls"})
-public record Pbkdf2EncoderV1 (
-	@NotNull Pbkdf2Algorithm algorithm,
+public record Pbkdf2InputConstantsV1 (
+	@NotNull Pbkdf2AlgorithmV1 algorithm,
 	@Min(Constraints.MIN_ITER) int iterations,
-	@Min(Constraints.MIN_HASH_BYTES_LEN) int hashBytesLen,
-	@NotNull EncodeDecode encodeDecode
+	@Min(CommonConstraints.MIN_HASH_BYTES_LEN) int hashBytesLen,
+	@NotNull HashCodec codec
 ) implements HashInputConstants {
 	@Override
 	public byte[] canonicalBytes() {
@@ -46,22 +46,22 @@ public record Pbkdf2EncoderV1 (
 	@NotEmpty public HashInputConstants decode(
 		@NotNull final List<String> parts
 	) {
-		final Pbkdf2Algorithm algorithmDecoded    = (this.encodeDecode.flags().encodeHashInputConstants()) ? Pbkdf2Algorithm.canonicalString(parts.removeFirst()) : this.algorithm();
-		final int             iterationsDecoded   = (this.encodeDecode.flags().encodeHashInputConstants()) ? Integer.parseInt(parts.removeFirst())                : this.iterations();
-		final int             hashBytesLenDecoded = (this.encodeDecode.flags().encodeHashInputConstants()) ? Integer.parseInt(parts.removeFirst())                : this.hashBytesLen();
-		final Pbkdf2EncoderV1 parametersDecoded   = new Pbkdf2EncoderV1(algorithmDecoded, iterationsDecoded, hashBytesLenDecoded, this.encodeDecode);
+		final Pbkdf2AlgorithmV1        algorithmDecoded    = (this.codec().flags().encodeHashInputConstants()) ? Pbkdf2AlgorithmV1.canonicalString(parts.removeFirst()) : this.algorithm();
+		final int                    iterationsDecoded   = (this.codec().flags().encodeHashInputConstants()) ? Integer.parseInt(parts.removeFirst())                : this.iterations();
+		final int                    hashBytesLenDecoded = (this.codec().flags().encodeHashInputConstants()) ? Integer.parseInt(parts.removeFirst())                : this.hashBytesLen();
+		final Pbkdf2InputConstantsV1 parametersDecoded   = new Pbkdf2InputConstantsV1(algorithmDecoded, iterationsDecoded, hashBytesLenDecoded, this.codec);
 		return parametersDecoded;
 	}
 
 	@Override
 	public byte[] compute(
-		@NotNull @Min(Constraints.MIN_SALT_BYTES_LEN) final byte[]       saltBytes,
+		@NotNull @Min(Constraints.MIN_SALT_BYTES_LEN) final byte[]       variableInputConstantsBytes,
 		@NotNull @Min(Constraints.MIN_RAW_INPUT_SIZE) final CharSequence rawInput
 	) {
 		try {
 			final PBEKeySpec spec = new PBEKeySpec(
 				rawInput.toString().toCharArray(),
-				saltBytes.clone(),
+				variableInputConstantsBytes.clone(),
 				this.iterations(),
 				this.hashBytesLen() * 8
 			);
@@ -75,19 +75,19 @@ public record Pbkdf2EncoderV1 (
 
 	@Override
 	public Boolean recompute(
-		@Min(Constraints.MIN_SALT_BYTES_LEN) final int                expectedSaltBytesLength,
-		@Min(Constraints.MIN_SALT_BYTES_LEN) final int                actualSaltBytesLength,
-		@NotNull                             final HashInputConstants actualConstantParameters,
-		@Min(Constraints.MIN_HASH_BYTES_LEN) final int                expectedHashBytesLength,
-		@Min(Constraints.MIN_HASH_BYTES_LEN) final int                actualHashBytesLength
+		@Min(Constraints.MIN_SALT_BYTES_LEN)       final int                expectedHashInputVariablesBytesLength,
+		@Min(Constraints.MIN_SALT_BYTES_LEN)       final int                actualHashInputVariablesBytesLength,
+		@NotNull                                   final HashInputConstants actualHashInputConstants,
+		@Min(CommonConstraints.MIN_HASH_BYTES_LEN) final int                expectedHashBytesLength,
+		@Min(CommonConstraints.MIN_HASH_BYTES_LEN) final int                actualHashBytesLength
 	) {
-		final Pbkdf2EncoderV1 actualConstantParametersPbkdf2 = (Pbkdf2EncoderV1) actualConstantParameters;
+		final Pbkdf2InputConstantsV1 actualConstantParametersPbkdf2 = (Pbkdf2InputConstantsV1) actualHashInputConstants;
 		return Boolean.valueOf(
-			   (expectedSaltBytesLength != actualSaltBytesLength)
-			|| (this.algorithm()        != actualConstantParametersPbkdf2.algorithm())
-			|| (this.iterations()       != actualConstantParametersPbkdf2.iterations())
-			|| (expectedHashBytesLength != actualHashBytesLength)
-			|| (this.encodeDecode()     != actualConstantParametersPbkdf2.encodeDecode())
+			   (expectedHashInputVariablesBytesLength != actualHashInputVariablesBytesLength)
+			|| (this.algorithm()                      != actualConstantParametersPbkdf2.algorithm())
+			|| (this.iterations()                     != actualConstantParametersPbkdf2.iterations())
+			|| (expectedHashBytesLength               != actualHashBytesLength)
+			|| (this.codec()                          != actualConstantParametersPbkdf2.codec())
 		);
 	}
 
@@ -95,6 +95,5 @@ public record Pbkdf2EncoderV1 (
 		public static final int MIN_RAW_INPUT_SIZE = 0;	// Absolute Min (Testing): 0-bit,  Recommended Min (Production): 0-bit/0-bytes
 		public static final int MIN_SALT_BYTES_LEN = 0;	// Absolute Min (Testing): 0-bit,  Recommended Min (Production): 256-bit/32-bytes
 		public static final int MIN_ITER = 1;			// Absolute Min (Testing): 1,      Recommended Min (Production): 600_000
-		public static final int MIN_HASH_BYTES_LEN = 8;	// Absolute Min (Testing): 64-bit, Recommended Min (Production): 256-bit/32-bytes
 	}
 }

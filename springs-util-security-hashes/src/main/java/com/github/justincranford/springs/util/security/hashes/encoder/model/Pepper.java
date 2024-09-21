@@ -29,7 +29,7 @@ public record Pepper(
 		final byte[][] dataChunks = List.of(
 			rawInput,				// Priority 1: required, unique input (e.g. deterministic hashing of PII)
 			pepper.secretContext(),	// Priority 2: optional, secret entropy; useful if secretKey=null (or reused)
-			additionalData,			// Priority 3: optional, data binding (e.g. Pbkdf2 => salt+iter+dkLen, Argon2 => salt+lanes+mem)
+			additionalData,			// Priority 3: optional, data binding (e.g. Pbkdf2 => salt+iter+dkLen, Argon2 => salt+lanes+mem, AES/GCM => IV+AAD)
 			pepper.clearContext()	// Priority 4: optional, clear entropy; useful if secretKey=null (or reused) and secretContext=null (or reused)
 		).toArray(new byte[0][]);
 

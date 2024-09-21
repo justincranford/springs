@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 
 @RequiredArgsConstructor
-public class HashPepperSalt implements PepperInterface {
+public class HashPepperInputVariables implements PepperInterface {
 	@Delegate
 	@NotNull private final Pepper delegate;
 }

@@ -6,20 +6,20 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public record HashInputVariables(
-	@NotEmpty byte[] saltBytes
+	@NotEmpty byte[] hashInputVariablesBytes // Hmac salt or AEAD IV (aka nonce)
 ) {
 	public byte[] canonicalBytes() {
-		return this.saltBytes;
+		return this.hashInputVariablesBytes;
 	}
 
 	@NotEmpty public List<String> canonicalObjects(@NotNull final HashInputConstants hashInputConstants) {
 		return List.of(
-			hashInputConstants.encode(this.saltBytes)
+			hashInputConstants.encode(this.hashInputVariablesBytes)
 		);
 	}
 
-	public static void encode(@NotNull final HashInputConstants expectedHashInputConstants, @NotNull final HashInputVariables expectedHashInputVariables, @NotEmpty final List<String> hashInputsValues) {
-		if (expectedHashInputConstants.encodeDecode().flags().encodeHashInputVariables()) {
+	public static void appendEncodeInput(@NotNull final HashInputConstants expectedHashInputConstants, @NotNull final HashInputVariables expectedHashInputVariables, @NotEmpty final List<String> hashInputsValues) {
+		if (expectedHashInputConstants.codec().flags().encodeHashInputVariables()) {
 			hashInputsValues.addAll(expectedHashInputVariables.canonicalObjects(expectedHashInputConstants));
 		}
 	}
@@ -30,9 +30,9 @@ public record HashInputVariables(
 
 	private HashInputVariables decode(@NotEmpty final List<String> hashInputsEncoded, @NotNull final HashInputConstants hashInputConstants) {
 		return new HashInputVariables(
-			hashInputConstants.encodeDecode().flags().encodeHashInputVariables()
+			hashInputConstants.codec().flags().encodeHashInputVariables()
 				? hashInputConstants.decode(hashInputsEncoded.removeFirst())
-				: this.saltBytes
+				: this.hashInputVariablesBytes
 		);
 	}
 }

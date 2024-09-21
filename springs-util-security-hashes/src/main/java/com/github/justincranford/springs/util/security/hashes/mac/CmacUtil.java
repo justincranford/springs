@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.security.hashes.cipher;
+package com.github.justincranford.springs.util.security.hashes.mac;
 import javax.crypto.SecretKey;
 
 import org.bouncycastle.crypto.CipherParameters;

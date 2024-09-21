@@ -16,7 +16,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-import com.github.justincranford.springs.util.security.hashes.encoder.EncodeDecode;
+import com.github.justincranford.springs.util.basic.TextCodec;
+import com.github.justincranford.springs.util.security.hashes.encoder.HashCodec;
+import com.github.justincranford.springs.util.security.hashes.encoder.HashCodec.Flags;
 import com.github.justincranford.springs.util.security.hashes.mac.MacAlgorithm;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +34,11 @@ import lombok.extern.slf4j.Slf4j;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class Pbkdf2EncoderV1Test {
 	private static final int HASH_REPEATS = 3; // repeat hashing in each test; 1 unique output means deterministic, N different outputs means non-deterministic
-	private static final Pbkdf2EncoderV1 FAST_PBKDF2 = new Pbkdf2EncoderV1(Pbkdf2Algorithm.PBKDF2WithHmacSHA256, 1, 32, EncodeDecode.STD_C_SALT_OTH);
+	private static final HashCodec HASH_CODEC = new HashCodec(TextCodec.BASE64_STD, ":", "|", Flags.BOTH);
+	private static final Pbkdf2InputConstantsV1 FAST_PBKDF2 = new Pbkdf2InputConstantsV1(Pbkdf2AlgorithmV1.PBKDF2WithHmacSHA256, 1, 32, HASH_CODEC);
 	private static final String PII = "Hello.World@example.com";
 	private static final String PWD = "P@ssw0rd";
 
-	
 	@Nested
 	public class EncodePwd {
 		/**
@@ -118,7 +120,7 @@ public class Pbkdf2EncoderV1Test {
 		}
 	}
 
-	private Set<String> computeHashMultipleTimes(final int repeats, final Pbkdf2EncoderV1 parameters, final CharSequence charSequence, final Function<CharSequence, byte[]> saltSupplier) {
+	private Set<String> computeHashMultipleTimes(final int repeats, final Pbkdf2InputConstantsV1 parameters, final CharSequence charSequence, final Function<CharSequence, byte[]> saltSupplier) {
 		final Set<String> encodedHashes = new HashSet<>();
 		for (int i = 0; i < repeats; i++) {
 			final byte[] saltBytes = saltSupplier.apply(charSequence); // derive salt from charSequence (or not)

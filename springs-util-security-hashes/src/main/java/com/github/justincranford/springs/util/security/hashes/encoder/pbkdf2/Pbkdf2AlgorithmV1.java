@@ -6,10 +6,11 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DERSequence;
 
 import com.github.justincranford.springs.util.security.hashes.asn1.Asn1Util;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashAlgorithm;
 import com.github.justincranford.springs.util.security.hashes.mac.MacAlgorithm;
 
 @SuppressWarnings({"nls"})
-public enum Pbkdf2Algorithm {
+public enum Pbkdf2AlgorithmV1 implements HashAlgorithm {
 	PBKDF2WithHmacMD5       ("PBKDF2withHmacMD5",        MacAlgorithm.HmacMD5),
 	PBKDF2WithHmacSHA1      ("PBKDF2withHmacSHA1",       MacAlgorithm.HmacSHA1),
 	PBKDF2WithHmacSHA224    ("PBKDF2withHmacSHA224",     MacAlgorithm.HmacSHA224),
@@ -24,8 +25,8 @@ public enum Pbkdf2Algorithm {
 	PBKDF2WithHmacSHA3_512  ("PBKDF2withHmacSHA3-512",   MacAlgorithm.HmacSHA3_512),
 	;
 
-	public static Pbkdf2Algorithm canonicalString(String canonicalString) {
-		return Arrays.stream(Pbkdf2Algorithm.values())
+	public static Pbkdf2AlgorithmV1 canonicalString(String canonicalString) {
+		return Arrays.stream(Pbkdf2AlgorithmV1.values())
 			.filter(value -> value.canonicalString().equals(canonicalString))
 			.findFirst()
 			.orElseThrow(() -> new RuntimeException("canonicalString not found"));
@@ -37,7 +38,7 @@ public enum Pbkdf2Algorithm {
 	private final byte[] asn1DerBytes;
 	private final String canonicalString;
 	private final String toString;
-	private Pbkdf2Algorithm(final String algorithm0, final MacAlgorithm macAlgorithm0) {
+	private Pbkdf2AlgorithmV1(final String algorithm0, final MacAlgorithm macAlgorithm0) {
 		this.algorithm       = algorithm0;
 		this.macAlgorithm    = macAlgorithm0;
 		this.asn1DerSequence = Asn1Util.derSequence(Constants.PBKDF2_OID, this.macAlgorithm.asn1Oid());

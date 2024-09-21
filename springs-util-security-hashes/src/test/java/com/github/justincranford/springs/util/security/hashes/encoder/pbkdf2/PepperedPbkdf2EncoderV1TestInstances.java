@@ -6,14 +6,16 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.github.justincranford.springs.util.basic.Base64Util;
+import com.github.justincranford.springs.util.basic.TextCodec;
 import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
-import com.github.justincranford.springs.util.security.hashes.encoder.EncodeDecode;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.Pepper;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPeppers;
+import com.github.justincranford.springs.util.security.hashes.encoder.HashCodec;
+import com.github.justincranford.springs.util.security.hashes.encoder.HashCodec.Flags;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashInputConstantsAndHashPeppers;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperPostHash;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperPreHash;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperSalt;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashInputConstantsAndHashPeppers;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperInputVariables;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPeppers;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.Pepper;
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.ConstantSalt;
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.DerivedSalt;
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.RandomSalt;
@@ -113,18 +115,23 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 	public static class Defaults {
 		public static final int ITER = 600_000;
 		public static final int DK_BYTES_LEN = 32;
-		public static final Pbkdf2Algorithm PRF_ALG = Pbkdf2Algorithm.PBKDF2WithHmacSHA256;
+		public static final Pbkdf2AlgorithmV1 PRF_ALG = Pbkdf2AlgorithmV1.PBKDF2WithHmacSHA256;
 
 		public static final int RAND_LEN_BYTES = 32;
 		public static final int DER_LEN_BYTES = 32;
 		public static final byte[] CONST_BYTES = "constant-salt-bytes".getBytes(StandardCharsets.UTF_8);
+
+		public static final HashCodec STD_CB_NONE     = new HashCodec(TextCodec.BASE64_STD, "|", ":", Flags.NONE);
+		public static final HashCodec STD_CB_SALT     = new HashCodec(TextCodec.BASE64_STD, "|", ":", Flags.VARS);
+		public static final HashCodec STD_CB_OTH      = new HashCodec(TextCodec.BASE64_STD, "|", ":", Flags.CONS);
+		public static final HashCodec STD_CB_SALT_OTH = new HashCodec(TextCodec.BASE64_STD, "|", ":", Flags.BOTH);
 	}
 
 	public static class Parameters {
-		public static final Pbkdf2EncoderV1 STD_CB_NONE     = new Pbkdf2EncoderV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, EncodeDecode.STD_C_NONE);
-		public static final Pbkdf2EncoderV1 STD_CB_SALT     = new Pbkdf2EncoderV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, EncodeDecode.STD_C_SALT);
-		public static final Pbkdf2EncoderV1 STD_CB_OTH      = new Pbkdf2EncoderV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, EncodeDecode.STD_C_OTH);
-		public static final Pbkdf2EncoderV1 STD_CB_SALT_OTH = new Pbkdf2EncoderV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, EncodeDecode.STD_C_SALT_OTH);
+		public static final Pbkdf2InputConstantsV1 STD_CB_NONE     = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.STD_CB_NONE);
+		public static final Pbkdf2InputConstantsV1 STD_CB_SALT     = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.STD_CB_SALT);
+		public static final Pbkdf2InputConstantsV1 STD_CB_OTH      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.STD_CB_OTH);
+		public static final Pbkdf2InputConstantsV1 STD_CB_SALT_OTH = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.STD_CB_SALT_OTH);
 	}
 
 	public static class PepperOptions {
@@ -138,13 +145,13 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 		public static final SecretKey CKEY = new SecretKeySpec(new byte[32], PepperOptions.CMAC_ALG.algorithm());
 		public static final SecretKey HKEY = new SecretKeySpec("pre-salt-key".getBytes(StandardCharsets.UTF_8), PepperOptions.HMAC_ALG.algorithm());
 
-		public static final HashPepperSalt NULL   = null;
-		public static final HashPepperSalt NONE   = new HashPepperSalt(new Pepper(null, null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperSalt CTX    = new HashPepperSalt(new Pepper(null, null,                  new byte[7], new byte[3], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperSalt HSK    = new HashPepperSalt(new Pepper(HKEY, null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperSalt HSKCTX = new HashPepperSalt(new Pepper(HKEY, null,                  new byte[3], new byte[2], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperSalt CSK    = new HashPepperSalt(new Pepper(CKEY, PepperOptions.DER_ALG, new byte[0], new byte[0], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
-		public static final HashPepperSalt CSKCTX = new HashPepperSalt(new Pepper(CKEY, PepperOptions.DER_ALG, new byte[3], new byte[2], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperInputVariables NULL   = null;
+		public static final HashPepperInputVariables NONE   = new HashPepperInputVariables(new Pepper(null, null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperInputVariables CTX    = new HashPepperInputVariables(new Pepper(null, null,                  new byte[7], new byte[3], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperInputVariables HSK    = new HashPepperInputVariables(new Pepper(HKEY, null,                  new byte[0], new byte[0], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperInputVariables HSKCTX = new HashPepperInputVariables(new Pepper(HKEY, null,                  new byte[3], new byte[2], PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperInputVariables CSK    = new HashPepperInputVariables(new Pepper(CKEY, PepperOptions.DER_ALG, new byte[0], new byte[0], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
+		public static final HashPepperInputVariables CSKCTX = new HashPepperInputVariables(new Pepper(CKEY, PepperOptions.DER_ALG, new byte[3], new byte[2], PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC));
 	}
 
 	public static class PreHash {

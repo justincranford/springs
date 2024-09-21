@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.security.hashes.cipher;
+package com.github.justincranford.springs.util.security.hashes.mac;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
