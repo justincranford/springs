@@ -28,23 +28,48 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class PepperedPbkdf2EncoderV1TestInstances {
 	public static final class Random {
-		public static final RandomSalt SALTOTH_NULL_NULL_NULL       = new RandomSalt(ParametersAndPeppers.SALTOTH_NULL_NULL_NULL,       Defaults.RAND_LEN_BYTES);
-		public static final RandomSalt SALTOTH_NONE_NONE_NONE       = new RandomSalt(ParametersAndPeppers.SALTOTH_NONE_NONE_NONE,       Defaults.RAND_LEN_BYTES);
-		public static final RandomSalt SALTOTH_CTX_CTX_CTX          = new RandomSalt(ParametersAndPeppers.SALTOTH_CTX_CTX_CTX,          Defaults.RAND_LEN_BYTES);
-		public static final RandomSalt SALTOTH_HSK_HSK_HSK          = new RandomSalt(ParametersAndPeppers.SALTOTH_HSK_HSK_HSK,          Defaults.RAND_LEN_BYTES);
-		public static final RandomSalt SALTOTH_HSKCTX_HSKCTX_HSKCTX = new RandomSalt(ParametersAndPeppers.SALTOTH_HSKCTX_HSKCTX_HSKCTX, Defaults.RAND_LEN_BYTES);
-		public static final RandomSalt SALTOTH_CSK_CSK_CSK          = new RandomSalt(ParametersAndPeppers.SALTOTH_CSK_CSK_CSK,          Defaults.RAND_LEN_BYTES);
-		public static final RandomSalt SALTOTH_CSKCTX_CSKCTX_CSKCTX = new RandomSalt(ParametersAndPeppers.SALTOTH_CSKCTX_CSKCTX_CSKCTX, Defaults.RAND_LEN_BYTES);
-		public static final RandomSalt SALT_NULL_NULL_NULL          = new RandomSalt(ParametersAndPeppers.SALT_NULL_NULL_NULL,          Defaults.RAND_LEN_BYTES);
-		public static final RandomSalt SALT_NONE_NONE_NONE          = new RandomSalt(ParametersAndPeppers.SALT_NONE_NONE_NONE,          Defaults.RAND_LEN_BYTES);
-		public static final RandomSalt SALT_CTX_CTX_CTX             = new RandomSalt(ParametersAndPeppers.SALT_CTX_CTX_CTX,             Defaults.RAND_LEN_BYTES);
-		public static final RandomSalt SALT_HSK_HSK_HSK             = new RandomSalt(ParametersAndPeppers.SALT_HSK_HSK_HSK,             Defaults.RAND_LEN_BYTES);
-		public static final RandomSalt SALT_HSKCTX_HSKCTX_HSKCTX    = new RandomSalt(ParametersAndPeppers.SALT_HSKCTX_HSKCTX_HSKCTX,    Defaults.RAND_LEN_BYTES);
-		public static final RandomSalt SALT_CSK_CSK_CSK             = new RandomSalt(ParametersAndPeppers.SALT_CSK_CSK_CSK,             Defaults.RAND_LEN_BYTES);
-		public static final RandomSalt SALT_CSKCTX_CSKCTX_CSKCTX    = new RandomSalt(ParametersAndPeppers.SALT_CSKCTX_CSKCTX_CSKCTX,    Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_CONS_NULL_NULL_NULL       = new RandomSalt(ParametersAndPeppers.VARS_CONS_NULL_NULL_NULL,       Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_CONS_NONE_NONE_NONE       = new RandomSalt(ParametersAndPeppers.VARS_CONS_NONE_NONE_NONE,       Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_CONS_CTX_CTX_CTX          = new RandomSalt(ParametersAndPeppers.VARS_CONS_CTX_CTX_CTX,          Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_CONS_HSK_HSK_HSK          = new RandomSalt(ParametersAndPeppers.VARS_CONS_HSK_HSK_HSK,          Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_CONS_HSKCTX_HSKCTX_HSKCTX = new RandomSalt(ParametersAndPeppers.VARS_CONS_HSKCTX_HSKCTX_HSKCTX, Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_CONS_CSK_CSK_CSK          = new RandomSalt(ParametersAndPeppers.VARS_CONS_CSK_CSK_CSK,          Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_CONS_CSKCTX_CSKCTX_CSKCTX = new RandomSalt(ParametersAndPeppers.VARS_CONS_CSKCTX_CSKCTX_CSKCTX, Defaults.RAND_LEN_BYTES);
+
+		public static final RandomSalt VARS_NULL_NULL_NULL          = new RandomSalt(ParametersAndPeppers.VARS_NULL_NULL_NULL,          Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_NONE_NONE_NONE          = new RandomSalt(ParametersAndPeppers.VARS_NONE_NONE_NONE,          Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_CTX_CTX_CTX             = new RandomSalt(ParametersAndPeppers.VARS_CTX_CTX_CTX,             Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_HSK_HSK_HSK             = new RandomSalt(ParametersAndPeppers.VARS_HSK_HSK_HSK,             Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_HSKCTX_HSKCTX_HSKCTX    = new RandomSalt(ParametersAndPeppers.VARS_HSKCTX_HSKCTX_HSKCTX,    Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_CSK_CSK_CSK             = new RandomSalt(ParametersAndPeppers.VARS_CSK_CSK_CSK,             Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_CSKCTX_CSKCTX_CSKCTX    = new RandomSalt(ParametersAndPeppers.VARS_CSKCTX_CSKCTX_CSKCTX,    Defaults.RAND_LEN_BYTES);
 	}
 
 	public static final class Derived {
+//		public static final DerivedSalt VARS_CONS_NULL_NULL_NULL       = new DerivedSalt(ParametersAndPeppers.VARS_CONS_NULL_NULL_NULL, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt VARS_CONS_NONE_NONE_NONE       = new DerivedSalt(ParametersAndPeppers.VARS_CONS_NONE_NONE_NONE, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt VARS_CONS_CTX_CTX_CTX          = new DerivedSalt(ParametersAndPeppers.VARS_CONS_CTX_CTX_CTX, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt VARS_CONS_HSK_HSK_HSK          = new DerivedSalt(ParametersAndPeppers.VARS_CONS_HSK_HSK_HSK, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt VARS_CONS_HSKCTX_HSKCTX_HSKCTX = new DerivedSalt(ParametersAndPeppers.VARS_CONS_HSKCTX_HSKCTX_HSKCTX, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt VARS_CONS_CSK_CSK_CSK          = new DerivedSalt(ParametersAndPeppers.VARS_CONS_CSK_CSK_CSK, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt VARS_CONS_CSKCTX_CSKCTX_CSKCTX = new DerivedSalt(ParametersAndPeppers.VARS_CONS_CSKCTX_CSKCTX_CSKCTX, Defaults.DER_LEN_BYTES);
+
+//		public static final DerivedSalt VARS_NULL_NULL_NULL       = new DerivedSalt(ParametersAndPeppers.VARS_NULL_NULL_NULL, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt VARS_NONE_NONE_NONE       = new DerivedSalt(ParametersAndPeppers.VARS_NONE_NONE_NONE, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt VARS_CTX_CTX_CTX          = new DerivedSalt(ParametersAndPeppers.VARS_CTX_CTX_CTX, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt VARS_HSK_HSK_HSK          = new DerivedSalt(ParametersAndPeppers.VARS_HSK_HSK_HSK, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt VARS_HSKCTX_HSKCTX_HSKCTX = new DerivedSalt(ParametersAndPeppers.VARS_HSKCTX_HSKCTX_HSKCTX, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt VARS_CSK_CSK_CSK          = new DerivedSalt(ParametersAndPeppers.VARS_CSK_CSK_CSK, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt VARS_CSKCTX_CSKCTX_CSKCTX = new DerivedSalt(ParametersAndPeppers.VARS_CSKCTX_CSKCTX_CSKCTX, Defaults.DER_LEN_BYTES);
+
+//		public static final DerivedSalt CONS_NULL_NULL_NULL       = new DerivedSalt(ParametersAndPeppers.CONS_NULL_NULL_NULL, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt CONS_NONE_NONE_NONE       = new DerivedSalt(ParametersAndPeppers.CONS_NONE_NONE_NONE, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt CONS_CTX_CTX_CTX          = new DerivedSalt(ParametersAndPeppers.CONS_CTX_CTX_CTX, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt CONS_HSK_HSK_HSK          = new DerivedSalt(ParametersAndPeppers.CONS_HSK_HSK_HSK, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt CONS_HSKCTX_HSKCTX_HSKCTX = new DerivedSalt(ParametersAndPeppers.CONS_HSKCTX_HSKCTX_HSKCTX, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt CONS_CSK_CSK_CSK          = new DerivedSalt(ParametersAndPeppers.CONS_CSK_CSK_CSK, Defaults.DER_LEN_BYTES);
+		public static final DerivedSalt CONS_CSKCTX_CSKCTX_CSKCTX = new DerivedSalt(ParametersAndPeppers.CONS_CSKCTX_CSKCTX_CSKCTX, Defaults.DER_LEN_BYTES);
+
 //		public static final DerivedSalt NONE_NULL_NULL_NULL       = new DerivedSalt(ParametersAndPeppers.NONE_NULL_NULL_NULL, Defaults.DER_LEN_BYTES);
 		public static final DerivedSalt NONE_NONE_NONE_NONE       = new DerivedSalt(ParametersAndPeppers.NONE_NONE_NONE_NONE, Defaults.DER_LEN_BYTES);
 		public static final DerivedSalt NONE_CTX_CTX_CTX          = new DerivedSalt(ParametersAndPeppers.NONE_CTX_CTX_CTX, Defaults.DER_LEN_BYTES);
@@ -52,33 +77,33 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 		public static final DerivedSalt NONE_HSKCTX_HSKCTX_HSKCTX = new DerivedSalt(ParametersAndPeppers.NONE_HSKCTX_HSKCTX_HSKCTX, Defaults.DER_LEN_BYTES);
 		public static final DerivedSalt NONE_CSK_CSK_CSK          = new DerivedSalt(ParametersAndPeppers.NONE_CSK_CSK_CSK, Defaults.DER_LEN_BYTES);
 		public static final DerivedSalt NONE_CSKCTX_CSKCTX_CSKCTX = new DerivedSalt(ParametersAndPeppers.NONE_CSKCTX_CSKCTX_CSKCTX, Defaults.DER_LEN_BYTES);
-
-//		public static final DerivedSalt SALT_NULL_NULL_NULL       = new DerivedSalt(ParametersAndPeppers.SALT_NULL_NULL_NULL, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt SALT_NONE_NONE_NONE       = new DerivedSalt(ParametersAndPeppers.SALT_NONE_NONE_NONE, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt SALT_CTX_CTX_CTX          = new DerivedSalt(ParametersAndPeppers.SALT_CTX_CTX_CTX, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt SALT_HSK_HSK_HSK          = new DerivedSalt(ParametersAndPeppers.SALT_HSK_HSK_HSK, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt SALT_HSKCTX_HSKCTX_HSKCTX = new DerivedSalt(ParametersAndPeppers.SALT_HSKCTX_HSKCTX_HSKCTX, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt SALT_CSK_CSK_CSK          = new DerivedSalt(ParametersAndPeppers.SALT_CSK_CSK_CSK, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt SALT_CSKCTX_CSKCTX_CSKCTX = new DerivedSalt(ParametersAndPeppers.SALT_CSKCTX_CSKCTX_CSKCTX, Defaults.DER_LEN_BYTES);
-
-//		public static final DerivedSalt OTH_NULL_NULL_NULL       = new DerivedSalt(ParametersAndPeppers.OTH_NULL_NULL_NULL, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt OTH_NONE_NONE_NONE       = new DerivedSalt(ParametersAndPeppers.OTH_NONE_NONE_NONE, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt OTH_CTX_CTX_CTX          = new DerivedSalt(ParametersAndPeppers.OTH_CTX_CTX_CTX, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt OTH_HSK_HSK_HSK          = new DerivedSalt(ParametersAndPeppers.OTH_HSK_HSK_HSK, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt OTH_HSKCTX_HSKCTX_HSKCTX = new DerivedSalt(ParametersAndPeppers.OTH_HSKCTX_HSKCTX_HSKCTX, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt OTH_CSK_CSK_CSK          = new DerivedSalt(ParametersAndPeppers.OTH_CSK_CSK_CSK, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt OTH_CSKCTX_CSKCTX_CSKCTX = new DerivedSalt(ParametersAndPeppers.OTH_CSKCTX_CSKCTX_CSKCTX, Defaults.DER_LEN_BYTES);
-
-//		public static final DerivedSalt SALTOTH_NULL_NULL_NULL       = new DerivedSalt(ParametersAndPeppers.SALTOTH_NULL_NULL_NULL, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt SALTOTH_NONE_NONE_NONE       = new DerivedSalt(ParametersAndPeppers.SALTOTH_NONE_NONE_NONE, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt SALTOTH_CTX_CTX_CTX          = new DerivedSalt(ParametersAndPeppers.SALTOTH_CTX_CTX_CTX, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt SALTOTH_HSK_HSK_HSK          = new DerivedSalt(ParametersAndPeppers.SALTOTH_HSK_HSK_HSK, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt SALTOTH_HSKCTX_HSKCTX_HSKCTX = new DerivedSalt(ParametersAndPeppers.SALTOTH_HSKCTX_HSKCTX_HSKCTX, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt SALTOTH_CSK_CSK_CSK          = new DerivedSalt(ParametersAndPeppers.SALTOTH_CSK_CSK_CSK, Defaults.DER_LEN_BYTES);
-		public static final DerivedSalt SALTOTH_CSKCTX_CSKCTX_CSKCTX = new DerivedSalt(ParametersAndPeppers.SALTOTH_CSKCTX_CSKCTX_CSKCTX, Defaults.DER_LEN_BYTES);
 	}
 
 	public static final class Constant {
+		public static final ConstantSalt VARS_CONS_NULL_NULL_NULL       = new ConstantSalt(ParametersAndPeppers.VARS_CONS_NULL_NULL_NULL, Defaults.CONST_BYTES);
+		public static final ConstantSalt VARS_CONS_NONE_NONE_NONE       = new ConstantSalt(ParametersAndPeppers.VARS_CONS_NONE_NONE_NONE, Defaults.CONST_BYTES);
+		public static final ConstantSalt VARS_CONS_CTX_CTX_CTX          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_CTX_CTX_CTX, Defaults.CONST_BYTES);
+		public static final ConstantSalt VARS_CONS_HSK_HSK_HSK          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HSK_HSK_HSK, Defaults.CONST_BYTES);
+		public static final ConstantSalt VARS_CONS_HSKCTX_HSKCTX_HSKCTX = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HSKCTX_HSKCTX_HSKCTX, Defaults.CONST_BYTES);
+		public static final ConstantSalt VARS_CONS_CSK_CSK_CSK          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_CSK_CSK_CSK, Defaults.CONST_BYTES);
+		public static final ConstantSalt VARS_CONS_CSKCTX_CSKCTX_CSKCTX = new ConstantSalt(ParametersAndPeppers.VARS_CONS_CSKCTX_CSKCTX_CSKCTX, Defaults.CONST_BYTES);
+
+		public static final ConstantSalt VARS_NULL_NULL_NULL       = new ConstantSalt(ParametersAndPeppers.VARS_NULL_NULL_NULL, Defaults.CONST_BYTES);
+		public static final ConstantSalt VARS_NONE_NONE_NONE       = new ConstantSalt(ParametersAndPeppers.VARS_NONE_NONE_NONE, Defaults.CONST_BYTES);
+		public static final ConstantSalt VARS_CTX_CTX_CTX          = new ConstantSalt(ParametersAndPeppers.VARS_CTX_CTX_CTX, Defaults.CONST_BYTES);
+		public static final ConstantSalt VARS_HSK_HSK_HSK          = new ConstantSalt(ParametersAndPeppers.VARS_HSK_HSK_HSK, Defaults.CONST_BYTES);
+		public static final ConstantSalt VARS_HSKCTX_HSKCTX_HSKCTX = new ConstantSalt(ParametersAndPeppers.VARS_HSKCTX_HSKCTX_HSKCTX, Defaults.CONST_BYTES);
+		public static final ConstantSalt VARS_CSK_CSK_CSK          = new ConstantSalt(ParametersAndPeppers.VARS_CSK_CSK_CSK, Defaults.CONST_BYTES);
+		public static final ConstantSalt VARS_CSKCTX_CSKCTX_CSKCTX = new ConstantSalt(ParametersAndPeppers.VARS_CSKCTX_CSKCTX_CSKCTX, Defaults.CONST_BYTES);
+
+		public static final ConstantSalt CONS_NULL_NULL_NULL       = new ConstantSalt(ParametersAndPeppers.CONS_NULL_NULL_NULL, Defaults.CONST_BYTES);
+		public static final ConstantSalt CONS_NONE_NONE_NONE       = new ConstantSalt(ParametersAndPeppers.CONS_NONE_NONE_NONE, Defaults.CONST_BYTES);
+		public static final ConstantSalt CONS_CTX_CTX_CTX          = new ConstantSalt(ParametersAndPeppers.CONS_CTX_CTX_CTX, Defaults.CONST_BYTES);
+		public static final ConstantSalt CONS_HSK_HSK_HSK          = new ConstantSalt(ParametersAndPeppers.CONS_HSK_HSK_HSK, Defaults.CONST_BYTES);
+		public static final ConstantSalt CONS_HSKCTX_HSKCTX_HSKCTX = new ConstantSalt(ParametersAndPeppers.CONS_HSKCTX_HSKCTX_HSKCTX, Defaults.CONST_BYTES);
+		public static final ConstantSalt CONS_CSK_CSK_CSK          = new ConstantSalt(ParametersAndPeppers.CONS_CSK_CSK_CSK, Defaults.CONST_BYTES);
+		public static final ConstantSalt CONS_CSKCTX_CSKCTX_CSKCTX = new ConstantSalt(ParametersAndPeppers.CONS_CSKCTX_CSKCTX_CSKCTX, Defaults.CONST_BYTES);
+
 		public static final ConstantSalt NONE_NULL_NULL_NULL       = new ConstantSalt(ParametersAndPeppers.NONE_NULL_NULL_NULL, Defaults.CONST_BYTES);
 		public static final ConstantSalt NONE_NONE_NONE_NONE       = new ConstantSalt(ParametersAndPeppers.NONE_NONE_NONE_NONE, Defaults.CONST_BYTES);
 		public static final ConstantSalt NONE_CTX_CTX_CTX          = new ConstantSalt(ParametersAndPeppers.NONE_CTX_CTX_CTX, Defaults.CONST_BYTES);
@@ -86,30 +111,6 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 		public static final ConstantSalt NONE_HSKCTX_HSKCTX_HSKCTX = new ConstantSalt(ParametersAndPeppers.NONE_HSKCTX_HSKCTX_HSKCTX, Defaults.CONST_BYTES);
 		public static final ConstantSalt NONE_CSK_CSK_CSK          = new ConstantSalt(ParametersAndPeppers.NONE_CSK_CSK_CSK, Defaults.CONST_BYTES);
 		public static final ConstantSalt NONE_CSKCTX_CSKCTX_CSKCTX = new ConstantSalt(ParametersAndPeppers.NONE_CSKCTX_CSKCTX_CSKCTX, Defaults.CONST_BYTES);
-
-		public static final ConstantSalt SALT_NULL_NULL_NULL       = new ConstantSalt(ParametersAndPeppers.SALT_NULL_NULL_NULL, Defaults.CONST_BYTES);
-		public static final ConstantSalt SALT_NONE_NONE_NONE       = new ConstantSalt(ParametersAndPeppers.SALT_NONE_NONE_NONE, Defaults.CONST_BYTES);
-		public static final ConstantSalt SALT_CTX_CTX_CTX          = new ConstantSalt(ParametersAndPeppers.SALT_CTX_CTX_CTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt SALT_HSK_HSK_HSK          = new ConstantSalt(ParametersAndPeppers.SALT_HSK_HSK_HSK, Defaults.CONST_BYTES);
-		public static final ConstantSalt SALT_HSKCTX_HSKCTX_HSKCTX = new ConstantSalt(ParametersAndPeppers.SALT_HSKCTX_HSKCTX_HSKCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt SALT_CSK_CSK_CSK          = new ConstantSalt(ParametersAndPeppers.SALT_CSK_CSK_CSK, Defaults.CONST_BYTES);
-		public static final ConstantSalt SALT_CSKCTX_CSKCTX_CSKCTX = new ConstantSalt(ParametersAndPeppers.SALT_CSKCTX_CSKCTX_CSKCTX, Defaults.CONST_BYTES);
-
-		public static final ConstantSalt OTH_NULL_NULL_NULL       = new ConstantSalt(ParametersAndPeppers.OTH_NULL_NULL_NULL, Defaults.CONST_BYTES);
-		public static final ConstantSalt OTH_NONE_NONE_NONE       = new ConstantSalt(ParametersAndPeppers.OTH_NONE_NONE_NONE, Defaults.CONST_BYTES);
-		public static final ConstantSalt OTH_CTX_CTX_CTX          = new ConstantSalt(ParametersAndPeppers.OTH_CTX_CTX_CTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt OTH_HSK_HSK_HSK          = new ConstantSalt(ParametersAndPeppers.OTH_HSK_HSK_HSK, Defaults.CONST_BYTES);
-		public static final ConstantSalt OTH_HSKCTX_HSKCTX_HSKCTX = new ConstantSalt(ParametersAndPeppers.OTH_HSKCTX_HSKCTX_HSKCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt OTH_CSK_CSK_CSK          = new ConstantSalt(ParametersAndPeppers.OTH_CSK_CSK_CSK, Defaults.CONST_BYTES);
-		public static final ConstantSalt OTH_CSKCTX_CSKCTX_CSKCTX = new ConstantSalt(ParametersAndPeppers.OTH_CSKCTX_CSKCTX_CSKCTX, Defaults.CONST_BYTES);
-
-		public static final ConstantSalt SALTOTH_NULL_NULL_NULL       = new ConstantSalt(ParametersAndPeppers.SALTOTH_NULL_NULL_NULL, Defaults.CONST_BYTES);
-		public static final ConstantSalt SALTOTH_NONE_NONE_NONE       = new ConstantSalt(ParametersAndPeppers.SALTOTH_NONE_NONE_NONE, Defaults.CONST_BYTES);
-		public static final ConstantSalt SALTOTH_CTX_CTX_CTX          = new ConstantSalt(ParametersAndPeppers.SALTOTH_CTX_CTX_CTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt SALTOTH_HSK_HSK_HSK          = new ConstantSalt(ParametersAndPeppers.SALTOTH_HSK_HSK_HSK, Defaults.CONST_BYTES);
-		public static final ConstantSalt SALTOTH_HSKCTX_HSKCTX_HSKCTX = new ConstantSalt(ParametersAndPeppers.SALTOTH_HSKCTX_HSKCTX_HSKCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt SALTOTH_CSK_CSK_CSK          = new ConstantSalt(ParametersAndPeppers.SALTOTH_CSK_CSK_CSK, Defaults.CONST_BYTES);
-		public static final ConstantSalt SALTOTH_CSKCTX_CSKCTX_CSKCTX = new ConstantSalt(ParametersAndPeppers.SALTOTH_CSKCTX_CSKCTX_CSKCTX, Defaults.CONST_BYTES);
 	}
 
 	public static class Defaults {
@@ -122,16 +123,16 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 		public static final byte[] CONST_BYTES = "constant-salt-bytes".getBytes(StandardCharsets.UTF_8);
 
 		public static final HashCodec B64_STD_CB_NONE     = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.NONE);
-		public static final HashCodec B64_STD_CB_SALT     = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.VARS);
-		public static final HashCodec B64_STD_CB_OTH      = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.CONS);
-		public static final HashCodec B64_STD_CB_SALT_OTH = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.BOTH);
+		public static final HashCodec B64_STD_CB_VARS     = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.VARS);
+		public static final HashCodec B64_STD_CB_CONS      = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.CONS);
+		public static final HashCodec B64_STD_CB_VARS_CONS = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.BOTH);
 	}
 
 	public static class Parameters {
-		public static final Pbkdf2InputConstantsV1 STD_CB_NONE     = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_NONE);
-		public static final Pbkdf2InputConstantsV1 STD_CB_SALT     = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_SALT);
-		public static final Pbkdf2InputConstantsV1 STD_CB_OTH      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_OTH);
-		public static final Pbkdf2InputConstantsV1 STD_CB_SALT_OTH = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_SALT_OTH);
+		public static final Pbkdf2InputConstantsV1 B64_STD_CB_VARS_CONS = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_VARS_CONS);
+		public static final Pbkdf2InputConstantsV1 B64_STD_CB_VARS      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_VARS);
+		public static final Pbkdf2InputConstantsV1 B64_STD_CB_CONS      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_CONS);
+		public static final Pbkdf2InputConstantsV1 B64_STD_CB_NONE      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_NONE);
 	}
 
 	public static class PepperOptions {
@@ -193,36 +194,36 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 
 	// Key+Context pairs for Macs
 	public static class ParametersAndPeppers {
-		public static final HashInputConstantsAndHashPeppers NONE_NULL_NULL_NULL       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.NULL_NULL_NULL);
-		public static final HashInputConstantsAndHashPeppers NONE_NONE_NONE_NONE       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.NONE_NONE_NONE);
-		public static final HashInputConstantsAndHashPeppers NONE_CTX_CTX_CTX          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.CTX_CTX_CTX);
-		public static final HashInputConstantsAndHashPeppers NONE_HSK_HSK_HSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.HSK_HSK_HSK);
-		public static final HashInputConstantsAndHashPeppers NONE_HSKCTX_HSKCTX_HSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.HSKCTX_HSKCTX_HSKCTX);
-		public static final HashInputConstantsAndHashPeppers NONE_CSK_CSK_CSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.CSK_CSK_CSK);
-		public static final HashInputConstantsAndHashPeppers NONE_CSKCTX_CSKCTX_CSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_NONE, Peppers.CSKCTX_CSKCTX_CSKCTX);
+		public static final HashInputConstantsAndHashPeppers NONE_NULL_NULL_NULL       = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_NONE, Peppers.NULL_NULL_NULL);
+		public static final HashInputConstantsAndHashPeppers NONE_NONE_NONE_NONE       = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_NONE, Peppers.NONE_NONE_NONE);
+		public static final HashInputConstantsAndHashPeppers NONE_CTX_CTX_CTX          = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_NONE, Peppers.CTX_CTX_CTX);
+		public static final HashInputConstantsAndHashPeppers NONE_HSK_HSK_HSK          = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_NONE, Peppers.HSK_HSK_HSK);
+		public static final HashInputConstantsAndHashPeppers NONE_HSKCTX_HSKCTX_HSKCTX = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_NONE, Peppers.HSKCTX_HSKCTX_HSKCTX);
+		public static final HashInputConstantsAndHashPeppers NONE_CSK_CSK_CSK          = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_NONE, Peppers.CSK_CSK_CSK);
+		public static final HashInputConstantsAndHashPeppers NONE_CSKCTX_CSKCTX_CSKCTX = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_NONE, Peppers.CSKCTX_CSKCTX_CSKCTX);
 
-		public static final HashInputConstantsAndHashPeppers SALT_NULL_NULL_NULL       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.NULL_NULL_NULL);
-		public static final HashInputConstantsAndHashPeppers SALT_NONE_NONE_NONE       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.NONE_NONE_NONE);
-		public static final HashInputConstantsAndHashPeppers SALT_CTX_CTX_CTX          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.CTX_CTX_CTX);
-		public static final HashInputConstantsAndHashPeppers SALT_HSK_HSK_HSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.HSK_HSK_HSK);
-		public static final HashInputConstantsAndHashPeppers SALT_HSKCTX_HSKCTX_HSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.HSKCTX_HSKCTX_HSKCTX);
-		public static final HashInputConstantsAndHashPeppers SALT_CSK_CSK_CSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.CSK_CSK_CSK);
-		public static final HashInputConstantsAndHashPeppers SALT_CSKCTX_CSKCTX_CSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT, Peppers.CSKCTX_CSKCTX_CSKCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_NULL_NULL_NULL       = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_VARS, Peppers.NULL_NULL_NULL);
+		public static final HashInputConstantsAndHashPeppers VARS_NONE_NONE_NONE       = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_VARS, Peppers.NONE_NONE_NONE);
+		public static final HashInputConstantsAndHashPeppers VARS_CTX_CTX_CTX          = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_VARS, Peppers.CTX_CTX_CTX);
+		public static final HashInputConstantsAndHashPeppers VARS_HSK_HSK_HSK          = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_VARS, Peppers.HSK_HSK_HSK);
+		public static final HashInputConstantsAndHashPeppers VARS_HSKCTX_HSKCTX_HSKCTX = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_VARS, Peppers.HSKCTX_HSKCTX_HSKCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_CSK_CSK_CSK          = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_VARS, Peppers.CSK_CSK_CSK);
+		public static final HashInputConstantsAndHashPeppers VARS_CSKCTX_CSKCTX_CSKCTX = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_VARS, Peppers.CSKCTX_CSKCTX_CSKCTX);
 
-		public static final HashInputConstantsAndHashPeppers OTH_NULL_NULL_NULL       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.NULL_NULL_NULL);
-		public static final HashInputConstantsAndHashPeppers OTH_NONE_NONE_NONE       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.NONE_NONE_NONE);
-		public static final HashInputConstantsAndHashPeppers OTH_CTX_CTX_CTX          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.CTX_CTX_CTX);
-		public static final HashInputConstantsAndHashPeppers OTH_HSK_HSK_HSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.HSK_HSK_HSK);
-		public static final HashInputConstantsAndHashPeppers OTH_HSKCTX_HSKCTX_HSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.HSKCTX_HSKCTX_HSKCTX);
-		public static final HashInputConstantsAndHashPeppers OTH_CSK_CSK_CSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.CSK_CSK_CSK);
-		public static final HashInputConstantsAndHashPeppers OTH_CSKCTX_CSKCTX_CSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_OTH, Peppers.CSKCTX_CSKCTX_CSKCTX);
+		public static final HashInputConstantsAndHashPeppers CONS_NULL_NULL_NULL       = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_CONS, Peppers.NULL_NULL_NULL);
+		public static final HashInputConstantsAndHashPeppers CONS_NONE_NONE_NONE       = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_CONS, Peppers.NONE_NONE_NONE);
+		public static final HashInputConstantsAndHashPeppers CONS_CTX_CTX_CTX          = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_CONS, Peppers.CTX_CTX_CTX);
+		public static final HashInputConstantsAndHashPeppers CONS_HSK_HSK_HSK          = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_CONS, Peppers.HSK_HSK_HSK);
+		public static final HashInputConstantsAndHashPeppers CONS_HSKCTX_HSKCTX_HSKCTX = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_CONS, Peppers.HSKCTX_HSKCTX_HSKCTX);
+		public static final HashInputConstantsAndHashPeppers CONS_CSK_CSK_CSK          = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_CONS, Peppers.CSK_CSK_CSK);
+		public static final HashInputConstantsAndHashPeppers CONS_CSKCTX_CSKCTX_CSKCTX = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_CONS, Peppers.CSKCTX_CSKCTX_CSKCTX);
 
-		public static final HashInputConstantsAndHashPeppers SALTOTH_NULL_NULL_NULL       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.NULL_NULL_NULL);
-		public static final HashInputConstantsAndHashPeppers SALTOTH_NONE_NONE_NONE       = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.NONE_NONE_NONE);
-		public static final HashInputConstantsAndHashPeppers SALTOTH_CTX_CTX_CTX          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.CTX_CTX_CTX);
-		public static final HashInputConstantsAndHashPeppers SALTOTH_HSK_HSK_HSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.HSK_HSK_HSK);
-		public static final HashInputConstantsAndHashPeppers SALTOTH_HSKCTX_HSKCTX_HSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.HSKCTX_HSKCTX_HSKCTX);
-		public static final HashInputConstantsAndHashPeppers SALTOTH_CSK_CSK_CSK          = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.CSK_CSK_CSK);
-		public static final HashInputConstantsAndHashPeppers SALTOTH_CSKCTX_CSKCTX_CSKCTX = new HashInputConstantsAndHashPeppers(Parameters.STD_CB_SALT_OTH, Peppers.CSKCTX_CSKCTX_CSKCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_NULL_NULL_NULL       = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_VARS_CONS, Peppers.NULL_NULL_NULL);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_NONE_NONE_NONE       = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_VARS_CONS, Peppers.NONE_NONE_NONE);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_CTX_CTX_CTX          = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_VARS_CONS, Peppers.CTX_CTX_CTX);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_HSK_HSK_HSK          = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_VARS_CONS, Peppers.HSK_HSK_HSK);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_HSKCTX_HSKCTX_HSKCTX = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_VARS_CONS, Peppers.HSKCTX_HSKCTX_HSKCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_CSK_CSK_CSK          = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_VARS_CONS, Peppers.CSK_CSK_CSK);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_CSKCTX_CSKCTX_CSKCTX = new HashInputConstantsAndHashPeppers(Parameters.B64_STD_CB_VARS_CONS, Peppers.CSKCTX_CSKCTX_CSKCTX);
 	}
 }
