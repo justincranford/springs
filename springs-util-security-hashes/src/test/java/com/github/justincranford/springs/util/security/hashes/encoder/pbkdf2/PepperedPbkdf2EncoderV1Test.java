@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings({"nls", "boxing", "static-method", "serial"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PepperedPbkdf2EncoderV1Test {
-	private static final int REPEATS = 1;
+	private static final int REPEATS = 3;
 
 	private static final Map<String, PasswordEncoder> keyEncodersMap = new LinkedHashMap<>() {{
 		final AtomicInteger id = new AtomicInteger(0);
