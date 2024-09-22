@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import com.github.justincranford.springs.util.basic.Base64Util;
+import com.github.justincranford.springs.util.basic.TextCodec;
 import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
 import com.github.justincranford.springs.util.security.hashes.mac.MacAlgorithm;
 
@@ -15,7 +15,7 @@ import jakarta.validation.constraints.Null;
 
 public record Pepper(
 	@NotNull  MacAlgorithm mac,				// required (e.g. HmacSHA256, CMAC256); used as Mac digest, as well as for deriving low-entropy hmacKey if secretKey=null
-	@NotNull  Base64Util.EncoderDecoder encoderDecoder, // required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
+	@NotNull  TextCodec codec, // required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
 	@Null SecretKey secretKey,				// high-entropy 256-bit random key; n.b. may be null
 	@Null DigestAlgorithm secretKeyDigest,	// if secretKey omitted, required to derive secretKeyBytes from inputs
 	@NotNull byte[] secretContext,			// may be empty (e.g. any-entropy N-byte value)
@@ -37,7 +37,7 @@ public record Pepper(
 		final SecretKey macKey = (pepper.secretKey() != null) ? pepper.secretKey() : pepper.mac().secretKeyFromDataChunks(dataChunks);
 
 		final byte[] pepperMac = pepper.mac().chain(macKey, dataChunks);
-		return pepper.encoderDecoder().encodeToBytes(pepperMac);	// required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
+		return pepper.codec().encodeToBytes(pepperMac);	// required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
 	}
 
 	public static int safeLength(@Null final PepperInterface pepper, @Min(1) final int defaultLen) {
@@ -45,6 +45,6 @@ public record Pepper(
 	}
 
 	public static byte[] safeDecode(@Null final PepperInterface pepper, @Min(1) final byte[] bytes) {
-		return (pepper != null) ? pepper.encoderDecoder().decodeFromBytes(bytes) : bytes;
+		return (pepper != null) ? pepper.codec().decodeFromBytes(bytes) : bytes;
 	}
 }

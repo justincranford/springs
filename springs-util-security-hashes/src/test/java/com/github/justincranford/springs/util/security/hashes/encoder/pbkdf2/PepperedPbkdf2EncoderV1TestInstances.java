@@ -5,15 +5,14 @@ import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.TextCodec;
 import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
 import com.github.justincranford.springs.util.security.hashes.encoder.HashCodec;
 import com.github.justincranford.springs.util.security.hashes.encoder.HashCodec.Flags;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashInputConstantsAndHashPeppers;
+import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperInputVariables;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperPostHash;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperPreHash;
-import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPepperInputVariables;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashPeppers;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.Pepper;
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.ConstantSalt;
@@ -29,7 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class PepperedPbkdf2EncoderV1TestInstances {
 	public static final class Random {
-		public static final RandomSalt VARS_CONS_NULL_NULL_NULL                   = new RandomSalt(ParametersAndPeppers.VARS_CONS_NULL_NULL_NULL,          Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_CONS_NULL_NULL_NULL                   = new RandomSalt(ParametersAndPeppers.VARS_CONS_NULL_NULL_NULL,                   Defaults.RAND_LEN_BYTES);
 		public static final RandomSalt VARS_CONS_HPWDNOD_HPWDNOD_HPWDNOD          = new RandomSalt(ParametersAndPeppers.VARS_CONS_HPWDNOD_HPWDNOD_HPWDNOD,          Defaults.RAND_LEN_BYTES);
 		public static final RandomSalt VARS_CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX = new RandomSalt(ParametersAndPeppers.VARS_CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX, Defaults.RAND_LEN_BYTES);
 		public static final RandomSalt VARS_CONS_HKEYNOD_HKEYNOD_HKEYNOD          = new RandomSalt(ParametersAndPeppers.VARS_CONS_HKEYNOD_HKEYNOD_HKEYNOD,          Defaults.RAND_LEN_BYTES);
@@ -43,7 +42,7 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 		public static final RandomSalt VARS_CONS_CKEYDER_CKEYDER_CKEYDER          = new RandomSalt(ParametersAndPeppers.VARS_CONS_CKEYDER_CKEYDER_CKEYDER,          Defaults.RAND_LEN_BYTES);
 		public static final RandomSalt VARS_CONS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX = new RandomSalt(ParametersAndPeppers.VARS_CONS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX, Defaults.RAND_LEN_BYTES);
 
-		public static final RandomSalt VARS_NULL_NULL_NULL                        = new RandomSalt(ParametersAndPeppers.VARS_NULL_NULL_NULL,               Defaults.RAND_LEN_BYTES);
+		public static final RandomSalt VARS_NULL_NULL_NULL                        = new RandomSalt(ParametersAndPeppers.VARS_NULL_NULL_NULL,                        Defaults.RAND_LEN_BYTES);
 		public static final RandomSalt VARS_HPWDNOD_HPWDNOD_HPWDNOD               = new RandomSalt(ParametersAndPeppers.VARS_HPWDNOD_HPWDNOD_HPWDNOD,               Defaults.RAND_LEN_BYTES);
 		public static final RandomSalt VARS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX      = new RandomSalt(ParametersAndPeppers.VARS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX,      Defaults.RAND_LEN_BYTES);
 		public static final RandomSalt VARS_HKEYNOD_HKEYNOD_HKEYNOD               = new RandomSalt(ParametersAndPeppers.VARS_HKEYNOD_HKEYNOD_HKEYNOD,               Defaults.RAND_LEN_BYTES);
@@ -206,7 +205,7 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 		public static final CmacAlgorithm CMAC_ALG = CmacAlgorithm.AesCmac128;
 		public static final HmacAlgorithm HMAC_ALG = HmacAlgorithm.HmacSHA256;
 		public static final DigestAlgorithm DER_ALG = DigestAlgorithm.SHA256;
-		public static final Base64Util.EncoderDecoder ENC_DEC = Base64Util.URL;
+		public static final TextCodec CODEC = TextCodec.B64_URL;
 	}
 
 	public static class Key {
@@ -218,52 +217,52 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 	public static class InputVariables {
 		private static int i = 20;
 		public static final HashPepperInputVariables NULL       = null;
-		public static final HashPepperInputVariables HPWDNOD    = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.NULL, null,                  new byte[0], new byte[0]));
-		public static final HashPepperInputVariables HPWDNODCTX = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.NULL, null,                  new byte[i++], new byte[i++]));
-		public static final HashPepperInputVariables HKEYNOD    = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.HMAC, null,                  new byte[0], new byte[0]));
-		public static final HashPepperInputVariables HKEYNODCTX = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.HMAC, null,                  new byte[i++], new byte[i++]));
-		public static final HashPepperInputVariables HPWDDER    = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.NULL, PepperOptions.DER_ALG, new byte[0], new byte[0]));
-		public static final HashPepperInputVariables HPWDDERCTX = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.NULL, PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
-		public static final HashPepperInputVariables HKEYDER    = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.HMAC, PepperOptions.DER_ALG, new byte[0], new byte[0]));
-		public static final HashPepperInputVariables HKEYDERCTX = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.HMAC, PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
-		public static final HashPepperInputVariables CPWDDER    = new HashPepperInputVariables(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC, Key.NULL, PepperOptions.DER_ALG, new byte[0], new byte[0]));
-		public static final HashPepperInputVariables CPWDDERCTX = new HashPepperInputVariables(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC, Key.NULL, PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
-		public static final HashPepperInputVariables CKEYDER    = new HashPepperInputVariables(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC, Key.CMAC, PepperOptions.DER_ALG, new byte[0], new byte[0]));
-		public static final HashPepperInputVariables CKEYDERCTX = new HashPepperInputVariables(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC, Key.CMAC, PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
+		public static final HashPepperInputVariables HPWDNOD    = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.NULL, null,                  new byte[0], new byte[0]));
+		public static final HashPepperInputVariables HPWDNODCTX = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.NULL, null,                  new byte[i++], new byte[i++]));
+		public static final HashPepperInputVariables HKEYNOD    = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.HMAC, null,                  new byte[0], new byte[0]));
+		public static final HashPepperInputVariables HKEYNODCTX = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.HMAC, null,                  new byte[i++], new byte[i++]));
+		public static final HashPepperInputVariables HPWDDER    = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.NULL, PepperOptions.DER_ALG, new byte[0], new byte[0]));
+		public static final HashPepperInputVariables HPWDDERCTX = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.NULL, PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
+		public static final HashPepperInputVariables HKEYDER    = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.HMAC, PepperOptions.DER_ALG, new byte[0], new byte[0]));
+		public static final HashPepperInputVariables HKEYDERCTX = new HashPepperInputVariables(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.HMAC, PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
+		public static final HashPepperInputVariables CPWDDER    = new HashPepperInputVariables(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.CODEC, Key.NULL, PepperOptions.DER_ALG, new byte[0], new byte[0]));
+		public static final HashPepperInputVariables CPWDDERCTX = new HashPepperInputVariables(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.CODEC, Key.NULL, PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
+		public static final HashPepperInputVariables CKEYDER    = new HashPepperInputVariables(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.CODEC, Key.CMAC, PepperOptions.DER_ALG, new byte[0], new byte[0]));
+		public static final HashPepperInputVariables CKEYDERCTX = new HashPepperInputVariables(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.CODEC, Key.CMAC, PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
 	}
 
 	public static class PreHash {
 		private static int i = 40;
 		public static final HashPepperPreHash NULL       = null;
-		public static final HashPepperPreHash HPWDNOD    = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.NULL,  null,                  new byte[0], new byte[0]));
-		public static final HashPepperPreHash HPWDNODCTX = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.NULL,  null,                  new byte[i++], new byte[i++]));
-		public static final HashPepperPreHash HKEYNOD    = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.HMAC,  null,                  new byte[0], new byte[0]));
-		public static final HashPepperPreHash HKEYNODCTX = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.HMAC,  null,                  new byte[i++], new byte[i++]));
-		public static final HashPepperPreHash HPWDDER    = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.NULL,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
-		public static final HashPepperPreHash HPWDDERCTX = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.NULL,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
-		public static final HashPepperPreHash HKEYDER    = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.HMAC,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
-		public static final HashPepperPreHash HKEYDERCTX = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.HMAC,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
-		public static final HashPepperPreHash CPWDDER    = new HashPepperPreHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC, Key.NULL,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
-		public static final HashPepperPreHash CPWDDERCTX = new HashPepperPreHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC, Key.NULL,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
-		public static final HashPepperPreHash CKEYDER    = new HashPepperPreHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC, Key.CMAC,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
-		public static final HashPepperPreHash CKEYDERCTX = new HashPepperPreHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC, Key.CMAC,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
+		public static final HashPepperPreHash HPWDNOD    = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.NULL,  null,                  new byte[0], new byte[0]));
+		public static final HashPepperPreHash HPWDNODCTX = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.NULL,  null,                  new byte[i++], new byte[i++]));
+		public static final HashPepperPreHash HKEYNOD    = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.HMAC,  null,                  new byte[0], new byte[0]));
+		public static final HashPepperPreHash HKEYNODCTX = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.HMAC,  null,                  new byte[i++], new byte[i++]));
+		public static final HashPepperPreHash HPWDDER    = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.NULL,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
+		public static final HashPepperPreHash HPWDDERCTX = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.NULL,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
+		public static final HashPepperPreHash HKEYDER    = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.HMAC,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
+		public static final HashPepperPreHash HKEYDERCTX = new HashPepperPreHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.HMAC,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
+		public static final HashPepperPreHash CPWDDER    = new HashPepperPreHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.CODEC, Key.NULL,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
+		public static final HashPepperPreHash CPWDDERCTX = new HashPepperPreHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.CODEC, Key.NULL,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
+		public static final HashPepperPreHash CKEYDER    = new HashPepperPreHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.CODEC, Key.CMAC,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
+		public static final HashPepperPreHash CKEYDERCTX = new HashPepperPreHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.CODEC, Key.CMAC,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
 	}
 
 	public static class PostHash {
 		private static int i = 60;
 		public static final HashPepperPostHash NULL       = null;
-		public static final HashPepperPostHash HPWDNOD    = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.NULL,  null,                  new byte[0], new byte[0]));
-		public static final HashPepperPostHash HPWDNODCTX = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.NULL,  null,                  new byte[i++], new byte[i++]));
-		public static final HashPepperPostHash HKEYNOD    = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.HMAC,  null,                  new byte[0], new byte[0]));
-		public static final HashPepperPostHash HKEYNODCTX = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.HMAC,  null,                  new byte[i++], new byte[i++]));
-		public static final HashPepperPostHash HPWDDER    = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.NULL,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
-		public static final HashPepperPostHash HPWDDERCTX = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.NULL,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
-		public static final HashPepperPostHash HKEYDER    = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.HMAC,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
-		public static final HashPepperPostHash HKEYDERCTX = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.ENC_DEC, Key.HMAC,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
-		public static final HashPepperPostHash CPWDDER    = new HashPepperPostHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC, Key.NULL,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
-		public static final HashPepperPostHash CPWDDERCTX = new HashPepperPostHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC, Key.NULL,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
-		public static final HashPepperPostHash CKEYDER    = new HashPepperPostHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC, Key.CMAC,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
-		public static final HashPepperPostHash CKEYDERCTX = new HashPepperPostHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.ENC_DEC, Key.CMAC,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
+		public static final HashPepperPostHash HPWDNOD    = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.NULL,  null,                  new byte[0], new byte[0]));
+		public static final HashPepperPostHash HPWDNODCTX = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.NULL,  null,                  new byte[i++], new byte[i++]));
+		public static final HashPepperPostHash HKEYNOD    = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.HMAC,  null,                  new byte[0], new byte[0]));
+		public static final HashPepperPostHash HKEYNODCTX = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.HMAC,  null,                  new byte[i++], new byte[i++]));
+		public static final HashPepperPostHash HPWDDER    = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.NULL,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
+		public static final HashPepperPostHash HPWDDERCTX = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.NULL,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
+		public static final HashPepperPostHash HKEYDER    = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.HMAC,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
+		public static final HashPepperPostHash HKEYDERCTX = new HashPepperPostHash(new Pepper(PepperOptions.HMAC_ALG, PepperOptions.CODEC, Key.HMAC,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
+		public static final HashPepperPostHash CPWDDER    = new HashPepperPostHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.CODEC, Key.NULL,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
+		public static final HashPepperPostHash CPWDDERCTX = new HashPepperPostHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.CODEC, Key.NULL,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
+		public static final HashPepperPostHash CKEYDER    = new HashPepperPostHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.CODEC, Key.CMAC,  PepperOptions.DER_ALG, new byte[0], new byte[0]));
+		public static final HashPepperPostHash CKEYDERCTX = new HashPepperPostHash(new Pepper(PepperOptions.CMAC_ALG, PepperOptions.CODEC, Key.CMAC,  PepperOptions.DER_ALG, new byte[i++], new byte[i++]));
 	}
 
 	// 125 Tuples of Peppers => PeppperPreSalt{NULL,NONE,CTX,SK,SKCTX} x PeppperPreHash{NULL,NONE,CTX,SK,SKCTX} x PeppperPostHash{NULL,NONE,CTX,SK,SKCTX})
