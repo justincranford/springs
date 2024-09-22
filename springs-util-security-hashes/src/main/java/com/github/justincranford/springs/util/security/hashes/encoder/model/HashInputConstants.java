@@ -8,32 +8,42 @@ import com.github.justincranford.springs.util.security.hashes.encoder.HashCodec;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
-// TODO abstract instead of interface (codec, hashBytesLen)
-public interface HashInputConstants {
-	@NotNull public HashAlgorithm algorithm();
-	@NotNull HashCodec codec();
-	@Min(CommonConstraints.MIN_HASH_BYTES_LEN) int hashBytesLen();
-	@NotNull public byte[] canonicalBytes();
-	@NotEmpty public List<String> canonicalObjects();
-	@NotNull public byte[] compute(@NotNull final byte[] variableInputConstantsBytes, @NotNull final CharSequence inputString);
-	@NotNull public Boolean recompute( // TODO abstract
+@Getter
+@Accessors(fluent=true)
+public abstract class HashInputConstants {
+	@NotNull private HashAlgorithm algorithm;
+	@NotNull private HashCodec codec;
+	@Min(CommonConstraints.MIN_HASH_BYTES_LEN) private int hashBytesLen;
+
+	protected HashInputConstants(HashAlgorithm algorithm0, @NotNull HashCodec codec0, int hashBytesLen0) {
+		this.algorithm    = algorithm0;
+		this.codec        = codec0;
+		this.hashBytesLen = hashBytesLen0;
+	}
+
+	@NotNull public abstract byte[] canonicalBytes();
+	@NotEmpty public abstract List<String> canonicalObjects();
+	@NotNull public abstract byte[] compute(@NotNull final byte[] variableInputConstantsBytes, @NotNull final CharSequence inputString);
+	@NotNull public abstract Boolean recompute( // TODO abstract
 		@Min(CommonConstraints.MIN_HASH_INPUT_VARIABLES_BYTES_LEN) final int                expectedHashInputVariablesBytesLength,
 		@Min(CommonConstraints.MIN_HASH_INPUT_VARIABLES_BYTES_LEN) final int                actualHashInputVariablesBytesLength,
 		@NotNull                                                   final HashInputConstants actualHashInputConstants,
 		@Min(CommonConstraints.MIN_HASH_BYTES_LEN)                 final int                expectedHashBytesLength,
 		@Min(CommonConstraints.MIN_HASH_BYTES_LEN)                 final int                actualHashBytesLength
 	);
-	@NotEmpty public HashInputConstants decode(@NotEmpty List<String> parts);
+	@NotEmpty public abstract  HashInputConstants decode(@NotEmpty List<String> parts);
 
-	default public List<String> splitInputs(@NotNull final String hashInputsEncoded) {
+	public List<String> splitInputs(@NotNull final String hashInputsEncoded) {
 		return StringUtil.split(hashInputsEncoded, this.codec().innerSeparator());
 	}
 
-	default public String encode(@NotEmpty final byte[] plain) {
+	public String encode(@NotEmpty final byte[] plain) {
 		return this.codec().codec().encodeToString(plain);
 	}
-	default public byte[] decode(@NotEmpty final String encoded) {
+	public byte[] decode(@NotEmpty final String encoded) {
 		return this.codec().codec().decodeFromString(encoded);
 	}
 

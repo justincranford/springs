@@ -129,10 +129,10 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 	}
 
 	public static class Parameters {
-		public static final Pbkdf2InputConstantsV1 B64_STD_CB_VARS_CONS = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_VARS_CONS);
-		public static final Pbkdf2InputConstantsV1 B64_STD_CB_VARS      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_VARS);
-		public static final Pbkdf2InputConstantsV1 B64_STD_CB_CONS      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_CONS);
-		public static final Pbkdf2InputConstantsV1 B64_STD_CB_NONE      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.ITER, Defaults.DK_BYTES_LEN, Defaults.B64_STD_CB_NONE);
+		public static final Pbkdf2InputConstantsV1 B64_STD_CB_VARS_CONS = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.B64_STD_CB_VARS_CONS, Defaults.DK_BYTES_LEN, Defaults.ITER);
+		public static final Pbkdf2InputConstantsV1 B64_STD_CB_VARS      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.B64_STD_CB_VARS, Defaults.DK_BYTES_LEN, Defaults.ITER);
+		public static final Pbkdf2InputConstantsV1 B64_STD_CB_CONS      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.B64_STD_CB_CONS, Defaults.DK_BYTES_LEN, Defaults.ITER);
+		public static final Pbkdf2InputConstantsV1 B64_STD_CB_NONE      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.B64_STD_CB_NONE, Defaults.DK_BYTES_LEN, Defaults.ITER);
 	}
 
 	public static class PepperOptions {

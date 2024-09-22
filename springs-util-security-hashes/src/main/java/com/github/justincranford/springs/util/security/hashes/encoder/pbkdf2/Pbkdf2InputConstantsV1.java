@@ -14,18 +14,32 @@ import com.github.justincranford.springs.util.security.hashes.encoder.model.Hash
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.extern.slf4j.Slf4j;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
-@Slf4j
+@Getter
+@Accessors(fluent=true)
 @SuppressWarnings({"nls"})
-public record Pbkdf2InputConstantsV1 (
-	@NotNull Pbkdf2AlgorithmV1 algorithm,
-	@Min(Constraints.MIN_ITER) int iterations,
-	@Min(CommonConstraints.MIN_HASH_BYTES_LEN) int hashBytesLen,
-	@NotNull HashCodec codec
-) implements HashInputConstants {
+public class Pbkdf2InputConstantsV1 extends HashInputConstants {
+	@Min(Constraints.MIN_ITER) private int iterations;
+
+	public Pbkdf2InputConstantsV1(
+		@NotNull final Pbkdf2AlgorithmV1 algorithm0,
+		@NotNull final HashCodec codec0,
+		@Min(CommonConstraints.MIN_HASH_BYTES_LEN) final int hashBytesLen0,
+		@Min(Constraints.MIN_ITER) final int iterations0
+	) {
+		super(algorithm0, codec0, hashBytesLen0);
+		this.iterations = iterations0;
+	}
+
 	@Override
-	public byte[] canonicalBytes() {
+	@NotNull public Pbkdf2AlgorithmV1 algorithm() {
+		return (Pbkdf2AlgorithmV1) super.algorithm();
+	}
+
+	@Override
+	@NotEmpty public byte[] canonicalBytes() {
 		return ArrayUtil.concat(
 			this.algorithm().asn1DerBytes(),
 			ByteUtil.byteArray(this.iterations()),
@@ -46,10 +60,10 @@ public record Pbkdf2InputConstantsV1 (
 	@NotEmpty public HashInputConstants decode(
 		@NotNull final List<String> parts
 	) {
-		final Pbkdf2AlgorithmV1        algorithmDecoded    = (this.codec().flags().encodeHashInputConstants()) ? Pbkdf2AlgorithmV1.canonicalString(parts.removeFirst()) : this.algorithm();
-		final int                    iterationsDecoded   = (this.codec().flags().encodeHashInputConstants()) ? Integer.parseInt(parts.removeFirst())                : this.iterations();
-		final int                    hashBytesLenDecoded = (this.codec().flags().encodeHashInputConstants()) ? Integer.parseInt(parts.removeFirst())                : this.hashBytesLen();
-		final Pbkdf2InputConstantsV1 parametersDecoded   = new Pbkdf2InputConstantsV1(algorithmDecoded, iterationsDecoded, hashBytesLenDecoded, this.codec);
+		final Pbkdf2AlgorithmV1      algorithmDecoded    = (this.codec().flags().encodeHashInputConstants()) ? Pbkdf2AlgorithmV1.canonicalString(parts.removeFirst()) : this.algorithm();
+		final int                    iterationsDecoded   = (this.codec().flags().encodeHashInputConstants()) ? Integer.parseInt(parts.removeFirst())                  : this.iterations();
+		final int                    hashBytesLenDecoded = (this.codec().flags().encodeHashInputConstants()) ? Integer.parseInt(parts.removeFirst())                  : this.hashBytesLen();
+		final Pbkdf2InputConstantsV1 parametersDecoded   = new Pbkdf2InputConstantsV1(algorithmDecoded, super.codec(), hashBytesLenDecoded, iterationsDecoded);
 		return parametersDecoded;
 	}
 
