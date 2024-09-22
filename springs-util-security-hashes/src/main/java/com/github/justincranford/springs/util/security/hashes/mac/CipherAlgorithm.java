@@ -25,6 +25,7 @@ public enum CipherAlgorithm {
 	AESCBC256 ("AES/CBC/PKCS5Padding",  false, K.K32, I.P39, O.U,  0,  Oid.AESCBC256),
 	AESCBC192 ("AES/CBC/PKCS5Padding",  false, K.K24, I.P39, O.U,  0,  Oid.AESCBC192),
 	AESCBC128 ("AES/CBC/PKCS5Padding",  false, K.K16, I.P39, O.U,  0,  Oid.AESCBC128),
+	AESCMAC   ("AES-CMAC",              false, K.ALL, I.U,   null, 16, Oid.AESCMAC),
 	AESCMAC256("AES-CMAC",              false, K.K32, I.U,   null, 16, Oid.AESCMAC256),
 	AESCMAC192("AES-CMAC",              false, K.K24, I.U,   null, 16, Oid.AESCMAC192),
 	AESCMAC128("AES-CMAC",              false, K.K16, I.U,   null, 16, Oid.AESCMAC128),
@@ -159,6 +160,7 @@ public enum CipherAlgorithm {
 		public static final ASN1ObjectIdentifier AESCBC192  = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.22");
 		public static final ASN1ObjectIdentifier AESCBC128  = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.2");
 
+		public static final ASN1ObjectIdentifier AESCMAC    = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.49"); // TODO
 		public static final ASN1ObjectIdentifier AESCMAC256 = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.49");
 		public static final ASN1ObjectIdentifier AESCMAC192 = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.29");
 		public static final ASN1ObjectIdentifier AESCMAC128 = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.1.9");

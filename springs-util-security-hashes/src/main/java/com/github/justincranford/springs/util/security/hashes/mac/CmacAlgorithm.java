@@ -24,6 +24,7 @@ public enum CmacAlgorithm implements MacAlgorithm {
 	AesCmac128("AesCmac128", DigestAlgorithm.SHA256, Oid.AES_CMAC_128, CipherAlgorithm.AESCMAC128),
 	AesCmac192("AesCmac192", DigestAlgorithm.SHA256, Oid.AES_CMAC_192, CipherAlgorithm.AESCMAC192),
 	AesCmac256("AesCmac256", DigestAlgorithm.SHA256, Oid.AES_CMAC_256, CipherAlgorithm.AESCMAC256),
+	AesCmac   ("AesCmac",    DigestAlgorithm.SHA256, Oid.AES_CMAC,     CipherAlgorithm.AESCMAC),
 	;
 
 	private final String               algorithm;
@@ -36,17 +37,15 @@ public enum CmacAlgorithm implements MacAlgorithm {
 	private final String               toString;
 	private final CipherAlgorithm      cipherAlgorithm;
 	private CmacAlgorithm(@NotEmpty final String algorithm0, @NotNull final DigestAlgorithm digestAlgorithm0, @NotNull final ASN1ObjectIdentifier asn1Oid0, @NotNull final CipherAlgorithm cipherAlgorithm0) {
-		assert (digestAlgorithm0 != null) : "DigestAlgorithm must be specified";
-		assert (cipherAlgorithm0 != null) : "CipherAlgorithm must be specified";
 		this.algorithm         = algorithm0;
-		this.cipherAlgorithm   = cipherAlgorithm0;
 		this.digestAlgorithm   = digestAlgorithm0;
-		this.maxInputBytesLen  = this.cipherAlgorithm.maxInputBytesLen();
-		this.macOutputBytesLen = this.cipherAlgorithm.macOutputBytesLen();
+		this.maxInputBytesLen  = cipherAlgorithm0.maxInputBytesLen();
+		this.macOutputBytesLen = cipherAlgorithm0.macOutputBytesLen();
 		this.asn1Oid           = asn1Oid0;
 		this.asn1OidBytes      = Asn1Util.derBytes(asn1Oid0);
 		this.canonicalString   = asn1Oid0.getId();
 		this.toString          = this.algorithm + "[" + this.canonicalString + "]";
+		this.cipherAlgorithm   = cipherAlgorithm0;
 	}
 	@Override
 	public String algorithm() {
@@ -86,7 +85,7 @@ public enum CmacAlgorithm implements MacAlgorithm {
 	@Override
     public SecretKeySpec secretKeyFromDataChunks(@NotEmpty final byte[][] dataChunks) {
 		final byte[] cmacDigestBytes = this.digestAlgorithm.compute(dataChunks); // digest chain the data chunks
-		final byte[] keyBytes = new byte[this.cipherAlgorithm().keyBytesLens().iterator().next().intValue()]; // use first supported keyBytes length
+		final byte[] keyBytes = new byte[this.cipherAlgorithm.keyBytesLens().iterator().next().intValue()]; // use first supported keyBytes length
 		if (cmacDigestBytes.length < keyBytes.length) {
 			throw new RuntimeException("Not enough digested bytes to fill Cmac secretKey");
 		}
@@ -127,5 +126,6 @@ public enum CmacAlgorithm implements MacAlgorithm {
 		public static final ASN1ObjectIdentifier AES_CMAC_128    = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.25");
 		public static final ASN1ObjectIdentifier AES_CMAC_192    = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.26");
 		public static final ASN1ObjectIdentifier AES_CMAC_256    = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.27");
+		public static final ASN1ObjectIdentifier AES_CMAC        = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.28"); // TODO
 	}
 }
