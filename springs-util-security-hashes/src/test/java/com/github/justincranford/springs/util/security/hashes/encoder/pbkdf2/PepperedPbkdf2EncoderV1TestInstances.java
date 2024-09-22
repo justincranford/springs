@@ -19,7 +19,8 @@ import com.github.justincranford.springs.util.security.hashes.encoder.model.Pepp
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.ConstantSalt;
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.DerivedSalt;
 import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.PepperedPbkdf2EncoderV1.RandomSalt;
-import com.github.justincranford.springs.util.security.hashes.mac.MacAlgorithm;
+import com.github.justincranford.springs.util.security.hashes.mac.CmacAlgorithm;
+import com.github.justincranford.springs.util.security.hashes.mac.HmacAlgorithm;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -136,8 +137,8 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 	}
 
 	public static class PepperOptions {
-		public static final MacAlgorithm CMAC_ALG = MacAlgorithm.AesCmac256;
-		public static final MacAlgorithm HMAC_ALG = MacAlgorithm.HmacSHA256;
+		public static final CmacAlgorithm CMAC_ALG = CmacAlgorithm.AesCmac256;
+		public static final HmacAlgorithm HMAC_ALG = HmacAlgorithm.HmacSHA256;
 		public static final DigestAlgorithm DER_ALG = DigestAlgorithm.SHA256;
 		public static final Base64Util.EncoderDecoder ENC_DEC = Base64Util.STD;
 	}

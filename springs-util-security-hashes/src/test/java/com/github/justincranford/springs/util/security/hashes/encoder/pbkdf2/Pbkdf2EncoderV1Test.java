@@ -19,7 +19,7 @@ import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.basic.TextCodec;
 import com.github.justincranford.springs.util.security.hashes.encoder.HashCodec;
 import com.github.justincranford.springs.util.security.hashes.encoder.HashCodec.Flags;
-import com.github.justincranford.springs.util.security.hashes.mac.MacAlgorithm;
+import com.github.justincranford.springs.util.security.hashes.mac.HmacAlgorithm;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -81,7 +81,7 @@ public class Pbkdf2EncoderV1Test {
 		@Nested
 		public class DerivedSaltWithPiiAsKey {
 			private static final byte[] CONSTANT_SALT_SEED_BYTES = SecureRandomUtil.randomBytes(64); // needs to be secret
-			private static final MacAlgorithm PEPPER_ALG = MacAlgorithm.HmacSHA256;
+			private static final HmacAlgorithm PEPPER_ALG = HmacAlgorithm.HmacSHA256;
 			private static final Function<CharSequence, byte[]> DERIVED_SALT_SUPPLIER = (charSequence) -> {
 				final SecretKeySpec piiAsKey = new SecretKeySpec(charSequence.toString().getBytes(), "PepperTheSalt"); // no key => use PII input as the key
 				return PEPPER_ALG.compute(piiAsKey, ArrayUtil.concat(charSequence.toString().getBytes(), CONSTANT_SALT_SEED_BYTES));
@@ -105,7 +105,7 @@ public class Pbkdf2EncoderV1Test {
 		@Nested
 		public class DerivedSaltWithRandomKey {
 			private static final byte[] CONSTANT_SALT_SEED_BYTES = SecureRandomUtil.randomBytes(64); // doesn't need to be secret
-			private static final MacAlgorithm PEPPER_ALG = MacAlgorithm.HmacSHA256;
+			private static final HmacAlgorithm PEPPER_ALG = HmacAlgorithm.HmacSHA256;
 			private static final SecretKeySpec RANDOM_HMAC_KEY = new SecretKeySpec(SecureRandomUtil.randomBytes(64), "PepperTheSalt"); // needs to be secret
 			private static final  Function<CharSequence, byte[]> DERIVED_SALT_SUPPLIER = (charSequence) -> {
 				return PEPPER_ALG.compute(RANDOM_HMAC_KEY, ArrayUtil.concat(charSequence.toString().getBytes(), CONSTANT_SALT_SEED_BYTES));
