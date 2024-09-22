@@ -34,8 +34,6 @@ public class PepperedPbkdf2EncoderV1Test {
 		final AtomicInteger id = new AtomicInteger(0);
 		List.of(
 //			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_CONS_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_CONS_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_CONS_CTX_CTX_CTX,
 			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_CONS_HPWD_HPWD_HPWD,
 			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_CONS_HPWDCTX_HPWDCTX_HPWDCTX,
 			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_CONS_HKEY_HKEY_HKEY,
@@ -46,8 +44,6 @@ public class PepperedPbkdf2EncoderV1Test {
 			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_CONS_CKEYCTX_CKEYCTX_CKEYCTX,
 
 //			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_CTX_CTX_CTX,
 			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_HPWD_HPWD_HPWD,
 			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_HPWDCTX_HPWDCTX_HPWDCTX,
 			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_HKEY_HKEY_HKEY,
@@ -58,8 +54,6 @@ public class PepperedPbkdf2EncoderV1Test {
 			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_CKEYCTX_CKEYCTX_CKEYCTX,
 
 //			PepperedPbkdf2EncoderV1TestInstances.Derived.CONS_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1TestInstances.Derived.CONS_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1TestInstances.Derived.CONS_CTX_CTX_CTX,
 			PepperedPbkdf2EncoderV1TestInstances.Derived.CONS_HPWD_HPWD_HPWD,
 			PepperedPbkdf2EncoderV1TestInstances.Derived.CONS_HPWDCTX_HPWDCTX_HPWDCTX,
 			PepperedPbkdf2EncoderV1TestInstances.Derived.CONS_HKEY_HKEY_HKEY,
@@ -70,8 +64,6 @@ public class PepperedPbkdf2EncoderV1Test {
 			PepperedPbkdf2EncoderV1TestInstances.Derived.CONS_CKEYCTX_CKEYCTX_CKEYCTX,
 
 //			PepperedPbkdf2EncoderV1TestInstances.Derived.NONE_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1TestInstances.Derived.NONE_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1TestInstances.Derived.NONE_CTX_CTX_CTX,
 			PepperedPbkdf2EncoderV1TestInstances.Derived.NONE_HPWD_HPWD_HPWD,
 			PepperedPbkdf2EncoderV1TestInstances.Derived.NONE_HPWDCTX_HPWDCTX_HPWDCTX,
 			PepperedPbkdf2EncoderV1TestInstances.Derived.NONE_HKEY_HKEY_HKEY,
@@ -82,8 +74,6 @@ public class PepperedPbkdf2EncoderV1Test {
 			PepperedPbkdf2EncoderV1TestInstances.Derived.NONE_CKEYCTX_CKEYCTX_CKEYCTX,
 
 			PepperedPbkdf2EncoderV1TestInstances.Constant.VARS_CONS_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1TestInstances.Constant.VARS_CONS_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1TestInstances.Constant.VARS_CONS_CTX_CTX_CTX,
 			PepperedPbkdf2EncoderV1TestInstances.Constant.VARS_CONS_HPWD_HPWD_HPWD,
 			PepperedPbkdf2EncoderV1TestInstances.Constant.VARS_CONS_HPWDCTX_HPWDCTX_HPWDCTX,
 			PepperedPbkdf2EncoderV1TestInstances.Constant.VARS_CONS_HKEY_HKEY_HKEY,
@@ -94,8 +84,6 @@ public class PepperedPbkdf2EncoderV1Test {
 			PepperedPbkdf2EncoderV1TestInstances.Constant.VARS_CONS_CKEYCTX_CKEYCTX_CKEYCTX,
 
 			PepperedPbkdf2EncoderV1TestInstances.Constant.VARS_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1TestInstances.Constant.VARS_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1TestInstances.Constant.VARS_CTX_CTX_CTX,
 			PepperedPbkdf2EncoderV1TestInstances.Constant.VARS_HPWD_HPWD_HPWD,
 			PepperedPbkdf2EncoderV1TestInstances.Constant.VARS_HPWDCTX_HPWDCTX_HPWDCTX,
 			PepperedPbkdf2EncoderV1TestInstances.Constant.VARS_HKEY_HKEY_HKEY,
@@ -106,8 +94,6 @@ public class PepperedPbkdf2EncoderV1Test {
 			PepperedPbkdf2EncoderV1TestInstances.Constant.VARS_CKEYCTX_CKEYCTX_CKEYCTX,
 
 			PepperedPbkdf2EncoderV1TestInstances.Constant.CONS_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1TestInstances.Constant.CONS_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1TestInstances.Constant.CONS_CTX_CTX_CTX,
 			PepperedPbkdf2EncoderV1TestInstances.Constant.CONS_HPWD_HPWD_HPWD,
 			PepperedPbkdf2EncoderV1TestInstances.Constant.CONS_HPWDCTX_HPWDCTX_HPWDCTX,
 			PepperedPbkdf2EncoderV1TestInstances.Constant.CONS_HKEY_HKEY_HKEY,
@@ -118,8 +104,6 @@ public class PepperedPbkdf2EncoderV1Test {
 			PepperedPbkdf2EncoderV1TestInstances.Constant.CONS_CKEYCTX_CKEYCTX_CKEYCTX,
 
 			PepperedPbkdf2EncoderV1TestInstances.Constant.NONE_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1TestInstances.Constant.NONE_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1TestInstances.Constant.NONE_CTX_CTX_CTX,
 			PepperedPbkdf2EncoderV1TestInstances.Constant.NONE_HPWD_HPWD_HPWD,
 			PepperedPbkdf2EncoderV1TestInstances.Constant.NONE_HPWDCTX_HPWDCTX_HPWDCTX,
 			PepperedPbkdf2EncoderV1TestInstances.Constant.NONE_HKEY_HKEY_HKEY,
@@ -140,8 +124,6 @@ public class PepperedPbkdf2EncoderV1Test {
 		final AtomicInteger id = new AtomicInteger(0);
 		List.of(
 			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_CONS_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_CONS_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_CONS_CTX_CTX_CTX,
 			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_CONS_HPWD_HPWD_HPWD,
 			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_CONS_HPWDCTX_HPWDCTX_HPWDCTX,
 			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_CONS_HKEY_HKEY_HKEY,
@@ -152,8 +134,6 @@ public class PepperedPbkdf2EncoderV1Test {
 			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_CONS_CKEYCTX_CKEYCTX_CKEYCTX,
 
 			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_NULL_NULL_NULL,
-			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_NONE_NONE_NONE,
-			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_CTX_CTX_CTX,
 			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_HPWD_HPWD_HPWD,
 			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_HPWDCTX_HPWDCTX_HPWDCTX,
 			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_HKEY_HKEY_HKEY,
