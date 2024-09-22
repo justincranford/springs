@@ -117,83 +117,89 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 	}
 
 	public static final class Constant {
-		public static final ConstantSalt VARS_CONS_NULL_NULL_NULL                   = new ConstantSalt(ParametersAndPeppers.VARS_CONS_NULL_NULL_NULL,          Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CONS_HPWDNOD_HPWDNOD_HPWDNOD          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HPWDNOD_HPWDNOD_HPWDNOD,          Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CONS_HKEYNOD_HKEYNOD_HKEYNOD          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HKEYNOD_HKEYNOD_HKEYNOD,          Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CONS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CONS_HPWDDER_HPWDDER_HPWDDER          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HPWDDER_HPWDDER_HPWDDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CONS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CONS_HKEYDER_HKEYDER_HKEYDER          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HKEYDER_HKEYDER_HKEYDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CONS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CONS_CPWDDER_CPWDDER_CPWDDER          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_CPWDDER_CPWDDER_CPWDDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CONS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX = new ConstantSalt(ParametersAndPeppers.VARS_CONS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CONS_CKEYDER_CKEYDER_CKEYDER          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_CKEYDER_CKEYDER_CKEYDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CONS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX = new ConstantSalt(ParametersAndPeppers.VARS_CONS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX, Defaults.CONST_BYTES);
+		public static final ConstantSalt VARS_CONS_NULL_NULL_NULL                   = new ConstantSalt(ParametersAndPeppers.VARS_CONS_NULL_NULL_NULL,                   Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CONS_HPWDNOD_HPWDNOD_HPWDNOD          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HPWDNOD_HPWDNOD_HPWDNOD,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CONS_HKEYNOD_HKEYNOD_HKEYNOD          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HKEYNOD_HKEYNOD_HKEYNOD,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CONS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CONS_HPWDDER_HPWDDER_HPWDDER          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HPWDDER_HPWDDER_HPWDDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CONS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CONS_HKEYDER_HKEYDER_HKEYDER          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HKEYDER_HKEYDER_HKEYDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CONS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX = new ConstantSalt(ParametersAndPeppers.VARS_CONS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CONS_CPWDDER_CPWDDER_CPWDDER          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_CPWDDER_CPWDDER_CPWDDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CONS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX = new ConstantSalt(ParametersAndPeppers.VARS_CONS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CONS_CKEYDER_CKEYDER_CKEYDER          = new ConstantSalt(ParametersAndPeppers.VARS_CONS_CKEYDER_CKEYDER_CKEYDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CONS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX = new ConstantSalt(ParametersAndPeppers.VARS_CONS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX, Defaults.CONST_SALT_BYTES);
 
-		public static final ConstantSalt VARS_NULL_NULL_NULL                        = new ConstantSalt(ParametersAndPeppers.VARS_NULL_NULL_NULL,          Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_HPWDNOD_HPWDNOD_HPWDNOD               = new ConstantSalt(ParametersAndPeppers.VARS_HPWDNOD_HPWDNOD_HPWDNOD,          Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX      = new ConstantSalt(ParametersAndPeppers.VARS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_HKEYNOD_HKEYNOD_HKEYNOD               = new ConstantSalt(ParametersAndPeppers.VARS_HKEYNOD_HKEYNOD_HKEYNOD,          Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX      = new ConstantSalt(ParametersAndPeppers.VARS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_HPWDDER_HPWDDER_HPWDDER               = new ConstantSalt(ParametersAndPeppers.VARS_HPWDDER_HPWDDER_HPWDDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX      = new ConstantSalt(ParametersAndPeppers.VARS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_HKEYDER_HKEYDER_HKEYDER               = new ConstantSalt(ParametersAndPeppers.VARS_HKEYDER_HKEYDER_HKEYDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX      = new ConstantSalt(ParametersAndPeppers.VARS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CPWDDER_CPWDDER_CPWDDER               = new ConstantSalt(ParametersAndPeppers.VARS_CPWDDER_CPWDDER_CPWDDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX      = new ConstantSalt(ParametersAndPeppers.VARS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CKEYDER_CKEYDER_CKEYDER               = new ConstantSalt(ParametersAndPeppers.VARS_CKEYDER_CKEYDER_CKEYDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt VARS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX      = new ConstantSalt(ParametersAndPeppers.VARS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX, Defaults.CONST_BYTES);
+		public static final ConstantSalt VARS_NULL_NULL_NULL                        = new ConstantSalt(ParametersAndPeppers.VARS_NULL_NULL_NULL,                   Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_HPWDNOD_HPWDNOD_HPWDNOD               = new ConstantSalt(ParametersAndPeppers.VARS_HPWDNOD_HPWDNOD_HPWDNOD,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX      = new ConstantSalt(ParametersAndPeppers.VARS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_HKEYNOD_HKEYNOD_HKEYNOD               = new ConstantSalt(ParametersAndPeppers.VARS_HKEYNOD_HKEYNOD_HKEYNOD,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX      = new ConstantSalt(ParametersAndPeppers.VARS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_HPWDDER_HPWDDER_HPWDDER               = new ConstantSalt(ParametersAndPeppers.VARS_HPWDDER_HPWDDER_HPWDDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX      = new ConstantSalt(ParametersAndPeppers.VARS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_HKEYDER_HKEYDER_HKEYDER               = new ConstantSalt(ParametersAndPeppers.VARS_HKEYDER_HKEYDER_HKEYDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX      = new ConstantSalt(ParametersAndPeppers.VARS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CPWDDER_CPWDDER_CPWDDER               = new ConstantSalt(ParametersAndPeppers.VARS_CPWDDER_CPWDDER_CPWDDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX      = new ConstantSalt(ParametersAndPeppers.VARS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CKEYDER_CKEYDER_CKEYDER               = new ConstantSalt(ParametersAndPeppers.VARS_CKEYDER_CKEYDER_CKEYDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt VARS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX      = new ConstantSalt(ParametersAndPeppers.VARS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX, Defaults.CONST_SALT_BYTES);
 
-		public static final ConstantSalt CONS_NULL_NULL_NULL                        = new ConstantSalt(ParametersAndPeppers.CONS_NULL_NULL_NULL,          Defaults.CONST_BYTES);
-		public static final ConstantSalt CONS_HPWDNOD_HPWDNOD_HPWDNOD               = new ConstantSalt(ParametersAndPeppers.CONS_HPWDNOD_HPWDNOD_HPWDNOD,          Defaults.CONST_BYTES);
-		public static final ConstantSalt CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX      = new ConstantSalt(ParametersAndPeppers.CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt CONS_HKEYNOD_HKEYNOD_HKEYNOD               = new ConstantSalt(ParametersAndPeppers.CONS_HKEYNOD_HKEYNOD_HKEYNOD,          Defaults.CONST_BYTES);
-		public static final ConstantSalt CONS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX      = new ConstantSalt(ParametersAndPeppers.CONS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt CONS_HPWDDER_HPWDDER_HPWDDER               = new ConstantSalt(ParametersAndPeppers.CONS_HPWDDER_HPWDDER_HPWDDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt CONS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX      = new ConstantSalt(ParametersAndPeppers.CONS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt CONS_HKEYDER_HKEYDER_HKEYDER               = new ConstantSalt(ParametersAndPeppers.CONS_HKEYDER_HKEYDER_HKEYDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt CONS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX      = new ConstantSalt(ParametersAndPeppers.CONS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt CONS_CPWDDER_CPWDDER_CPWDDER               = new ConstantSalt(ParametersAndPeppers.CONS_CPWDDER_CPWDDER_CPWDDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt CONS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX      = new ConstantSalt(ParametersAndPeppers.CONS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt CONS_CKEYDER_CKEYDER_CKEYDER               = new ConstantSalt(ParametersAndPeppers.CONS_CKEYDER_CKEYDER_CKEYDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt CONS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX      = new ConstantSalt(ParametersAndPeppers.CONS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX, Defaults.CONST_BYTES);
+		public static final ConstantSalt CONS_NULL_NULL_NULL                        = new ConstantSalt(ParametersAndPeppers.CONS_NULL_NULL_NULL,                   Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt CONS_HPWDNOD_HPWDNOD_HPWDNOD               = new ConstantSalt(ParametersAndPeppers.CONS_HPWDNOD_HPWDNOD_HPWDNOD,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX      = new ConstantSalt(ParametersAndPeppers.CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt CONS_HKEYNOD_HKEYNOD_HKEYNOD               = new ConstantSalt(ParametersAndPeppers.CONS_HKEYNOD_HKEYNOD_HKEYNOD,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt CONS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX      = new ConstantSalt(ParametersAndPeppers.CONS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt CONS_HPWDDER_HPWDDER_HPWDDER               = new ConstantSalt(ParametersAndPeppers.CONS_HPWDDER_HPWDDER_HPWDDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt CONS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX      = new ConstantSalt(ParametersAndPeppers.CONS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt CONS_HKEYDER_HKEYDER_HKEYDER               = new ConstantSalt(ParametersAndPeppers.CONS_HKEYDER_HKEYDER_HKEYDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt CONS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX      = new ConstantSalt(ParametersAndPeppers.CONS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt CONS_CPWDDER_CPWDDER_CPWDDER               = new ConstantSalt(ParametersAndPeppers.CONS_CPWDDER_CPWDDER_CPWDDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt CONS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX      = new ConstantSalt(ParametersAndPeppers.CONS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt CONS_CKEYDER_CKEYDER_CKEYDER               = new ConstantSalt(ParametersAndPeppers.CONS_CKEYDER_CKEYDER_CKEYDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt CONS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX      = new ConstantSalt(ParametersAndPeppers.CONS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX, Defaults.CONST_SALT_BYTES);
 
-		public static final ConstantSalt NONE_NULL_NULL_NULL                        = new ConstantSalt(ParametersAndPeppers.NONE_NULL_NULL_NULL,          Defaults.CONST_BYTES);
-		public static final ConstantSalt NONE_HPWDNOD_HPWDNOD_HPWDNOD               = new ConstantSalt(ParametersAndPeppers.NONE_HPWDNOD_HPWDNOD_HPWDNOD,          Defaults.CONST_BYTES);
-		public static final ConstantSalt NONE_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX      = new ConstantSalt(ParametersAndPeppers.NONE_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt NONE_HKEYNOD_HKEYNOD_HKEYNOD               = new ConstantSalt(ParametersAndPeppers.NONE_HKEYNOD_HKEYNOD_HKEYNOD,          Defaults.CONST_BYTES);
-		public static final ConstantSalt NONE_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX      = new ConstantSalt(ParametersAndPeppers.NONE_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt NONE_HPWDDER_HPWDDER_HPWDDER               = new ConstantSalt(ParametersAndPeppers.NONE_HPWDDER_HPWDDER_HPWDDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt NONE_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX      = new ConstantSalt(ParametersAndPeppers.NONE_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt NONE_HKEYDER_HKEYDER_HKEYDER               = new ConstantSalt(ParametersAndPeppers.NONE_HKEYDER_HKEYDER_HKEYDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt NONE_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX      = new ConstantSalt(ParametersAndPeppers.NONE_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt NONE_CPWDDER_CPWDDER_CPWDDER               = new ConstantSalt(ParametersAndPeppers.NONE_CPWDDER_CPWDDER_CPWDDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt NONE_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX      = new ConstantSalt(ParametersAndPeppers.NONE_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX, Defaults.CONST_BYTES);
-		public static final ConstantSalt NONE_CKEYDER_CKEYDER_CKEYDER               = new ConstantSalt(ParametersAndPeppers.NONE_CKEYDER_CKEYDER_CKEYDER,          Defaults.CONST_BYTES);
-		public static final ConstantSalt NONE_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX      = new ConstantSalt(ParametersAndPeppers.NONE_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX, Defaults.CONST_BYTES);
-	}
-
-	public static class Defaults {
-		public static final int ITER = 1; // OWASP recommends 600_000 in production
-		public static final int DK_BYTES_LEN = 32;
-		public static final Pbkdf2AlgorithmV1 PRF_ALG = Pbkdf2AlgorithmV1.PBKDF2WithHmacSHA256;
-
-		public static final int RAND_LEN_BYTES = 32;
-		public static final int DER_LEN_BYTES = 32;
-		public static final byte[] CONST_BYTES = "constant-salt-bytes".getBytes(StandardCharsets.UTF_8);
-
-		public static final HashCodec B64_STD_CB_NONE      = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.NONE);
-		public static final HashCodec B64_STD_CB_VARS      = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.VARS);
-		public static final HashCodec B64_STD_CB_CONS      = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.CONS);
-		public static final HashCodec B64_STD_CB_VARS_CONS = new HashCodec(TextCodec.B64_STD, "|", ":", Flags.BOTH);
+		public static final ConstantSalt NONE_NULL_NULL_NULL                        = new ConstantSalt(ParametersAndPeppers.NONE_NULL_NULL_NULL,                   Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt NONE_HPWDNOD_HPWDNOD_HPWDNOD               = new ConstantSalt(ParametersAndPeppers.NONE_HPWDNOD_HPWDNOD_HPWDNOD,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt NONE_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX      = new ConstantSalt(ParametersAndPeppers.NONE_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt NONE_HKEYNOD_HKEYNOD_HKEYNOD               = new ConstantSalt(ParametersAndPeppers.NONE_HKEYNOD_HKEYNOD_HKEYNOD,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt NONE_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX      = new ConstantSalt(ParametersAndPeppers.NONE_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt NONE_HPWDDER_HPWDDER_HPWDDER               = new ConstantSalt(ParametersAndPeppers.NONE_HPWDDER_HPWDDER_HPWDDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt NONE_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX      = new ConstantSalt(ParametersAndPeppers.NONE_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt NONE_HKEYDER_HKEYDER_HKEYDER               = new ConstantSalt(ParametersAndPeppers.NONE_HKEYDER_HKEYDER_HKEYDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt NONE_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX      = new ConstantSalt(ParametersAndPeppers.NONE_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt NONE_CPWDDER_CPWDDER_CPWDDER               = new ConstantSalt(ParametersAndPeppers.NONE_CPWDDER_CPWDDER_CPWDDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt NONE_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX      = new ConstantSalt(ParametersAndPeppers.NONE_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX, Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt NONE_CKEYDER_CKEYDER_CKEYDER               = new ConstantSalt(ParametersAndPeppers.NONE_CKEYDER_CKEYDER_CKEYDER,          Defaults.CONST_SALT_BYTES);
+		public static final ConstantSalt NONE_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX      = new ConstantSalt(ParametersAndPeppers.NONE_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX, Defaults.CONST_SALT_BYTES);
 	}
 
 	public static class Codec {
-		public static final Pbkdf2InputConstantsV1 B64_STD_CB_VARS_CONS = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.B64_STD_CB_VARS_CONS, Defaults.DK_BYTES_LEN, Defaults.ITER);
-		public static final Pbkdf2InputConstantsV1 B64_STD_CB_VARS      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.B64_STD_CB_VARS, Defaults.DK_BYTES_LEN, Defaults.ITER);
-		public static final Pbkdf2InputConstantsV1 B64_STD_CB_CONS      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.B64_STD_CB_CONS, Defaults.DK_BYTES_LEN, Defaults.ITER);
-		public static final Pbkdf2InputConstantsV1 B64_STD_CB_NONE      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Defaults.B64_STD_CB_NONE, Defaults.DK_BYTES_LEN, Defaults.ITER);
+		public static final TextCodec TEXT = TextCodec.B64_STD;
+		public static final String    OUTER = "|";
+		public static final String    INNER = ":";
+
+		public static final HashCodec NONE      = new HashCodec(TEXT, OUTER, INNER, Flags.NONE);
+		public static final HashCodec VARS      = new HashCodec(TEXT, OUTER, INNER, Flags.VARS);
+		public static final HashCodec CONS      = new HashCodec(TEXT, OUTER, INNER, Flags.CONS);
+		public static final HashCodec VARS_CONS = new HashCodec(TEXT, OUTER, INNER, Flags.BOTH);
+	}
+
+	public static class Defaults {
+		public static final Pbkdf2AlgorithmV1 PRF_ALG = Pbkdf2AlgorithmV1.PBKDF2WithHmacSHA256;
+		public static final int DK_BYTES_LEN = 32;
+		public static final int ITER = 1; // OWASP recommends 600_000 in production
+
+		public static final int RAND_LEN_BYTES = 32;
+		public static final int DER_LEN_BYTES = 32;
+		public static final byte[] CONST_SALT_BYTES = "constant-salt-bytes".getBytes(StandardCharsets.UTF_8);
+	}
+
+	public static class Constants {
+		public static final Pbkdf2InputConstantsV1 VARS_CONS = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Codec.VARS_CONS, Defaults.DK_BYTES_LEN, Defaults.ITER);
+		public static final Pbkdf2InputConstantsV1 VARS      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Codec.VARS,      Defaults.DK_BYTES_LEN, Defaults.ITER);
+		public static final Pbkdf2InputConstantsV1 CONS      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Codec.CONS,      Defaults.DK_BYTES_LEN, Defaults.ITER);
+		public static final Pbkdf2InputConstantsV1 NONE      = new Pbkdf2InputConstantsV1(Defaults.PRF_ALG, Codec.NONE,      Defaults.DK_BYTES_LEN, Defaults.ITER);
 	}
 
 	public static class PepperOptions {
@@ -276,60 +282,60 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 
 	// Key+Context pairs for Macs
 	public static class ParametersAndPeppers {
-		public static final HashInputConstantsAndHashPeppers NONE_NULL_NULL_NULL                   = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_NONE, Peppers.NULL_NULL_NULL);
-		public static final HashInputConstantsAndHashPeppers NONE_HPWDNOD_HPWDNOD_HPWDNOD          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_NONE, Peppers.HPWDNOD_HPWDNOD_HPWDNOD);
-		public static final HashInputConstantsAndHashPeppers NONE_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_NONE, Peppers.HPWDNODCTX_HPWDNODCTX_HPWDNODCTX);
-		public static final HashInputConstantsAndHashPeppers NONE_HKEYNOD_HKEYNOD_HKEYNOD          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_NONE, Peppers.HKEYNOD_HKEYNOD_HKEYNOD);
-		public static final HashInputConstantsAndHashPeppers NONE_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_NONE, Peppers.HKEYNODCTX_HKEYNODCTX_HKEYNODCTX);
-		public static final HashInputConstantsAndHashPeppers NONE_HPWDDER_HPWDDER_HPWDDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_NONE, Peppers.HPWDDER_HPWDDER_HPWDDER);
-		public static final HashInputConstantsAndHashPeppers NONE_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_NONE, Peppers.HPWDDERCTX_HPWDDERCTX_HPWDDERCTX);
-		public static final HashInputConstantsAndHashPeppers NONE_HKEYDER_HKEYDER_HKEYDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_NONE, Peppers.HKEYDER_HKEYDER_HKEYDER);
-		public static final HashInputConstantsAndHashPeppers NONE_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_NONE, Peppers.HKEYDERCTX_HKEYDERCTX_HKEYDERCTX);
-		public static final HashInputConstantsAndHashPeppers NONE_CPWDDER_CPWDDER_CPWDDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_NONE, Peppers.CPWDDER_CPWDDER_CPWDDER);
-		public static final HashInputConstantsAndHashPeppers NONE_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_NONE, Peppers.CPWDDERCTX_CPWDDERCTX_CPWDDERCTX);
-		public static final HashInputConstantsAndHashPeppers NONE_CKEYDER_CKEYDER_CKEYDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_NONE, Peppers.CKEYDER_CKEYDER_CKEYDER);
-		public static final HashInputConstantsAndHashPeppers NONE_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_NONE, Peppers.CKEYDERCTX_CKEYDERCTX_CKEYDERCTX);
+		public static final HashInputConstantsAndHashPeppers NONE_NULL_NULL_NULL                   = new HashInputConstantsAndHashPeppers(Constants.NONE, Peppers.NULL_NULL_NULL);
+		public static final HashInputConstantsAndHashPeppers NONE_HPWDNOD_HPWDNOD_HPWDNOD          = new HashInputConstantsAndHashPeppers(Constants.NONE, Peppers.HPWDNOD_HPWDNOD_HPWDNOD);
+		public static final HashInputConstantsAndHashPeppers NONE_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX = new HashInputConstantsAndHashPeppers(Constants.NONE, Peppers.HPWDNODCTX_HPWDNODCTX_HPWDNODCTX);
+		public static final HashInputConstantsAndHashPeppers NONE_HKEYNOD_HKEYNOD_HKEYNOD          = new HashInputConstantsAndHashPeppers(Constants.NONE, Peppers.HKEYNOD_HKEYNOD_HKEYNOD);
+		public static final HashInputConstantsAndHashPeppers NONE_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX = new HashInputConstantsAndHashPeppers(Constants.NONE, Peppers.HKEYNODCTX_HKEYNODCTX_HKEYNODCTX);
+		public static final HashInputConstantsAndHashPeppers NONE_HPWDDER_HPWDDER_HPWDDER          = new HashInputConstantsAndHashPeppers(Constants.NONE, Peppers.HPWDDER_HPWDDER_HPWDDER);
+		public static final HashInputConstantsAndHashPeppers NONE_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX = new HashInputConstantsAndHashPeppers(Constants.NONE, Peppers.HPWDDERCTX_HPWDDERCTX_HPWDDERCTX);
+		public static final HashInputConstantsAndHashPeppers NONE_HKEYDER_HKEYDER_HKEYDER          = new HashInputConstantsAndHashPeppers(Constants.NONE, Peppers.HKEYDER_HKEYDER_HKEYDER);
+		public static final HashInputConstantsAndHashPeppers NONE_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX = new HashInputConstantsAndHashPeppers(Constants.NONE, Peppers.HKEYDERCTX_HKEYDERCTX_HKEYDERCTX);
+		public static final HashInputConstantsAndHashPeppers NONE_CPWDDER_CPWDDER_CPWDDER          = new HashInputConstantsAndHashPeppers(Constants.NONE, Peppers.CPWDDER_CPWDDER_CPWDDER);
+		public static final HashInputConstantsAndHashPeppers NONE_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX = new HashInputConstantsAndHashPeppers(Constants.NONE, Peppers.CPWDDERCTX_CPWDDERCTX_CPWDDERCTX);
+		public static final HashInputConstantsAndHashPeppers NONE_CKEYDER_CKEYDER_CKEYDER          = new HashInputConstantsAndHashPeppers(Constants.NONE, Peppers.CKEYDER_CKEYDER_CKEYDER);
+		public static final HashInputConstantsAndHashPeppers NONE_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX = new HashInputConstantsAndHashPeppers(Constants.NONE, Peppers.CKEYDERCTX_CKEYDERCTX_CKEYDERCTX);
 
-		public static final HashInputConstantsAndHashPeppers VARS_NULL_NULL_NULL                   = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS, Peppers.NULL_NULL_NULL);
-		public static final HashInputConstantsAndHashPeppers VARS_HPWDNOD_HPWDNOD_HPWDNOD          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS, Peppers.HPWDNOD_HPWDNOD_HPWDNOD);
-		public static final HashInputConstantsAndHashPeppers VARS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS, Peppers.HPWDNODCTX_HPWDNODCTX_HPWDNODCTX);
-		public static final HashInputConstantsAndHashPeppers VARS_HKEYNOD_HKEYNOD_HKEYNOD          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS, Peppers.HKEYNOD_HKEYNOD_HKEYNOD);
-		public static final HashInputConstantsAndHashPeppers VARS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS, Peppers.HKEYNODCTX_HKEYNODCTX_HKEYNODCTX);
-		public static final HashInputConstantsAndHashPeppers VARS_HPWDDER_HPWDDER_HPWDDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS, Peppers.HPWDDER_HPWDDER_HPWDDER);
-		public static final HashInputConstantsAndHashPeppers VARS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS, Peppers.HPWDDERCTX_HPWDDERCTX_HPWDDERCTX);
-		public static final HashInputConstantsAndHashPeppers VARS_HKEYDER_HKEYDER_HKEYDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS, Peppers.HKEYDER_HKEYDER_HKEYDER);
-		public static final HashInputConstantsAndHashPeppers VARS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS, Peppers.HKEYDERCTX_HKEYDERCTX_HKEYDERCTX);
-		public static final HashInputConstantsAndHashPeppers VARS_CPWDDER_CPWDDER_CPWDDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS, Peppers.CPWDDER_CPWDDER_CPWDDER);
-		public static final HashInputConstantsAndHashPeppers VARS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS, Peppers.CPWDDERCTX_CPWDDERCTX_CPWDDERCTX);
-		public static final HashInputConstantsAndHashPeppers VARS_CKEYDER_CKEYDER_CKEYDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS, Peppers.CKEYDER_CKEYDER_CKEYDER);
-		public static final HashInputConstantsAndHashPeppers VARS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS, Peppers.CKEYDERCTX_CKEYDERCTX_CKEYDERCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_NULL_NULL_NULL                   = new HashInputConstantsAndHashPeppers(Constants.VARS, Peppers.NULL_NULL_NULL);
+		public static final HashInputConstantsAndHashPeppers VARS_HPWDNOD_HPWDNOD_HPWDNOD          = new HashInputConstantsAndHashPeppers(Constants.VARS, Peppers.HPWDNOD_HPWDNOD_HPWDNOD);
+		public static final HashInputConstantsAndHashPeppers VARS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX = new HashInputConstantsAndHashPeppers(Constants.VARS, Peppers.HPWDNODCTX_HPWDNODCTX_HPWDNODCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_HKEYNOD_HKEYNOD_HKEYNOD          = new HashInputConstantsAndHashPeppers(Constants.VARS, Peppers.HKEYNOD_HKEYNOD_HKEYNOD);
+		public static final HashInputConstantsAndHashPeppers VARS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX = new HashInputConstantsAndHashPeppers(Constants.VARS, Peppers.HKEYNODCTX_HKEYNODCTX_HKEYNODCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_HPWDDER_HPWDDER_HPWDDER          = new HashInputConstantsAndHashPeppers(Constants.VARS, Peppers.HPWDDER_HPWDDER_HPWDDER);
+		public static final HashInputConstantsAndHashPeppers VARS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX = new HashInputConstantsAndHashPeppers(Constants.VARS, Peppers.HPWDDERCTX_HPWDDERCTX_HPWDDERCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_HKEYDER_HKEYDER_HKEYDER          = new HashInputConstantsAndHashPeppers(Constants.VARS, Peppers.HKEYDER_HKEYDER_HKEYDER);
+		public static final HashInputConstantsAndHashPeppers VARS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX = new HashInputConstantsAndHashPeppers(Constants.VARS, Peppers.HKEYDERCTX_HKEYDERCTX_HKEYDERCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_CPWDDER_CPWDDER_CPWDDER          = new HashInputConstantsAndHashPeppers(Constants.VARS, Peppers.CPWDDER_CPWDDER_CPWDDER);
+		public static final HashInputConstantsAndHashPeppers VARS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX = new HashInputConstantsAndHashPeppers(Constants.VARS, Peppers.CPWDDERCTX_CPWDDERCTX_CPWDDERCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_CKEYDER_CKEYDER_CKEYDER          = new HashInputConstantsAndHashPeppers(Constants.VARS, Peppers.CKEYDER_CKEYDER_CKEYDER);
+		public static final HashInputConstantsAndHashPeppers VARS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX = new HashInputConstantsAndHashPeppers(Constants.VARS, Peppers.CKEYDERCTX_CKEYDERCTX_CKEYDERCTX);
 
-		public static final HashInputConstantsAndHashPeppers CONS_NULL_NULL_NULL                   = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_CONS, Peppers.NULL_NULL_NULL);
-		public static final HashInputConstantsAndHashPeppers CONS_HPWDNOD_HPWDNOD_HPWDNOD          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_CONS, Peppers.HPWDNOD_HPWDNOD_HPWDNOD);
-		public static final HashInputConstantsAndHashPeppers CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_CONS, Peppers.HPWDNODCTX_HPWDNODCTX_HPWDNODCTX);
-		public static final HashInputConstantsAndHashPeppers CONS_HKEYNOD_HKEYNOD_HKEYNOD          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_CONS, Peppers.HKEYNOD_HKEYNOD_HKEYNOD);
-		public static final HashInputConstantsAndHashPeppers CONS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_CONS, Peppers.HKEYNODCTX_HKEYNODCTX_HKEYNODCTX);
-		public static final HashInputConstantsAndHashPeppers CONS_HPWDDER_HPWDDER_HPWDDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_CONS, Peppers.HPWDDER_HPWDDER_HPWDDER);
-		public static final HashInputConstantsAndHashPeppers CONS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_CONS, Peppers.HPWDDERCTX_HPWDDERCTX_HPWDDERCTX);
-		public static final HashInputConstantsAndHashPeppers CONS_HKEYDER_HKEYDER_HKEYDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_CONS, Peppers.HKEYDER_HKEYDER_HKEYDER);
-		public static final HashInputConstantsAndHashPeppers CONS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_CONS, Peppers.HKEYDERCTX_HKEYDERCTX_HKEYDERCTX);
-		public static final HashInputConstantsAndHashPeppers CONS_CPWDDER_CPWDDER_CPWDDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_CONS, Peppers.CPWDDER_CPWDDER_CPWDDER);
-		public static final HashInputConstantsAndHashPeppers CONS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_CONS, Peppers.CPWDDERCTX_CPWDDERCTX_CPWDDERCTX);
-		public static final HashInputConstantsAndHashPeppers CONS_CKEYDER_CKEYDER_CKEYDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_CONS, Peppers.CKEYDER_CKEYDER_CKEYDER);
-		public static final HashInputConstantsAndHashPeppers CONS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_CONS, Peppers.CKEYDERCTX_CKEYDERCTX_CKEYDERCTX);
+		public static final HashInputConstantsAndHashPeppers CONS_NULL_NULL_NULL                   = new HashInputConstantsAndHashPeppers(Constants.CONS, Peppers.NULL_NULL_NULL);
+		public static final HashInputConstantsAndHashPeppers CONS_HPWDNOD_HPWDNOD_HPWDNOD          = new HashInputConstantsAndHashPeppers(Constants.CONS, Peppers.HPWDNOD_HPWDNOD_HPWDNOD);
+		public static final HashInputConstantsAndHashPeppers CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX = new HashInputConstantsAndHashPeppers(Constants.CONS, Peppers.HPWDNODCTX_HPWDNODCTX_HPWDNODCTX);
+		public static final HashInputConstantsAndHashPeppers CONS_HKEYNOD_HKEYNOD_HKEYNOD          = new HashInputConstantsAndHashPeppers(Constants.CONS, Peppers.HKEYNOD_HKEYNOD_HKEYNOD);
+		public static final HashInputConstantsAndHashPeppers CONS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX = new HashInputConstantsAndHashPeppers(Constants.CONS, Peppers.HKEYNODCTX_HKEYNODCTX_HKEYNODCTX);
+		public static final HashInputConstantsAndHashPeppers CONS_HPWDDER_HPWDDER_HPWDDER          = new HashInputConstantsAndHashPeppers(Constants.CONS, Peppers.HPWDDER_HPWDDER_HPWDDER);
+		public static final HashInputConstantsAndHashPeppers CONS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX = new HashInputConstantsAndHashPeppers(Constants.CONS, Peppers.HPWDDERCTX_HPWDDERCTX_HPWDDERCTX);
+		public static final HashInputConstantsAndHashPeppers CONS_HKEYDER_HKEYDER_HKEYDER          = new HashInputConstantsAndHashPeppers(Constants.CONS, Peppers.HKEYDER_HKEYDER_HKEYDER);
+		public static final HashInputConstantsAndHashPeppers CONS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX = new HashInputConstantsAndHashPeppers(Constants.CONS, Peppers.HKEYDERCTX_HKEYDERCTX_HKEYDERCTX);
+		public static final HashInputConstantsAndHashPeppers CONS_CPWDDER_CPWDDER_CPWDDER          = new HashInputConstantsAndHashPeppers(Constants.CONS, Peppers.CPWDDER_CPWDDER_CPWDDER);
+		public static final HashInputConstantsAndHashPeppers CONS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX = new HashInputConstantsAndHashPeppers(Constants.CONS, Peppers.CPWDDERCTX_CPWDDERCTX_CPWDDERCTX);
+		public static final HashInputConstantsAndHashPeppers CONS_CKEYDER_CKEYDER_CKEYDER          = new HashInputConstantsAndHashPeppers(Constants.CONS, Peppers.CKEYDER_CKEYDER_CKEYDER);
+		public static final HashInputConstantsAndHashPeppers CONS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX = new HashInputConstantsAndHashPeppers(Constants.CONS, Peppers.CKEYDERCTX_CKEYDERCTX_CKEYDERCTX);
 
-		public static final HashInputConstantsAndHashPeppers VARS_CONS_NULL_NULL_NULL                   = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS_CONS, Peppers.NULL_NULL_NULL);
-		public static final HashInputConstantsAndHashPeppers VARS_CONS_HPWDNOD_HPWDNOD_HPWDNOD          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS_CONS, Peppers.HPWDNOD_HPWDNOD_HPWDNOD);
-		public static final HashInputConstantsAndHashPeppers VARS_CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS_CONS, Peppers.HPWDNODCTX_HPWDNODCTX_HPWDNODCTX);
-		public static final HashInputConstantsAndHashPeppers VARS_CONS_HKEYNOD_HKEYNOD_HKEYNOD          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS_CONS, Peppers.HKEYNOD_HKEYNOD_HKEYNOD);
-		public static final HashInputConstantsAndHashPeppers VARS_CONS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS_CONS, Peppers.HKEYNODCTX_HKEYNODCTX_HKEYNODCTX);
-		public static final HashInputConstantsAndHashPeppers VARS_CONS_HPWDDER_HPWDDER_HPWDDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS_CONS, Peppers.HPWDDER_HPWDDER_HPWDDER);
-		public static final HashInputConstantsAndHashPeppers VARS_CONS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS_CONS, Peppers.HPWDDERCTX_HPWDDERCTX_HPWDDERCTX);
-		public static final HashInputConstantsAndHashPeppers VARS_CONS_HKEYDER_HKEYDER_HKEYDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS_CONS, Peppers.HKEYDER_HKEYDER_HKEYDER);
-		public static final HashInputConstantsAndHashPeppers VARS_CONS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS_CONS, Peppers.HKEYDERCTX_HKEYDERCTX_HKEYDERCTX);
-		public static final HashInputConstantsAndHashPeppers VARS_CONS_CPWDDER_CPWDDER_CPWDDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS_CONS, Peppers.CPWDDER_CPWDDER_CPWDDER);
-		public static final HashInputConstantsAndHashPeppers VARS_CONS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS_CONS, Peppers.CPWDDERCTX_CPWDDERCTX_CPWDDERCTX);
-		public static final HashInputConstantsAndHashPeppers VARS_CONS_CKEYDER_CKEYDER_CKEYDER          = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS_CONS, Peppers.CKEYDER_CKEYDER_CKEYDER);
-		public static final HashInputConstantsAndHashPeppers VARS_CONS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX = new HashInputConstantsAndHashPeppers(Codec.B64_STD_CB_VARS_CONS, Peppers.CKEYDERCTX_CKEYDERCTX_CKEYDERCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_NULL_NULL_NULL                   = new HashInputConstantsAndHashPeppers(Constants.VARS_CONS, Peppers.NULL_NULL_NULL);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_HPWDNOD_HPWDNOD_HPWDNOD          = new HashInputConstantsAndHashPeppers(Constants.VARS_CONS, Peppers.HPWDNOD_HPWDNOD_HPWDNOD);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX = new HashInputConstantsAndHashPeppers(Constants.VARS_CONS, Peppers.HPWDNODCTX_HPWDNODCTX_HPWDNODCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_HKEYNOD_HKEYNOD_HKEYNOD          = new HashInputConstantsAndHashPeppers(Constants.VARS_CONS, Peppers.HKEYNOD_HKEYNOD_HKEYNOD);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_HKEYNODCTX_HKEYNODCTX_HKEYNODCTX = new HashInputConstantsAndHashPeppers(Constants.VARS_CONS, Peppers.HKEYNODCTX_HKEYNODCTX_HKEYNODCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_HPWDDER_HPWDDER_HPWDDER          = new HashInputConstantsAndHashPeppers(Constants.VARS_CONS, Peppers.HPWDDER_HPWDDER_HPWDDER);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_HPWDDERCTX_HPWDDERCTX_HPWDDERCTX = new HashInputConstantsAndHashPeppers(Constants.VARS_CONS, Peppers.HPWDDERCTX_HPWDDERCTX_HPWDDERCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_HKEYDER_HKEYDER_HKEYDER          = new HashInputConstantsAndHashPeppers(Constants.VARS_CONS, Peppers.HKEYDER_HKEYDER_HKEYDER);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_HKEYDERCTX_HKEYDERCTX_HKEYDERCTX = new HashInputConstantsAndHashPeppers(Constants.VARS_CONS, Peppers.HKEYDERCTX_HKEYDERCTX_HKEYDERCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_CPWDDER_CPWDDER_CPWDDER          = new HashInputConstantsAndHashPeppers(Constants.VARS_CONS, Peppers.CPWDDER_CPWDDER_CPWDDER);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX = new HashInputConstantsAndHashPeppers(Constants.VARS_CONS, Peppers.CPWDDERCTX_CPWDDERCTX_CPWDDERCTX);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_CKEYDER_CKEYDER_CKEYDER          = new HashInputConstantsAndHashPeppers(Constants.VARS_CONS, Peppers.CKEYDER_CKEYDER_CKEYDER);
+		public static final HashInputConstantsAndHashPeppers VARS_CONS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX = new HashInputConstantsAndHashPeppers(Constants.VARS_CONS, Peppers.CKEYDERCTX_CKEYDERCTX_CKEYDERCTX);
 	}
 }
