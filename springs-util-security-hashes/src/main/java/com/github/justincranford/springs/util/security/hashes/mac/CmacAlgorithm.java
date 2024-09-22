@@ -96,13 +96,17 @@ public enum CmacAlgorithm implements MacAlgorithm {
 
 	@Override
     public byte[] compute(@NotNull final SecretKey key, @NotNull final byte[] data) {
-        final CipherParameters cipherParameters = new KeyParameter(key.getEncoded());
-        final Mac cmac = new CMac(AESEngine.newInstance());
-        final byte[] macResult = new byte[cmac.getMacSize()];
-        cmac.init(cipherParameters);
-        cmac.update(data, 0, data.length);
-        cmac.doFinal(macResult, 0);
-        return macResult;
+		try {
+	        final CipherParameters cipherParameters = new KeyParameter(key.getEncoded());
+	        final Mac cmac = new CMac(AESEngine.newInstance());
+	        final byte[] macResult = new byte[cmac.getMacSize()];
+	        cmac.init(cipherParameters);
+	        cmac.update(data, 0, data.length);
+	        cmac.doFinal(macResult, 0);
+	        return macResult;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
     }
 
 	public static CmacAlgorithm oidOf(final ASN1ObjectIdentifier asn1Oid) {

@@ -94,9 +94,9 @@ public enum HmacAlgorithm implements MacAlgorithm {
 	@Override
     public byte[] compute(@NotNull final SecretKey key, @NotNull final byte[] data) {
 		try {
-			final Mac mac = Mac.getInstance(this.algorithm);
-			mac.init(key);
-			return mac.doFinal(data);
+			final Mac hmac = Mac.getInstance(this.algorithm);
+			hmac.init(key);
+			return hmac.doFinal(data);
 		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
 			throw new RuntimeException(e);
 		}
