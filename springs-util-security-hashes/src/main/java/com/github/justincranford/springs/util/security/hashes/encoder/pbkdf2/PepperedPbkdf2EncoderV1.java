@@ -17,13 +17,13 @@ import com.github.justincranford.springs.util.security.hashes.encoder.model.Pepp
 @Slf4j
 public final class PepperedPbkdf2EncoderV1 {
 	public static final class RandomSalt extends PepperedHashEncoderV1 {
-		public RandomSalt(@NotNull HashInputConstantsAndHashPeppers parametersAndMacs, @Min(Constraints.MIN_RAND_BYTES_LEN) int saltBytesLen) {
+		public RandomSalt(@NotNull final HashInputConstantsAndHashPeppers parametersAndMacs, @Min(Constraints.MIN_RAND_BYTES_LEN) final int saltBytesLen) {
 			super(parametersAndMacs, (rawInput) -> SecureRandomUtil.randomBytes(saltBytesLen));
 		}
 	}
 
 	public static final class DerivedSalt extends PepperedHashEncoderV1 {
-		public DerivedSalt(@NotNull HashInputConstantsAndHashPeppers hashInputConstantsAndHashPeppers, @Min(Constraints.MIN_DER_BYTES_LEN) int saltBytesLen) {
+		public DerivedSalt(@NotNull final HashInputConstantsAndHashPeppers hashInputConstantsAndHashPeppers, @Min(Constraints.MIN_DER_BYTES_LEN) final int saltBytesLen) {
 			super(hashInputConstantsAndHashPeppers, (rawInput) -> {
 				final HashPepperInputVariables hashPepperSalt = hashInputConstantsAndHashPeppers.hashPeppers().inputVariables();
 				if (hashPepperSalt == null) {
@@ -38,7 +38,7 @@ public final class PepperedPbkdf2EncoderV1 {
 	}
 
 	public static final class ConstantSalt extends PepperedHashEncoderV1 {
-		public ConstantSalt(@NotNull HashInputConstantsAndHashPeppers hashInputConstantsAndHashPeppers, @NotEmpty byte[] saltBytes) {
+		public ConstantSalt(@NotNull final HashInputConstantsAndHashPeppers hashInputConstantsAndHashPeppers, @NotEmpty final byte[] saltBytes) {
 			super(hashInputConstantsAndHashPeppers, (rawInput) -> saltBytes);
 		}
 	}

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.github.justincranford.springs.util.basic.StringUtil;
 import com.github.justincranford.springs.util.security.hashes.encoder.HashCodec;
+import com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2.Pbkdf2AlgorithmV1;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -14,11 +15,15 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent=true)
 public abstract class HashInputConstants {
-	@NotNull private HashAlgorithm algorithm;
-	@NotNull private HashCodec codec;
-	@Min(CommonConstraints.MIN_HASH_BYTES_LEN) private int hashBytesLen;
+	@NotNull                                   private HashAlgorithm algorithm;
+	@NotNull                                   private HashCodec     codec;
+	@Min(CommonConstraints.MIN_HASH_BYTES_LEN) private int           hashBytesLen;
 
-	protected HashInputConstants(HashAlgorithm algorithm0, @NotNull HashCodec codec0, int hashBytesLen0) {
+	protected HashInputConstants(
+		@NotNull                                   final Pbkdf2AlgorithmV1 algorithm0,
+		@NotNull                                   final HashCodec         codec0,
+		@Min(CommonConstraints.MIN_HASH_BYTES_LEN) final int               hashBytesLen0
+	) {
 		this.algorithm    = algorithm0;
 		this.codec        = codec0;
 		this.hashBytesLen = hashBytesLen0;
@@ -34,7 +39,7 @@ public abstract class HashInputConstants {
 		@Min(CommonConstraints.MIN_HASH_BYTES_LEN)                 final int                expectedHashBytesLength,
 		@Min(CommonConstraints.MIN_HASH_BYTES_LEN)                 final int                actualHashBytesLength
 	);
-	@NotEmpty public abstract  HashInputConstants decode(@NotEmpty List<String> parts);
+	@NotEmpty public abstract HashInputConstants decode(@NotEmpty List<String> parts);
 
 	public List<String> splitInputs(@NotNull final String hashInputsEncoded) {
 		return StringUtil.split(hashInputsEncoded, this.codec().innerSeparator());

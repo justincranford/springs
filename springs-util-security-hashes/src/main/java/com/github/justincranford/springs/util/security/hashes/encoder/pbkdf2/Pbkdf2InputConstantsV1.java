@@ -24,10 +24,10 @@ public class Pbkdf2InputConstantsV1 extends HashInputConstants {
 	@Min(Constraints.MIN_ITER) private int iterations;
 
 	public Pbkdf2InputConstantsV1(
-		@NotNull final Pbkdf2AlgorithmV1 algorithm0,
-		@NotNull final HashCodec codec0,
-		@Min(CommonConstraints.MIN_HASH_BYTES_LEN) final int hashBytesLen0,
-		@Min(Constraints.MIN_ITER) final int iterations0
+		@NotNull                                   final Pbkdf2AlgorithmV1 algorithm0,
+		@NotNull                                   final HashCodec         codec0,
+		@Min(CommonConstraints.MIN_HASH_BYTES_LEN) final int               hashBytesLen0,
+		@Min(Constraints.MIN_ITER)                 final int               iterations0
 	) {
 		super(algorithm0, codec0, hashBytesLen0);
 		this.iterations = iterations0;
