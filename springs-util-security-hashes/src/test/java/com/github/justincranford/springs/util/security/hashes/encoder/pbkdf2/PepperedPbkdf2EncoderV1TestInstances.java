@@ -87,7 +87,7 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 		public static final DerivedSalt VARS_CKEYDER_CKEYDER_CKEYDER               = new DerivedSalt(ParametersAndPeppers.VARS_CKEYDER_CKEYDER_CKEYDER,          Defaults.DER_LEN_BYTES);
 		public static final DerivedSalt VARS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX      = new DerivedSalt(ParametersAndPeppers.VARS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX, Defaults.DER_LEN_BYTES);
 
-//		public static final DerivedSalt CONS_NULL_NULL_NULL               = new DerivedSalt(ParametersAndPeppers.CONS_NULL_NULL_NULL, Defaults.DER_LEN_BYTES);
+//		public static final DerivedSalt CONS_NULL_NULL_NULL                        = new DerivedSalt(ParametersAndPeppers.CONS_NULL_NULL_NULL, Defaults.DER_LEN_BYTES);
 		public static final DerivedSalt CONS_HPWDNOD_HPWDNOD_HPWDNOD               = new DerivedSalt(ParametersAndPeppers.CONS_HPWDNOD_HPWDNOD_HPWDNOD,          Defaults.DER_LEN_BYTES);
 		public static final DerivedSalt CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX      = new DerivedSalt(ParametersAndPeppers.CONS_HPWDNODCTX_HPWDNODCTX_HPWDNODCTX, Defaults.DER_LEN_BYTES);
 		public static final DerivedSalt CONS_HKEYNOD_HKEYNOD_HKEYNOD               = new DerivedSalt(ParametersAndPeppers.CONS_HKEYNOD_HKEYNOD_HKEYNOD,          Defaults.DER_LEN_BYTES);
@@ -197,10 +197,10 @@ public final class PepperedPbkdf2EncoderV1TestInstances {
 	}
 
 	public static class PepperOptions {
-		public static final CmacAlgorithm CMAC_ALG = CmacAlgorithm.AesCmac256;
+		public static final CmacAlgorithm CMAC_ALG = CmacAlgorithm.AesCmac128;
 		public static final HmacAlgorithm HMAC_ALG = HmacAlgorithm.HmacSHA256;
 		public static final DigestAlgorithm DER_ALG = DigestAlgorithm.SHA256;
-		public static final Base64Util.EncoderDecoder ENC_DEC = Base64Util.STD;
+		public static final Base64Util.EncoderDecoder ENC_DEC = Base64Util.URL;
 	}
 
 	public static class Key {
