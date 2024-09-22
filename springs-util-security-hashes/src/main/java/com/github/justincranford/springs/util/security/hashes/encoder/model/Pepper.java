@@ -34,7 +34,7 @@ public record Pepper(
 		).toArray(new byte[0][]);
 
 		// Use high-entropy secretKey (i.e. optimal), or low-entropy concatData-derived secretKey (i.e. fallback)
-		final SecretKey macKey = (pepper.secretKey() != null) ? pepper.secretKey() : pepper.mac().secretKeyFromDataChunks(pepper.secretKeyDigest(), dataChunks);
+		final SecretKey macKey = (pepper.secretKey() != null) ? pepper.secretKey() : pepper.mac().secretKeyFromDataChunks(dataChunks);
 
 		final byte[] pepperMac = pepper.mac().chain(macKey, dataChunks);
 		return pepper.encoderDecoder().encodeToBytes(pepperMac);	// required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)

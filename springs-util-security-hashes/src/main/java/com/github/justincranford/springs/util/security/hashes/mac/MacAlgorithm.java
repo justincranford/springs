@@ -8,11 +8,9 @@ import javax.crypto.spec.SecretKeySpec;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
-import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 
 public interface MacAlgorithm {
 	public String algorithm();
@@ -22,7 +20,7 @@ public interface MacAlgorithm {
 	public byte[] asn1OidBytes();
 	public String canonicalString();
 
-    public SecretKeySpec secretKeyFromDataChunks(@Null final DigestAlgorithm secretKeyDigest, @NotEmpty final byte[][] dataChunks);
+    public SecretKeySpec secretKeyFromDataChunks(@NotEmpty final byte[][] dataChunks);
 
     public byte[] compute(@NotNull final SecretKey key, @NotNull final byte[] data);
 

@@ -21,13 +21,12 @@ import jakarta.validation.constraints.NotNull;
 
 @SuppressWarnings({"nls"})
 public enum CmacAlgorithm implements MacAlgorithm {
-	AesCmac128("AesCmac128", CipherAlgorithm.AESCMAC128, null, Oid.AES_CMAC_128),
-	AesCmac192("AesCmac192", CipherAlgorithm.AESCMAC192, null, Oid.AES_CMAC_192),
-	AesCmac256("AesCmac256", CipherAlgorithm.AESCMAC256, null, Oid.AES_CMAC_256),
+	AesCmac128("AesCmac128", DigestAlgorithm.SHA256, Oid.AES_CMAC_128, CipherAlgorithm.AESCMAC128),
+	AesCmac192("AesCmac192", DigestAlgorithm.SHA256, Oid.AES_CMAC_192, CipherAlgorithm.AESCMAC192),
+	AesCmac256("AesCmac256", DigestAlgorithm.SHA256, Oid.AES_CMAC_256, CipherAlgorithm.AESCMAC256),
 	;
 
 	private final String               algorithm;
-	private final CipherAlgorithm      cipherAlgorithm;
 	private final DigestAlgorithm      digestAlgorithm;
 	private final BigInteger           maxInputBytesLen;
 	private final int                  macOutputBytesLen;
@@ -35,13 +34,15 @@ public enum CmacAlgorithm implements MacAlgorithm {
 	private final byte[]               asn1OidBytes;
 	private final String               canonicalString;
 	private final String               toString;
-	private CmacAlgorithm(final String algorithm0, final CipherAlgorithm cipherAlgorithm0, final DigestAlgorithm digestAlgorithm0, final ASN1ObjectIdentifier asn1Oid0) {
-		assert (cipherAlgorithm0 == null) ^ (digestAlgorithm0 == null) : "CipherAlgorithm or DigestAlgorithm must be specified";
+	private final CipherAlgorithm      cipherAlgorithm;
+	private CmacAlgorithm(@NotEmpty final String algorithm0, @NotNull final DigestAlgorithm digestAlgorithm0, @NotNull final ASN1ObjectIdentifier asn1Oid0, @NotNull final CipherAlgorithm cipherAlgorithm0) {
+		assert (digestAlgorithm0 != null) : "DigestAlgorithm must be specified";
+		assert (cipherAlgorithm0 != null) : "CipherAlgorithm must be specified";
 		this.algorithm         = algorithm0;
 		this.cipherAlgorithm   = cipherAlgorithm0;
 		this.digestAlgorithm   = digestAlgorithm0;
-		this.maxInputBytesLen  = (digestAlgorithm0 != null) ? this.digestAlgorithm.maxInputBytesLen()     : this.cipherAlgorithm.maxInputBytesLen();
-		this.macOutputBytesLen = (digestAlgorithm0 != null) ? this.digestAlgorithm.digestOutputBytesLen() : this.cipherAlgorithm.macOutputBytesLen();
+		this.maxInputBytesLen  = this.cipherAlgorithm.maxInputBytesLen();
+		this.macOutputBytesLen = this.cipherAlgorithm.macOutputBytesLen();
 		this.asn1Oid           = asn1Oid0;
 		this.asn1OidBytes      = Asn1Util.derBytes(asn1Oid0);
 		this.canonicalString   = asn1Oid0.getId();
@@ -83,12 +84,9 @@ public enum CmacAlgorithm implements MacAlgorithm {
 	}
 
 	@Override
-    public SecretKeySpec secretKeyFromDataChunks(@NotNull final DigestAlgorithm secretKeyDigest, @NotEmpty final byte[][] dataChunks) {
-    	if (secretKeyDigest == null) {
-			throw new RuntimeException("DigestAlgorithm is required for creating Cmac secretKey");
-		}
+    public SecretKeySpec secretKeyFromDataChunks(@NotEmpty final byte[][] dataChunks) {
+		final byte[] cmacDigestBytes = this.digestAlgorithm.compute(dataChunks); // digest chain the data chunks
 		final byte[] keyBytes = new byte[this.cipherAlgorithm().keyBytesLens().iterator().next().intValue()]; // use first supported keyBytes length
-		final byte[] cmacDigestBytes = secretKeyDigest.compute(dataChunks); // digest chain the data chunks
 		if (cmacDigestBytes.length < keyBytes.length) {
 			throw new RuntimeException("Not enough digested bytes to fill Cmac secretKey");
 		}
