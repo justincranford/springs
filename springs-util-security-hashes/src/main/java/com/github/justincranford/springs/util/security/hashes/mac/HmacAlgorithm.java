@@ -85,10 +85,12 @@ public enum HmacAlgorithm implements MacAlgorithm {
 		return this.toString;
 	}
 
+	// TODO pass DigestAlgorithm from Pepper
 	@Override
 	public SecretKeySpec secretKeyFromDataChunks(@NotEmpty final byte[][] dataChunks) {
-		final byte[] keyBytes = ArrayUtil.concat(dataChunks);
-		return new SecretKeySpec(keyBytes, this.algorithm);
+		final byte[] dataChunkBytes = ArrayUtil.concat(dataChunks);
+		final byte[] hmacKeyBytes = (this.digestAlgorithm == null) ? dataChunkBytes : this.digestAlgorithm.compute(dataChunkBytes);
+		return new SecretKeySpec(hmacKeyBytes, this.algorithm);
 	}
 
 	@Override

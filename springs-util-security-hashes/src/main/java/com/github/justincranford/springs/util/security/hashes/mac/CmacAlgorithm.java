@@ -85,12 +85,12 @@ public enum CmacAlgorithm implements MacAlgorithm {
 	@Override
     public SecretKeySpec secretKeyFromDataChunks(@NotEmpty final byte[][] dataChunks) {
 		final byte[] cmacDigestBytes = this.digestAlgorithm.compute(dataChunks); // digest chain the data chunks
-		final byte[] keyBytes = new byte[this.cipherAlgorithm.keyBytesLens().iterator().next().intValue()]; // use first supported keyBytes length
-		if (cmacDigestBytes.length < keyBytes.length) {
+		final byte[] cmacKeyBytes = new byte[this.cipherAlgorithm.keyBytesLens().iterator().next().intValue()]; // use first supported keyBytes length
+		if (cmacDigestBytes.length < cmacKeyBytes.length) {
 			throw new RuntimeException("Not enough digested bytes to fill Cmac secretKey");
 		}
-		System.arraycopy(cmacDigestBytes, 0, keyBytes, 0, keyBytes.length); // truncate to required key length
-		return new SecretKeySpec(keyBytes, this.algorithm());
+		System.arraycopy(cmacDigestBytes, 0, cmacKeyBytes, 0, cmacKeyBytes.length); // truncate to required key length
+		return new SecretKeySpec(cmacKeyBytes, this.algorithm());
 	}
 
 	@Override
@@ -98,11 +98,11 @@ public enum CmacAlgorithm implements MacAlgorithm {
 		try {
 	        final CipherParameters cipherParameters = new KeyParameter(key.getEncoded());
 	        final Mac cmac = new CMac(AESEngine.newInstance());
-	        final byte[] macResult = new byte[cmac.getMacSize()];
+	        final byte[] cmacResult = new byte[cmac.getMacSize()];
 	        cmac.init(cipherParameters);
 	        cmac.update(data, 0, data.length);
-	        cmac.doFinal(macResult, 0);
-	        return macResult;
+	        cmac.doFinal(cmacResult, 0);
+	        return cmacResult;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

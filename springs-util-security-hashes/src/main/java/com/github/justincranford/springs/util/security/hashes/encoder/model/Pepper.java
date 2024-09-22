@@ -15,7 +15,7 @@ import jakarta.validation.constraints.Null;
 
 public record Pepper(
 	@NotNull  MacAlgorithm mac,				// required (e.g. HmacSHA256, CMAC256); used as Mac digest, as well as for deriving low-entropy hmacKey if secretKey=null
-	@NotNull  TextCodec codec, // required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
+	@NotNull  TextCodec codec, 				// required (e.g. mitigate bcrypt truncation weaknesses w.r.t null bytes and max 72-bytes)
 	@Null SecretKey secretKey,				// high-entropy 256-bit random key; n.b. may be null
 	@Null DigestAlgorithm secretKeyDigest,	// if secretKey omitted, required to derive secretKeyBytes from inputs
 	@NotNull byte[] secretContext,			// may be empty (e.g. any-entropy N-byte value)
