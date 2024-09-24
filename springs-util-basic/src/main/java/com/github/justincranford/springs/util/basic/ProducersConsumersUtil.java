@@ -12,7 +12,6 @@ import java.util.function.Supplier;
 
 @SuppressWarnings({"nls"})
 public class ProducersConsumersUtil {
-	@SuppressWarnings("resource")
 	public static <T> Runnable run(
 		final ExecutorService  executor,
 		final int              numProducers,
