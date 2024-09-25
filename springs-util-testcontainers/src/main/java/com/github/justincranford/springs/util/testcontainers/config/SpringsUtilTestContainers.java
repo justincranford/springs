@@ -36,7 +36,7 @@ public class SpringsUtilTestContainers {
 	public static final TestContainerGrafana        GRAFANA        = new TestContainerGrafana();
 	public static final TestContainerKafka          KAFKA          = new TestContainerKafka();
 	public static final TestContainerZipkin         ZIPKIN         = new TestContainerZipkin();
-	public static final TestContainerDynamoDb       DYNAMIDB       = new TestContainerDynamoDb();
+	public static final TestContainerDynamoDb       DYNAMODB       = new TestContainerDynamoDb();
 	public static final TestContainerPostgresql     POSTGRESQL     = new TestContainerPostgresql();
 	public static final TestContainerSeleniumChrome SELENIUMCHROME = new TestContainerSeleniumChrome();
 	public static final TestContainerMongoDb        MONGODB        = new TestContainerMongoDb();
@@ -51,7 +51,7 @@ public class SpringsUtilTestContainers {
 //		    GRAFANA,        // Example: 10.437 seconds 17.041 seconds
 //		    KAFKA,          // Example:  8.321 seconds 15.380 seconds
 //		    ZIPKIN,         // Example:  6.794 seconds 17.291 seconds
-//		    DYNAMIDB,       // Example:  6.300 seconds 11.433 seconds
+//		    DYNAMODB,       // Example:  6.300 seconds 11.433 seconds
 //		    POSTGRESQL,     // Example:  6.204 seconds  4.056 seconds
 //		    SELENIUMCHROME, // Example:  5.468 seconds  7.835 seconds
 //		    MONGODB,        // Example:  5.060 seconds  7.026 seconds
