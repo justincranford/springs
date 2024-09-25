@@ -83,8 +83,8 @@ public enum CmacAlgorithm implements MacAlgorithm {
 	}
 
 	@Override
-    public SecretKeySpec secretKeyFromDataChunks(@NotEmpty final byte[][] dataChunks) {
-		final byte[] cmacDigestBytes = this.digestAlgorithm.compute(dataChunks); // digest chain the data chunks
+    public SecretKeySpec secretKeyFromDataChunks(@NotNull DigestAlgorithm secretKeyDigest, @NotEmpty final byte[][] dataChunks) {
+		final byte[] cmacDigestBytes = secretKeyDigest.compute(dataChunks); // digest chain the data chunks
 		final byte[] cmacKeyBytes = new byte[this.cipherAlgorithm.keyBytesLens().iterator().next().intValue()]; // use first supported keyBytes length
 		if (cmacDigestBytes.length < cmacKeyBytes.length) {
 			throw new RuntimeException("Not enough digested bytes to fill Cmac secretKey");

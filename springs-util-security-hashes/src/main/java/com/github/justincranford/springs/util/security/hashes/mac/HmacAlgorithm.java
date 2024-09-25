@@ -17,6 +17,7 @@ import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgor
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 
 @SuppressWarnings({"nls"})
 public enum HmacAlgorithm implements MacAlgorithm {
@@ -85,11 +86,10 @@ public enum HmacAlgorithm implements MacAlgorithm {
 		return this.toString;
 	}
 
-	// TODO pass DigestAlgorithm from Pepper
 	@Override
-	public SecretKeySpec secretKeyFromDataChunks(@NotEmpty final byte[][] dataChunks) {
+	public SecretKeySpec secretKeyFromDataChunks(@Null DigestAlgorithm secretKeyDigest, @NotEmpty final byte[][] dataChunks) {
 		final byte[] dataChunkBytes = ArrayUtil.concat(dataChunks);
-		final byte[] hmacKeyBytes = (this.digestAlgorithm == null) ? dataChunkBytes : this.digestAlgorithm.compute(dataChunkBytes);
+		final byte[] hmacKeyBytes = (secretKeyDigest == null) ? dataChunkBytes : secretKeyDigest.compute(dataChunkBytes);
 		return new SecretKeySpec(hmacKeyBytes, this.algorithm);
 	}
 

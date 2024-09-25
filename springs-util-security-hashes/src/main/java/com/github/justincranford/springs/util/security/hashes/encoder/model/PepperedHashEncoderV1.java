@@ -54,12 +54,12 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
 		final HashInputConstants hashInputConstants              = hashInputs.hashInputConstants();
 		final byte[]             plainHashInputVariablesBytes    = hashInputs.hashInputVariables().hashInputVariablesBytes();
 		final byte[]             additionalDataBytes             = hashInputs.canonicalBytes();
-		final byte[]             pepperedHashInputVariablesBytes = Pepper.safeComputeAndEncode(hashPeppers.inputVariables(), plainHashInputVariablesBytes, additionalDataBytes);
+		final byte[]             pepperedHashInputVariablesBytes = PepperInterface.safeComputeAndEncode(hashPeppers.inputVariables(), plainHashInputVariablesBytes, additionalDataBytes);
 		final byte[]             plainInputBytes                 = rawInput.toString().getBytes(StandardCharsets.UTF_8);
-		final byte[]             pepperedInputBytes              = Pepper.safeComputeAndEncode(hashPeppers.preHash(), plainInputBytes, additionalDataBytes);
+		final byte[]             pepperedInputBytes              = PepperInterface.safeComputeAndEncode(hashPeppers.preHash(), plainInputBytes, additionalDataBytes);
 		final String             pepperedInputString             = new String(pepperedInputBytes, StandardCharsets.UTF_8);
 		final byte[]             plainHashBytes                  = hashInputConstants.compute(pepperedHashInputVariablesBytes, pepperedInputString);
-		final byte[]             pepperedHashBytes               = Pepper.safeComputeAndEncode(hashPeppers.postHash(), plainHashBytes, additionalDataBytes);
+		final byte[]             pepperedHashBytes               = PepperInterface.safeComputeAndEncode(hashPeppers.postHash(), plainHashBytes, additionalDataBytes);
 		return new Hash(pepperedHashBytes);
 	}
 }
