@@ -1,17 +1,17 @@
 package com.github.justincranford.springs.service.chatbot;
 
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.RestTemplate;
 import org.testcontainers.ollama.OllamaContainer;
 
 import com.github.justincranford.springs.service.chatbot.config.SpringsServiceChatbotConfiguration;
@@ -25,8 +25,9 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest(
-	webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+	webEnvironment = SpringBootTest.WebEnvironment.NONE,
 	classes = {
+		AbstractIT.AbstractITConfiguration.class,
 		SpringsServiceChatbotConfiguration.class
 	}
 )
@@ -38,10 +39,12 @@ import lombok.extern.slf4j.Slf4j;
 @ActiveProfiles({"test"})
 @Slf4j
 @Observed
-@SuppressWarnings("nls")
-public class AbstractIT {
-	@LocalServerPort
-	private long localServerPort;
+@SuppressWarnings({"nls", "static-method"})
+public abstract class AbstractIT {
+	@Autowired
+	private RestTemplate restTemplate; 
+//	@LocalServerPort
+//	private long localServerPort;
 	@Autowired
 	private MeterRegistry meterRegistry;
 	@Autowired
@@ -49,24 +52,13 @@ public class AbstractIT {
 	@Autowired
 	private SpringsServiceChatbotProperties springsServiceChatbotProperties;
 
-	@BeforeAll
-	private static void beforeAll() {
-		SpringsUtilTestContainers.startContainers(List.of(SpringsUtilTestContainers.OLLAMA));
-	}
-
-	/**
-	 * @see OllamaContainer#getEndpoint
-	 */
-	@SuppressWarnings("resource")
-	@DynamicPropertySource
-	public static void ollamaContainerProperties(final DynamicPropertyRegistry registry) {
-		final OllamaContainer instance = SpringsUtilTestContainers.OLLAMA.getInstance();
-		if (instance.isRunning()) {
-			log.info("Setting dynamic properties from SpringsUtilTestContainers.OLLAMA");
-			registry.add("springs.service.chatbot.host", () -> instance.getHost());
-			registry.add("springs.service.chatbot.port", () -> instance.getMappedPort(11434));
-		} else {
-			log.info("Using static properties");
+	@Configuration
+	public static class AbstractITConfiguration {
+		@Bean
+		public RestTemplate restTemplate() {
+			final RestTemplate restTemplate = new RestTemplate();
+			restTemplate.setErrorHandler(new DefaultResponseErrorHandler());
+			return restTemplate;
 		}
 	}
 }
