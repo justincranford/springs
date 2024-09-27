@@ -27,10 +27,17 @@ public class TestContainerSeleniumChrome extends AbstractTestContainer<BrowserWe
 	}
 
 	@Override
-	public BrowserWebDriverContainer<?> initAndGetInstance() {
-		try {
-			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);
-			super.instance = new BrowserWebDriverContainer<>(dockerImageName)
+	public BrowserWebDriverContainer<?> getInstance() {
+		initializeIfRequired();
+		return super.instance;
+	}
+
+	@Override
+	public void initializeIfRequired() {
+		if (!super.initialized) {
+			try {
+				final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);
+				super.instance = new BrowserWebDriverContainer<>(dockerImageName)
 					.withCapabilities(new ChromeOptions())
 					.withExposedPorts(SELENIUM_PORT, VNC_PORT)
 				    .waitingFor(new WaitAllStrategy(WaitAllStrategy.Mode.WITH_MAXIMUM_OUTER_TIMEOUT).withStartupTimeout(START_TIMEOUT)
@@ -39,10 +46,12 @@ public class TestContainerSeleniumChrome extends AbstractTestContainer<BrowserWe
 			        )
 				    .withNetwork(Network.SHARED)
 				    .withNetworkAliases(NETWORK_ALIAS);
-		} catch (Throwable t) {
-			log.debug("Failed to initialize", t);
-			super.instance = null;
+			} catch (Throwable t) {
+				log.debug("Failed to initialize", t);
+				super.instance = null;
+			} finally {
+				this.initialized = true;
+			}
 		}
-		return super.instance;
 	}
 }

@@ -25,10 +25,17 @@ public class TestContainerConsul extends AbstractTestContainer<ConsulContainer> 
 	}
 
 	@Override
-	public ConsulContainer initAndGetInstance() {
-		try {
-			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);
-			super.instance = new ConsulContainer(dockerImageName)
+	public ConsulContainer getInstance() {
+		initializeIfRequired();
+		return super.instance;
+	}
+
+	@Override
+	protected void initializeIfRequired() {
+		if (!super.initialized) {
+			try {
+				final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);
+				super.instance = new ConsulContainer(dockerImageName)
 					.withReuse(true)
 					.withExposedPorts(CONSUL_HTTP_PORT, CONSUL_GRPC_PORT)
 				    .waitingFor(new WaitAllStrategy(WaitAllStrategy.Mode.WITH_MAXIMUM_OUTER_TIMEOUT).withStartupTimeout(START_TIMEOUT)
@@ -37,10 +44,12 @@ public class TestContainerConsul extends AbstractTestContainer<ConsulContainer> 
 			        )
 				    .withNetwork(Network.SHARED)
 				    .withNetworkAliases(NETWORK_ALIAS);
-		} catch (Throwable t) {
-			log.debug("Failed to initialize", t);
-			super.instance = null;
+			} catch (Throwable t) {
+				log.debug("Failed to initialize", t);
+				super.instance = null;
+			} finally {
+				this.initialized = true;
+			}
 		}
-		return super.instance;
 	}
 }

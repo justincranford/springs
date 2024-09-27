@@ -28,10 +28,17 @@ public class TestContainerElasticsearch extends AbstractTestContainer<Elasticsea
 	}
 
 	@Override
-	public ElasticsearchContainer initAndGetInstance() {
-		try {
-			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);
-			super.instance = new ElasticsearchContainer(dockerImageName)
+	public ElasticsearchContainer getInstance() {
+		initializeIfRequired();
+		return super.instance;
+	}
+
+	@Override
+	public void initializeIfRequired() {
+		if (!super.initialized) {
+			try {
+				final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);
+				super.instance = new ElasticsearchContainer(dockerImageName)
 					.withReuse(true)
 					.withExposedPorts(ELASTICSEARCH_HTTP_PORT, ELASTICSEARCH_TRANSPORT_PORT)
 				    .waitingFor(new WaitAllStrategy(WaitAllStrategy.Mode.WITH_MAXIMUM_OUTER_TIMEOUT).withStartupTimeout(START_TIMEOUT)
@@ -40,10 +47,13 @@ public class TestContainerElasticsearch extends AbstractTestContainer<Elasticsea
 			        )
 				    .withNetwork(Network.SHARED)
 				    .withNetworkAliases(NETWORK_ALIAS);
-		} catch (Throwable t) {
-			log.debug("Failed to initialize", t);
-			super.instance = null;
+				super.initialized = true;
+			} catch (Throwable t) {
+				log.debug("Failed to initialize", t);
+				super.instance = null;
+			} finally {
+				this.initialized = true;
+			}
 		}
-		return super.instance;
 	}
 }

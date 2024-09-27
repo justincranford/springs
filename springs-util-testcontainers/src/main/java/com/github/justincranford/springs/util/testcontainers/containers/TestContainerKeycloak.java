@@ -23,23 +23,32 @@ public final class TestContainerKeycloak extends AbstractTestContainer<KeycloakC
 	}
 
 	@Override
-	public KeycloakContainer initAndGetInstance() {
-		try {
-			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);
-			super.instance = new KeycloakContainer(dockerImageName.asCanonicalNameString())
+	public KeycloakContainer getInstance() {
+		initializeIfRequired();
+		return super.instance;
+	}
+
+	@Override
+	public void initializeIfRequired() {
+		if (!super.initialized) {
+			try {
+				final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);
+				super.instance = new KeycloakContainer(dockerImageName.asCanonicalNameString())
 //					.withReuse(true)
 //			        .withExposedPorts(KEYCLOAK_PORT_HTTP, KEYCLOAK_PORT_HTTPS, KEYCLOAK_PORT_MGMT)
-////					.withExposedPorts(KEYCLOAK_PORT_HTTP, KEYCLOAK_PORT_HTTPS, KEYCLOAK_PORT_DEBUG, KEYCLOAK_PORT_MGMT)
+////				.withExposedPorts(KEYCLOAK_PORT_HTTP, KEYCLOAK_PORT_HTTPS, KEYCLOAK_PORT_DEBUG, KEYCLOAK_PORT_MGMT)
 //				    .waitingFor(new WaitAllStrategy(WaitAllStrategy.Mode.WITH_MAXIMUM_OUTER_TIMEOUT).withStartupTimeout(START_TIMEOUT)
 //			    		.withStrategy(Wait.forHttp("/health/started").forPort(KEYCLOAK_PORT_MGMT))//.usingTls().allowInsecure())
 //			            .withStrategy(Wait.forListeningPort())
 //			        )
-					    .withNetwork(Network.SHARED)
-					    .withNetworkAliases(NETWORK_ALIAS);
-		} catch (Throwable t) {
-			log.debug("Failed to initialize", t);
-			super.instance = null;
+				    .withNetwork(Network.SHARED)
+				    .withNetworkAliases(NETWORK_ALIAS);
+			} catch (Throwable t) {
+				log.debug("Failed to initialize", t);
+				super.instance = null;
+			} finally {
+				this.initialized = true;
+			}
 		}
-		return super.instance;
 	}
 }

@@ -24,10 +24,17 @@ public class TestContainerDynamoDb extends AbstractTestContainer<GenericContaine
 	}
 
 	@Override
-	public GenericContainer<?> initAndGetInstance() {
-		try {
-			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);
-			super.instance = new GenericContainer<>(dockerImageName)
+	public GenericContainer<?> getInstance() {
+		initializeIfRequired();
+		return super.instance;
+	}
+
+	@Override
+	public void initializeIfRequired() {
+		if (!super.initialized) {
+			try {
+				final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);
+				super.instance = new GenericContainer<>(dockerImageName)
 					.withReuse(true)
 					.withExposedPorts(DYNAMODB_PORT)
 				    .waitingFor(new WaitAllStrategy(WaitAllStrategy.Mode.WITH_MAXIMUM_OUTER_TIMEOUT).withStartupTimeout(START_TIMEOUT)
@@ -35,10 +42,13 @@ public class TestContainerDynamoDb extends AbstractTestContainer<GenericContaine
 			        )
 				    .withNetwork(Network.SHARED)
 				    .withNetworkAliases(NETWORK_ALIAS);
-		} catch (Throwable t) {
-			log.debug("Failed to initialize", t);
-			super.instance = null;
+				super.initialized = true;
+			} catch (Throwable t) {
+				log.debug("Failed to initialize", t);
+				super.instance = null;
+			} finally {
+				this.initialized = true;
+			}
 		}
-		return super.instance;
 	}
 }

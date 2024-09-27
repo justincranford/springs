@@ -24,9 +24,8 @@ import com.github.justincranford.springs.util.testcontainers.containers.TestCont
 import io.micrometer.observation.annotation.Observed;
 import lombok.extern.slf4j.Slf4j;
 
-// TODO Make @Observed work
 /**
- * Container.start() is blocking, so start containers concurrently
+ * Container.start() is blocking, so start multiple containers concurrently. Same for stop.
  */
 @Slf4j
 @SuppressWarnings({"nls", "boxing"})
@@ -46,20 +45,20 @@ public class SpringsUtilTestContainers {
 	public static final TestContainerOllama         OLLAMA         = new TestContainerOllama();
 
 	public static final List<AbstractTestContainer<?>> ALL = List.of(
-//		    ELASTICSEARCH,  // Example: 23.152 seconds 47.656 seconds
-//		    KEYCLOCK,       // Example: 18.809 seconds 40.408 seconds
-//		    GRAFANA,        // Example: 10.437 seconds 17.041 seconds
-//		    KAFKA,          // Example:  8.321 seconds 15.380 seconds
-//		    ZIPKIN,         // Example:  6.794 seconds 17.291 seconds
-//		    DYNAMODB,       // Example:  6.300 seconds 11.433 seconds
-//		    POSTGRESQL,     // Example:  6.204 seconds  4.056 seconds
-//		    SELENIUMCHROME, // Example:  5.468 seconds  7.835 seconds
-//		    MONGODB,        // Example:  5.060 seconds  7.026 seconds
-		    VAULT,          // Example:  3.640 seconds  2.909 seconds
-		    CONSUL,         // Example:  2.602 seconds  2.933 seconds
-		    REDIS,          // Example:  2.334 seconds  2.647 seconds
-		    OLLAMA          // Example:  1.318 seconds  1.936 seconds
-		);
+	    ELASTICSEARCH,  // Example: 23.152 seconds 47.656 seconds
+	    KEYCLOCK,       // Example: 18.809 seconds 40.408 seconds
+	    GRAFANA,        // Example: 10.437 seconds 17.041 seconds
+	    KAFKA,          // Example:  8.321 seconds 15.380 seconds
+	    ZIPKIN,         // Example:  6.794 seconds 17.291 seconds
+	    DYNAMODB,       // Example:  6.300 seconds 11.433 seconds
+	    POSTGRESQL,     // Example:  6.204 seconds  4.056 seconds
+	    SELENIUMCHROME, // Example:  5.468 seconds  7.835 seconds
+	    MONGODB,        // Example:  5.060 seconds  7.026 seconds
+	    VAULT,          // Example:  3.640 seconds  2.909 seconds
+	    CONSUL,         // Example:  2.602 seconds  2.933 seconds
+	    REDIS,          // Example:  2.334 seconds  2.647 seconds
+	    OLLAMA          // Example:  1.318 seconds  1.936 seconds
+	);
 
     @Observed
     public static synchronized void startAllContainers() {
@@ -75,10 +74,10 @@ public class SpringsUtilTestContainers {
     public static void startContainers(final List<AbstractTestContainer<?>> testContainerInstances) {
         final long startNanos = System.nanoTime();
         try {
-            log.info("Starting containers, count: {}", testContainerInstances.size());
+            log.debug("Starting containers, count: {}", testContainerInstances.size());
             testContainerInstances.parallelStream().forEach(testContainerInstance -> startContainer(testContainerInstance));
         } finally {
-            log.info("Started containers, count: {}, duration: {}", testContainerInstances.size(), format(startNanos));
+            log.debug("Started containers, count: {}, duration: {}", testContainerInstances.size(), format(startNanos));
         }
     }
 
@@ -86,49 +85,49 @@ public class SpringsUtilTestContainers {
     public static void stopContainers(final List<AbstractTestContainer<?>> testContainerInstances) {
         final long startNanos = System.nanoTime();
         try {
-            log.info("Stopping containers, count: {}", testContainerInstances.size());
+            log.debug("Stopping containers, count: {}", testContainerInstances.size());
             testContainerInstances.parallelStream().forEach(testContainerInstance -> stopContainer(testContainerInstance));
         } finally {
-            log.info("Stopped containers, count: {}, duration: {}", testContainerInstances.size(), format(startNanos));
+            log.debug("Stopped containers, count: {}, duration: {}", testContainerInstances.size(), format(startNanos));
         }
     }
 
     @Observed
-    public static boolean startContainer(final AbstractTestContainer<?> testContainerInstance) {
+    public static void startContainer(final AbstractTestContainer<?> testContainerInstance) {
         final long startNanos = System.nanoTime();
-		final boolean isStarted = testContainerInstance.isRunning();
-        if (isStarted) {
-            log.info("Already started container, image name: {}", testContainerInstance.getContainerName());
-        } else {
-        	try (final GenericContainer<?> genericContainer = testContainerInstance.initAndGetInstance()) {
-                log.info("Starting container, image name: {}", testContainerInstance.getContainerName());
+        final GenericContainer<?> genericContainer = testContainerInstance.getInstance();
+    	try {
+    		final boolean isStarted = genericContainer.isRunning();
+            if (isStarted) {
+                log.debug("Already started container, image name: {}", testContainerInstance.getContainerName());
+            } else {
+                log.debug("Starting container, image name: {}", testContainerInstance.getContainerName());
                 genericContainer.start();
-            } catch(Throwable t) {
-                log.info("Start container failed, image name: {}, duration: {}", testContainerInstance.getContainerName(), format(startNanos), t);
-            } finally {
-                log.info("Started container, image name: {}, duration: {}", testContainerInstance.getContainerName(), format(startNanos));
             }
+        } catch(Throwable t) {
+            log.debug("Start container failed, image name: {}, duration: {}", testContainerInstance.getContainerName(), format(startNanos), t);
+        } finally {
+            log.debug("Started container, image name: {}, duration: {}", testContainerInstance.getContainerName(), format(startNanos));
         }
-        return isStarted;
     }
 
     @Observed
-    public static boolean stopContainer(final AbstractTestContainer<?> testContainerInstance) {
+    public static void stopContainer(final AbstractTestContainer<?> testContainerInstance) {
         final long startNanos = System.nanoTime();
-        final boolean isStopped = !testContainerInstance.isRunning();
-        if (isStopped) {
-            log.info("Already stopped container, image name: {}", testContainerInstance.getContainerName());
-        } else {
-            try (final GenericContainer<?> genericContainer = testContainerInstance.getInstance()) {
-                log.info("Stopping container, image name: {}", testContainerInstance.getContainerName());
+        final GenericContainer<?> genericContainer = testContainerInstance.getInstance();
+        try {
+            final boolean isStopped = !genericContainer.isRunning();
+            if (isStopped) {
+                log.debug("Already stopped container, image name: {}", testContainerInstance.getContainerName());
+            } else {
+                log.debug("Stopping container, image name: {}", testContainerInstance.getContainerName());
                 genericContainer.stop();
-            } catch(Throwable t) {
-                log.info("Stop container failed, image name: {}, duration: {}", testContainerInstance.getContainerName(), format(startNanos), t);
-            } finally {
-                log.info("Stopped container, image name: {}, duration: {}", testContainerInstance.getContainerName(), format(startNanos));
             }
+        } catch(Throwable t) {
+            log.debug("Stop container failed, image name: {}, duration: {}", testContainerInstance.getContainerName(), format(startNanos), t);
+        } finally {
+            log.debug("Stopped container, image name: {}, duration: {}", testContainerInstance.getContainerName(), format(startNanos));
         }
-        return isStopped;
     }
 
     private static String format(final long startNanos) {

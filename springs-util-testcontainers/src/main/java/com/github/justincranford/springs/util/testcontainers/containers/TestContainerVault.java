@@ -24,10 +24,17 @@ public class TestContainerVault extends AbstractTestContainer<VaultContainer<?>>
 	}
 
 	@Override
-	public VaultContainer<?> initAndGetInstance() {
-		try {
-			final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);
-			super.instance = new VaultContainer<>(dockerImageName)
+	public VaultContainer<?> getInstance() {
+		initializeIfRequired();
+		return super.instance;
+	}
+
+	@Override
+	public void initializeIfRequired() {
+		if (!super.initialized) {
+			try {
+				final DockerImageName dockerImageName = DockerImageName.parse(DOCKER_IMAGE_NAME);
+				super.instance = new VaultContainer<>(dockerImageName)
 					.withReuse(true)
 					.withExposedPorts(VAULT_PORT)
 				    .waitingFor(new WaitAllStrategy(WaitAllStrategy.Mode.WITH_MAXIMUM_OUTER_TIMEOUT).withStartupTimeout(START_TIMEOUT)
@@ -36,10 +43,12 @@ public class TestContainerVault extends AbstractTestContainer<VaultContainer<?>>
 			        )
 				    .withNetwork(Network.SHARED)
 				    .withNetworkAliases(NETWORK_ALIAS);
-		} catch (Throwable t) {
-			log.debug("Failed to initialize", t);
-			super.instance = null;
+			} catch (Throwable t) {
+				log.debug("Failed to initialize", t);
+				super.instance = null;
+			} finally {
+				this.initialized = true;
+			}
 		}
-		return super.instance;
 	}
 }
