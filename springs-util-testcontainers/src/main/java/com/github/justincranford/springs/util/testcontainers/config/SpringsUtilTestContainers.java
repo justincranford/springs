@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
  * Container.start() is blocking, so start multiple containers concurrently. Same for stop.
  */
 @Slf4j
-@SuppressWarnings({"nls", "boxing"})
+@SuppressWarnings({"nls", "boxing", "resource"})
 public class SpringsUtilTestContainers {
 	public static final TestContainerElasticsearch  ELASTICSEARCH  = new TestContainerElasticsearch();
 	public static final TestContainerKeycloak       KEYCLOCK       = new TestContainerKeycloak();
@@ -92,7 +92,7 @@ public class SpringsUtilTestContainers {
         }
     }
 
-    @Observed
+	@Observed
     public static void startContainer(final AbstractTestContainer<?> testContainerInstance) {
         final long startNanos = System.nanoTime();
         final GenericContainer<?> genericContainer = testContainerInstance.getInstance();

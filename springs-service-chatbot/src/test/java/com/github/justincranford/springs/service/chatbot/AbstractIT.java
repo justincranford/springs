@@ -33,8 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Observed
 public abstract class AbstractIT {
-//	@LocalServerPort
-//	private long localServerPort;
 	@Autowired
 	private MeterRegistry meterRegistry;
 	@Autowired

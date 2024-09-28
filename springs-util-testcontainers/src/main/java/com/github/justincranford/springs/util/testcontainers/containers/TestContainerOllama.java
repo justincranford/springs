@@ -39,9 +39,9 @@ public class TestContainerOllama extends AbstractTestContainer<OllamaContainer> 
 				super.instance = new OllamaContainer(dockerImageName)
 					.withReuse(true)
 					.withExposedPorts(OLLAMA_PORT)
-//				    .waitingFor(new WaitAllStrategy(WaitAllStrategy.Mode.WITH_MAXIMUM_OUTER_TIMEOUT).withStartupTimeout(START_TIMEOUT)
-//			            .withStrategy(Wait.forListeningPort())
-//			        )
+				    .waitingFor(new WaitAllStrategy(WaitAllStrategy.Mode.WITH_MAXIMUM_OUTER_TIMEOUT).withStartupTimeout(START_TIMEOUT)
+			            .withStrategy(Wait.forListeningPort())
+			        )
 				    .withNetwork(Network.SHARED)
 				    .withNetworkAliases(NETWORK_ALIAS);
 			} catch (Throwable t) {

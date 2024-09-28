@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.github.justincranford.springs.service.chatbot.properties.SpringsServiceChatbotProperties;
-import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
 
 @Configuration
 @EnableConfigurationProperties
@@ -14,9 +13,7 @@ import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfigu
 	basePackageClasses = {SpringsServiceChatbotProperties.class}
 )
 @Import({
-	SpringsServiceChatbotHttpClient.class,
-	SpringsUtilJsonConfiguration.class
-//	SpringsUtilObservabilityConfiguration.class
+	SpringsServiceChatbotHttpClient.class
 })
 public class SpringsServiceChatbotConfiguration {
 	// do nothing
