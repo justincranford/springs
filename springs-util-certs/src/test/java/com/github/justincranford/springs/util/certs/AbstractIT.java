@@ -1,6 +1,7 @@
 package com.github.justincranford.springs.util.certs;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -23,8 +24,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @ActiveProfiles({"test"})
 public class AbstractIT {
-
-    @EnableAutoConfiguration
+    @EnableAutoConfiguration(exclude = { UserDetailsServiceAutoConfiguration.class })
     @EnableConfigurationProperties
     static class AbstractITConfiguration {
     	// do nothing

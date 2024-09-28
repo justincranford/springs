@@ -66,7 +66,7 @@ public class CertUtil {
             Date.from(ZonedDateTime.of(2099, 12, 31, 23, 59, 59, 999999999, ZoneOffset.UTC).toInstant()),
             new BigInteger(159, SecureRandomUtil.SECURE_RANDOM),
             serverPublicKey,
-            new X500Name(RFC4519Style.INSTANCE, "CN=Web Server,DC=Root CA"),
+            new X500Name(RFC4519Style.INSTANCE, "CN=HTTPS Server,DC=Root CA"),
             caPrivateKey,
             new X500Name(RFC4519Style.INSTANCE, "DC=Root CA"),
             caSigningAlgorithm,

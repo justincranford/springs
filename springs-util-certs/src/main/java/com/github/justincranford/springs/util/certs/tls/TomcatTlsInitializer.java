@@ -1,11 +1,14 @@
 package com.github.justincranford.springs.util.certs.tls;
 
 import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,42 +41,32 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 				return;
 			}
 
-			// generate cert/privateKey pairs for CA and server
-			final List<KeyPair> keyPairs = KeyGenUtil.generateKeyPairs(2, wantedProperties.sslAutoConfigAlgorithm());
-	        final KeyPair caKeyPair = keyPairs.get(0);
-	        final KeyPair serverKeyPair = keyPairs.get(1);
+			final List<KeyPair> keyPairs = new LinkedList<>(KeyGenUtil.generateKeyPairs(2, wantedProperties.sslAutoConfigAlgorithm()));
+	        final KeyPair rootCaKeyPair      = keyPairs.removeFirst();
+	        final KeyPair httpsServerKeyPair = keyPairs.removeFirst();
 
-	        final SignUtil.ProviderAndAlgorithm pa = SignUtil.toProviderAndAlgorithm(caKeyPair.getPrivate());
+	        final X509Certificate rootCaCert      = rootCaCert(rootCaKeyPair);
+			final X509Certificate httpsServerCert = httpsServerCert(rootCaKeyPair.getPrivate(), httpsServerKeyPair.getPublic(), wantedProperties.serverAddress());
 
-	        // TODO Create CA cert concurrently to server cert
-	        final X509Certificate rootCaCert = CertUtil.createSignedRootCaCert(pa.provider(), pa.algorithm(), caKeyPair);
-			rootCaCert.verify(rootCaCert.getPublicKey());
+			rootCaCert.verify(rootCaKeyPair.getPublic());
+			httpsServerCert.verify(rootCaKeyPair.getPublic());
 
-			final Set<String> sanDnsNames    = new LinkedHashSet<>(List.of("localhost"));
-	        final Set<String> sanIpAddresses = new LinkedHashSet<>(List.of("127.0.0.1", "::1"));
-			if (InternetDomainName.isValid(wantedProperties.serverAddress())) {
-				sanDnsNames.add(wantedProperties.serverAddress());
-			} else if (InetAddresses.isUriInetAddress(wantedProperties.serverAddress())) {
-				sanIpAddresses.add(wantedProperties.serverAddress());
-			}
-
-	        final X509Certificate serverCert = CertUtil.createSignedServerCert(pa.provider(), pa.algorithm(), caKeyPair.getPrivate(), serverKeyPair.getPublic(), sanDnsNames, sanIpAddresses);
-			serverCert.verify(caKeyPair.getPublic());
-
-			final String rootCaCertPem       = PemUtil.toPem(rootCaCert);
-			final String serverCertPem       = PemUtil.toPem(serverCert);
-			final String serverPrivateKeyPem = PemUtil.toPem(serverKeyPair.getPrivate());
+			final String rootCaCertPem            = PemUtil.toPem(rootCaCert);
+			final String rootCaPrivateKeyPem      = PemUtil.toPem(rootCaKeyPair.getPrivate());
+			final String httpsServerCertPem       = PemUtil.toPem(httpsServerCert);
+			final String httpsServerPrivateKeyPem = PemUtil.toPem(httpsServerKeyPair.getPrivate());
 
 	        // Log server privateKey, server cert, and root CA cert as PEM
-			log.info("CA certificate chain:\n{}\n",     rootCaCertPem);
-			log.info("Server certificate chain:\n{}\n", serverCertPem);
-	        log.info("Server private key:\n{}\n",       serverPrivateKeyPem);
+			log.info("Root CA certificate:\n{}",    rootCaCertPem);
+	        log.info("Root CA private key:\n{}",    rootCaPrivateKeyPem);
+			log.info("TLS server certificate:\n{}", httpsServerCertPem);
+	        log.info("TLS server private key:\n{}", httpsServerPrivateKeyPem);
 
 	        // inject cert/privateKey pairs as properties in a map
 	        final Map<String, Object> tlsProperties = new LinkedHashMap<>();
 	        tlsProperties.put("spring.ssl.bundle.pem.client.truststore.certificate", rootCaCertPem);
-	        tlsProperties.put("spring.ssl.bundle.pem.server.keystore.certificate", serverCertPem);
-	        tlsProperties.put("spring.ssl.bundle.pem.server.keystore.privateKey", serverPrivateKeyPem);
+	        tlsProperties.put("spring.ssl.bundle.pem.server.keystore.certificate", httpsServerCertPem);
+	        tlsProperties.put("spring.ssl.bundle.pem.server.keystore.privateKey", httpsServerPrivateKeyPem);
 	        tlsProperties.put("server.ssl.enabled", Boolean.TRUE);
 	        tlsProperties.put("server.ssl.bundle", "server");
 	        tlsProperties.put("server.ssl.protocol", "TLSv1.3");
@@ -84,6 +77,26 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 			throw new RuntimeException(e);
 		}
     }
+
+	private static X509Certificate rootCaCert(final KeyPair caKeyPair) throws Exception {
+		final SignUtil.ProviderAndAlgorithm signerPA = SignUtil.toProviderAndAlgorithm(caKeyPair.getPrivate());
+		return CertUtil.createSignedRootCaCert(signerPA.provider(), signerPA.algorithm(), caKeyPair);
+	}
+
+	private static X509Certificate httpsServerCert(final PrivateKey caPrivateKey, final PublicKey serverPublicKey, final String serverAddress) throws Exception {
+		final Set<String> sanDnsNames    = new LinkedHashSet<>(List.of("localhost"));
+		final Set<String> sanIpAddresses = new LinkedHashSet<>(List.of("127.0.0.1", "::1"));
+		if (InternetDomainName.isValid(serverAddress)) {
+			sanDnsNames.add(serverAddress);
+		} else if (InetAddresses.isUriInetAddress(serverAddress)) {
+			sanIpAddresses.add(serverAddress);
+		} else {
+			throw new RuntimeException("Address is not a valid hostname or IP address");
+		}
+
+		final SignUtil.ProviderAndAlgorithm providerAndAlgorithm = SignUtil.toProviderAndAlgorithm(caPrivateKey);
+		return CertUtil.createSignedServerCert(providerAndAlgorithm.provider(), providerAndAlgorithm.algorithm(), caPrivateKey, serverPublicKey, sanDnsNames, sanIpAddresses);
+	}
 
     private static WantedProperties findWantedProperties(final Collection<PropertySource<?>> propertySources) {
 		final Map<String, Object> foundPropertyValues = new HashMap<>();
