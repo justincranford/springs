@@ -31,6 +31,11 @@ import lombok.ToString;
 public class SpringsServiceChatbotProperties {
 	@NotNull
 	@NotEmpty
+	@Size(min=4, max=5)
+    private String protocol;
+
+	@NotNull
+	@NotEmpty
 	@Size(min=1, max=255)
     private String host;
 

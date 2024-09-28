@@ -13,11 +13,8 @@ import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfigu
 @ComponentScan(
 	basePackageClasses = {SpringsServiceChatbotProperties.class}
 )
-//@EnableJpaRepositories(
-//	basePackageClasses = {AppleOrm.class, BushelOrm.class},
-//	repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class
-//)
 @Import({
+	SpringsServiceChatbotHttpClient.class,
 	SpringsUtilJsonConfiguration.class
 //	SpringsUtilObservabilityConfiguration.class
 })
