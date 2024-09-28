@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
@@ -47,15 +48,15 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 	        final KeyPair rootCaKeyPair      = keyPairs.removeFirst();
 	        final KeyPair httpsServerKeyPair = keyPairs.removeFirst();
 
-			final CompletableFuture<X509Certificate> task1 = CompletableFuture.supplyAsync(() -> handleExceptions(() -> 
+			final Future<X509Certificate> futureRootCaCert = CompletableFuture.supplyAsync(() -> handleExceptions(() -> 
 				rootCaCert(rootCaKeyPair)
 			).get());
-			final CompletableFuture<X509Certificate> task2 = CompletableFuture.supplyAsync(() -> handleExceptions(() -> 
+			final Future<X509Certificate> futureHttpsServerCert = CompletableFuture.supplyAsync(() -> handleExceptions(() -> 
 				httpsServerCert(rootCaKeyPair.getPrivate(), httpsServerKeyPair.getPublic(), wantedProperties.serverAddress())
 			).get());
 
-			final X509Certificate rootCaCert      = task1.get();
-			final X509Certificate httpsServerCert = task2.get();
+			final X509Certificate rootCaCert      = futureRootCaCert.get();
+			final X509Certificate httpsServerCert = futureHttpsServerCert.get();
 
 			rootCaCert.verify(rootCaKeyPair.getPublic());
 			httpsServerCert.verify(rootCaKeyPair.getPublic());
@@ -87,21 +88,7 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 		}
     }
 
-    public static <T> Supplier<T> handleExceptions(SupplierWithException<T> supplier) {
-        return () -> {
-            try {
-                return supplier.get();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        };
-    }
-
-    @FunctionalInterface
-    public interface SupplierWithException<T> {
-        T get() throws Exception;
-    }
-	private static X509Certificate rootCaCert(final KeyPair caKeyPair) throws Exception {
+    private static X509Certificate rootCaCert(final KeyPair caKeyPair) throws Exception {
 		final SignUtil.ProviderAndAlgorithm signerPA = SignUtil.toProviderAndAlgorithm(caKeyPair.getPrivate());
 		return CertUtil.createSignedRootCaCert(signerPA.provider(), signerPA.algorithm(), caKeyPair);
 	}
@@ -136,4 +123,19 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 		final String  sslAutoConfigAlgorithm =                      (String) foundPropertyValues.getOrDefault("server.ssl.auto-config.algorithm", "EC-P384");
 		return new WantedProperties(serverAddress, sslAutoConfigEnabled, sslAutoConfigAlgorithm);
 	}
+
+    public static <T> Supplier<T> handleExceptions(SupplierWithException<T> supplier) {
+        return () -> {
+            try {
+                return supplier.get();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    @FunctionalInterface
+    public interface SupplierWithException<T> {
+        T get() throws Exception;
+    }
 }
