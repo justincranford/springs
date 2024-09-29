@@ -14,13 +14,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.function.Supplier;
 
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.function.ThrowingSupplier;
 
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
@@ -48,12 +48,8 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 	        final KeyPair rootCaKeyPair      = keyPairs.removeFirst();
 	        final KeyPair httpsServerKeyPair = keyPairs.removeFirst();
 
-			final Future<X509Certificate> futureRootCaCert = CompletableFuture.supplyAsync(() -> handleExceptions(() -> 
-				rootCaCert(rootCaKeyPair)
-			).get());
-			final Future<X509Certificate> futureHttpsServerCert = CompletableFuture.supplyAsync(() -> handleExceptions(() -> 
-				httpsServerCert(rootCaKeyPair.getPrivate(), httpsServerKeyPair.getPublic(), wantedProperties.serverAddress())
-			).get());
+			final Future<X509Certificate> futureRootCaCert      = async(() -> rootCaCert(rootCaKeyPair));
+			final Future<X509Certificate> futureHttpsServerCert = async(() -> httpsServerCert(rootCaKeyPair.getPrivate(), httpsServerKeyPair.getPublic(), wantedProperties.serverAddress()));
 
 			final X509Certificate rootCaCert      = futureRootCaCert.get();
 			final X509Certificate httpsServerCert = futureHttpsServerCert.get();
@@ -124,18 +120,7 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 		return new WantedProperties(serverAddress, sslAutoConfigEnabled, sslAutoConfigAlgorithm);
 	}
 
-    public static <T> Supplier<T> handleExceptions(SupplierWithException<T> supplier) {
-        return () -> {
-            try {
-                return supplier.get();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        };
-    }
-
-    @FunctionalInterface
-    public interface SupplierWithException<T> {
-        T get() throws Exception;
-    }
+	private static <T> Future<T> async(final ThrowingSupplier<T> throwingSupplier) {
+		return CompletableFuture.supplyAsync(() -> throwingSupplier.get());
+	}
 }
