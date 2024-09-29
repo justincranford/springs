@@ -16,6 +16,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
+import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.MutablePropertySources;
@@ -31,8 +32,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @SuppressWarnings({"nls"})
 public class TomcatTlsInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-    private record WantedProperties(String serverAddress, boolean sslAutoConfigEnabled, String sslAutoConfigAlgorithm) {
-    	private static final List<String> PROPERTY_NAMES = List.of("server.address", "server.ssl.auto-config.enabled", "server.ssl.auto-config.algorithm");
+    public static final String CLIENT_BUNDLE_SERVER_AUTHENTICATION = "myclient-server-authentication";
+    public static final String CLIENT_BUNDLE_MUTUAL_AUTHENTICATION = "myclient-mutual-authentication";
+    public static final String SERVER_BUNDLE = "myserver";
+
+    private record WantedProperties(String serverAddress, boolean sslAutoConfigEnabled, String sslAutoConfigAlgorithm, String clientEmail) {
+    	private static final List<String> PROPERTY_NAMES = List.of(
+			"server.address",
+			"server.ssl.auto-config.enabled",
+			"server.ssl.auto-config.algorithm",
+			"client.ssl.email"
+		);
     }
 
     @Override
@@ -44,39 +54,58 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 				return;
 			}
 
-			final List<KeyPair> keyPairs = new LinkedList<>(KeyGenUtil.generateKeyPairs(2, wantedProperties.sslAutoConfigAlgorithm()));
-	        final KeyPair rootCaKeyPair      = keyPairs.removeFirst();
-	        final KeyPair httpsServerKeyPair = keyPairs.removeFirst();
+			final List<KeyPair> keyPairs = new LinkedList<>(KeyGenUtil.generateKeyPairs(4, wantedProperties.sslAutoConfigAlgorithm()));
+	        final KeyPair httpsServerRootCaKeyPair = keyPairs.removeFirst();
+	        final KeyPair httpsServerKeyPair       = keyPairs.removeFirst();
+	        final KeyPair httpsClientRootCaKeyPair = keyPairs.removeFirst();
+	        final KeyPair httpsClientKeyPair       = keyPairs.removeFirst();
 
-			final Future<X509Certificate> futureRootCaCert      = async(() -> rootCaCert(rootCaKeyPair));
-			final Future<X509Certificate> futureHttpsServerCert = async(() -> httpsServerCert(rootCaKeyPair.getPrivate(), httpsServerKeyPair.getPublic(), wantedProperties.serverAddress()));
+			final Future<X509Certificate> futureHttpsServerRootCaCert = async(() -> httpsServerRootCaCert(httpsServerRootCaKeyPair));
+			final Future<X509Certificate> futureHttpsServerCert       = async(() -> httpsServerCert(httpsServerRootCaKeyPair.getPrivate(), httpsServerKeyPair.getPublic(), wantedProperties.serverAddress()));
+			final Future<X509Certificate> futureHttpsClientRootCaCert = async(() -> httpsClientRootCaCert(httpsClientRootCaKeyPair));
+			final Future<X509Certificate> futureHttpsClientCert       = async(() -> httpsClientCert(httpsClientRootCaKeyPair.getPrivate(), httpsClientKeyPair.getPublic(), wantedProperties.clientEmail()));
 
-			final X509Certificate rootCaCert      = futureRootCaCert.get();
-			final X509Certificate httpsServerCert = futureHttpsServerCert.get();
+			final X509Certificate httpsServerRootCaCert = futureHttpsServerRootCaCert.get();
+			final X509Certificate httpsServerCert       = futureHttpsServerCert.get();
+			final X509Certificate httpsClientRootCaCert = futureHttpsClientRootCaCert.get();
+			final X509Certificate httpsClientCert       = futureHttpsClientCert.get();
 
-			rootCaCert.verify(rootCaKeyPair.getPublic());
-			httpsServerCert.verify(rootCaKeyPair.getPublic());
+			httpsServerRootCaCert.verify(httpsServerRootCaKeyPair.getPublic());
+			httpsServerCert.verify(httpsServerRootCaKeyPair.getPublic());
+			httpsClientRootCaCert.verify(httpsClientRootCaKeyPair.getPublic());	
+			httpsClientCert.verify(httpsClientRootCaKeyPair.getPublic());
 
-			final String rootCaCertPem            = PemUtil.toPem(rootCaCert);
-			final String rootCaPrivateKeyPem      = PemUtil.toPem(rootCaKeyPair.getPrivate());
-			final String httpsServerCertPem       = PemUtil.toPem(httpsServerCert);
-			final String httpsServerPrivateKeyPem = PemUtil.toPem(httpsServerKeyPair.getPrivate());
+			final String httpsServerRootCaCertPem       = PemUtil.toPem(httpsServerRootCaCert);
+			final String httpsServerRootCaPrivateKeyPem = PemUtil.toPem(httpsServerRootCaKeyPair.getPrivate());
+			final String httpsServerCertPem             = PemUtil.toPem(httpsServerCert);
+			final String httpsServerPrivateKeyPem       = PemUtil.toPem(httpsServerKeyPair.getPrivate());
+			final String httpsClientRootCaCertPem       = PemUtil.toPem(httpsClientRootCaCert);
+			final String httpsClientRootCaPrivateKeyPem = PemUtil.toPem(httpsClientRootCaKeyPair.getPrivate());
+			final String httpsClientCertPem             = PemUtil.toPem(httpsClientCert);
+			final String httpsClientPrivateKeyPem       = PemUtil.toPem(httpsClientKeyPair.getPrivate());
 
-	        // Log server privateKey, server cert, and root CA cert as PEM
-			log.info("Root CA certificate:\n{}",    rootCaCertPem);
-	        log.info("Root CA private key:\n{}",    rootCaPrivateKeyPem);
-			log.info("TLS server certificate:\n{}", httpsServerCertPem);
-	        log.info("TLS server private key:\n{}", httpsServerPrivateKeyPem);
+			log.info("HTTPS Server Root CA:\n{}{}", httpsServerRootCaCertPem, httpsServerRootCaPrivateKeyPem);
+			log.info("HTTPS Server:\n{}{}",         httpsServerCertPem,       httpsServerPrivateKeyPem);
+			log.info("HTTPS Client Root CA:\n{}{}", httpsClientRootCaCertPem, httpsClientRootCaPrivateKeyPem);
+			log.info("HTTPS Client:\n{}{}",         httpsClientCertPem,       httpsClientPrivateKeyPem);
 
 	        // inject cert/privateKey pairs as properties in a map
 	        final Map<String, Object> tlsProperties = new LinkedHashMap<>();
-	        tlsProperties.put("spring.ssl.bundle.pem.client.truststore.certificate", rootCaCertPem);
-	        tlsProperties.put("spring.ssl.bundle.pem.server.keystore.certificate", httpsServerCertPem);
-	        tlsProperties.put("spring.ssl.bundle.pem.server.keystore.privateKey", httpsServerPrivateKeyPem);
-	        tlsProperties.put("server.ssl.enabled", Boolean.TRUE);
-	        tlsProperties.put("server.ssl.bundle", "server");
-	        tlsProperties.put("server.ssl.protocol", "TLSv1.3");
+	        tlsProperties.put("spring.ssl.bundle.pem." + CLIENT_BUNDLE_SERVER_AUTHENTICATION + ".truststore.certificate", httpsServerRootCaCertPem);
+
+	        tlsProperties.put("spring.ssl.bundle.pem." + CLIENT_BUNDLE_MUTUAL_AUTHENTICATION + ".keystore.certificate",   httpsClientCertPem);
+	        tlsProperties.put("spring.ssl.bundle.pem." + CLIENT_BUNDLE_MUTUAL_AUTHENTICATION + ".keystore.privateKey",    httpsClientPrivateKeyPem);
+	        tlsProperties.put("spring.ssl.bundle.pem." + CLIENT_BUNDLE_MUTUAL_AUTHENTICATION + ".truststore.certificate", httpsServerRootCaCertPem);
+
+	        tlsProperties.put("spring.ssl.bundle.pem." + SERVER_BUNDLE + ".keystore.certificate",   httpsServerCertPem);
+	        tlsProperties.put("spring.ssl.bundle.pem." + SERVER_BUNDLE + ".keystore.privateKey",    httpsServerPrivateKeyPem);
+			tlsProperties.put("spring.ssl.bundle.pem." + SERVER_BUNDLE + ".truststore.certificate", httpsClientRootCaCertPem);
+
+			tlsProperties.put("server.ssl.enabled",          Boolean.TRUE);
+	        tlsProperties.put("server.ssl.protocol",         "TLSv1.3");
 	        tlsProperties.put("server.ssl.enabledProtocols", "TLSv1.3,TLSv1.2");
+	        tlsProperties.put("server.ssl.bundle",           SERVER_BUNDLE);
+	        tlsProperties.put("server.ssl.clientAuth",       ClientAuth.WANT.name());
 
 	        mutablePropertySources.addFirst(new OriginTrackedMapPropertySource("tomcat-tls", tlsProperties));
 		} catch(Exception e) {
@@ -84,9 +113,14 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 		}
     }
 
-    private static X509Certificate rootCaCert(final KeyPair caKeyPair) throws Exception {
-		final SignUtil.ProviderAndAlgorithm signerPA = SignUtil.toProviderAndAlgorithm(caKeyPair.getPrivate());
-		return CertUtil.createSignedRootCaCert(signerPA.provider(), signerPA.algorithm(), caKeyPair);
+    private static X509Certificate httpsServerRootCaCert(final KeyPair serverCaKeyPair) throws Exception {
+		final SignUtil.ProviderAndAlgorithm signerPA = SignUtil.toProviderAndAlgorithm(serverCaKeyPair.getPrivate());
+		return CertUtil.createSignedServerRootCaCert(signerPA.provider(), signerPA.algorithm(), serverCaKeyPair);
+	}
+
+    private static X509Certificate httpsClientRootCaCert(final KeyPair clientCaKeyPair) throws Exception {
+		final SignUtil.ProviderAndAlgorithm signerPA = SignUtil.toProviderAndAlgorithm(clientCaKeyPair.getPrivate());
+		return CertUtil.createSignedClientRootCaCert(signerPA.provider(), signerPA.algorithm(), clientCaKeyPair);
 	}
 
 	private static X509Certificate httpsServerCert(final PrivateKey caPrivateKey, final PublicKey serverPublicKey, final String serverAddress) throws Exception {
@@ -104,6 +138,12 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 		return CertUtil.createSignedServerCert(providerAndAlgorithm.provider(), providerAndAlgorithm.algorithm(), caPrivateKey, serverPublicKey, sanDnsNames, sanIpAddresses);
 	}
 
+	private static X509Certificate httpsClientCert(final PrivateKey caPrivateKey, final PublicKey clientPublicKey, final String emailAddress) throws Exception {
+		final Set<String> sanEmailAddresses = new LinkedHashSet<>(List.of(emailAddress));
+		final SignUtil.ProviderAndAlgorithm providerAndAlgorithm = SignUtil.toProviderAndAlgorithm(caPrivateKey);
+		return CertUtil.createSignedClientCert(providerAndAlgorithm.provider(), providerAndAlgorithm.algorithm(), caPrivateKey, clientPublicKey, sanEmailAddresses);
+	}
+
     private static WantedProperties findWantedProperties(final Collection<PropertySource<?>> propertySources) {
 		final Map<String, Object> foundPropertyValues = new HashMap<>();
 		for (final PropertySource<?> propertySource : propertySources) {
@@ -117,7 +157,8 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 		final String  serverAddress          =                      (String) foundPropertyValues.getOrDefault("server.address",                   "localhost");
 		final boolean sslAutoConfigEnabled   = Boolean.parseBoolean((String) foundPropertyValues.getOrDefault("server.ssl.auto-config.enabled",   "false"));
 		final String  sslAutoConfigAlgorithm =                      (String) foundPropertyValues.getOrDefault("server.ssl.auto-config.algorithm", "EC-P384");
-		return new WantedProperties(serverAddress, sslAutoConfigEnabled, sslAutoConfigAlgorithm);
+		final String  clientEmail            =                      (String) foundPropertyValues.getOrDefault("client.ssl.email",                 "client@example.com");
+		return new WantedProperties(serverAddress, sslAutoConfigEnabled, sslAutoConfigAlgorithm, clientEmail);
 	}
 
 	private static <T> Future<T> async(final ThrowingSupplier<T> throwingSupplier) {

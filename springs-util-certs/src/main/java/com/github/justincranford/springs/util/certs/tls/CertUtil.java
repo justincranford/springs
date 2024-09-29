@@ -34,16 +34,36 @@ import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 
 @SuppressWarnings("nls")
 public class CertUtil {
-    // uses opinionated values for root CA X509Certificate
-	public static X509Certificate createSignedRootCaCert(final Provider caSigningProvider, final String caSigningAlgorithm, final KeyPair caKeyPair) throws Exception {
+	// uses opinionated values for root CA X509Certificate
+	public static X509Certificate createSignedServerRootCaCert(final Provider caSigningProvider, final String caSigningAlgorithm, final KeyPair caKeyPair) throws Exception {
 		X509Certificate rootCaCert = CertUtil.createCert(
             Date.from(ZonedDateTime.of(1970,  1,  1,  0,  0,  0,         0, ZoneOffset.UTC).toInstant()),
             Date.from(ZonedDateTime.of(2099, 12, 31, 23, 59, 59, 999999999, ZoneOffset.UTC).toInstant()),
             new BigInteger(159, SecureRandomUtil.SECURE_RANDOM),
             caKeyPair.getPublic(),
-            new X500Name(RFC4519Style.INSTANCE, "DC=Root CA"),
+            new X500Name(RFC4519Style.INSTANCE, "DC=Server Root CA"),
             caKeyPair.getPrivate(),
-            new X500Name(RFC4519Style.INSTANCE, "DC=Root CA"),
+            new X500Name(RFC4519Style.INSTANCE, "DC=Server Root CA"),
+            caSigningAlgorithm,
+            caSigningProvider,
+            new Extensions(new Extension[] {
+                new Extension(Extension.basicConstraints, true, new BasicConstraints(0)           .toASN1Primitive().getEncoded()),
+                new Extension(Extension.keyUsage,         true, new KeyUsage(KeyUsage.keyCertSign).toASN1Primitive().getEncoded())
+            })
+        );
+		return rootCaCert;
+	}
+
+	// uses opinionated values for root CA X509Certificate
+	public static X509Certificate createSignedClientRootCaCert(final Provider caSigningProvider, final String caSigningAlgorithm, final KeyPair caKeyPair) throws Exception {
+		X509Certificate rootCaCert = CertUtil.createCert(
+            Date.from(ZonedDateTime.of(1970,  1,  1,  0,  0,  0,         0, ZoneOffset.UTC).toInstant()),
+            Date.from(ZonedDateTime.of(2099, 12, 31, 23, 59, 59, 999999999, ZoneOffset.UTC).toInstant()),
+            new BigInteger(159, SecureRandomUtil.SECURE_RANDOM),
+            caKeyPair.getPublic(),
+            new X500Name(RFC4519Style.INSTANCE, "DC=Client Root CA"),
+            caKeyPair.getPrivate(),
+            new X500Name(RFC4519Style.INSTANCE, "DC=Client Root CA"),
             caSigningAlgorithm,
             caSigningProvider,
             new Extensions(new Extension[] {
@@ -66,9 +86,9 @@ public class CertUtil {
             Date.from(ZonedDateTime.of(2099, 12, 31, 23, 59, 59, 999999999, ZoneOffset.UTC).toInstant()),
             new BigInteger(159, SecureRandomUtil.SECURE_RANDOM),
             serverPublicKey,
-            new X500Name(RFC4519Style.INSTANCE, "CN=HTTPS Server,DC=Root CA"),
+            new X500Name(RFC4519Style.INSTANCE, "CN=HTTPS Server,DC=Server Root CA"),
             caPrivateKey,
-            new X500Name(RFC4519Style.INSTANCE, "DC=Root CA"),
+            new X500Name(RFC4519Style.INSTANCE, "DC=Server Root CA"),
             caSigningAlgorithm,
             caSigningProvider,
             new Extensions(new Extension[] {
@@ -78,6 +98,31 @@ public class CertUtil {
             })
         );
 		return serverCert;
+	}
+
+    // uses opinionated values for Web server X509Certificate
+	public static X509Certificate createSignedClientCert(final Provider caSigningProvider, final String caSigningAlgorithm, final PrivateKey caPrivateKey, final PublicKey serverPublicKey, final Set<String> emailAddresses) throws Exception {
+		final List<GeneralName> generalNameList = new ArrayList<>(emailAddresses.size());
+		generalNameList.addAll(emailAddresses.stream().map(sanEmailAddress -> new GeneralName(GeneralName.rfc822Name, sanEmailAddress)).toList());
+		final GeneralName[] generalNames = generalNameList.toArray(new GeneralName[generalNameList.size()]);
+
+		final X509Certificate clientCert = CertUtil.createCert(
+            Date.from(ZonedDateTime.of(1970,  1,  1,  0,  0,  0,         0, ZoneOffset.UTC).toInstant()),
+            Date.from(ZonedDateTime.of(2099, 12, 31, 23, 59, 59, 999999999, ZoneOffset.UTC).toInstant()),
+            new BigInteger(159, SecureRandomUtil.SECURE_RANDOM),
+            serverPublicKey,
+            new X500Name(RFC4519Style.INSTANCE, "CN=HTTPS Client,DC=Client Root CA"),
+            caPrivateKey,
+            new X500Name(RFC4519Style.INSTANCE, "DC=Client Root CA"),
+            caSigningAlgorithm,
+            caSigningProvider,
+            new Extensions(new Extension[] {
+                new Extension(Extension.keyUsage,               true,  new KeyUsage(KeyUsage.digitalSignature).toASN1Primitive().getEncoded()),
+                new Extension(Extension.extendedKeyUsage,       false, new ExtendedKeyUsage(KeyPurposeId.id_kp_clientAuth).toASN1Primitive().getEncoded()),
+                new Extension(Extension.subjectAlternativeName, false, new GeneralNames(generalNames).toASN1Primitive().getEncoded())
+            })
+        );
+		return clientCert;
 	}
 
 	// general purpose X509Certificate settings (e.g. root CA, sub CA, end entity, etc)
