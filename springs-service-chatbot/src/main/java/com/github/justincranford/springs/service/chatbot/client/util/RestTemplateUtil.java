@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.chatbot.config;
+package com.github.justincranford.springs.service.chatbot.client.util;
 
 import java.util.List;
 import java.util.Map;
@@ -29,24 +29,24 @@ public class RestTemplateUtil {
 	)));
 
 	private static final HttpHeaders POST_JSON_HEADERS = new HttpHeaders(CollectionUtils.toMultiValueMap(Map.of(
-		"Host",            List.of("localhost:11434"),
-		"User-Agent",      USER_AGENT,
+		"Host",         List.of("localhost:11434"),
+		"User-Agent",   USER_AGENT,
 		"Content-Type", CONTENT_TYPE_APPLCIATION_JSON,
 		"Accept",       ACCEPT_APPLCIATION_JSON
 	)));
 
-	public static <T> T jsonGet(final RestTemplate restTemplate, final String url, final Class<T> clazz) {
+	public static <RESPONSE> RESPONSE jsonGet(final RestTemplate restTemplate, final String url, final Class<RESPONSE> clazz) {
 		return http(restTemplate, url, HttpMethod.GET, new HttpEntity<>(GET_JSON_HEADERS), clazz);
 	}
 
-	public static <T> T jsonPost(final RestTemplate restTemplate, final String postRequest, final String url, final Class<T> clazz) {
+	public static <REQUEST, RESPONSE> RESPONSE jsonPost(final RestTemplate restTemplate, final REQUEST postRequest, final String url, final Class<RESPONSE> clazz) {
 		return http(restTemplate, url, HttpMethod.POST, new HttpEntity<>(postRequest, POST_JSON_HEADERS), clazz);
 	}
 
-	private static <T> T http(final RestTemplate restTemplate, final String url, final HttpMethod method, final HttpEntity<String> entity, final Class<T> clazz) {
+	private static <REQUEST, RESPONSE> RESPONSE http(final RestTemplate restTemplate, final String url, final HttpMethod method, final HttpEntity<REQUEST> entity, final Class<RESPONSE> clazz) {
 		try {
-        	log.error("Method: [{}], URL: [{}], entity: [{}], class: [{}]", method, url, entity, clazz);
-			final ResponseEntity<T> response = restTemplate.exchange(url, method, entity, clazz);
+        	log.info("Method: [{}], URL: [{}], entity: [{}], class: [{}]", method, url, entity, clazz);
+			final ResponseEntity<RESPONSE> response = restTemplate.exchange(url, method, entity, clazz);
             return response.getBody();
         } catch (HttpStatusCodeException e) {
         	log.error("HTTP Error Response: [" + e.getStatusCode() + "]\nResponse body: " + e.getResponseBodyAsString());

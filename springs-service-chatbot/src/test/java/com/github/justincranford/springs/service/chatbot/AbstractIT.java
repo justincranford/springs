@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.github.justincranford.springs.service.chatbot.config.SpringsServiceChatbotClient;
+import com.github.justincranford.springs.service.chatbot.client.SpringsServiceChatbotClient;
 import com.github.justincranford.springs.service.chatbot.config.SpringsServiceChatbotConfiguration;
 import com.github.justincranford.springs.service.chatbot.properties.SpringsServiceChatbotProperties;
 
