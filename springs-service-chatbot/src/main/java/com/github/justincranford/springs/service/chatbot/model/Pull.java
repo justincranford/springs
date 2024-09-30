@@ -41,7 +41,16 @@ public class Pull {
 	@Builder
 	@ToString(exclude={})
 	public static class Response extends Abstract.Response {
-	    @JsonProperty("reply")
-	    private String reply;
-	}
+	    @JsonProperty("status")
+	    private String status;
+
+	    @JsonProperty("digest")
+	    private String digest;
+
+	    @JsonProperty("total")
+	    private long total;
+
+	    @JsonProperty("completed")
+	    private long completed;
+    }
 }
