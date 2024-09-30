@@ -52,6 +52,10 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
 	 */
 	private static final boolean USE_TEST_CONTAINER = false;
 	private static final String MODEL = "llama3.2";
+//	private static final String MODEL = "llama3.2:1b";
+//	private static final String MODEL = "llama3.2:3b";
+//	private static final String MODEL = "llama3.2:latest";
+//	private static final String MODEL = "mistral-7b";
 
 	@BeforeAll
 	private static void beforeAll() {
