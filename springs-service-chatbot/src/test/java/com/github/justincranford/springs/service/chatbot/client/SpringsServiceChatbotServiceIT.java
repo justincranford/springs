@@ -19,6 +19,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.ollama.OllamaContainer;
 
 import com.github.justincranford.springs.service.chatbot.AbstractIT;
+import com.github.justincranford.springs.service.chatbot.model.Abstract;
 import com.github.justincranford.springs.service.chatbot.model.Chat;
 import com.github.justincranford.springs.service.chatbot.model.Generate;
 import com.github.justincranford.springs.service.chatbot.model.Ps;
@@ -194,6 +195,7 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
 		void testGenerate() {
 	        final Generate.Request  request  = Generate.Request.builder().model(MODEL).stream(Boolean.FALSE)
         		.prompt("Why is the sky blue?")
+        		.options(Abstract.Options.builder().temperature(Double.valueOf(5.0d)).build())
         		.build();
 	        final Generate.Response response = springsServiceChatbotClient().generate(request);
 			assertThat(response.response()).isNotNull();
@@ -228,6 +230,7 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
         		.messages(List.of(
     				Chat.Request.Message.builder().role(Chat.Request.Message.Role.USER).content("Why is the sky blue?").build()
 				))
+        		.options(Abstract.Options.builder().temperature(Double.valueOf(5.0d)).build())
         		.build();
 	        final Chat.Response response = springsServiceChatbotClient().chat(request);
 			assertThat(response.message()).isNotNull();

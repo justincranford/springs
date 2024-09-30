@@ -34,7 +34,16 @@ public class Chat {
 
 	    @JsonProperty("stream")
 	    private Boolean stream;
-	
+
+		@JsonProperty("options")
+		protected Options options;
+
+		@JsonProperty("template")
+		protected String template;
+
+		@JsonProperty("format")
+		protected Boolean format;
+
 	    @JsonProperty("messages")
 	    private List<Message> messages;
 	}

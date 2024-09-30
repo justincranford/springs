@@ -30,6 +30,15 @@ public class Pull {
 
 	    @JsonProperty("stream")
 	    private Boolean stream;
+
+		@JsonProperty("options")
+		protected Options options;
+
+		@JsonProperty("template")
+		protected String template;
+
+		@JsonProperty("format")
+		protected Boolean format;
 	}
 
 	@Getter(onMethod=@__(@JsonProperty))

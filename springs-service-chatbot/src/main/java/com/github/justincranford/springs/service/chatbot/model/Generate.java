@@ -14,71 +14,80 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 public class Generate {
-	@SuppressWarnings({"nls"})
+	@SuppressWarnings({ "nls" })
 	public static final String URL = "/api/generate";
 
-	@Getter(onMethod=@__(@JsonProperty))
+	@Getter(onMethod = @__(@JsonProperty))
 	@Setter
-	@Accessors(fluent=true)
+	@Accessors(fluent = true)
 	@JsonIgnoreProperties
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Builder
-	@ToString(exclude={})
+	@ToString(exclude = {})
 	public static class Request extends Abstract.Request {
-	    @JsonProperty("model")
-	    private String model;
+		@JsonProperty("model")
+		private String model;
 
-	    @JsonProperty("keep_alive")
-	    private Long keepAlive;
+		@JsonProperty("keep_alive")
+		private Long keepAlive;
 
-	    @JsonProperty("stream")
-	    private Boolean stream;
+		@JsonProperty("stream")
+		private Boolean stream;
 
-	    @JsonProperty("prompt")
-	    private String prompt;
+		@JsonProperty("options")
+		protected Options options;
+
+		@JsonProperty("template")
+		protected String template;
+
+		@JsonProperty("format")
+		protected Boolean format;
+
+		@JsonProperty("prompt")
+		private String prompt;
 	}
 
-	@Getter(onMethod=@__(@JsonProperty))
+	@Getter(onMethod = @__(@JsonProperty))
 	@Setter
-	@Accessors(fluent=true)
+	@Accessors(fluent = true)
 	@JsonIgnoreProperties
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Builder
-	@ToString(exclude={})
+	@ToString(exclude = {})
 	public static class Response extends Abstract.Response {
-	    @JsonProperty("model")
-	    private String model;
+		@JsonProperty("model")
+		private String model;
 
-	    @JsonProperty("created_at")
-	    private String createdAt;
+		@JsonProperty("created_at")
+		private String createdAt;
 
-	    @JsonProperty("response")
-	    private String response;
+		@JsonProperty("response")
+		private String response;
 
-	    @JsonProperty("done")
-	    private Boolean done;
+		@JsonProperty("done")
+		private Boolean done;
 
-	    @JsonProperty("context")
-	    private List<Integer> context;
+		@JsonProperty("context")
+		private List<Integer> context;
 
-	    @JsonProperty("total_duration")
-	    private Long totalDuration;
+		@JsonProperty("total_duration")
+		private Long totalDuration;
 
-	    @JsonProperty("load_duration")
-	    private Long loadDuration;
+		@JsonProperty("load_duration")
+		private Long loadDuration;
 
-	    @JsonProperty("prompt_eval_duration")
-	    private Long promptEvalDuration;
+		@JsonProperty("prompt_eval_duration")
+		private Long promptEvalDuration;
 
-	    @JsonProperty("eval_duration")
-	    private Long evalDuration;
+		@JsonProperty("eval_duration")
+		private Long evalDuration;
 
-	    @JsonProperty("prompt_eval_count")
-	    private Integer promptEvalCount;
+		@JsonProperty("prompt_eval_count")
+		private Integer promptEvalCount;
 
-	    @JsonProperty("eval_count")
-	    private Integer evalCount;
-    }
+		@JsonProperty("eval_count")
+		private Integer evalCount;
+	}
 }
