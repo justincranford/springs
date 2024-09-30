@@ -21,33 +21,6 @@ public class Ps {
 	@Getter(onMethod=@__(@JsonProperty))
 	@Setter
 	@Accessors(fluent = true)
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@Builder
-	@ToString(exclude={})
-	public static class Request extends Abstract.Request {
-	    @JsonProperty("model")
-	    private String model;
-
-	    @JsonProperty("keep_alive")
-	    private Long keepAlive;
-
-	    @JsonProperty("stream")
-	    private Boolean stream;
-
-		@JsonProperty("options")
-		protected Options options;
-
-		@JsonProperty("template")
-		protected String template;
-
-		@JsonProperty("format")
-		protected Boolean format;
-	}
-
-	@Getter(onMethod=@__(@JsonProperty))
-	@Setter
-	@Accessors(fluent = true)
 	@JsonIgnoreProperties
 	@NoArgsConstructor
 	@AllArgsConstructor
