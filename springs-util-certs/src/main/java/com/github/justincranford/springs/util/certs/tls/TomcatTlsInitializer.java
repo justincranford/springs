@@ -23,6 +23,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.function.ThrowingSupplier;
 
+import com.github.justincranford.springs.util.basic.ThreadUtil;
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 import com.google.common.net.InternetDomainName;
@@ -60,10 +61,10 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 	        final KeyPair httpsClientRootCaKeyPair = keyPairs.removeFirst();
 	        final KeyPair httpsClientKeyPair       = keyPairs.removeFirst();
 
-			final Future<X509Certificate> futureHttpsServerRootCaCert = async(() -> httpsServerRootCaCert(httpsServerRootCaKeyPair));
-			final Future<X509Certificate> futureHttpsServerCert       = async(() -> httpsServerCert(httpsServerRootCaKeyPair.getPrivate(), httpsServerKeyPair.getPublic(), wantedProperties.serverAddress()));
-			final Future<X509Certificate> futureHttpsClientRootCaCert = async(() -> httpsClientRootCaCert(httpsClientRootCaKeyPair));
-			final Future<X509Certificate> futureHttpsClientCert       = async(() -> httpsClientCert(httpsClientRootCaKeyPair.getPrivate(), httpsClientKeyPair.getPublic(), wantedProperties.clientEmail()));
+			final Future<X509Certificate> futureHttpsServerRootCaCert = ThreadUtil.async(() -> httpsServerRootCaCert(httpsServerRootCaKeyPair));
+			final Future<X509Certificate> futureHttpsServerCert       = ThreadUtil.async(() -> httpsServerCert(httpsServerRootCaKeyPair.getPrivate(), httpsServerKeyPair.getPublic(), wantedProperties.serverAddress()));
+			final Future<X509Certificate> futureHttpsClientRootCaCert = ThreadUtil.async(() -> httpsClientRootCaCert(httpsClientRootCaKeyPair));
+			final Future<X509Certificate> futureHttpsClientCert       = ThreadUtil.async(() -> httpsClientCert(httpsClientRootCaKeyPair.getPrivate(), httpsClientKeyPair.getPublic(), wantedProperties.clientEmail()));
 
 			final X509Certificate httpsServerRootCaCert = futureHttpsServerRootCaCert.get();
 			final X509Certificate httpsServerCert       = futureHttpsServerCert.get();
@@ -159,9 +160,5 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 		final String  sslAutoConfigAlgorithm =                      (String) foundPropertyValues.getOrDefault("server.ssl.auto-config.algorithm", "EC-P384");
 		final String  clientEmail            =                      (String) foundPropertyValues.getOrDefault("client.ssl.email",                 "client@example.com");
 		return new WantedProperties(serverAddress, sslAutoConfigEnabled, sslAutoConfigAlgorithm, clientEmail);
-	}
-
-	private static <T> Future<T> async(final ThrowingSupplier<T> throwingSupplier) {
-		return CompletableFuture.supplyAsync(() -> throwingSupplier.get());
 	}
 }

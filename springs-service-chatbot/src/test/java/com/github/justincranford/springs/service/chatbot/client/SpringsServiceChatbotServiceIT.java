@@ -1,9 +1,12 @@
 package com.github.justincranford.springs.service.chatbot.client;
 
+import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,6 +21,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.ollama.OllamaContainer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.justincranford.springs.service.chatbot.AbstractIT;
 import com.github.justincranford.springs.service.chatbot.model.Abstract;
 import com.github.justincranford.springs.service.chatbot.model.Chat;
@@ -25,6 +29,7 @@ import com.github.justincranford.springs.service.chatbot.model.Generate;
 import com.github.justincranford.springs.service.chatbot.model.Ps;
 import com.github.justincranford.springs.service.chatbot.model.Pull;
 import com.github.justincranford.springs.service.chatbot.model.Tags;
+import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
 
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +56,7 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
 	 *  = Example shell:  docker exec -it ollama bash
 	 */
 	private static final boolean USE_TEST_CONTAINER = false;
+	private static final long TIMEOUT_MILLIS = 30000L;
 	private static final String MODEL = "llama3.2";
 //	private static final String MODEL = "llama3.2:1b";
 //	private static final String MODEL = "llama3.2:3b";
@@ -196,13 +202,53 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
 
 		@Order(3)
 		@Test
-		void testGenerate() {
-	        final Generate.Request  request  = Generate.Request.builder().model(MODEL).stream(Boolean.FALSE)
+		void testGenerateStream() {
+	        final Generate.Request request = Generate.Request.builder().model(MODEL).stream(Boolean.TRUE)
         		.prompt("Why is the sky blue?")
-        		.options(Abstract.Options.builder().temperature(Double.valueOf(5.0d)).build())
+        		.options(
+    				Abstract.Options.builder()
+    					.temperature(Double.valueOf(SecureRandomUtil.SECURE_RANDOM.nextDouble(5d, 10d)))
+    					.seed(Integer.valueOf(SecureRandomUtil.SECURE_RANDOM.nextInt()))
+    					.build())
         		.build();
-	        final Generate.Response response = springsServiceChatbotClient().generate(request);
-			assertThat(response.response()).isNotNull();
+
+    		final long totalNanos = System.nanoTime();
+//    		final long requestNanos = System.nanoTime();
+	        final BlockingQueue<Generate.Response> responses = springsServiceChatbotClient().generateStream(request);
+//	        try {
+//				log.info("generate request [{} usec, {} usec]:\n{}", micros(requestNanos), micros(totalNanos), objectMapper().writeValueAsString(request));
+//			} catch (JsonProcessingException e) {
+//		        log.info("generate request, exception:", e);
+//		        throw new RuntimeException(e);
+//			}
+	        while (true) {
+        		final long responseNanos = System.nanoTime();
+	        	try {
+					final Generate.Response response = responses.poll(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+			        log.info("generate response [{} usec, {} msec]:\n{}", micros(responseNanos), millis(totalNanos), objectMapper().writeValueAsString(response));
+					if (response == null) {
+				        log.info("generate response timed out [{} usec, {} msec]", micros(responseNanos), millis(totalNanos));
+				        fail("Timed out");
+						break;
+					} else if (response.done().booleanValue()) {
+				        log.info("done [{} usec, {} msec]: true, done_reason: {}", micros(responseNanos), millis(totalNanos), response.doneReason());
+						break;
+					}
+				} catch (InterruptedException e) {
+			        log.warn("generate response, interrupted exception [{} usec, {} msec]", micros(responseNanos), millis(totalNanos), e);
+    			    Thread.currentThread().interrupt();
+				} catch (JsonProcessingException e) {
+			        log.error("generate response, processing exception [{} usec, {} msec]", micros(responseNanos), millis(totalNanos), e);
+				}
+	        }
+		}
+
+		private Float micros(final long startNanos) {
+			return Float.valueOf((System.nanoTime() - startNanos) / 1000F);
+		}
+
+		private Float millis(final long startNanos) {
+			return Float.valueOf((System.nanoTime() - startNanos) / 1000000F);
 		}
 	}
 
@@ -234,7 +280,11 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
         		.messages(List.of(
     				Chat.Request.Message.builder().role(Chat.Request.Message.Role.USER).content("Why is the sky blue?").build()
 				))
-        		.options(Abstract.Options.builder().temperature(Double.valueOf(5.0d)).build())
+        		.options(
+    				Abstract.Options.builder()
+    					.temperature(Double.valueOf(SecureRandomUtil.SECURE_RANDOM.nextDouble(5d, 10d)))
+    					.seed(Integer.valueOf(SecureRandomUtil.SECURE_RANDOM.nextInt()))
+    					.build())
         		.build();
 	        final Chat.Response response = springsServiceChatbotClient().chat(request);
 			assertThat(response.message()).isNotNull();

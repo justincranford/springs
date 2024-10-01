@@ -5,7 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.github.justincranford.springs.service.chatbot.client.config.SpringsServiceChatbotClientConfiguration;
+import com.github.justincranford.springs.service.chatbot.config.client.SpringsServiceChatbotClientConfiguration;
 import com.github.justincranford.springs.service.chatbot.properties.SpringsServiceChatbotProperties;
 import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
 

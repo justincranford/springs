@@ -1,6 +1,8 @@
 package com.github.justincranford.springs.service.chatbot.client;
 
 import java.util.Objects;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -82,6 +84,16 @@ public class SpringsServiceChatbotClient {
 			return response;
 		} catch(Exception e) {
 	        log.info("models exception:", e);
+	        throw new RuntimeException(e);
+		}
+	}
+
+	public BlockingQueue<Generate.Response> generateStream(final Generate.Request request) {
+		try {
+	        log.info("generate request:\n{}", this.objectMapper.writeValueAsString(request));
+			return RestTemplateUtil.jsonPostStream(this.restTemplate, request, this.baseUrl + Generate.URL, Generate.Response.class);
+		} catch(Exception e) {
+	        log.info("generate exception:", e);
 	        throw new RuntimeException(e);
 		}
 	}

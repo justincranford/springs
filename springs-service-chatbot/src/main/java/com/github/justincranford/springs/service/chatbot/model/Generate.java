@@ -69,6 +69,9 @@ public class Generate {
 		@JsonProperty("done")
 		private Boolean done;
 
+		@JsonProperty("done_reason")
+		private String doneReason;
+
 		@JsonProperty("context")
 		private List<Integer> context;
 

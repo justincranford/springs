@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.chatbot.client.config;
+package com.github.justincranford.springs.service.chatbot.config.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class SpringsServiceChatbotClientConfiguration {
 	@Bean
 	public RestTemplate restTemplate() {
 		final RestTemplate restTemplate = new RestTemplate();
-//		restTemplate.getInterceptors().add(new LoggingInterceptor());
+		restTemplate.getInterceptors().add(new LoggingInterceptor());
 		restTemplate.setErrorHandler(new DefaultResponseErrorHandler());
 		return restTemplate;
 	}
