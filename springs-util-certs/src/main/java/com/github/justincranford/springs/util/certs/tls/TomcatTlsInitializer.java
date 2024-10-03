@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
@@ -21,7 +20,6 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
-import org.springframework.util.function.ThrowingSupplier;
 
 import com.github.justincranford.springs.util.basic.ThreadUtil;
 import com.google.common.collect.Lists;
