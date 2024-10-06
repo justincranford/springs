@@ -68,7 +68,7 @@ public class AbstractIT {
     }
 
 	@RestController
-	@RequestMapping("/")
+	@RequestMapping("/helloworld")
 	public static class MyRestController {
 		@GetMapping
 		public String helloWorld() {

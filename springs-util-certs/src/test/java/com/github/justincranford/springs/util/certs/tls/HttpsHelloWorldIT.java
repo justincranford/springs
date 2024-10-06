@@ -21,14 +21,14 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @Slf4j
 @SuppressWarnings("nls")
-public class TomcatTlsInitializerIT extends AbstractIT {
+public class HttpsHelloWorldIT extends AbstractIT {
 	@Test
 	void testTlsMutualAuthentication() {
 		final HttpHeaders headers = new HttpHeaders(CollectionUtils.toMultiValueMap(Map.of(
 			"Host",   List.of(serverAddress() + ":" + localServerPort()),
 			"Accept", List.of("*/*")
 		)));
-		final String url = "https://" + serverAddress() + ":" + localServerPort();
+		final String url = "https://" + serverAddress() + ":" + localServerPort() + "/helloworld";
 		log.info("url: {}", url);
 		try {
 			final ResponseEntity<String> x = tlsMutualAuthenticationRestTemplate().exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
@@ -46,7 +46,7 @@ public class TomcatTlsInitializerIT extends AbstractIT {
 			"Host",   List.of(serverAddress() + ":" + localServerPort()),
 			"Accept", List.of("*/*")
 		)));
-		final String url = "https://" + serverAddress() + ":" + localServerPort();
+		final String url = "https://" + serverAddress() + ":" + localServerPort() + "/helloworld";
 		log.info("url: {}", url);
 		try {
 			final ResponseEntity<String> x = tlsServerAuthenticationRestTemplate().exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
