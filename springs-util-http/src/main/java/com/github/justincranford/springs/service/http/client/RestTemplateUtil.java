@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.chatbot.client.util;
+package com.github.justincranford.springs.service.http.client;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

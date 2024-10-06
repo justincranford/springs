@@ -1,6 +1,5 @@
-package com.github.justincranford.springs.service.webauthn;
+package com.github.justincranford.springs.util.certs;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.ActiveProfiles;
@@ -19,33 +17,34 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.RestTemplate;
 
 import com.github.justincranford.springs.service.http.client.config.SpringsUtilHttpClientConfiguration;
-import com.github.justincranford.springs.service.http.server.HelloWorldController;
-import com.github.justincranford.springs.service.webauthn.config.SpringsServiceWebauthnConfiguration;
+import com.github.justincranford.springs.util.certs.client.config.SpringsUtilHttpsClientsConfiguration;
+import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
 import com.github.justincranford.springs.util.certs.server.TomcatTlsInitializer;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest(
 	webEnvironment = WebEnvironment.RANDOM_PORT,
 	classes={
-		SpringsServiceWebauthnConfiguration.class,
+		SpringsUtilHttpsConfiguration.class,
 		AbstractIT.AbstractITConfiguration.class
-	}
+	}	
 )
+// TODO Fix configuration so this isn't needed
 @ContextConfiguration(
 	initializers={TomcatTlsInitializer.class}
 )
-@Import({HelloWorldController.class})
 @Getter
 @Accessors(fluent = true)
 @ActiveProfiles({"test"})
-@SuppressWarnings({"nls", "static-method"})
-@Slf4j
+@SuppressWarnings({"static-method"})
 public class AbstractIT {
 	@LocalServerPort
 	private long localServerPort;
+
+	@Value("${" + TomcatTlsInitializer.SslAutoConfigPropertyNames.ENABLED + ":false}")
+	private boolean sslAutoConfigEnabled;
 
 	@Value("${server.address}")
 	private String serverAddress;
@@ -71,24 +70,10 @@ public class AbstractIT {
 	@Qualifier("stlsRestTemplate")
 	private RestTemplate stlsRestTemplate;
 
-	private String httpBaseUrl;
-	private String httpsBaseUrl;
-
-	@BeforeEach
-	public void beforeEach() {
-		this.httpBaseUrl  = "http://"  + this.serverAddress + ":" + this.localServerPort;
-		this.httpsBaseUrl = "https://" + this.serverAddress + ":" + this.localServerPort;
-		log.info("{}, {}", this.httpBaseUrl, this.httpsBaseUrl);
-	}
-
     @Configuration
-	@EnableAutoConfiguration(
-		exclude = {
-			UserDetailsServiceAutoConfiguration.class
-		}
-	)
+	@EnableAutoConfiguration(exclude = { UserDetailsServiceAutoConfiguration.class })
     static class AbstractITConfiguration {
-		@Bean
+	    @Bean
 	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 	        http
 	        	.authorizeHttpRequests(authz -> authz.anyRequest().permitAll())

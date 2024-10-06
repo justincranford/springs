@@ -24,7 +24,8 @@
 		<module>springs-util-basic</module>
 		<module>springs-util-json</module>
 		<module>springs-util-observability</module>
-		<module>springs-util-certs</module>
+		<module>springs-util-http</module>
+		<module>springs-util-https</module>
 		<module>springs-util-testcontainers</module>
 		<module>springs-util-security-hashes</module>
 		<module>springs-persistence-orm-base</module>
@@ -61,6 +62,14 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
+			<dependency>
+			    <groupId>com.fasterxml.jackson</groupId>
+			    <artifactId>jackson-bom</artifactId>
+			    <version>2.17.2</version>
+			    <type>pom</type>
+				<scope>import</scope>
+			</dependency>
 			<dependency>
 				<groupId>org.springframework.ai</groupId>
 				<artifactId>spring-ai-bom</artifactId>
@@ -68,8 +77,14 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-       			<!--
-			https://mvnrepository.com/artifact/org.testcontainers/testcontainers -->
+			<dependency>
+				<groupId>com.yubico</groupId>
+				<artifactId>webauthn-server-parent</artifactId>
+			    <version>2.5.3</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+       		<!-- https://mvnrepository.com/artifact/org.testcontainers/testcontainers -->
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>testcontainers-bom</artifactId>
@@ -82,15 +97,13 @@
 				<artifactId>testcontainers-keycloak</artifactId>
 				<version>3.4.0</version>
 			</dependency>
-			<!--
-			https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on -->
+			<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on -->
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcpkix-jdk18on</artifactId>
 				<version>1.78.1</version>
 			</dependency>
-			<!--
-			https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on -->
+			<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on -->
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcprov-jdk18on</artifactId>
@@ -102,11 +115,21 @@
 				<artifactId>guava</artifactId>
 				<version>33.3.0-jre</version>
 			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/com.yubico/webauthn-server-core -->
 			<dependency>
 			    <groupId>com.yubico</groupId>
 			    <artifactId>webauthn-server-core</artifactId>
 			    <version>2.5.3</version>
 			</dependency>
+			<!-- https://mvnrepository.com/artifact/com.upokecenter/cbor -->
+			<!-- 
+			<dependency>
+				<groupId>com.upokecenter</groupId>
+				<artifactId>cbor</artifactId>
+				<version>4.5.6</version>
+			</dependency>
+			-->
 		</dependencies>
 	</dependencyManagement>
 
