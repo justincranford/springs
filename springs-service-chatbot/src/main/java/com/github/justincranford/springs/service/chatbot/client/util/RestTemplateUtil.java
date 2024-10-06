@@ -41,7 +41,7 @@ public class RestTemplateUtil {
 	}
 	private static <REQUEST, RESPONSE> RESPONSE http(final RestTemplate restTemplate, final String url, final HttpMethod method, final HttpEntity<REQUEST> entity, final Class<RESPONSE> clazz) {
 		try {
-			log.info("Method: [{}], URL: [{}], entity: [{}], class: [{}]", method, url, entity, clazz);
+			log.debug("Method: [{}], URL: [{}], entity: [{}], class: [{}]", method, url, entity, clazz);
 			final ResponseEntity<RESPONSE> response = restTemplate.exchange(url, method, entity, clazz);
 			return response.getBody();
 		} catch (HttpStatusCodeException e) {
@@ -61,7 +61,7 @@ public class RestTemplateUtil {
 	private static <REQUEST, RESPONSE> BlockingQueue<RESPONSE> httpStream(final RestTemplate restTemplate, final String url, final HttpMethod method, final HttpEntity<REQUEST> entity, final Class<RESPONSE> clazz) {
 		try {
 			final BlockingQueue<RESPONSE> responseQueue = new LinkedBlockingQueue<>();
-			log.info("Method: [{}], URL: [{}], entity: [{}], class: [{}]", method, url, entity, clazz);
+			log.debug("Method: [{}], URL: [{}], entity: [{}], class: [{}]", method, url, entity, clazz);
 			restTemplate.execute(
 				url,
 				method,
@@ -76,7 +76,6 @@ public class RestTemplateUtil {
 				(clientHttpResponse) -> {
 					try (JsonParser parser = JSON_FACTORY.createParser(new BufferedReader(new InputStreamReader(clientHttpResponse.getBody())))) {
 					    while (!parser.isClosed()) {
-							log.info("", new Throwable("Body"));
 					        if (parser.nextToken() == null) {
 					            break;
 					        }
@@ -98,20 +97,20 @@ public class RestTemplateUtil {
 
 	private static HttpHeaders getHttpHeaders(final String url) {
 		return new HttpHeaders(CollectionUtils.toMultiValueMap(Map.of(
-			"Host",		 List.of(hostHeaderFromUrl(url)),
-			"User-Agent", 	USER_AGENT,
-			"Accept-Language", ACCEPT_LANGUAGE,
-			"Accept", 		ACCEPT_APPLCIATION_JSON)
+			"Host",				List.of(hostHeaderFromUrl(url)),
+			"User-Agent",		USER_AGENT,
+			"Accept-Language",	ACCEPT_LANGUAGE,
+			"Accept", 			ACCEPT_APPLCIATION_JSON)
 		));
 	}
 
 	private static HttpHeaders postHttpHeaders(final String url) {
 		return new HttpHeaders(CollectionUtils.toMultiValueMap(Map.of(
-			"Host",		List.of(hostHeaderFromUrl(url)),
-			"User-Agent",	USER_AGENT,
-			"Content-Type",	CONTENT_TYPE_APPLCIATION_JSON,
-			"Accept-Language", ACCEPT_LANGUAGE,
-			"Accept",	ACCEPT_APPLCIATION_JSON)
+			"Host",				List.of(hostHeaderFromUrl(url)),
+			"User-Agent",		USER_AGENT,
+			"Content-Type",		CONTENT_TYPE_APPLCIATION_JSON,
+			"Accept-Language",	ACCEPT_LANGUAGE,
+			"Accept",			ACCEPT_APPLCIATION_JSON)
 		));
 	}
 

@@ -73,18 +73,18 @@ public class SpringsServiceOllama {
 			final CountDownLatch latch = new CountDownLatch(1);
 			final Flux<ChatResponse> chatResponseFlux = this.chatClient.prompt(prompt).stream().chatResponse()
 				.doOnRequest((value) -> {
-					log.info("value:\n{}", Long.valueOf(value));
+					log.debug("value:\n{}", Long.valueOf(value));
 				})
 				.doOnNext(chatResponse -> {
 					final Generation result = chatResponse.getResult();
 					response.append(result.getOutput().getContent());
 					final String finishReason = result.getMetadata().getFinishReason();
 					if (finishReason != null) {
-						log.info("finishReason:\n{}", finishReason);
+						log.debug("finishReason:\n{}", finishReason);
 					}
 				})
 				.doOnComplete(() -> {
-					log.info("Response:\n{}", response);
+					log.debug("Response:\n{}", response);
 					latch.countDown();
 				})
 				.doOnError((exception) -> {
