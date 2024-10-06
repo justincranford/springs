@@ -25,10 +25,10 @@ public class TomcatTlsInitializerIT extends AbstractIT {
 	@Test
 	void testTlsMutualAuthentication() {
 		final HttpHeaders headers = new HttpHeaders(CollectionUtils.toMultiValueMap(Map.of(
-			"Host",   List.of("localhost:" + localServerPort()),
+			"Host",   List.of(serverAddress() + ":" + localServerPort()),
 			"Accept", List.of("*/*")
 		)));
-		final String url = "https://localhost:" + localServerPort();
+		final String url = "https://" + serverAddress() + ":" + localServerPort();
 		log.info("url: {}", url);
 		try {
 			final ResponseEntity<String> x = tlsMutualAuthenticationRestTemplate().exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
@@ -43,10 +43,10 @@ public class TomcatTlsInitializerIT extends AbstractIT {
 	@Test
 	void testTlsServerAuthentication() {
 		final HttpHeaders headers = new HttpHeaders(CollectionUtils.toMultiValueMap(Map.of(
-			"Host",   List.of("localhost:" + localServerPort()),
+			"Host",   List.of(serverAddress() + ":" + localServerPort()),
 			"Accept", List.of("*/*")
 		)));
-		final String url = "https://localhost:" + localServerPort();
+		final String url = "https://" + serverAddress() + ":" + localServerPort();
 		log.info("url: {}", url);
 		try {
 			final ResponseEntity<String> x = tlsServerAuthenticationRestTemplate().exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);

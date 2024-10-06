@@ -128,7 +128,11 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 		if (InternetDomainName.isValid(serverAddress)) {
 			sanDnsNames.add(serverAddress);
 		} else if (InetAddresses.isUriInetAddress(serverAddress)) {
-			sanIpAddresses.add(serverAddress);
+		    if (serverAddress.startsWith("[") && serverAddress.endsWith("]")) {
+				sanIpAddresses.add(serverAddress.substring(1, serverAddress.length() - 1));
+		    } else {
+				sanIpAddresses.add(serverAddress);
+		    }
 		} else {
 			throw new RuntimeException("Address is not a valid hostname or IP address");
 		}

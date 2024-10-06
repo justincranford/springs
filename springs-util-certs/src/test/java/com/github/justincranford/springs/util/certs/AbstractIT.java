@@ -1,6 +1,7 @@
 package com.github.justincranford.springs.util.certs;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,6 +46,9 @@ public class AbstractIT {
 	@LocalServerPort
 	private long localServerPort;
 
+	@Value("${server.address}")
+	private String serverAddress;
+
 	@Autowired
 	private RestTemplate tlsMutualAuthenticationRestTemplate;
 
@@ -53,7 +57,6 @@ public class AbstractIT {
 
     @Configuration
 	@EnableAutoConfiguration(exclude = { UserDetailsServiceAutoConfiguration.class })
-//    @EnableConfigurationProperties
     static class AbstractITConfiguration {
 	    @Bean
 	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
