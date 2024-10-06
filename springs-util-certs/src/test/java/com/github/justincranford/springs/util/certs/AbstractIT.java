@@ -3,13 +3,9 @@ package com.github.justincranford.springs.util.certs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -22,14 +18,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.github.justincranford.springs.util.certs.config.SpringsUtilCertsConfiguration;
 import com.github.justincranford.springs.util.certs.tls.TomcatTlsInitializer;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
 @SpringBootTest(
-	classes={AbstractIT.AbstractITConfiguration.class},
-	webEnvironment = WebEnvironment.RANDOM_PORT
+	webEnvironment = WebEnvironment.RANDOM_PORT,
+	classes={
+		SpringsUtilCertsConfiguration.class,
+		AbstractIT.AbstractITConfiguration.class
+	}	
 )
 @ContextConfiguration(
 	initializers={TomcatTlsInitializer.class}
@@ -51,26 +51,10 @@ public class AbstractIT {
 	@Autowired
 	private RestTemplate tlsServerAuthenticationRestTemplate;
 
-	@EnableAutoConfiguration(exclude = { UserDetailsServiceAutoConfiguration.class })
-    @EnableConfigurationProperties
     @Configuration
+	@EnableAutoConfiguration(exclude = { UserDetailsServiceAutoConfiguration.class })
+//    @EnableConfigurationProperties
     static class AbstractITConfiguration {
-		@Bean
-    	public RestTemplate tlsMutualAuthenticationRestTemplate(final RestTemplateBuilder restTemplateBuilder, final SslBundles sslBundles) {
-	        final SslBundle clientSslBundle = sslBundles.getBundle(TomcatTlsInitializer.CLIENT_BUNDLE_MUTUAL_AUTHENTICATION);
-    		return restTemplateBuilder
-				.setSslBundle(clientSslBundle)
-				.build();
-    	}
-
-		@Bean
-    	public RestTemplate tlsServerAuthenticationRestTemplate(final RestTemplateBuilder restTemplateBuilder, final SslBundles sslBundles) {
-	        final SslBundle clientSslBundle = sslBundles.getBundle(TomcatTlsInitializer.CLIENT_BUNDLE_SERVER_AUTHENTICATION);
-    		return restTemplateBuilder
-				.setSslBundle(clientSslBundle)
-				.build();
-    	}
-
 	    @Bean
 	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 	        http
