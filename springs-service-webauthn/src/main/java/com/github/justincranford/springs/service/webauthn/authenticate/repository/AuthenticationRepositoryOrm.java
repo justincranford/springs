@@ -1,8 +1,8 @@
-package com.github.justincranford.springs.service.webauthn.authentication.repository;
+package com.github.justincranford.springs.service.webauthn.authenticate.repository;
 
 import java.util.concurrent.TimeUnit;
 
-import com.github.justincranford.springs.service.webauthn.authentication.data.AuthenticationRequest;
+import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationRequest;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 

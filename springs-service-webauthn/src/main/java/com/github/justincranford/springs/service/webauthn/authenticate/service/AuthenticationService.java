@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.webauthn.authentication.service;
+package com.github.justincranford.springs.service.webauthn.authenticate.service;
 
 import java.net.MalformedURLException;
 
@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.service.webauthn.authentication.data.AuthenticationRequest;
-import com.github.justincranford.springs.service.webauthn.authentication.data.AuthenticationResponse;
-import com.github.justincranford.springs.service.webauthn.authentication.data.AuthenticationSuccess;
-import com.github.justincranford.springs.service.webauthn.authentication.repository.AuthenticationRepositoryOrm;
+import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationRequest;
+import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationResponse;
+import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationSuccess;
+import com.github.justincranford.springs.service.webauthn.authenticate.repository.AuthenticationRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialRepositoryOrm;
 import com.yubico.webauthn.RelyingParty;
 

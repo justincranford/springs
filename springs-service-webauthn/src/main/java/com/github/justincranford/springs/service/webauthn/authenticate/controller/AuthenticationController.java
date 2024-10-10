@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.webauthn.authentication.controller;
+package com.github.justincranford.springs.service.webauthn.authenticate.controller;
 
 import java.net.MalformedURLException;
 
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.service.webauthn.authentication.data.AuthenticationRequest;
-import com.github.justincranford.springs.service.webauthn.authentication.data.AuthenticationResponse;
-import com.github.justincranford.springs.service.webauthn.authentication.data.AuthenticationSuccess;
-import com.github.justincranford.springs.service.webauthn.authentication.service.AuthenticationService;
+import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationRequest;
+import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationResponse;
+import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationSuccess;
+import com.github.justincranford.springs.service.webauthn.authenticate.service.AuthenticationService;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;

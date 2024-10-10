@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.webauthn.authentication.data;
+package com.github.justincranford.springs.service.webauthn.authenticate.data;
 
 import java.net.MalformedURLException;
 import java.net.URI;

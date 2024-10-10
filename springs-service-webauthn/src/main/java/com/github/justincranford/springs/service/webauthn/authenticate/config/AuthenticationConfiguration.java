@@ -1,11 +1,11 @@
-package com.github.justincranford.springs.service.webauthn.authentication.config;
+package com.github.justincranford.springs.service.webauthn.authenticate.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.github.justincranford.springs.service.webauthn.authentication.service.AuthenticationService;
-import com.github.justincranford.springs.service.webauthn.authentication.repository.AuthenticationRepositoryOrm;
+import com.github.justincranford.springs.service.webauthn.authenticate.repository.AuthenticationRepositoryOrm;
+import com.github.justincranford.springs.service.webauthn.authenticate.service.AuthenticationService;
 
 @Configuration
 @Import({AuthenticationService.class})
