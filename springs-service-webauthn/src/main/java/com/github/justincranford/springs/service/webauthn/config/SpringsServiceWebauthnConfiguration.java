@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import com.github.justincranford.springs.service.webauthn.actions.config.ActionsConfiguration;
 import com.github.justincranford.springs.service.webauthn.authenticate.config.AuthenticationConfiguration;
 import com.github.justincranford.springs.service.webauthn.credential.config.CredentialConfiguration;
 import com.github.justincranford.springs.service.webauthn.register.config.RegistrationConfiguration;
@@ -15,6 +16,7 @@ import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfi
 @Import(value = {
 	SpringsUtilHttpsConfiguration.class,
 	RelyingPartyConfiguration.class,
+	ActionsConfiguration.class,
 	CredentialConfiguration.class,
 	RegistrationConfiguration.class,
 	AuthenticationConfiguration.class

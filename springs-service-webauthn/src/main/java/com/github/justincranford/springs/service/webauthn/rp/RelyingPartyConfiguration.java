@@ -5,10 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import com.github.justincranford.springs.service.webauthn.register.controller.RegisterController;
 import com.yubico.webauthn.CredentialRepository;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.data.PublicKeyCredentialParameters;
@@ -18,7 +16,6 @@ import com.yubico.webauthn.extension.appid.InvalidAppIdException;
 
 @Configuration
 @SuppressWarnings({"nls"})
-@ComponentScan(basePackageClasses={RegisterController.class})
 public class RelyingPartyConfiguration {
 	@Value("${server.address}")
 	private String serverAddress;

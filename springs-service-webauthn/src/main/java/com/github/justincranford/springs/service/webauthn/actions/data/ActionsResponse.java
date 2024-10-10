@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.webauthn.util.controller;
+package com.github.justincranford.springs.service.webauthn.actions.data;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -19,12 +19,12 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 @SuppressWarnings({"nls"})
-public final class IndexResponse {
-	public final Index actions;
+public final class ActionsResponse {
+	public final Actions actions;
 	public final Info info;
 
-	public IndexResponse(final String url) throws MalformedURLException {
-		this.actions = new Index(url);
+	public ActionsResponse(final String url) throws MalformedURLException {
+		this.actions = new Actions(url);
 		this.info = new Info(url);
 	}
 
@@ -34,13 +34,13 @@ public final class IndexResponse {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@ToString
 	@EqualsAndHashCode(callSuper = false)
-	public final class Index {
+	public final class Actions {
 		public final URL authenticate;
 		public final URL deleteAccount;
 		public final URL deregister;
 		public final URL register;
 
-		public Index(final String url) throws MalformedURLException {
+		public Actions(final String url) throws MalformedURLException {
 			final String slash = url.endsWith("/") ? "" : "/";
 			this.authenticate = URI.create(url + slash + "authenticate").toURL();
 			this.deleteAccount = URI.create(url + slash + "delete-account").toURL();

@@ -1,10 +1,8 @@
 package com.github.justincranford.springs.service.webauthn.register.controller;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +16,6 @@ import com.github.justincranford.springs.service.webauthn.register.data.Registra
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationResponse;
 import com.github.justincranford.springs.service.webauthn.register.data.SuccessfulRegistrationResult;
 import com.github.justincranford.springs.service.webauthn.register.service.RegistrationService;
-import com.github.justincranford.springs.service.webauthn.util.controller.IndexResponse;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -34,12 +31,6 @@ public class RegisterController {
 	private ObjectMapper objectMapper;
 	@Autowired
 	private RegistrationService registrationService;
-
-	@GetMapping(value={"/api/v1/"})
-	public String index(HttpServletRequest request) throws IOException {
-		final IndexResponse indexResponse = new IndexResponse(request.getRequestURL().toString());
-		return this.objectMapper.writeValueAsString(indexResponse);
-	}
 
 	@PostMapping(value={"/api/v1/register", "/api/v1/register/"},consumes={"application/x-www-form-urlencoded"},produces={"application/json"})
 	public RegistrationRequest startRegistration(

@@ -4,11 +4,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import com.github.justincranford.springs.service.webauthn.register.controller.RegisterController;
 import com.github.justincranford.springs.service.webauthn.register.repository.RegistrationRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.register.service.RegistrationService;
 
 @Configuration
-@Import({RegistrationService.class})
+@Import({RegisterController.class, RegistrationService.class})
 @SuppressWarnings({"static-method"})
 public class RegistrationConfiguration {
 	@Bean
