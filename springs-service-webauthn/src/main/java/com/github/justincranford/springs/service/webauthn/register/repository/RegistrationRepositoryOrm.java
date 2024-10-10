@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.webauthn.rp.repository;
+package com.github.justincranford.springs.service.webauthn.register.repository;
 
 import java.util.concurrent.TimeUnit;
 

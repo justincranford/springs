@@ -9,8 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import com.github.justincranford.springs.service.webauthn.register.controller.RegisterController;
-import com.github.justincranford.springs.service.webauthn.rp.repository.CredentialRepositoryOrm;
-import com.github.justincranford.springs.service.webauthn.rp.repository.RegistrationRepositoryOrm;
 import com.yubico.webauthn.CredentialRepository;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.data.PublicKeyCredentialParameters;
@@ -19,7 +17,7 @@ import com.yubico.webauthn.extension.appid.AppId;
 import com.yubico.webauthn.extension.appid.InvalidAppIdException;
 
 @Configuration
-@SuppressWarnings({"nls", "static-method"})
+@SuppressWarnings({"nls"})
 @ComponentScan(basePackageClasses={RegisterController.class})
 public class RelyingPartyConfiguration {
 	@Value("${server.address}")
@@ -30,16 +28,6 @@ public class RelyingPartyConfiguration {
 
 	@Value("${webauthn.relyingParty.name}")
 	private String webauthnRelyingPartyName;
-
-	@Bean
-	public CredentialRepository credentialRepository() {
-		return new CredentialRepositoryOrm();
-	}
-
-	@Bean
-	public RegistrationRepositoryOrm registrationRepositoryOrm() {
-		return new RegistrationRepositoryOrm();
-	}
 
 	@Bean
 	public RelyingPartyIdentity relyingPartyIdentity() {

@@ -1,96 +1,67 @@
 package com.github.justincranford.springs.service.webauthn.authentication.data;
 
-import java.util.Collection;
+import java.io.IOException;
 import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.github.justincranford.springs.service.webauthn.rp.repository.CredentialOrm;
+import com.github.justincranford.springs.service.webauthn.register.data.AttestationCertInfo;
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationRequest;
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationResponse;
 import com.github.justincranford.springs.service.webauthn.util.AuthDataSerializer;
-import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
+import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.AuthenticatorData;
 import com.yubico.webauthn.data.ByteArray;
-import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
-import com.yubico.webauthn.data.PublicKeyCredential;
-import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter(onMethod = @__(@JsonProperty))
 @Setter
 //	@Accessors(fluent = true)
-@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
 @EqualsAndHashCode(callSuper = false)
-@SuppressWarnings({ "hiding" })
-public final class SuccessfulAuthenticationResult {
-	private final boolean success = true;
-	private final AssertionRequestWrapper request;
-	private final AssertionResponse response;
-	private final Collection<CredentialOrm> registrations;
+@Slf4j
+@SuppressWarnings({"nls", "hiding"})
+public class SuccessfulAuthenticationResult {
+	final boolean success = true;
+	RegistrationRequest request;
+	RegistrationResponse response;
+	RegisteredCredential registration;
+	boolean attestationTrusted;
+	Optional<AttestationCertInfo> attestationCert;
 
 	@JsonSerialize(using = AuthDataSerializer.class)
 	AuthenticatorData authData;
 
-	private final String username;
-	private final ByteArray sessionToken;
+	String username;
+	String sessionToken;
 
-	public SuccessfulAuthenticationResult(AssertionRequestWrapper request, AssertionResponse response,
-			Collection<CredentialOrm> registrations, String username, ByteArray sessionToken) {
-		this(request, response, registrations, response.getCredential().getResponse().getParsedAuthenticatorData(),
-				username, sessionToken);
-	}
-
-	@Getter(onMethod = @__(@JsonProperty))
-	@Setter
-//		@Accessors(fluent = true)
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	@ToString
-	@EqualsAndHashCode(callSuper = false)
-	public class AssertionRequestWrapper {
-		@NonNull
-		private final ByteArray requestId;
-		@NonNull
-		private final PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions;
-		@NonNull
-		private final Optional<String> username;
-		@NonNull
-		@JsonIgnore
-		private final transient com.yubico.webauthn.AssertionRequest request;
-
-		public AssertionRequestWrapper(@NonNull ByteArray requestId,
-				@NonNull com.yubico.webauthn.AssertionRequest request) {
-			this.requestId = requestId;
-			this.publicKeyCredentialRequestOptions = request.getPublicKeyCredentialRequestOptions();
-			this.username = request.getUsername();
-			this.request = request;
-		}
-	}
-
-	@Getter(onMethod = @__(@JsonProperty))
-	@Setter
-//		@Accessors(fluent = true)
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	@ToString
-	@EqualsAndHashCode(callSuper = false)
-	@JsonIgnoreProperties({ "sessionToken" })
-	public class AssertionResponse {
-		private final ByteArray requestId;
-		private final PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential;
-
-		public AssertionResponse(@JsonProperty("requestId") ByteArray requestId,
-				@JsonProperty("credential") PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential) {
-			this.requestId = requestId;
-			this.credential = credential;
-		}
+	public SuccessfulAuthenticationResult(RegistrationRequest request, RegistrationResponse response,
+			RegisteredCredential registration, boolean attestationTrusted, String sessionToken) {
+		this.request = request;
+		this.response = response;
+		this.registration = registration;
+		this.attestationTrusted = attestationTrusted;
+		this.attestationCert = Optional
+				.ofNullable(
+						response.getCredential().getResponse().getAttestation().getAttestationStatement().get("x5c"))
+				.map(certs -> certs.get(0)).flatMap((JsonNode certDer) -> {
+					try {
+						return Optional.of(new ByteArray(certDer.binaryValue()));
+					} catch (IOException e) {
+						log.error("Failed to get binary value from x5c element: {}", certDer, e);
+						return Optional.empty();
+					}
+				}).map(AttestationCertInfo::new);
+		this.authData = response.getCredential().getResponse().getParsedAuthenticatorData();
+		this.username = request.getUsername();
+		this.sessionToken = sessionToken;
 	}
 }

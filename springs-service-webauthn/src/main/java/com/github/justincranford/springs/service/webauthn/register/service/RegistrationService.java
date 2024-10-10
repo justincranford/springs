@@ -11,11 +11,11 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationRequest;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationResponse;
 import com.github.justincranford.springs.service.webauthn.register.data.SuccessfulRegistrationResult;
-import com.github.justincranford.springs.service.webauthn.rp.repository.CredentialRepositoryOrm;
-import com.github.justincranford.springs.service.webauthn.rp.repository.RegistrationRepositoryOrm;
+import com.github.justincranford.springs.service.webauthn.register.repository.RegistrationRepositoryOrm;
 import com.yubico.webauthn.FinishRegistrationOptions;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.RegistrationResult;

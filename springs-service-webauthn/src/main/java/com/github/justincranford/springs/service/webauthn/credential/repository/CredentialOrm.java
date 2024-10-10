@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.webauthn.rp.repository;
+package com.github.justincranford.springs.service.webauthn.credential.repository;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
