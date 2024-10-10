@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -59,12 +60,12 @@ public class RegistrationService {
 			.id(randomByteArray(32))
 			.build();
 		final StartRegistrationOptions startRegistrationOptions = StartRegistrationOptions.builder().user(userIdentity)
-			.timeout(300L)
+			.timeout(300_000L) // 5 minutes
 			.authenticatorSelection(
 				AuthenticatorSelectionCriteria.builder()
 					.authenticatorAttachment(AuthenticatorAttachment.PLATFORM)
-					.residentKey(ResidentKeyRequirement.REQUIRED)
-					.userVerification(UserVerificationRequirement.PREFERRED
+					.residentKey(ResidentKeyRequirement.PREFERRED)
+					.userVerification(UserVerificationRequirement.DISCOURAGED
 				).build()
 			)
 //			.extensions(
@@ -94,27 +95,36 @@ public class RegistrationService {
 				new RegistrationRequest.StartRegistrationActions(requestUrl)
 			).build();
 		this.registrationRepositoryOrm.add(newSessionToken, registrationRequest);
-		log.info("registrationRequest: {}", this.objectMapper.writeValueAsString(registrationRequest));
+		log.info("registrationRequest: {}", this.objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(registrationRequest));
 		return registrationRequest;
 	}
 
 	public SuccessfulRegistrationResult finish(final RegistrationResponse registrationResponse) {
 		try {
-			final String sessionToken = registrationResponse.getSessionToken();
-			log.info("sessionToken: {}", sessionToken);
+    		final String sessionToken = registrationResponse.getSessionToken();
+			log.trace("Res, sessionToken: {}", sessionToken);
 
-    		final RegistrationRequest registrationRequest = this.registrationRepositoryOrm.remove(sessionToken);
-			log.info("registrationRequest: {}", registrationRequest);
+			final RegistrationRequest registrationRequest = this.registrationRepositoryOrm.remove(sessionToken);
+			log.trace("registrationRequest: {}", registrationRequest);
+			log.trace("registrationRequest: {}", registrationResponse);
+			if (registrationRequest == null) {
+				log.error("Invalid sessionToken: {}", sessionToken);
+				throw new RegistrationFailedException(new IllegalArgumentException("Invalid sessionToken"));
+			}
+
+			log.info("registrationRequest: {}", this.objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(registrationRequest));
+			log.info("registrationResponse: {}", this.objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(registrationResponse));
 
 			final UserIdentity userIdentity       = registrationRequest.getUserIdentity();
 			final String       username           = registrationRequest.getUsername();
     		final String       displayName        = registrationRequest.getDisplayName();
     		final String       credentialNickname = registrationRequest.getCredentialNickname();
-			log.info("userIdentity: {}, username: {}, displayName: {}, credentialNickname: {}",
+			log.trace("Req, userIdentity: {}, username: {}, displayName: {}, credentialNickname: {}, sessionToken: {}",
 				userIdentity,
 				username,
 				displayName,
-				credentialNickname
+				credentialNickname,
+				registrationRequest.getSessionToken()
 			);
 
 			final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = registrationRequest
@@ -130,6 +140,9 @@ public class RegistrationService {
 					.response(publicKeyCredential)
 					.build()
 				);
+			log.trace("registrationResult: {}", publicKeyCredential);
+			log.info("registrationResult: {}", this.objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(publicKeyCredential));
+
 			final RegisteredCredential registeredCredential = RegisteredCredential.builder()
 				.credentialId(registrationResult.getKeyId().getId())
 				.userHandle(userIdentity.getId())
@@ -138,6 +151,9 @@ public class RegistrationService {
 				.backupEligible(Boolean.valueOf(registrationResult.isBackupEligible()))
 				.backupState(Boolean.valueOf(registrationResult.isBackedUp()))
 				.build();
+			log.info("registeredCredential: {}", registeredCredential);
+			log.info("registeredCredential: {}", this.objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(registeredCredential));
+
 			this.credentialRepositoryOrm.addRegistrationByUsername(username, registeredCredential);
 			final SuccessfulRegistrationResult successfulRegistrationResult = new SuccessfulRegistrationResult(
 				registrationRequest,
@@ -146,7 +162,9 @@ public class RegistrationService {
 				true,
 				sessionToken
 			);
-			log.info("successfulRegistrationResult: {}", this.objectMapper.writeValueAsString(successfulRegistrationResult));
+			log.info("successfulRegistrationResult: {}", successfulRegistrationResult);
+			log.info("successfulRegistrationResult: {}", this.objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(successfulRegistrationResult));
+
 			return successfulRegistrationResult;
 		} catch (RegistrationFailedException | JsonProcessingException e) {
 			log.info("Finish registration exception", e);

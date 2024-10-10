@@ -42,21 +42,27 @@ function extend(obj, more) {
 
 function rejectIfNotSuccess(response) {
   if (response.success) {
+    console.log('response.success', response.success);
     return response;
   } else {
+    console.log('rejectIfNotSuccess', response.success);
     return new Promise((resolve, reject) => reject(response));
   }
 }
 
 function updateSession(response) {
   if (response.sessionToken) {
+     console.log('response.sessionToken', response.sessionToken);
      session.sessionToken = response.sessionToken;
   }
   if (response.username) {
+    console.log('response.username', response.username);
     session.username = response.username;
   }
   updateSessionBox();
+  console.log('updateSessionBox');
   updateRegisterButtons();
+  console.log('updateRegisterButtons');
   return response;
 }
 
@@ -371,40 +377,65 @@ async function register(event, requireResidentKey) {
 }
 
 function getAuthenticateRequest(urls, username) {
+  console.log('username', username);
+  debugger; // Pauses before processing the response
   return fetch(urls.authenticate, {
     body: new URLSearchParams(username ? { username } : {}),
     method: 'POST',
   })
     .then(response => response.json())
+    .then(authenticateRequest => {
+      console.log('authenticateRequest', authenticateRequest);
+      debugger; // Pauses before processing the response
+      return authenticateRequest;
+    })
     .then(updateSession)
     .then(rejectIfNotSuccess)
   ;
 }
 
 function executeAuthenticateRequest(request) {
-  console.log('executeAuthenticateRequest', request);
+  console.log('request', JSON.stringify(request, false, 2));
+  console.log('request.publicKeyCredentialRequestOptions', JSON.stringify(request.publicKeyCredentialRequestOptions, false, 2));
+  debugger; // Pauses before processing the response
 
   return webauthnJson.get({ publicKey: request.publicKeyCredentialRequestOptions });
 }
 
 function authenticateWithUsername(event) {
-  return authenticate(event, document.getElementById('username').value);
+  const username = document.getElementById('username').value;
+  const displayName = document.getElementById('displayName').value;
+  const credentialNickname = document.getElementById('credentialNickname').value;
+  console.log('username', username);
+  console.log('displayName', displayName);
+  console.log('credentialNickname', credentialNickname);
+  debugger;
+  return authenticate(event, username);
 }
 async function authenticate(event, username) {
   try {
+    console.log('event', event);
     console.log('username', username);
     const data = await performCeremony({
       getIndexActions,
-      getRequest: urls => getAuthenticateRequest(urls, username),
+      getRequest: urls => {
+        console.log('executing getAuthenticateRequest');
+        return getAuthenticateRequest(urls, username);
+      },
       statusStrings: {
         init: 'Initiating authentication ceremony with server...',
         authenticatorRequest: 'Asking authenticators to perform assertion...',
         success: 'Authentication successful!',
       },
-      executeRequest: executeAuthenticateRequest,
+      executeRequest: request => {
+        console.log('request', request);
+        debugger; // Pauses before executeAuthenticateRequest is called
+        return executeAuthenticateRequest(request);
+      }
     });
     console.log('data', data);
     console.log('data.registrations', data.registrations);
+    console.log('data.registrations[0].username', data.registrations[0].username);
 
     if (data.registrations) {
       addMessage(`Authenticated as: ${data.registrations[0].username}`);
@@ -412,7 +443,10 @@ async function authenticate(event, username) {
     return data;
 
   } catch (err) {
-    setStatus('Authentication failed.');
+    setStatus('Authentication failed');
+    setStatus('err', err);
+    setStatus('err.name', err.name);
+    setStatus('err.messages', err.messages);
     if (err.name === 'InvalidStateError') {
       addMessage(`This authenticator is not registered for the account "${username}". Please try again with a registered authenticator.`)
     } else if (err.message) {
@@ -503,16 +537,16 @@ window.onload = init;
     <form class="horizontal">
       <div class="row">
         <label for="username">Username:</label>
-        <div><input type="text" id="username" /></div>
+        <div><input type="text" id="username" value="My Username"/></div>
       </div>
       <div class="row">
         <label for="displayName">Display name:</label>
-        <div><input type="text" id="displayName"/></div>
+        <div><input type="text" id="displayName" value="My Display Name"/></div>
       </div>
 
       <div class="row">
         <label for="credentialNickname">Credential nickname:</label>
-        <div><input type="text" id="credentialNickname"/></div>
+        <div><input type="text" id="credentialNickname" value="My Credential Nickname"/></div>
         <div>
           <button type="button" id="registerButton">
             Create account with non-discoverable credential

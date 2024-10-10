@@ -26,6 +26,7 @@ import lombok.ToString;
 @Builder
 @SuppressWarnings({"hiding"})
 public class AuthenticationRequest {
+	private final boolean success = true;
 	private final String requestId;
 	private final AssertionRequest request;
 	private final PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions;

@@ -28,7 +28,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest(
-	webEnvironment = WebEnvironment.RANDOM_PORT,
+	webEnvironment = WebEnvironment.DEFINED_PORT,
 	classes={
 		SpringsServiceWebauthnConfiguration.class,
 		AbstractIT.AbstractITConfiguration.class
@@ -78,7 +78,8 @@ public class AbstractIT {
 	public void beforeEach() {
 		this.httpBaseUrl  = "http://"  + this.serverAddress + ":" + this.localServerPort;
 		this.httpsBaseUrl = "https://" + this.serverAddress + ":" + this.localServerPort;
-		log.info("{}, {}", this.httpBaseUrl, this.httpsBaseUrl);
+		log.info("httpsBaseUrl: {}", this.httpsBaseUrl);
+		log.info("httpBaseUrl: {}", this.httpBaseUrl);
 	}
 
     @Configuration

@@ -8,7 +8,7 @@ import com.github.justincranford.springs.service.webauthn.actions.config.Actions
 import com.github.justincranford.springs.service.webauthn.authenticate.config.AuthenticationConfiguration;
 import com.github.justincranford.springs.service.webauthn.credential.config.CredentialConfiguration;
 import com.github.justincranford.springs.service.webauthn.register.config.RegistrationConfiguration;
-import com.github.justincranford.springs.service.webauthn.rp.RelyingPartyConfiguration;
+import com.github.justincranford.springs.service.webauthn.relyingparty.config.RelyingPartyConfiguration;
 import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
 
 @Configuration

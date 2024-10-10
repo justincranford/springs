@@ -22,7 +22,11 @@ import com.yubico.webauthn.FinishAssertionOptions;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartAssertionOptions;
+import com.yubico.webauthn.data.AssertionExtensionInputs;
 import com.yubico.webauthn.data.ByteArray;
+import com.yubico.webauthn.data.Extensions.LargeBlob.LargeBlobAuthenticationInput;
+import com.yubico.webauthn.data.Extensions.LargeBlob.LargeBlobRegistrationInput.LargeBlobSupport;
+import com.yubico.webauthn.data.UserVerificationRequirement;
 import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 
@@ -44,20 +48,38 @@ public class AuthenticationService {
 	@Autowired
 	private CredentialRepositoryOrm credentialRepositoryOrm;
 
+	/**
+	 * 
+	 * @param username Non-blank for Webauthn, null for Passkey
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws JsonProcessingException
+	 */
 	public AuthenticationRequest start(
 		@Nullable final String username
 	) throws MalformedURLException, JsonProcessingException {
-		final Set<RegisteredCredential> credentials;
-		if (Strings.isNotBlank(username)) {
-			credentials = this.credentialRepositoryOrm.getRegistrationsByUsername(username);
+		final boolean isUsernameRequest = Strings.isNotBlank(username);
+		if (isUsernameRequest) {
+			final Set<RegisteredCredential> credentials = this.credentialRepositoryOrm.getRegistrationsByUsername(username);
 			if (credentials.isEmpty()) {
-				log.warn("Username {} does not exist", username);
-				throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+				log.warn("Authenticate with username {} won't work because it does not exist", username);
+			} else {
+				log.info("Authenticate with username {} may work because it exists", username);
 			}
+		} else {
+			log.info("Authenticate with passkey (aka without username)", username);
 		}
 		final AssertionRequest assertionRequest = this.relyingParty.startAssertion(
 			StartAssertionOptions.builder()
-				.username(username)
+				.timeout(300_000L) // 5 minutes
+				.username(isUsernameRequest ? username : null)
+				.userVerification(UserVerificationRequirement.PREFERRED)
+				.extensions(
+					AssertionExtensionInputs.builder()
+						.appid(this.relyingParty.getAppId())
+						.uvm()
+						.build()
+				)
 				.build()
 		);
 
