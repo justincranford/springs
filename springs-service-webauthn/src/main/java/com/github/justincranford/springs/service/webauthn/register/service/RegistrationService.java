@@ -47,10 +47,17 @@ public class RegistrationService {
 	@Autowired
 	private CredentialRepositoryOrm credentialRepositoryOrm;
 
-	public RegistrationRequest start(final String username, final String displayName, final String credentialNickname,
-			final String requestUrl) throws MalformedURLException, JsonProcessingException {
-		final UserIdentity userIdentity = UserIdentity.builder().name(username).displayName(displayName)
-				.id(randomByteArray(32)).build();
+	public RegistrationRequest start(
+		final String username,
+		final String displayName,
+		final String credentialNickname,
+		final String requestUrl
+	) throws MalformedURLException, JsonProcessingException {
+		final UserIdentity userIdentity = UserIdentity.builder()
+			.name(username)
+			.displayName(displayName)
+			.id(randomByteArray(32))
+			.build();
 		final StartRegistrationOptions startRegistrationOptions = StartRegistrationOptions.builder().user(userIdentity)
 			.timeout(300L)
 			.authenticatorSelection(
