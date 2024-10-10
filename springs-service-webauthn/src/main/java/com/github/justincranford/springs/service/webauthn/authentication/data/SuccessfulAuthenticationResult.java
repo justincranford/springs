@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.webauthn.register.data;
+package com.github.justincranford.springs.service.webauthn.authentication.data;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -31,7 +31,7 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
 @EqualsAndHashCode(callSuper = false)
-@SuppressWarnings({"hiding"})
+@SuppressWarnings({ "hiding" })
 public final class SuccessfulAuthenticationResult {
 	private final boolean success = true;
 	private final AssertionRequestWrapper request;
