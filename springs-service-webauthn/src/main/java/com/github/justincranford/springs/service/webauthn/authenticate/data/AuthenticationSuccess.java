@@ -3,6 +3,7 @@ package com.github.justincranford.springs.service.webauthn.authenticate.data;
 import java.io.IOException;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -17,31 +18,33 @@ import com.yubico.webauthn.data.ByteArray;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
 @Getter(onMethod = @__(@JsonProperty))
 @Setter
-//	@Accessors(fluent = true)
+//@Accessors(fluent = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
 @EqualsAndHashCode(callSuper = false)
 @Slf4j
 @SuppressWarnings({"nls", "hiding"})
 public class AuthenticationSuccess {
-	final boolean success = true;
-	RegistrationRequest request;
-	RegistrationResponse response;
-	RegisteredCredential registration;
-	boolean attestationTrusted;
-	Optional<AttestationCertInfo> attestationCert;
+	private final boolean success = true;
+	private final RegistrationRequest request;
+	private final RegistrationResponse response;
+	private final RegisteredCredential registration;
+	private final boolean attestationTrusted;
+	private final Optional<AttestationCertInfo> attestationCert;
 
 	@JsonSerialize(using = AuthDataSerializer.class)
-	AuthenticatorData authData;
+	private final AuthenticatorData authData;
 
-	String username;
-	String sessionToken;
+	private final String username;
+	private final String sessionToken;
 
 	public AuthenticationSuccess(RegistrationRequest request, RegistrationResponse response,
 			RegisteredCredential registration, boolean attestationTrusted, String sessionToken) {

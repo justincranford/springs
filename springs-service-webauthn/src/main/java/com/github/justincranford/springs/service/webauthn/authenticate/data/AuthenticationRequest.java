@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
@@ -12,9 +13,11 @@ import com.yubico.webauthn.data.UserIdentity;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
 @Getter(onMethod = @__(@JsonProperty))
 @Setter
 //	@Accessors(fluent = true)
@@ -33,6 +36,7 @@ public class AuthenticationRequest {
 	private final Request request;
 	private final StartRegistrationActions actions;
 
+	@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
 	@Getter(onMethod = @__(@JsonProperty))
 	@Setter
 //		@Accessors(fluent = true)
@@ -45,6 +49,7 @@ public class AuthenticationRequest {
 		private final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
 	}
 
+	@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
 	@Getter(onMethod = @__(@JsonProperty))
 	@Setter
 //		@Accessors(fluent = true)

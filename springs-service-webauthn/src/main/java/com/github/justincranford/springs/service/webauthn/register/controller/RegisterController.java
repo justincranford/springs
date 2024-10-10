@@ -32,7 +32,11 @@ public class RegisterController {
 	@Autowired
 	private RegistrationService registrationService;
 
-	@PostMapping(value={"/api/v1/register", "/api/v1/register/"},consumes={"application/x-www-form-urlencoded"},produces={"application/json"})
+	@PostMapping(
+		value={"/api/v1/register", "/api/v1/register/"},
+		consumes={"application/x-www-form-urlencoded"},
+		produces={"application/json"}
+	)
 	public RegistrationRequest startRegistration(
 		final HttpServletRequest request,
 		@Nonnull  @RequestParam(required=true)  final String  username,

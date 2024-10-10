@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.github.justincranford.springs.service.http.client.RestTemplateUtil;
 import com.github.justincranford.springs.service.webauthn.AbstractIT;
+import com.github.justincranford.springs.service.webauthn.actions.data.ActionsResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,8 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("nls")
 public class WebauthnIT extends AbstractIT {
 	@Test
-	void testTlsServerAuthentication() {
+	void testHome() {
 		final String response = RestTemplateUtil.plainGet(stlsRestTemplate(), httpsBaseUrl() + "/index.html", String.class);
 		assertThat(response).contains("WebAuthn");
+	}
+
+	@Test
+	void testActionsApi() {
+		final ActionsResponse response = RestTemplateUtil.anyGet(stlsRestTemplate(), httpsBaseUrl() + "/api/v1", ActionsResponse.class);
+		log.info("response: {}", response);
+		assertThat(response).isNotNull();
 	}
 }
