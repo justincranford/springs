@@ -32,35 +32,29 @@ public class AuthenticationController {
 	@Autowired
 	private AuthenticationService authenticationService;
 
-	@PostMapping(value={"/api/v1/authenticate", "/api/v1/authenticate/"},consumes={"application/x-www-form-urlencoded"},produces={"application/json"})
+	@PostMapping(
+		value={"/api/v1/authenticate", "/api/v1/authenticate/"},
+		consumes={"application/x-www-form-urlencoded"},
+		produces={"application/json"}
+	)
 	public AuthenticationRequest startAuthentication(
-		final HttpServletRequest request,
-		@Nonnull  @RequestParam(required=true)  final String  username,
-		@Nonnull  @RequestParam(required=true)  final String  displayName,
-		@Nullable @RequestParam(required=false) final String  credentialNickname,
-		@Nonnull  @RequestParam(required=true)  final String  sessionToken,
-		@Nullable @RequestParam(required=false) final Boolean requireResidentKey
+		@Nullable @RequestParam(required=false) final String username
 	) throws JsonProcessingException, MalformedURLException {
-		log.info("username: {}, displayName: {}, credentialNickname: {}, sessionToken: {}, requireResidentKey: {}",
-			username,
-			displayName,
-			credentialNickname,
-			sessionToken,
-			requireResidentKey
-		);
-		return this.authenticationService.start(username, displayName, credentialNickname, request.getRequestURL().toString());
+		log.info("username: {}", username);
+		final AuthenticationRequest request = this.authenticationService.start(username);
+		log.info("request: {}", request);
+		return request;
 	}
 
-	// /api/v1/register/finish
 	@PostMapping(
 		value={"/api/v1/authenticate/finish","/api/v1/authenticate/finish/"},
 		consumes={"text/plain;charset=UTF-8"},
 		produces={"application/json"}
 	)
-	public AuthenticationSuccess finishAuthentication(@RequestBody final String responseString) throws JsonMappingException, JsonProcessingException {
-		log.info("responseString: {}", responseString);
+	public AuthenticationSuccess finishAuthentication(@RequestBody final String responseJson) throws JsonMappingException, JsonProcessingException {
+		log.info("responseString: {}", responseJson);
 
-		final AuthenticationResponse authenticationResponse = this.objectMapper.readValue(responseString, AuthenticationResponse.class);
+		final AuthenticationResponse authenticationResponse = this.objectMapper.readValue(responseJson, AuthenticationResponse.class);
 		log.info("response: {}", authenticationResponse);
 
 		return this.authenticationService.finish(authenticationResponse);

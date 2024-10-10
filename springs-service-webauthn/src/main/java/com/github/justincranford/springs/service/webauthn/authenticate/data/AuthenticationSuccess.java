@@ -1,7 +1,9 @@
 package com.github.justincranford.springs.service.webauthn.authenticate.data;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -34,11 +36,9 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings({"nls", "hiding"})
 public class AuthenticationSuccess {
 	private final boolean success = true;
-	private final RegistrationRequest request;
-	private final RegistrationResponse response;
-	private final RegisteredCredential registration;
-	private final boolean attestationTrusted;
-	private final Optional<AttestationCertInfo> attestationCert;
+	private final AuthenticationRequest request;
+	private final AuthenticationResponse response;
+    private final Set<RegisteredCredential> registrations;
 
 	@JsonSerialize(using = AuthDataSerializer.class)
 	private final AuthenticatorData authData;
@@ -46,25 +46,18 @@ public class AuthenticationSuccess {
 	private final String username;
 	private final String sessionToken;
 
-	public AuthenticationSuccess(RegistrationRequest request, RegistrationResponse response,
-			RegisteredCredential registration, boolean attestationTrusted, String sessionToken) {
+	public AuthenticationSuccess(
+		AuthenticationRequest request,
+		AuthenticationResponse response,
+		Set<RegisteredCredential> registrations,
+		String username,
+		String sessionToken
+	) {
 		this.request = request;
 		this.response = response;
-		this.registration = registration;
-		this.attestationTrusted = attestationTrusted;
-		this.attestationCert = Optional
-				.ofNullable(
-						response.getCredential().getResponse().getAttestation().getAttestationStatement().get("x5c"))
-				.map(certs -> certs.get(0)).flatMap((JsonNode certDer) -> {
-					try {
-						return Optional.of(new ByteArray(certDer.binaryValue()));
-					} catch (IOException e) {
-						log.error("Failed to get binary value from x5c element: {}", certDer, e);
-						return Optional.empty();
-					}
-				}).map(AttestationCertInfo::new);
+		this.registrations = registrations;
 		this.authData = response.getCredential().getResponse().getParsedAuthenticatorData();
-		this.username = request.getUsername();
+		this.username = username;
 		this.sessionToken = sessionToken;
 	}
 }

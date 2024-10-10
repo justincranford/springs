@@ -392,6 +392,7 @@ function authenticateWithUsername(event) {
 }
 async function authenticate(event, username) {
   try {
+    console.log('username', username);
     const data = await performCeremony({
       getIndexActions,
       getRequest: urls => getAuthenticateRequest(urls, username),
@@ -402,6 +403,8 @@ async function authenticate(event, username) {
       },
       executeRequest: executeAuthenticateRequest,
     });
+    console.log('data', data);
+    console.log('data.registrations', data.registrations);
 
     if (data.registrations) {
       addMessage(`Authenticated as: ${data.registrations[0].username}`);

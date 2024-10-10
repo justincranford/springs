@@ -1,15 +1,14 @@
 package com.github.justincranford.springs.service.webauthn.authenticate.data;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
-import com.yubico.webauthn.data.UserIdentity;
+import com.yubico.webauthn.AssertionRequest;
+import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -25,43 +24,20 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 @Builder
-@SuppressWarnings({"nls"})
+@SuppressWarnings({"hiding"})
 public class AuthenticationRequest {
-	private final boolean success = true;
-	private final UserIdentity userIdentity;
-	private final String username;
-	private final String displayName;
-	private final String credentialNickname;
-	private final String sessionToken;
-	private final Request request;
-	private final StartRegistrationActions actions;
+	private final String requestId;
+	private final AssertionRequest request;
+	private final PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions;
+	private final Optional<String> username;
 
-	@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
-	@Getter(onMethod = @__(@JsonProperty))
-	@Setter
-//		@Accessors(fluent = true)
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	@ToString
-	@EqualsAndHashCode(callSuper = false)
-	@Builder
-	public static class Request {
-		@JsonInclude(JsonInclude.Include.NON_NULL)
-		private final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
-	}
-
-	@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
-	@Getter(onMethod = @__(@JsonProperty))
-	@Setter
-//		@Accessors(fluent = true)
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	@ToString
-	@EqualsAndHashCode(callSuper = false)
-	public static class StartRegistrationActions {
-		public final URL finish;
-
-		public StartRegistrationActions(final String url) throws MalformedURLException {
-			final String slash = url.endsWith("/") ? "" : "/";
-			this.finish = URI.create(url + slash + "finish").toURL();
-		}
+	public AuthenticationRequest(
+		@NotNull String requestId,
+		@NotNull AssertionRequest request
+	) {
+		this.requestId = requestId;
+		this.request = request;
+		this.publicKeyCredentialRequestOptions = request.getPublicKeyCredentialRequestOptions();
+		this.username = request.getUsername();
 	}
 }
