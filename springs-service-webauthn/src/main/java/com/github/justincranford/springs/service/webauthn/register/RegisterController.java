@@ -93,7 +93,7 @@ public class RegisterController {
 				AuthenticatorSelectionCriteria.builder()
 					.authenticatorAttachment(AuthenticatorAttachment.PLATFORM)
 					.residentKey(ResidentKeyRequirement.REQUIRED)
-					.userVerification(UserVerificationRequirement.REQUIRED)
+					.userVerification(UserVerificationRequirement.PREFERRED)
 					.build()
 			)
 //			.extensions(
