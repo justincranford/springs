@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.webauthn.register;
+package com.github.justincranford.springs.service.webauthn.register.controller;
 
 import java.net.MalformedURLException;
 import java.net.URI;

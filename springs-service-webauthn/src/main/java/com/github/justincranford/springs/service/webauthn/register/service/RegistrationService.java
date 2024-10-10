@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.webauthn.register;
+package com.github.justincranford.springs.service.webauthn.register.service;
 
 import static com.github.justincranford.springs.service.webauthn.register.util.ByteArrayUtil.randomByteArray;
 

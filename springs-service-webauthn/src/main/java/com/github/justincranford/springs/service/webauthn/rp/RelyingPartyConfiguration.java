@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import com.github.justincranford.springs.service.webauthn.register.RegisterController;
+import com.github.justincranford.springs.service.webauthn.register.controller.RegisterController;
 import com.github.justincranford.springs.service.webauthn.rp.repository.CredentialRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.rp.repository.RegistrationRepositoryOrm;
 import com.yubico.webauthn.CredentialRepository;

@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.webauthn.register;
+package com.github.justincranford.springs.service.webauthn.register.controller;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationRequest;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationResponse;
 import com.github.justincranford.springs.service.webauthn.register.data.SuccessfulRegistrationResult;
-import com.yubico.webauthn.data.exception.Base64UrlException;
+import com.github.justincranford.springs.service.webauthn.register.service.RegistrationService;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -65,7 +65,7 @@ public class RegisterController {
 		consumes={"text/plain;charset=UTF-8"},
 		produces={"application/json"}
 	)
-	public SuccessfulRegistrationResult finishRegistration(@RequestBody final String responseString) throws JsonMappingException, JsonProcessingException, Base64UrlException {
+	public SuccessfulRegistrationResult finishRegistration(@RequestBody final String responseString) throws JsonMappingException, JsonProcessingException {
 		log.info("responseString: {}", responseString);
 
 		final RegistrationResponse registrationResponse = this.objectMapper.readValue(responseString, RegistrationResponse.class);

@@ -22,7 +22,7 @@ public class AttestationCertInfo {
 		try (ByteArrayInputStream bais = new ByteArrayInputStream(certDer.getBytes())) {
 			cert = (X509Certificate) CertificateFactory.getInstance("X509").generateCertificate(bais);
 		} catch (CertificateException | IOException e) {
-			log.error("Failed to parse attestation certificate");
+			log.error("Failed to parse attestation certificate", e);
 		}
 		if (cert == null) {
 			this.text = null;
