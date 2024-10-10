@@ -55,9 +55,9 @@ public class RegisterController {
 	@Autowired
 	private RelyingParty relyingParty;
 	@Autowired
-	private CredentialRepositoryOrm webauthnCredentialRepository;
-
-	private RegistrationRepositoryOrm webauthnStartedRegistrationsRepository = new RegistrationRepositoryOrm();
+	private CredentialRepositoryOrm credentialRepositoryOrm;
+	@Autowired
+	private RegistrationRepositoryOrm registrationRepositoryOrm;
 
 	@GetMapping(value={"/api/v1/"})
 	public String index(HttpServletRequest request) throws IOException {
@@ -118,7 +118,7 @@ public class RegisterController {
 			)
 			.actions(new RegistrationRequest.StartRegistrationActions(request.getRequestURL().toString()))
 			.build();
-		this.webauthnStartedRegistrationsRepository.add(newSessionToken, registrationRequest);
+		this.registrationRepositoryOrm.add(newSessionToken, registrationRequest);
 		log.info("registrationRequest: {}", this.objectMapper.writeValueAsString(registrationRequest));
 		return registrationRequest;
 	}
@@ -139,7 +139,7 @@ public class RegisterController {
 			final String sessionToken = registrationResponse.getSessionToken();
 			log.info("sessionToken: {}", sessionToken);
 
-    		final RegistrationRequest registrationRequest = this.webauthnStartedRegistrationsRepository.remove(sessionToken);
+    		final RegistrationRequest registrationRequest = this.registrationRepositoryOrm.remove(sessionToken);
 			log.info("registrationRequest: {}", registrationRequest);
 
 			final UserIdentity userIdentity       = registrationRequest.getUserIdentity();
@@ -174,7 +174,7 @@ public class RegisterController {
 				.backupEligible(Boolean.valueOf(registrationResult.isBackupEligible()))
 				.backupState(Boolean.valueOf(registrationResult.isBackedUp()))
 				.build();
-			this.webauthnCredentialRepository.addRegistrationByUsername(username, registeredCredential);
+			this.credentialRepositoryOrm.addRegistrationByUsername(username, registeredCredential);
 			final SuccessfulRegistrationResult successfulRegistrationResult = new SuccessfulRegistrationResult(
 				registrationRequest,
 				registrationResponse,

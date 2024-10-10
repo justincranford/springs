@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.github.justincranford.springs.service.webauthn.register.RegisterController;
 import com.github.justincranford.springs.service.webauthn.rp.repository.CredentialRepositoryOrm;
+import com.github.justincranford.springs.service.webauthn.rp.repository.RegistrationRepositoryOrm;
 import com.yubico.webauthn.CredentialRepository;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.data.PublicKeyCredentialParameters;
@@ -33,6 +34,11 @@ public class RelyingPartyConfiguration {
 	@Bean
 	public CredentialRepository credentialRepository() {
 		return new CredentialRepositoryOrm();
+	}
+
+	@Bean
+	public RegistrationRepositoryOrm registrationRepositoryOrm() {
+		return new RegistrationRepositoryOrm();
 	}
 
 	@Bean
