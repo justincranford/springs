@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.service.webauthn.register.service;
 
-import static com.github.justincranford.springs.service.webauthn.register.util.ByteArrayUtil.randomByteArray;
+import static com.github.justincranford.springs.service.webauthn.util.ByteArrayUtil.randomByteArray;
 
 import java.net.MalformedURLException;
 

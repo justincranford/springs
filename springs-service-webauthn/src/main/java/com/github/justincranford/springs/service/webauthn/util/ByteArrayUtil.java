@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.webauthn.register.util;
+package com.github.justincranford.springs.service.webauthn.util;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;

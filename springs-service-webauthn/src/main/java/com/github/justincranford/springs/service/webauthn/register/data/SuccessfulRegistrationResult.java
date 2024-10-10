@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.github.justincranford.springs.service.webauthn.register.util.AuthDataSerializer;
+import com.github.justincranford.springs.service.webauthn.util.AuthDataSerializer;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.AuthenticatorData;
 import com.yubico.webauthn.data.ByteArray;

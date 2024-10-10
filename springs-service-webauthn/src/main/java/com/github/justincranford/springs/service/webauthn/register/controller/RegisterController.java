@@ -18,6 +18,7 @@ import com.github.justincranford.springs.service.webauthn.register.data.Registra
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationResponse;
 import com.github.justincranford.springs.service.webauthn.register.data.SuccessfulRegistrationResult;
 import com.github.justincranford.springs.service.webauthn.register.service.RegistrationService;
+import com.github.justincranford.springs.service.webauthn.util.controller.IndexResponse;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
