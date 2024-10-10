@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.github.justincranford.springs.service.webauthn.register.data.AttestationCertInfo;
+import com.github.justincranford.springs.service.webauthn.credential.data.AttestationCertInfo;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationRequest;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationResponse;
 import com.github.justincranford.springs.service.webauthn.util.AuthDataSerializer;
@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @EqualsAndHashCode(callSuper = false)
 @Slf4j
 @SuppressWarnings({"nls", "hiding"})
-public class SuccessfulAuthenticationResult {
+public class AuthenticationSuccess {
 	final boolean success = true;
 	RegistrationRequest request;
 	RegistrationResponse response;
@@ -43,7 +43,7 @@ public class SuccessfulAuthenticationResult {
 	String username;
 	String sessionToken;
 
-	public SuccessfulAuthenticationResult(RegistrationRequest request, RegistrationResponse response,
+	public AuthenticationSuccess(RegistrationRequest request, RegistrationResponse response,
 			RegisteredCredential registration, boolean attestationTrusted, String sessionToken) {
 		this.request = request;
 		this.response = response;

@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.webauthn.register.data;
+package com.github.justincranford.springs.service.webauthn.credential.data;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

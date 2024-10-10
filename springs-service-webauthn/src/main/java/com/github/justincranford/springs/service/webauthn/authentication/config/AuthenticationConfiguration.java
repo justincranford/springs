@@ -10,7 +10,7 @@ import com.github.justincranford.springs.service.webauthn.authentication.reposit
 @Configuration
 @Import({AuthenticationService.class})
 @SuppressWarnings({"static-method"})
-public class AuthenticationServiceConfiguration {
+public class AuthenticationConfiguration {
 	@Bean
 	public AuthenticationRepositoryOrm authenticationRepositoryOrm() {
 		return new AuthenticationRepositoryOrm();

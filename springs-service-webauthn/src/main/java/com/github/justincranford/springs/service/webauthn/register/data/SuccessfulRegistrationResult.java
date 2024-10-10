@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.github.justincranford.springs.service.webauthn.credential.data.AttestationCertInfo;
 import com.github.justincranford.springs.service.webauthn.util.AuthDataSerializer;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.AuthenticatorData;
@@ -40,23 +41,24 @@ public class SuccessfulRegistrationResult {
 	String username;
 	String sessionToken;
 
-	public SuccessfulRegistrationResult(RegistrationRequest request, RegistrationResponse response,
-			RegisteredCredential registration, boolean attestationTrusted, String sessionToken) {
+	public SuccessfulRegistrationResult(RegistrationRequest request, RegistrationResponse response, RegisteredCredential registration, boolean attestationTrusted, String sessionToken) {
 		this.request = request;
 		this.response = response;
 		this.registration = registration;
 		this.attestationTrusted = attestationTrusted;
 		this.attestationCert = Optional
-				.ofNullable(
-						response.getCredential().getResponse().getAttestation().getAttestationStatement().get("x5c"))
-				.map(certs -> certs.get(0)).flatMap((JsonNode certDer) -> {
-					try {
-						return Optional.of(new ByteArray(certDer.binaryValue()));
-					} catch (IOException e) {
-						log.error("Failed to get binary value from x5c element: {}", certDer, e);
-						return Optional.empty();
-					}
-				}).map(AttestationCertInfo::new);
+			.ofNullable(
+				response.getCredential().getResponse().getAttestation().getAttestationStatement().get("x5c")
+			)
+			.map(certs -> certs.get(0)).flatMap((JsonNode certDer) -> {
+				try {
+					return Optional.of(new ByteArray(certDer.binaryValue()));
+				} catch (IOException e) {
+					log.error("Failed to get binary value from x5c element: {}", certDer, e);
+					return Optional.empty();
+				}
+			})
+			.map(AttestationCertInfo::new);
 		this.authData = response.getCredential().getResponse().getParsedAuthenticatorData();
 		this.username = request.getUsername();
 		this.sessionToken = sessionToken;

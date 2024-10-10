@@ -4,8 +4,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.github.justincranford.springs.service.webauthn.authentication.config.AuthenticationServiceConfiguration;
-import com.github.justincranford.springs.service.webauthn.register.config.RegistrationServiceConfiguration;
+import com.github.justincranford.springs.service.webauthn.authentication.config.AuthenticationConfiguration;
+import com.github.justincranford.springs.service.webauthn.credential.config.CredentialConfiguration;
+import com.github.justincranford.springs.service.webauthn.register.config.RegistrationConfiguration;
 import com.github.justincranford.springs.service.webauthn.rp.RelyingPartyConfiguration;
 import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
 
@@ -14,8 +15,9 @@ import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfi
 @Import(value = {
 	SpringsUtilHttpsConfiguration.class,
 	RelyingPartyConfiguration.class,
-	RegistrationServiceConfiguration.class,
-	AuthenticationServiceConfiguration.class
+	CredentialConfiguration.class,
+	RegistrationConfiguration.class,
+	AuthenticationConfiguration.class
 })
 public class SpringsServiceWebauthnConfiguration {
 	// do nothing

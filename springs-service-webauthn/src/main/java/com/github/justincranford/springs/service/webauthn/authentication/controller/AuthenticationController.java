@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.justincranford.springs.service.webauthn.authentication.data.AuthenticationRequest;
 import com.github.justincranford.springs.service.webauthn.authentication.data.AuthenticationResponse;
-import com.github.justincranford.springs.service.webauthn.authentication.data.SuccessfulAuthenticationResult;
+import com.github.justincranford.springs.service.webauthn.authentication.data.AuthenticationSuccess;
 import com.github.justincranford.springs.service.webauthn.authentication.service.AuthenticationService;
 
 import jakarta.annotation.Nonnull;
@@ -57,7 +57,7 @@ public class AuthenticationController {
 		consumes={"text/plain;charset=UTF-8"},
 		produces={"application/json"}
 	)
-	public SuccessfulAuthenticationResult finishAuthentication(@RequestBody final String responseString) throws JsonMappingException, JsonProcessingException {
+	public AuthenticationSuccess finishAuthentication(@RequestBody final String responseString) throws JsonMappingException, JsonProcessingException {
 		log.info("responseString: {}", responseString);
 
 		final AuthenticationResponse authenticationResponse = this.objectMapper.readValue(responseString, AuthenticationResponse.class);

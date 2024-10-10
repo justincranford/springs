@@ -2,25 +2,25 @@ package com.github.justincranford.springs.service.webauthn.authentication.reposi
 
 import java.util.concurrent.TimeUnit;
 
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationRequest;
+import com.github.justincranford.springs.service.webauthn.authentication.data.AuthenticationRequest;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 @SuppressWarnings({"nls"})
 public class AuthenticationRepositoryOrm {
-	private final Cache<String, RegistrationRequest> startedRegistrations = CacheBuilder.newBuilder().maximumSize(1000)
+	private final Cache<String, AuthenticationRequest> startedAuthentications = CacheBuilder.newBuilder().maximumSize(1000)
 			.expireAfterAccess(1, TimeUnit.DAYS).build();
 
-	public void add(final String sessionToken, final RegistrationRequest registrationRequest) {
-		this.startedRegistrations.put(sessionToken, registrationRequest);
+	public void add(final String sessionToken, final AuthenticationRequest registrationRequest) {
+		this.startedAuthentications.put(sessionToken, registrationRequest);
 	}
 
-	public RegistrationRequest remove(final String sessionToken) {
-		final RegistrationRequest registrationRequest = this.startedRegistrations.getIfPresent(sessionToken);
+	public AuthenticationRequest remove(final String sessionToken) {
+		final AuthenticationRequest registrationRequest = this.startedAuthentications.getIfPresent(sessionToken);
 		if (registrationRequest == null) {
-			throw new RuntimeException("Request does not exist");
+			throw new RuntimeException("Authentication does not exist");
 		}
-		this.startedRegistrations.invalidate(sessionToken);
+		this.startedAuthentications.invalidate(sessionToken);
 		return registrationRequest;
 	}
 }

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.justincranford.springs.service.webauthn.authentication.data.AuthenticationRequest;
 import com.github.justincranford.springs.service.webauthn.authentication.data.AuthenticationResponse;
-import com.github.justincranford.springs.service.webauthn.authentication.data.SuccessfulAuthenticationResult;
+import com.github.justincranford.springs.service.webauthn.authentication.data.AuthenticationSuccess;
 import com.github.justincranford.springs.service.webauthn.authentication.repository.AuthenticationRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialRepositoryOrm;
 import com.yubico.webauthn.RelyingParty;
@@ -38,7 +38,7 @@ public class AuthenticationService {
 		return null;
 	}
 
-	public SuccessfulAuthenticationResult finish(final AuthenticationResponse AuthenticationResponse) {
+	public AuthenticationSuccess finish(final AuthenticationResponse AuthenticationResponse) {
 		return null;
 	}
 }
