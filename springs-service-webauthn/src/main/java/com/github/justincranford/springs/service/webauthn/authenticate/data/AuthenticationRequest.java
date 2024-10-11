@@ -1,5 +1,8 @@
 package com.github.justincranford.springs.service.webauthn.authenticate.data;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -24,21 +27,40 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 @Builder
-@SuppressWarnings({"hiding"})
+@SuppressWarnings({"nls", "hiding"})
 public class AuthenticationRequest {
 	private final boolean success = true;
 	private final String requestId;
 	private final AssertionRequest request;
 	private final PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions;
 	private final Optional<String> username;
+	private final Actions actions;
 
 	public AuthenticationRequest(
 		@NotNull String requestId,
-		@NotNull AssertionRequest request
+		@NotNull AssertionRequest request,
+		@NotNull Actions actions
 	) {
 		this.requestId = requestId;
 		this.request = request;
 		this.publicKeyCredentialRequestOptions = request.getPublicKeyCredentialRequestOptions();
 		this.username = request.getUsername();
+		this.actions = actions;
+	}
+
+	@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
+	@Getter(onMethod = @__(@JsonProperty))
+	@Setter
+//	@Accessors(fluent = true)
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@ToString
+	@EqualsAndHashCode(callSuper = false)
+	public static class Actions {
+		public final URL finish;
+
+		public Actions(final String url) throws MalformedURLException {
+			final String slash = url.endsWith("/") ? "" : "/";
+			this.finish = URI.create(url + slash + "finish").toURL();
+		}
 	}
 }

@@ -1,5 +1,7 @@
 package com.github.justincranford.springs.service.webauthn.credential.repository;
 
+import static com.github.justincranford.springs.service.webauthn.util.ByteArrayUtil.decodeBase64Url;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
@@ -14,34 +16,26 @@ import com.yubico.webauthn.CredentialRepository;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
-import com.yubico.webauthn.data.PublicKeyCredentialType;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings({ "nls" })
 public class CredentialRepositoryOrm implements CredentialRepository {
-	private final Cache<String, Set<RegisteredCredential>> storage = CacheBuilder.newBuilder()
+	private final Cache<String, Set<CredentialOrm>> storage = CacheBuilder.newBuilder()
 		.maximumSize(1000)
 		.expireAfterAccess(1, TimeUnit.DAYS)
 		.build();
 
 	@Override
 	public Set<PublicKeyCredentialDescriptor> getCredentialIdsForUsername(final String username) {
-		final Set<RegisteredCredential> registeredCredentials = this.storage.getIfPresent(username);
-        if (registeredCredentials == null) {
+		final Set<CredentialOrm> credentialOrms = this.storage.getIfPresent(username);
+        if (credentialOrms == null) {
             return Set.of();
         }
-        final Set<PublicKeyCredentialDescriptor> publicKeyCredentialDescriptors = registeredCredentials
-        	.stream()
-            .map(registeredCredential ->
-            	PublicKeyCredentialDescriptor.builder()
-                    .id(registeredCredential.getCredentialId())
-                    .type(PublicKeyCredentialType.PUBLIC_KEY)
-                    .build()
-            )
+        final Set<PublicKeyCredentialDescriptor> publicKeyCredentialDescriptors = credentialOrms.stream()
+            .map(CredentialOrm::toPublicKeyCredentialDescriptor)
             .collect(Collectors.toSet());
-
 		log.debug("lookup username: {}, publicKeyCredentialDescriptors: {}", username, publicKeyCredentialDescriptors);
 		return publicKeyCredentialDescriptors;
 	}
@@ -49,15 +43,15 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 	@Override
 	public Optional<String> getUsernameForUserHandle(final ByteArray userHandle) {
 		final Optional<String> optionalUsername = this.storage.asMap().entrySet().stream()
-			.filter(usernameToRegisteredCredentials -> {
-				for (final RegisteredCredential registeredCredential : usernameToRegisteredCredentials.getValue()) {
-					if (userHandle.equals(registeredCredential.getUserHandle())) {
+			.filter(usernameToCredentialOrms -> {
+				for (final CredentialOrm credentialOrm : usernameToCredentialOrms.getValue()) {
+					if (userHandle.equals(decodeBase64Url(credentialOrm.getUserHandle()))) {
 						return true;
 					}
 				}
 				return false;
 			})
-			.map(usernameToRegisteredCredentials -> usernameToRegisteredCredentials.getKey())
+			.map(usernameToCredentialOrms -> usernameToCredentialOrms.getKey())
 			.findAny();
 			log.debug("lookup user handle: {}; optionalUsername: {}", userHandle, optionalUsername);
 			return optionalUsername;
@@ -65,13 +59,13 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 
 	@Override
 	public Optional<ByteArray> getUserHandleForUsername(final String username) {
-		final Set<RegisteredCredential> registeredCredentials = this.storage.getIfPresent(username);
-        if (registeredCredentials == null) {
+		final Set<CredentialOrm> oredentialOrms = this.storage.getIfPresent(username);
+        if (oredentialOrms == null) {
             return Optional.empty();
         }
-        final Set<ByteArray> userHandles = registeredCredentials
-        	.stream()
-            .map(registeredCredential -> registeredCredential.getUserHandle())
+        final Set<ByteArray> userHandles = oredentialOrms.stream()
+            .map(CredentialOrm::getUserHandle)
+            .map(x -> decodeBase64Url(x))
             .collect(Collectors.toSet());
         if (userHandles.isEmpty()) {
         	throw new InternalError("No userHandles found for username");
@@ -84,63 +78,51 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 
 	@Override
 	public Optional<RegisteredCredential> lookup(final ByteArray credentialId, final ByteArray userHandle) {
-		final Optional<RegisteredCredential> optionalRegisteredCredential = this.storage
+		final Optional<RegisteredCredential> optionalCredentialOrm = this.storage
 			.asMap().values().stream().flatMap(Collection::stream)
-			.filter(registeredCredential ->
-				credentialId.equals(registeredCredential.getCredentialId()) &&
-				userHandle.equals(registeredCredential.getUserHandle())
+			.filter(credentialOrm ->
+				credentialId.getBase64Url().equals(credentialOrm.getCredentialId()) &&
+				userHandle.getBase64Url().equals(credentialOrm.getUserHandle())
 			)
+			.map(CredentialOrm::toRegisteredCredential)
 			.findAny();
-		log.debug("lookup credential ID: {}, user handle: {}; optionalRegisteredCredential: {}", credentialId, userHandle, optionalRegisteredCredential);
-		return optionalRegisteredCredential;
+		log.debug("lookup credential ID: {}, user handle: {}; optionalCredentialOrm: {}", credentialId, userHandle, optionalCredentialOrm);
+		return optionalCredentialOrm;
 	}
 
 	@Override
 	public Set<RegisteredCredential> lookupAll(final ByteArray credentialId) {
-		final Set<RegisteredCredential> registeredCredentials = this.storage
+		final Set<RegisteredCredential> credentialOrms = this.storage
 			.asMap().values().stream().flatMap(Collection::stream)
-			.filter(registeredCredential ->
-				credentialId.equals(registeredCredential.getCredentialId())
+			.filter(credentialOrm ->
+				credentialId.getBase64Url().equals(credentialOrm.getCredentialId())
 			)
+			.map(CredentialOrm::toRegisteredCredential)
 			.collect(Collectors.toSet());
-			log.debug("lookup credential ID: {}, optionalRegisteredCredentials: {}", credentialId, registeredCredentials);
-			return registeredCredentials;
+			log.debug("lookup credential ID: {}, optionalCredentialOrms: {}", credentialId, credentialOrms);
+			return credentialOrms;
 	}
 
-//	@Override
-//	public Set<RegisteredCredential> getCredentialDescriptorsForUserHandle(ByteArray userHandle) {
-//		return getRegistrationsByUserHandle(userHandle);
-//	}
-//
-//	@Override
-//	public Optional<RegisteredCredential> lookup(ByteArray credentialId, ByteArray userHandle) {
-//		Optional<RegisteredCredential> registrationMaybe = storage.asMap().values().stream()
-//				.flatMap(Collection::stream)
-//				.filter(credReg -> credentialId.equals(credReg.getCredential().getCredentialId())
-//						&& userHandle.equals(credReg.getUserHandle()))
-//				.findAny();
-//
-//		log.debug("lookup credential ID: {}, user handle: {}; result: {}", credentialId, userHandle, registrationMaybe);
-//
-//		return registrationMaybe;
-//	}
-//
-//	@Override
-//	public boolean credentialIdExists(ByteArray credentialId) {
-//		return storage.asMap().values().stream().flatMap(Collection::stream)
-//				.anyMatch(reg -> reg.getCredential().getCredentialId().equals(credentialId));
-//	}
+	public Set<CredentialOrm> getCredentialDescriptorsForUserHandle(ByteArray userHandle) {
+		return getRegistrationsByUserHandle(userHandle);
+	}
 
-	public boolean addRegistrationByUsername(final String username, final RegisteredCredential registeredCredential) {
+	public boolean credentialIdExists(ByteArray credentialId) {
+	final String base64Url = credentialId.getBase64Url();
+		return this.storage.asMap().values().stream().flatMap(Collection::stream)
+			.anyMatch(reg -> reg.getCredentialId().equals(base64Url));
+	}
+
+	public boolean addByUsername(final String username, final CredentialOrm CredentialOrm) {
 		try {
-			return this.storage.get(username, HashSet::new).add(registeredCredential);
+			return this.storage.get(username, HashSet::new).add(CredentialOrm);
 		} catch (ExecutionException e) {
 			log.error("Failed to add registration", e);
 			throw new RuntimeException(e);
 		}
 	}
 
-	public Set<RegisteredCredential> getRegistrationsByUsername(String username) {
+	public Set<CredentialOrm> getByUsername(String username) {
 		try {
 			return this.storage.get(username, HashSet::new);
 		} catch (ExecutionException e) {
@@ -149,27 +131,28 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 		}
 	}
 
-	public Set<RegisteredCredential> getRegistrationsByUserHandle(final ByteArray userHandle) {
-		final Set<RegisteredCredential> registeredCredentials = this.storage
-				.asMap().values().stream().flatMap(Collection::stream)
-				.filter(registeredCredential ->
-					userHandle.equals(registeredCredential.getUserHandle())
-				)
-				.collect(Collectors.toSet());
-			log.debug("lookup credential ID: {}, user handle: {}; optionalRegisteredCredential: {}", userHandle, registeredCredentials);
-			return registeredCredentials;
+	public Set<CredentialOrm> getRegistrationsByUserHandle(final ByteArray userHandle) {
+		final Set<CredentialOrm> credentialOrms = this.storage
+			.asMap().values().stream().flatMap(Collection::stream)
+			.filter(credentialOrm ->
+				userHandle.getBase64Url().equals(credentialOrm.getUserHandle())
+			)
+			.collect(Collectors.toSet());
+		log.debug("lookup credential ID: {}, user handle: {}; optionalCredentialOrm: {}", userHandle, credentialOrms);
+		return credentialOrms;
 	}
 
-	public Optional<RegisteredCredential> getRegistrationByUsernameAndCredentialId(String username, ByteArray id) {
+	public Optional<CredentialOrm> getRegistrationByUsernameAndCredentialId(String username, ByteArray id) {
 		try {
-			return this.storage.get(username, HashSet::new).stream().filter(credReg -> id.equals(credReg.getCredentialId())).findFirst();
+			final String credentialId = id.getBase64Url();
+			return this.storage.get(username, HashSet::new).stream().filter(credReg -> credentialId.equals(credReg.getCredentialId())).findFirst();
 		} catch (ExecutionException e) {
 			log.error("Registration lookup failed", e);
 			throw new RuntimeException(e);
 		}
 	}
 
-	public boolean removeRegistrationByUsername(String username, RegisteredCredential credentialRegistration) {
+	public boolean removeRegistrationByUsername(String username, CredentialOrm credentialRegistration) {
 		try {
 			return this.storage.get(username, HashSet::new).remove(credentialRegistration);
 		} catch (ExecutionException e) {
@@ -184,6 +167,6 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 	}
 
 	public boolean userExists(String username) {
-		return !getRegistrationsByUsername(username).isEmpty();
+		return !getByUsername(username).isEmpty();
 	}
 }

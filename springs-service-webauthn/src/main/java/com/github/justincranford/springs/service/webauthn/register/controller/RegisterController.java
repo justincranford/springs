@@ -45,14 +45,7 @@ public class RegisterController {
 		@Nonnull  @RequestParam(required=true)  final String  sessionToken,
 		@Nullable @RequestParam(required=false) final Boolean requireResidentKey
 	) throws JsonProcessingException, MalformedURLException {
-		log.info("username: {}, displayName: {}, credentialNickname: {}, sessionToken: {}, requireResidentKey: {}",
-			username,
-			displayName,
-			credentialNickname,
-			sessionToken,
-			requireResidentKey
-		);
-		return this.registrationService.start(username, displayName, credentialNickname, request.getRequestURL().toString());
+		return this.registrationService.start(username, displayName, credentialNickname, sessionToken, requireResidentKey, request.getRequestURL().toString());
 	}
 
 	// /api/v1/register/finish

@@ -378,7 +378,6 @@ async function register(event, requireResidentKey) {
 
 function getAuthenticateRequest(urls, username) {
   console.log('username', username);
-  debugger; // Pauses before processing the response
   return fetch(urls.authenticate, {
     body: new URLSearchParams(username ? { username } : {}),
     method: 'POST',
@@ -386,7 +385,6 @@ function getAuthenticateRequest(urls, username) {
     .then(response => response.json())
     .then(authenticateRequest => {
       console.log('authenticateRequest', authenticateRequest);
-      debugger; // Pauses before processing the response
       return authenticateRequest;
     })
     .then(updateSession)
@@ -397,9 +395,9 @@ function getAuthenticateRequest(urls, username) {
 function executeAuthenticateRequest(request) {
   console.log('request', JSON.stringify(request, false, 2));
   console.log('request.publicKeyCredentialRequestOptions', JSON.stringify(request.publicKeyCredentialRequestOptions, false, 2));
-  debugger; // Pauses before processing the response
 
-  return webauthnJson.get({ publicKey: request.publicKeyCredentialRequestOptions });
+  var response = webauthnJson.get({ publicKey: request.publicKeyCredentialRequestOptions });
+  return response;
 }
 
 function authenticateWithUsername(event) {
@@ -409,7 +407,6 @@ function authenticateWithUsername(event) {
   console.log('username', username);
   console.log('displayName', displayName);
   console.log('credentialNickname', credentialNickname);
-  debugger;
   return authenticate(event, username);
 }
 async function authenticate(event, username) {
@@ -429,7 +426,6 @@ async function authenticate(event, username) {
       },
       executeRequest: request => {
         console.log('request', request);
-        debugger; // Pauses before executeAuthenticateRequest is called
         return executeAuthenticateRequest(request);
       }
     });

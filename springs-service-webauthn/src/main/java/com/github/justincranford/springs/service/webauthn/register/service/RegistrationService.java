@@ -6,19 +6,19 @@ import java.net.MalformedURLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationRequest;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationResponse;
 import com.github.justincranford.springs.service.webauthn.register.data.SuccessfulRegistrationResult;
 import com.github.justincranford.springs.service.webauthn.register.repository.RegistrationRepositoryOrm;
+import com.github.justincranford.springs.util.basic.DateTimeUtil;
 import com.yubico.webauthn.FinishRegistrationOptions;
-import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.RegistrationResult;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartRegistrationOptions;
@@ -49,11 +49,20 @@ public class RegistrationService {
 	private CredentialRepositoryOrm credentialRepositoryOrm;
 
 	public RegistrationRequest start(
-		final String username,
-		final String displayName,
-		final String credentialNickname,
-		final String requestUrl
+		final String  username,
+		final String  displayName,
+		final String  credentialNickname,
+		final String  sessionToken,
+		final Boolean requireResidentKey,
+		final String  requestUrl
 	) throws MalformedURLException, JsonProcessingException {
+		log.info("username: {}, displayName: {}, credentialNickname: {}, sessionToken: {}, requireResidentKey: {}",
+			username,
+			displayName,
+			credentialNickname,
+			sessionToken,
+			requireResidentKey
+		);
 		final UserIdentity userIdentity = UserIdentity.builder()
 			.name(username)
 			.displayName(displayName)
@@ -80,20 +89,17 @@ public class RegistrationService {
 		final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = this.relyingParty
 				.startRegistration(startRegistrationOptions);
 		final String newSessionToken = randomByteArray(64).getBase64Url();
+		final RegistrationRequest.Request request = RegistrationRequest.Request.builder()
+			.publicKeyCredentialCreationOptions(publicKeyCredentialCreationOptions)
+			.build();
 		final RegistrationRequest registrationRequest = RegistrationRequest.builder()
 			.userIdentity(userIdentity)
 			.username(username)
 			.displayName(displayName)
 			.credentialNickname(credentialNickname)
 			.sessionToken(newSessionToken)
-			.request(
-				RegistrationRequest.Request.builder()
-					.publicKeyCredentialCreationOptions(publicKeyCredentialCreationOptions)
-					.build()
-			)
-			.actions(
-				new RegistrationRequest.StartRegistrationActions(requestUrl)
-			).build();
+			.request(request)
+			.actions(new RegistrationRequest.StartRegistrationActions(requestUrl)).build();
 		this.registrationRepositoryOrm.add(newSessionToken, registrationRequest);
 		log.info("registrationRequest: {}", this.objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(registrationRequest));
 		return registrationRequest;
@@ -143,22 +149,27 @@ public class RegistrationService {
 			log.trace("registrationResult: {}", publicKeyCredential);
 			log.info("registrationResult: {}", this.objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(publicKeyCredential));
 
-			final RegisteredCredential registeredCredential = RegisteredCredential.builder()
-				.credentialId(registrationResult.getKeyId().getId())
-				.userHandle(userIdentity.getId())
-				.publicKeyCose(registrationResult.getPublicKeyCose())
-				.signatureCount(registrationResult.getSignatureCount())
+			final CredentialOrm credentialOrm = CredentialOrm.builder()
+				.credentialNickname(registrationRequest.getCredentialNickname())
+				.username(registrationRequest.getUsername())
+				.displayName(registrationRequest.getDisplayName())
+				.userHandle(userIdentity.getId().getBase64Url())
+				.credentialId(registrationResult.getKeyId().getId().getBase64Url())
+				.transports(registrationResponse.getCredential().getResponse().getTransports())
+				.publicKeyCose(registrationResult.getPublicKeyCose().getBase64Url())
+				.signatureCount(Long.valueOf(registrationResult.getSignatureCount()))
 				.backupEligible(Boolean.valueOf(registrationResult.isBackupEligible()))
 				.backupState(Boolean.valueOf(registrationResult.isBackedUp()))
+				.registrationTime(DateTimeUtil.nowUtcTruncatedToMilliseconds())
 				.build();
-			log.info("registeredCredential: {}", registeredCredential);
-			log.info("registeredCredential: {}", this.objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(registeredCredential));
+			log.info("credentialOrm: {}", credentialOrm);
+			log.info("credentialOrm: {}", this.objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(credentialOrm));
 
-			this.credentialRepositoryOrm.addRegistrationByUsername(username, registeredCredential);
+			this.credentialRepositoryOrm.addByUsername(username, credentialOrm);
 			final SuccessfulRegistrationResult successfulRegistrationResult = new SuccessfulRegistrationResult(
 				registrationRequest,
 				registrationResponse,
-				registeredCredential,
+				credentialOrm.toRegisteredCredential(),
 				true,
 				sessionToken
 			);

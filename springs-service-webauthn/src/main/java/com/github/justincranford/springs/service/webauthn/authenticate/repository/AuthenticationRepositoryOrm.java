@@ -16,11 +16,11 @@ public class AuthenticationRepositoryOrm {
 	}
 
 	public AuthenticationRequest remove(final String sessionToken) {
-		final AuthenticationRequest registrationRequest = this.startedAuthentications.getIfPresent(sessionToken);
-		if (registrationRequest == null) {
+		final AuthenticationRequest authenticationRequest = this.startedAuthentications.getIfPresent(sessionToken);
+		if (authenticationRequest == null) {
 			throw new RuntimeException("Authentication does not exist");
 		}
 		this.startedAuthentications.invalidate(sessionToken);
-		return registrationRequest;
+		return authenticationRequest;
 	}
 }

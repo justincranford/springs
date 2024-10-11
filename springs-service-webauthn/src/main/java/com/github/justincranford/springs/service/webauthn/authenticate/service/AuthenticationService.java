@@ -1,7 +1,11 @@
 package com.github.justincranford.springs.service.webauthn.authenticate.service;
 
+import static com.github.justincranford.springs.service.webauthn.util.ByteArrayUtil.randomByteArray;
+
 import java.net.MalformedURLException;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,29 +19,24 @@ import com.github.justincranford.springs.service.webauthn.authenticate.data.Auth
 import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationResponse;
 import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationSuccess;
 import com.github.justincranford.springs.service.webauthn.authenticate.repository.AuthenticationRepositoryOrm;
+import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialRepositoryOrm;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.FinishAssertionOptions;
-import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.data.AssertionExtensionInputs;
-import com.yubico.webauthn.data.ByteArray;
-import com.yubico.webauthn.data.Extensions.LargeBlob.LargeBlobAuthenticationInput;
-import com.yubico.webauthn.data.Extensions.LargeBlob.LargeBlobRegistrationInput.LargeBlobSupport;
 import com.yubico.webauthn.data.UserVerificationRequirement;
 import com.yubico.webauthn.exception.AssertionFailedException;
-import com.yubico.webauthn.exception.RegistrationFailedException;
 
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-
-import static com.github.justincranford.springs.service.webauthn.util.ByteArrayUtil.randomByteArray;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-@SuppressWarnings({"nls", "deprecation", "unused", "static-method"})
+@SuppressWarnings({"nls"})
 public class AuthenticationService {
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -51,16 +50,17 @@ public class AuthenticationService {
 	/**
 	 * 
 	 * @param username Non-blank for Webauthn, null for Passkey
-	 * @return
+	 * @return Authentication assertion challenge
 	 * @throws MalformedURLException
 	 * @throws JsonProcessingException
 	 */
 	public AuthenticationRequest start(
-		@Nullable final String username
+		@Nullable final String username,
+		@Nonnull  final String requestUrl
 	) throws MalformedURLException, JsonProcessingException {
 		final boolean isUsernameRequest = Strings.isNotBlank(username);
 		if (isUsernameRequest) {
-			final Set<RegisteredCredential> credentials = this.credentialRepositoryOrm.getRegistrationsByUsername(username);
+			final Set<CredentialOrm> credentials = this.credentialRepositoryOrm.getByUsername(username);
 			if (credentials.isEmpty()) {
 				log.warn("Authenticate with username {} won't work because it does not exist", username);
 			} else {
@@ -84,7 +84,13 @@ public class AuthenticationService {
 		);
 
 		final String requestId = randomByteArray(64).getBase64Url();
-		final AuthenticationRequest authenticationRequest = new AuthenticationRequest(requestId, assertionRequest);
+		final AuthenticationRequest authenticationRequest = AuthenticationRequest.builder()
+			.requestId(requestId)
+			.request(assertionRequest)
+			.publicKeyCredentialRequestOptions(assertionRequest.getPublicKeyCredentialRequestOptions())
+			.username(Optional.ofNullable(username))
+			.actions(new AuthenticationRequest.Actions(requestUrl))
+			.build();
 		this.authenticationRepositoryOrm.add(requestId, authenticationRequest);
 		log.info("authenticationRequest: {}", authenticationRequest);
 		return authenticationRequest;
@@ -102,11 +108,12 @@ public class AuthenticationService {
 			        .build()
 			);
 			log.info("authenticationResult: {}", authenticationResult);
-			final Set<RegisteredCredential> registrationsByUserHandle = this.credentialRepositoryOrm.getRegistrationsByUserHandle(authenticationResult.getCredential().getUserHandle());
+			final Set<CredentialOrm> registrationsByUserHandle = this.credentialRepositoryOrm.getRegistrationsByUserHandle(authenticationResult.getCredential().getUserHandle());
 			final AuthenticationSuccess authenticationSuccess = new AuthenticationSuccess(
 				authenticationRequest,
 				authenticationResponse,
-				registrationsByUserHandle,
+				registrationsByUserHandle.stream().map(CredentialOrm::toRegisteredCredential).collect(Collectors.toSet()),
+				authenticationResponse.getCredential().getResponse().getParsedAuthenticatorData(),
 				authenticationRequest.getUsername().get(),
 				authenticationRequest.getRequestId()
 			);
