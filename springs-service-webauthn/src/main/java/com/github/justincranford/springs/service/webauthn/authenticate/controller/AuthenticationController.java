@@ -36,11 +36,14 @@ public class AuthenticationController {
 		consumes={"application/x-www-form-urlencoded"},
 		produces={"application/json"}
 	)
-	public AuthenticationRequest startAuthentication(
+	public String startAuthentication(
 		final HttpServletRequest request,
 		@Nullable @RequestParam(required=false) final String username
 	) throws JsonProcessingException, MalformedURLException {
-		return this.authenticationService.start(username, request.getRequestURL().toString());
+		final AuthenticationRequest start = this.authenticationService.start(username, request.getRequestURL().toString());
+		final String responseJson = this.objectMapper.writeValueAsString(start);//.replace("\"allowCredentials\":null,", "");
+		log.info("responseJson: {}", responseJson);
+		return responseJson;
 	}
 
 	@PostMapping(
@@ -49,7 +52,7 @@ public class AuthenticationController {
 		produces={"application/json"}
 	)
 	public AuthenticationSuccess finishAuthentication(@RequestBody final String responseJson) throws JsonMappingException, JsonProcessingException {
-		log.info("responseString: {}", responseJson);
+		log.info("responseJson: {}", responseJson);
 
 		final AuthenticationResponse authenticationResponse = this.objectMapper.readValue(responseJson, AuthenticationResponse.class);
 		log.info("authenticationResponse: {}", authenticationResponse);

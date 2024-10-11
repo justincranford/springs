@@ -15,7 +15,7 @@ import com.github.justincranford.springs.service.webauthn.credential.repository.
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationRequest;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationResponse;
-import com.github.justincranford.springs.service.webauthn.register.data.SuccessfulRegistrationResult;
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationSuccess;
 import com.github.justincranford.springs.service.webauthn.register.repository.RegistrationRepositoryOrm;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
 import com.yubico.webauthn.FinishRegistrationOptions;
@@ -107,7 +107,7 @@ public class RegistrationService {
 		return registrationRequest;
 	}
 
-	public SuccessfulRegistrationResult finish(final RegistrationResponse registrationResponse) {
+	public RegistrationSuccess finish(final RegistrationResponse registrationResponse) {
 		try {
     		final String sessionToken = registrationResponse.getSessionToken();
 			log.trace("Res, sessionToken: {}", sessionToken);
@@ -168,7 +168,7 @@ public class RegistrationService {
 			log.info("credentialOrm: {}", this.objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(credentialOrm));
 
 			this.credentialRepositoryOrm.addByUsername(username, credentialOrm);
-			final SuccessfulRegistrationResult successfulRegistrationResult = new SuccessfulRegistrationResult(
+			final RegistrationSuccess successfulRegistrationResult = new RegistrationSuccess(
 				registrationRequest,
 				registrationResponse,
 				credentialOrm.toRegisteredCredential(),

@@ -5,28 +5,28 @@ import java.net.URI;
 import java.net.URL;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
+//@Accessors(fluent = true)
+@AllArgsConstructor(onConstructor = @__(@JsonCreator))
+@NoArgsConstructor(onConstructor = @__(@JsonCreator))
 @Getter(onMethod = @__(@JsonProperty))
 @Setter
-//@Accessors(fluent = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
 @EqualsAndHashCode(callSuper = false)
-@Builder
+@Builder(toBuilder=true)
 @SuppressWarnings({"nls"})
 public final class ActionsResponse {
-	public final Actions actions;
-	public final Info info;
+	private Actions actions;
+	private Info info;
 
 	public ActionsResponse(final String url) throws MalformedURLException {
 		final String slash = url.endsWith("/") ? "" : "/";
@@ -34,19 +34,19 @@ public final class ActionsResponse {
 		this.info    = new Info(url + slash);
 	}
 
-	@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
+	//@Accessors(fluent = true)
+	@AllArgsConstructor(onConstructor = @__(@JsonCreator))
+	@NoArgsConstructor(onConstructor = @__(@JsonCreator))
 	@Getter(onMethod = @__(@JsonProperty))
 	@Setter
-//	@Accessors(fluent = true)
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@ToString
 	@EqualsAndHashCode(callSuper = false)
-	@Builder
+	@Builder(toBuilder=true)
 	public static final class Actions {
-		public final URL authenticate;
-		public final URL deleteAccount;
-		public final URL deregister;
-		public final URL register;
+		private URL authenticate;
+		private URL deleteAccount;
+		private URL deregister;
+		private URL register;
 
 		public Actions(final String url) throws MalformedURLException {
 			this.authenticate  = URI.create(url + "authenticate").toURL();
@@ -56,16 +56,16 @@ public final class ActionsResponse {
 		}
 	}
 
-	@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
+	//@Accessors(fluent = true)
+	@AllArgsConstructor(onConstructor = @__(@JsonCreator))
+	@NoArgsConstructor(onConstructor = @__(@JsonCreator))
 	@Getter(onMethod = @__(@JsonProperty))
 	@Setter
-//	@Accessors(fluent = true)
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@ToString
-	@Builder
 	@EqualsAndHashCode(callSuper = false)
+	@Builder(toBuilder=true)
 	public static final class Info {
-		public final URL version;
+		private URL version;
 
 		public Info(final String url) throws MalformedURLException {
 			this.version = URI.create(url + "version").toURL();

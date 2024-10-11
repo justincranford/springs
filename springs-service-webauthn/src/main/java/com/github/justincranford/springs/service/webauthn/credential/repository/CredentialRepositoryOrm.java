@@ -53,8 +53,8 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 			})
 			.map(usernameToCredentialOrms -> usernameToCredentialOrms.getKey())
 			.findAny();
-			log.debug("lookup user handle: {}; optionalUsername: {}", userHandle, optionalUsername);
-			return optionalUsername;
+		log.debug("lookup user handle: {}; optionalUsername: {}", userHandle, optionalUsername);
+		return optionalUsername;
 	}
 
 	@Override

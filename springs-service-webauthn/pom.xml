@@ -74,6 +74,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
+			<artifactId>springs-util-json</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-util-http</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>

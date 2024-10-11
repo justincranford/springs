@@ -26,7 +26,6 @@ import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.FinishAssertionOptions;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartAssertionOptions;
-import com.yubico.webauthn.data.AssertionExtensionInputs;
 import com.yubico.webauthn.data.UserVerificationRequirement;
 import com.yubico.webauthn.exception.AssertionFailedException;
 
@@ -69,31 +68,28 @@ public class AuthenticationService {
 		} else {
 			log.info("Authenticate with passkey (aka without username)", username);
 		}
-		final AssertionRequest assertionRequest = this.relyingParty.startAssertion(
-			StartAssertionOptions.builder()
-				.timeout(300_000L) // 5 minutes
-				.username(isUsernameRequest ? username : null)
-				.userVerification(UserVerificationRequirement.PREFERRED)
-				.extensions(
-					AssertionExtensionInputs.builder()
-						.appid(this.relyingParty.getAppId())
-						.uvm()
-						.build()
-				)
-				.build()
-		);
+		final StartAssertionOptions startAssertionOptions = StartAssertionOptions.builder()
+			.timeout(300_000L) // 5 minutes
+			.username(isUsernameRequest ? username : null)
+			.userHandle(Optional.empty())
+			.userVerification(UserVerificationRequirement.PREFERRED)
+//			.extensions(
+//				AssertionExtensionInputs.builder()
+//					.appid(this.relyingParty.getAppId())
+//					.uvm()
+//					.build()
+//			)
+			.build();
+		final AssertionRequest assertionRequest = this.relyingParty.startAssertion(startAssertionOptions);
 
-		final String requestId = "AuthnRequestId:" + randomByteArray(16).getBase64Url();
 		final String sessionToken = "AuthnSessionToken:" + randomByteArray(16).getBase64Url();
 		final AuthenticationRequest authenticationRequest = AuthenticationRequest.builder()
-			.requestId(requestId)
 			.sessionToken(sessionToken)
 			.request(assertionRequest)
 			.publicKeyCredentialRequestOptions(assertionRequest.getPublicKeyCredentialRequestOptions())
 			.username(Optional.ofNullable(username))
 			.actions(new AuthenticationRequest.Actions(requestUrl))
 			.build();
-		this.authenticationRepositoryOrm.add(requestId, authenticationRequest);
 		this.authenticationRepositoryOrm.add(sessionToken, authenticationRequest);
 		log.info("authenticationRequest: {}", authenticationRequest);
 		return authenticationRequest;
@@ -115,6 +111,7 @@ public class AuthenticationService {
 			log.info("authenticationResult: {}", authenticationResult);
 			final Set<CredentialOrm> registrationsByUserHandle = this.credentialRepositoryOrm.getRegistrationsByUserHandle(authenticationResult.getCredential().getUserHandle());
 			final AuthenticationSuccess authenticationSuccess = new AuthenticationSuccess(
+				true,
 				authenticationRequest,
 				authenticationResponse,
 				registrationsByUserHandle.stream().map(CredentialOrm::toRegisteredCredential).collect(Collectors.toSet()),

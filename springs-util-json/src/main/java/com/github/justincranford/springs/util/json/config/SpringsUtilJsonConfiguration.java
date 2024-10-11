@@ -19,7 +19,8 @@ public class SpringsUtilJsonConfiguration {
 	public ObjectMapper objectMapper(/* final Jackson2ObjectMapperBuilder builder */) {
 		return new ObjectMapper()
 //			.addMixIn(AbstractEntity.class, AbstractEntityMixin.class) // public abstract class AbstractEntityMixin { @JsonProperty("id") String internalId; }
-			.setSerializationInclusion(JsonInclude.Include.ALWAYS)
+//			.setSerializationInclusion(JsonInclude.Include.ALWAYS)
+			.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
 			.configure(SerializationFeature.WRAP_ROOT_VALUE, true)
 			.configure(SerializationFeature.INDENT_OUTPUT, true)
 			.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)

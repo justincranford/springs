@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationRequest;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationResponse;
-import com.github.justincranford.springs.service.webauthn.register.data.SuccessfulRegistrationResult;
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationSuccess;
 import com.github.justincranford.springs.service.webauthn.register.service.RegistrationService;
 
 import jakarta.annotation.Nonnull;
@@ -54,7 +54,7 @@ public class RegisterController {
 		consumes={"text/plain;charset=UTF-8"},
 		produces={"application/json"}
 	)
-	public SuccessfulRegistrationResult finishRegistration(@RequestBody final String responseJson) throws JsonMappingException, JsonProcessingException {
+	public RegistrationSuccess finishRegistration(@RequestBody final String responseJson) throws JsonMappingException, JsonProcessingException {
 		log.info("responseJson: {}", responseJson);
 
 		final RegistrationResponse registrationResponse = this.objectMapper.readValue(responseJson, RegistrationResponse.class);

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -14,37 +13,42 @@ import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.AuthenticatorData;
 import com.yubico.webauthn.data.ByteArray;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
-@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
+//@Accessors(fluent = true)
+@AllArgsConstructor(onConstructor = @__(@JsonCreator))
+@NoArgsConstructor(onConstructor = @__(@JsonCreator))
 @Getter(onMethod = @__(@JsonProperty))
 @Setter
-//	@Accessors(fluent = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
 @EqualsAndHashCode(callSuper = false)
+@Builder(toBuilder=true)
 @Slf4j
 @SuppressWarnings({"nls", "hiding"})
-public class SuccessfulRegistrationResult {
-	private final boolean success = true;
-	private final RegistrationRequest request;
-	private final RegistrationResponse response;
-	private final RegisteredCredential registration;
-	private final boolean attestationTrusted;
-	private final Optional<AttestationCertInfo> attestationCert;
+public class RegistrationSuccess {
+	@Builder.Default
+	private boolean success = true;
+	private RegistrationRequest request;
+	private RegistrationResponse response;
+	private RegisteredCredential registration;
+	private boolean attestationTrusted;
+	private Optional<AttestationCertInfo> attestationCert;
 
 	@JsonSerialize(using = AuthDataSerializer.class)
-	private final AuthenticatorData authData;
+	private AuthenticatorData authData;
 
-	private final String username;
-	private final String sessionToken;
+	private String username;
+	private String sessionToken;
 
-	public SuccessfulRegistrationResult(RegistrationRequest request, RegistrationResponse response, RegisteredCredential registration, boolean attestationTrusted, String sessionToken) {
+	@JsonCreator
+	public RegistrationSuccess(RegistrationRequest request, RegistrationResponse response, RegisteredCredential registration, boolean attestationTrusted, String sessionToken) {
 		this.request = request;
 		this.response = response;
 		this.registration = registration;

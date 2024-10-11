@@ -10,54 +10,57 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import com.yubico.webauthn.data.UserIdentity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
+//@Accessors(fluent = true)
+@AllArgsConstructor(onConstructor = @__(@JsonCreator))
+@NoArgsConstructor(onConstructor = @__(@JsonCreator))
 @Getter(onMethod = @__(@JsonProperty))
 @Setter
-//@Accessors(fluent = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
 @EqualsAndHashCode(callSuper = false)
-@Builder
+@Builder(toBuilder=true)
 @SuppressWarnings({"nls"})
 public class RegistrationRequest {
-	private final boolean success = true;
-	private final UserIdentity userIdentity;
-	private final String username;
-	private final String displayName;
-	private final String credentialNickname;
-	private final String sessionToken;
-	private final Request request;
-	private final StartRegistrationActions actions;
+	@Builder.Default
+	private boolean success = true;
+	private UserIdentity userIdentity;
+	private String username;
+	private String displayName;
+	private String credentialNickname;
+	private String sessionToken;
+	private Request request;
+	private StartRegistrationActions actions;
 
-	@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
+	//@Accessors(fluent = true)
+	@AllArgsConstructor(onConstructor = @__(@JsonCreator))
+	@NoArgsConstructor(onConstructor = @__(@JsonCreator))
 	@Getter(onMethod = @__(@JsonProperty))
 	@Setter
-//	@Accessors(fluent = true)
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@ToString
 	@EqualsAndHashCode(callSuper = false)
-	@Builder
+	@Builder(toBuilder=true)
 	public static class Request {
 		@JsonInclude(JsonInclude.Include.NON_NULL)
-		private final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
+		private PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
 	}
 
-	@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
+	//@Accessors(fluent = true)
+	@AllArgsConstructor(onConstructor = @__(@JsonCreator))
+	@NoArgsConstructor(onConstructor = @__(@JsonCreator))
 	@Getter(onMethod = @__(@JsonProperty))
 	@Setter
-//	@Accessors(fluent = true)
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@ToString
 	@EqualsAndHashCode(callSuper = false)
+	@Builder(toBuilder=true)
 	public static class StartRegistrationActions {
-		public final URL finish;
+		public URL finish;
 
 		public StartRegistrationActions(final String url) throws MalformedURLException {
 			final String slash = url.endsWith("/") ? "" : "/";

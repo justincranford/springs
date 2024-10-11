@@ -12,30 +12,33 @@ import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
+//@Accessors(fluent = true)
+@AllArgsConstructor(onConstructor = @__(@JsonCreator))
+@NoArgsConstructor(onConstructor = @__(@JsonCreator))
 @Getter(onMethod = @__(@JsonProperty))
 @Setter
-//	@Accessors(fluent = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
 @EqualsAndHashCode(callSuper = false)
-@Builder
+@Builder(toBuilder=true)
 @SuppressWarnings({"nls", "hiding"})
 public class AuthenticationRequest {
-	private final boolean success = true;
-	private final String requestId;
-	private final String sessionToken;
-	private final AssertionRequest request;
-	private final PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions;
-	private final Optional<String> username;
-	private final Actions actions;
+	@Builder.Default
+	private boolean success = true;
+	private String requestId;
+	private String sessionToken;
+	private AssertionRequest request;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions;
+	private Optional<String> username;
+	private Actions actions;
 
 	public AuthenticationRequest(
 		@NotNull String sessionToken,
@@ -50,15 +53,16 @@ public class AuthenticationRequest {
 		this.actions = actions;
 	}
 
-	@RequiredArgsConstructor(onConstructor = @__(@JsonCreator))
+	//@Accessors(fluent = true)
+	@AllArgsConstructor(onConstructor = @__(@JsonCreator))
+	@NoArgsConstructor(onConstructor = @__(@JsonCreator))
 	@Getter(onMethod = @__(@JsonProperty))
 	@Setter
-//	@Accessors(fluent = true)
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@ToString
 	@EqualsAndHashCode(callSuper = false)
+	@Builder(toBuilder=true)
 	public static class Actions {
-		public final URL finish;
+		public URL finish;
 
 		public Actions(final String url) throws MalformedURLException {
 			final String slash = url.endsWith("/") ? "" : "/";

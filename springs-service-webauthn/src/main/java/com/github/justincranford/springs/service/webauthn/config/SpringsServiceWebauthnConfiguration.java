@@ -10,11 +10,13 @@ import com.github.justincranford.springs.service.webauthn.credential.config.Cred
 import com.github.justincranford.springs.service.webauthn.register.config.RegistrationConfiguration;
 import com.github.justincranford.springs.service.webauthn.relyingparty.config.RelyingPartyConfiguration;
 import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
+import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
 
 @Configuration
 @EnableConfigurationProperties
 @Import(value = {
 	SpringsUtilHttpsConfiguration.class,
+	SpringsUtilJsonConfiguration.class,
 	RelyingPartyConfiguration.class,
 	ActionsConfiguration.class,
 	CredentialConfiguration.class,
