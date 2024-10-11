@@ -83,21 +83,26 @@ public class AuthenticationService {
 				.build()
 		);
 
-		final String requestId = randomByteArray(64).getBase64Url();
+		final String requestId = "AuthnRequestId:" + randomByteArray(16).getBase64Url();
+		final String sessionToken = "AuthnSessionToken:" + randomByteArray(16).getBase64Url();
 		final AuthenticationRequest authenticationRequest = AuthenticationRequest.builder()
 			.requestId(requestId)
+			.sessionToken(sessionToken)
 			.request(assertionRequest)
 			.publicKeyCredentialRequestOptions(assertionRequest.getPublicKeyCredentialRequestOptions())
 			.username(Optional.ofNullable(username))
 			.actions(new AuthenticationRequest.Actions(requestUrl))
 			.build();
 		this.authenticationRepositoryOrm.add(requestId, authenticationRequest);
+		this.authenticationRepositoryOrm.add(sessionToken, authenticationRequest);
 		log.info("authenticationRequest: {}", authenticationRequest);
 		return authenticationRequest;
 	}
 
 	public AuthenticationSuccess finish(final AuthenticationResponse authenticationResponse) {
 		try {
+			log.info("authenticationResponse: {}", authenticationResponse);
+
 			final AuthenticationRequest authenticationRequest = this.authenticationRepositoryOrm.remove(authenticationResponse.getSessionToken());
 			log.info("authenticationRequest: {}", authenticationRequest);
 

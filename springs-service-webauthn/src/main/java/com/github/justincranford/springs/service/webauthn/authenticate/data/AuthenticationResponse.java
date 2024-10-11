@@ -23,8 +23,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = false)
 @Builder
 public class AuthenticationResponse {
-	private final boolean success = true;
-//	private final ByteArray requestId;
+	private final String requestId;
 	private final PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential;
 	private final String sessionToken;
 }

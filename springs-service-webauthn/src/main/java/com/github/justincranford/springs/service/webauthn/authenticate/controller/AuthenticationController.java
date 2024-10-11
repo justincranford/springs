@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping(value="/")
 @Slf4j
+@SuppressWarnings({"nls"})
 public class AuthenticationController {
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -48,7 +49,11 @@ public class AuthenticationController {
 		produces={"application/json"}
 	)
 	public AuthenticationSuccess finishAuthentication(@RequestBody final String responseJson) throws JsonMappingException, JsonProcessingException {
+		log.info("responseString: {}", responseJson);
+
 		final AuthenticationResponse authenticationResponse = this.objectMapper.readValue(responseJson, AuthenticationResponse.class);
+		log.info("authenticationResponse: {}", authenticationResponse);
+
 		return this.authenticationService.finish(authenticationResponse);
 	}
 }

@@ -54,11 +54,11 @@ public class RegisterController {
 		consumes={"text/plain;charset=UTF-8"},
 		produces={"application/json"}
 	)
-	public SuccessfulRegistrationResult finishRegistration(@RequestBody final String responseString) throws JsonMappingException, JsonProcessingException {
-		log.info("responseString: {}", responseString);
+	public SuccessfulRegistrationResult finishRegistration(@RequestBody final String responseJson) throws JsonMappingException, JsonProcessingException {
+		log.info("responseJson: {}", responseJson);
 
-		final RegistrationResponse registrationResponse = this.objectMapper.readValue(responseString, RegistrationResponse.class);
-		log.info("response: {}", registrationResponse);
+		final RegistrationResponse registrationResponse = this.objectMapper.readValue(responseJson, RegistrationResponse.class);
+		log.info("registrationResponse: {}", registrationResponse);
 
 		return this.registrationService.finish(registrationResponse);
 	}

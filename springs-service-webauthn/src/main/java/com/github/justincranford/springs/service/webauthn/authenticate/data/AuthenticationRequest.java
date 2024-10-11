@@ -31,17 +31,19 @@ import lombok.ToString;
 public class AuthenticationRequest {
 	private final boolean success = true;
 	private final String requestId;
+	private final String sessionToken;
 	private final AssertionRequest request;
 	private final PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions;
 	private final Optional<String> username;
 	private final Actions actions;
 
 	public AuthenticationRequest(
-		@NotNull String requestId,
+		@NotNull String sessionToken,
 		@NotNull AssertionRequest request,
 		@NotNull Actions actions
 	) {
-		this.requestId = requestId;
+		this.requestId = sessionToken;
+		this.sessionToken = sessionToken;
 		this.request = request;
 		this.publicKeyCredentialRequestOptions = request.getPublicKeyCredentialRequestOptions();
 		this.username = request.getUsername();
