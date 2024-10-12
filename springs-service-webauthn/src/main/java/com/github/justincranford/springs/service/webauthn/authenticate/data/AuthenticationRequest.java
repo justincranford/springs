@@ -6,7 +6,6 @@ import java.net.URL;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
@@ -24,7 +23,7 @@ import lombok.ToString;
 @AllArgsConstructor(onConstructor = @__(@JsonCreator))
 @NoArgsConstructor(onConstructor = @__(@JsonCreator))
 @Getter(onMethod = @__(@JsonProperty))
-@Setter
+@Setter(onMethod = @__(@JsonProperty))
 @ToString
 @EqualsAndHashCode(callSuper = false)
 @Builder(toBuilder=true)
@@ -35,7 +34,6 @@ public class AuthenticationRequest {
 	private String requestId;
 	private String sessionToken;
 	private AssertionRequest request;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions;
 	private Optional<String> username;
 	private Actions actions;
@@ -57,7 +55,7 @@ public class AuthenticationRequest {
 	@AllArgsConstructor(onConstructor = @__(@JsonCreator))
 	@NoArgsConstructor(onConstructor = @__(@JsonCreator))
 	@Getter(onMethod = @__(@JsonProperty))
-	@Setter
+	@Setter(onMethod = @__(@JsonProperty))
 	@ToString
 	@EqualsAndHashCode(callSuper = false)
 	@Builder(toBuilder=true)

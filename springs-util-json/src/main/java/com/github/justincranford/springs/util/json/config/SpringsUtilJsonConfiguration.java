@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -18,14 +19,15 @@ public class SpringsUtilJsonConfiguration {
 	@Primary
 	public ObjectMapper objectMapper(/* final Jackson2ObjectMapperBuilder builder */) {
 		return new ObjectMapper()
+			.enable(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION)
 //			.addMixIn(AbstractEntity.class, AbstractEntityMixin.class) // public abstract class AbstractEntityMixin { @JsonProperty("id") String internalId; }
 //			.setSerializationInclusion(JsonInclude.Include.ALWAYS)
 			.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-			.configure(SerializationFeature.WRAP_ROOT_VALUE, true)
-			.configure(SerializationFeature.INDENT_OUTPUT, true)
-			.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-			.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
-			.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true)
+//			.configure(SerializationFeature.WRAP_ROOT_VALUE, true)
+//			.configure(SerializationFeature.INDENT_OUTPUT, true)
+//			.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+//			.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+//			.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true)
 			.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, true)
 			.configure(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS, true)
 			.configure(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY, true)

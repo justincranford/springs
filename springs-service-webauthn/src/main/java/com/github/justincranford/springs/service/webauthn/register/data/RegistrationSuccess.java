@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor(onConstructor = @__(@JsonCreator))
 @NoArgsConstructor(onConstructor = @__(@JsonCreator))
 @Getter(onMethod = @__(@JsonProperty))
-@Setter
+@Setter(onMethod = @__(@JsonProperty))
 @ToString
 @EqualsAndHashCode(callSuper = false)
 @Builder(toBuilder=true)
