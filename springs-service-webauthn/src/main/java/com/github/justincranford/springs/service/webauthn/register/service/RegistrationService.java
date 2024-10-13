@@ -70,8 +70,6 @@ public class RegistrationService {
 				.build();
 			final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = this.relyingParty
 					.startRegistration(startRegistrationOptions);
-			// TODO remove
-//			final String newRequestId = "RegRequestId:" + randomByteArray(32).getBase64Url();
 			final String newSessionToken = "RegSessionToken:" + randomByteArray(32).getBase64Url();
 			final RegistrationRequest.Request request = RegistrationRequest.Request.builder()
 				.publicKeyCredentialCreationOptions(publicKeyCredentialCreationOptions)
@@ -85,7 +83,6 @@ public class RegistrationService {
 				.sessionToken(newSessionToken)
 				.request(request)
 				.actions(new RegistrationRequest.StartRegistrationActions(requestUrl)).build();
-//			this.registrationRepositoryOrm.add(newRequestId, registrationRequest);
 			this.registrationRepositoryOrm.add(newSessionToken, registrationRequest);
 			this.prettyJson.log(registrationRequest);
 			return registrationRequest;
