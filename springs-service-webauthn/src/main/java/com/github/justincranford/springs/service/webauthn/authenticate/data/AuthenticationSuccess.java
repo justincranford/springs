@@ -2,7 +2,6 @@ package com.github.justincranford.springs.service.webauthn.authenticate.data;
 
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.justincranford.springs.service.webauthn.util.AuthDataSerializer;
@@ -18,16 +17,15 @@ import lombok.Setter;
 import lombok.ToString;
 
 //@Accessors(fluent = true)
-@AllArgsConstructor(onConstructor = @__(@JsonCreator))
-@NoArgsConstructor(onConstructor = @__(@JsonCreator))
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter(onMethod = @__(@JsonProperty))
-@Setter(onMethod = @__(@JsonProperty))
+@Setter
 @ToString
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode
 @Builder(toBuilder=true)
 public class AuthenticationSuccess {
-	@Builder.Default
-	private boolean success = true;
+	private boolean success;
 	private AuthenticationRequest request;
 	private AuthenticationResponse response;
     private Set<RegisteredCredential> registrations;

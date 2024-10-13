@@ -4,8 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import com.yubico.webauthn.data.UserIdentity;
@@ -19,17 +17,16 @@ import lombok.Setter;
 import lombok.ToString;
 
 //@Accessors(fluent = true)
-@AllArgsConstructor(onConstructor = @__(@JsonCreator))
-@NoArgsConstructor(onConstructor = @__(@JsonCreator))
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter(onMethod = @__(@JsonProperty))
-@Setter(onMethod = @__(@JsonProperty))
+@Setter
 @ToString
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode
 @Builder(toBuilder=true)
 @SuppressWarnings({"nls"})
 public class RegistrationRequest {
-	@Builder.Default
-	private boolean success = true;
+	private boolean success;
 	private UserIdentity userIdentity;
 	private String username;
 	private String displayName;
@@ -39,25 +36,24 @@ public class RegistrationRequest {
 	private StartRegistrationActions actions;
 
 	//@Accessors(fluent = true)
-	@AllArgsConstructor(onConstructor = @__(@JsonCreator))
-	@NoArgsConstructor(onConstructor = @__(@JsonCreator))
+	@AllArgsConstructor
+	@NoArgsConstructor
 	@Getter(onMethod = @__(@JsonProperty))
 	@Setter
 	@ToString
-	@EqualsAndHashCode(callSuper = false)
+	@EqualsAndHashCode
 	@Builder(toBuilder=true)
 	public static class Request {
-		@JsonInclude(JsonInclude.Include.NON_NULL)
 		private PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
 	}
 
 	//@Accessors(fluent = true)
-	@AllArgsConstructor(onConstructor = @__(@JsonCreator))
-	@NoArgsConstructor(onConstructor = @__(@JsonCreator))
+	@AllArgsConstructor
+	@NoArgsConstructor
 	@Getter(onMethod = @__(@JsonProperty))
-	@Setter(onMethod = @__(@JsonProperty))
+	@Setter
 	@ToString
-	@EqualsAndHashCode(callSuper = false)
+	@EqualsAndHashCode
 	@Builder(toBuilder=true)
 	public static class StartRegistrationActions {
 		public URL finish;

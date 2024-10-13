@@ -116,7 +116,7 @@ public class AuthenticationService {
 				authenticationResponse,
 				registrationsByUserHandle.stream().map(CredentialOrm::toRegisteredCredential).collect(Collectors.toSet()),
 				authenticationResponse.getCredential().getResponse().getParsedAuthenticatorData(),
-				authenticationRequest.getUsername().get(),
+				authenticationRequest.getUsername().orElse(null),
 				authenticationRequest.getRequestId()
 			);
 	        log.info("authenticationSuccess: {}", this.objectMapper.writeValueAsString(authenticationSuccess));

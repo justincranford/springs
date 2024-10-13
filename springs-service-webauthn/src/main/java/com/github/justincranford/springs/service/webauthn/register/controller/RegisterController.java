@@ -45,7 +45,10 @@ public class RegisterController {
 		@Nonnull  @RequestParam(required=true)  final String  sessionToken,
 		@Nullable @RequestParam(required=false) final Boolean requireResidentKey
 	) throws JsonProcessingException, MalformedURLException {
-		return this.registrationService.start(username, displayName, credentialNickname, sessionToken, requireResidentKey, request.getRequestURL().toString());
+		final RegistrationRequest registrationRequest = this.registrationService.start(username, displayName, credentialNickname, sessionToken, requireResidentKey, request.getRequestURL().toString());
+		final String registrationRequestJson = this.objectMapper.writeValueAsString(registrationRequest);
+		log.info("registrationRequestJson: {}", registrationRequestJson);
+		return registrationRequest;
 	}
 
 	// /api/v1/register/finish
@@ -54,10 +57,10 @@ public class RegisterController {
 		consumes={"text/plain;charset=UTF-8"},
 		produces={"application/json"}
 	)
-	public RegistrationSuccess finishRegistration(@RequestBody final String responseJson) throws JsonMappingException, JsonProcessingException {
-		log.info("responseJson: {}", responseJson);
+	public RegistrationSuccess finishRegistration(@RequestBody final String registrationResponseJson) throws JsonMappingException, JsonProcessingException {
+		log.info("registrationResponseJson: {}", registrationResponseJson);
 
-		final RegistrationResponse registrationResponse = this.objectMapper.readValue(responseJson, RegistrationResponse.class);
+		final RegistrationResponse registrationResponse = this.objectMapper.readValue(registrationResponseJson, RegistrationResponse.class);
 		log.info("registrationResponse: {}", registrationResponse);
 
 		return this.registrationService.finish(registrationResponse);

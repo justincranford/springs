@@ -40,10 +40,10 @@ public class AuthenticationController {
 		final HttpServletRequest request,
 		@Nullable @RequestParam(required=false) final String username
 	) throws JsonProcessingException, MalformedURLException {
-		final AuthenticationRequest start = this.authenticationService.start(username, request.getRequestURL().toString());
-		final String responseJson = this.objectMapper.writeValueAsString(start);//.replace("\"allowCredentials\":null,", "");
-		log.info("responseJson: {}", responseJson);
-		return responseJson;
+		final AuthenticationRequest authenticationRequest = this.authenticationService.start(username, request.getRequestURL().toString());
+		final String authenticationRequestJson = this.objectMapper.writeValueAsString(authenticationRequest);
+		log.info("authenticationRequestJson: {}", authenticationRequestJson);
+		return authenticationRequestJson;
 	}
 
 	@PostMapping(
@@ -51,10 +51,10 @@ public class AuthenticationController {
 		consumes={"text/plain;charset=UTF-8"},
 		produces={"application/json"}
 	)
-	public AuthenticationSuccess finishAuthentication(@RequestBody final String responseJson) throws JsonMappingException, JsonProcessingException {
-		log.info("responseJson: {}", responseJson);
+	public AuthenticationSuccess finishAuthentication(@RequestBody final String authenticationResponseJson) throws JsonMappingException, JsonProcessingException {
+		log.info("authenticationResponseJson: {}", authenticationResponseJson);
 
-		final AuthenticationResponse authenticationResponse = this.objectMapper.readValue(responseJson, AuthenticationResponse.class);
+		final AuthenticationResponse authenticationResponse = this.objectMapper.readValue(authenticationResponseJson, AuthenticationResponse.class);
 		log.info("authenticationResponse: {}", authenticationResponse);
 
 		return this.authenticationService.finish(authenticationResponse);

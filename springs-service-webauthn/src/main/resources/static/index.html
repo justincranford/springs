@@ -193,10 +193,11 @@ function resetDisplays() {
 }
 
 function getIndexActions() {
-  return fetch('api/v1/')
+  var actions = fetch('api/v1/')
     .then(response => response.json())
     .then(data => data.actions)
   ;
+  return actions;
 }
 
 function getRegisterRequest(urls, username, displayName, credentialNickname, requireResidentKey) {
@@ -257,6 +258,7 @@ async function performCeremony(params) {
   resetDisplays();
 
   const rootUrls = await getIndexActions();
+  console.log('rootUrls', rootUrls);
 
   setStatus(statusStrings.int);
   if (callbacks.init) {

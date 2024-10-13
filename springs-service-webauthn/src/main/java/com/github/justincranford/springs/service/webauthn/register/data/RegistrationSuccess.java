@@ -23,12 +23,12 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 //@Accessors(fluent = true)
-@AllArgsConstructor(onConstructor = @__(@JsonCreator))
-@NoArgsConstructor(onConstructor = @__(@JsonCreator))
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter(onMethod = @__(@JsonProperty))
-@Setter(onMethod = @__(@JsonProperty))
+@Setter
 @ToString
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode
 @Builder(toBuilder=true)
 @Slf4j
 @SuppressWarnings({"nls", "hiding"})

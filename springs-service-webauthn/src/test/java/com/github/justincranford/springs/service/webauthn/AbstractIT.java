@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.justincranford.springs.service.http.client.config.SpringsUtilHttpClientConfiguration;
 import com.github.justincranford.springs.service.http.server.HelloWorldController;
 import com.github.justincranford.springs.service.webauthn.config.SpringsServiceWebauthnConfiguration;
@@ -44,6 +45,9 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings({"nls", "static-method"})
 @Slf4j
 public class AbstractIT {
+	@Autowired
+	private ObjectMapper objectMapper;
+
 	@LocalServerPort
 	private long localServerPort;
 

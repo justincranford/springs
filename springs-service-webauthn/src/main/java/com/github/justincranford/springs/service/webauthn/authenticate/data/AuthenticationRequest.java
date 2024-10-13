@@ -5,7 +5,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
@@ -20,12 +19,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 //@Accessors(fluent = true)
-@AllArgsConstructor(onConstructor = @__(@JsonCreator))
-@NoArgsConstructor(onConstructor = @__(@JsonCreator))
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter(onMethod = @__(@JsonProperty))
-@Setter(onMethod = @__(@JsonProperty))
+@Setter
 @ToString
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode
 @Builder(toBuilder=true)
 @SuppressWarnings({"nls", "hiding"})
 public class AuthenticationRequest {
@@ -52,12 +51,12 @@ public class AuthenticationRequest {
 	}
 
 	//@Accessors(fluent = true)
-	@AllArgsConstructor(onConstructor = @__(@JsonCreator))
-	@NoArgsConstructor(onConstructor = @__(@JsonCreator))
+	@AllArgsConstructor
+	@NoArgsConstructor
 	@Getter(onMethod = @__(@JsonProperty))
-	@Setter(onMethod = @__(@JsonProperty))
+	@Setter
 	@ToString
-	@EqualsAndHashCode(callSuper = false)
+	@EqualsAndHashCode
 	@Builder(toBuilder=true)
 	public static class Actions {
 		public URL finish;

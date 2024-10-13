@@ -4,7 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -16,12 +15,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 //@Accessors(fluent = true)
-@AllArgsConstructor(onConstructor = @__(@JsonCreator))
-@NoArgsConstructor(onConstructor = @__(@JsonCreator))
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter(onMethod = @__(@JsonProperty))
 @Setter
 @ToString
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode
 @Builder(toBuilder=true)
 @SuppressWarnings({"nls"})
 public final class ActionsResponse {
@@ -35,12 +34,12 @@ public final class ActionsResponse {
 	}
 
 	//@Accessors(fluent = true)
-	@AllArgsConstructor(onConstructor = @__(@JsonCreator))
-	@NoArgsConstructor(onConstructor = @__(@JsonCreator))
+	@AllArgsConstructor
+	@NoArgsConstructor
 	@Getter(onMethod = @__(@JsonProperty))
 	@Setter
 	@ToString
-	@EqualsAndHashCode(callSuper = false)
+	@EqualsAndHashCode
 	@Builder(toBuilder=true)
 	public static final class Actions {
 		private URL authenticate;
@@ -57,12 +56,12 @@ public final class ActionsResponse {
 	}
 
 	//@Accessors(fluent = true)
-	@AllArgsConstructor(onConstructor = @__(@JsonCreator))
-	@NoArgsConstructor(onConstructor = @__(@JsonCreator))
+	@AllArgsConstructor
+	@NoArgsConstructor
 	@Getter(onMethod = @__(@JsonProperty))
 	@Setter
 	@ToString
-	@EqualsAndHashCode(callSuper = false)
+	@EqualsAndHashCode
 	@Builder(toBuilder=true)
 	public static final class Info {
 		private URL version;

@@ -94,6 +94,7 @@ public class RegistrationService {
 			.publicKeyCredentialCreationOptions(publicKeyCredentialCreationOptions)
 			.build();
 		final RegistrationRequest registrationRequest = RegistrationRequest.builder()
+			.success(true)
 			.userIdentity(userIdentity)
 			.username(username)
 			.displayName(displayName)
