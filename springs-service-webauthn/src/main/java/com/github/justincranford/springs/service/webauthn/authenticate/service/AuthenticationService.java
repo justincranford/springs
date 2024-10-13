@@ -24,8 +24,12 @@ import com.github.justincranford.springs.util.json.config.PrettyJson;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.FinishAssertionOptions;
+import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartAssertionOptions;
+import com.yubico.webauthn.data.AuthenticatorData;
+import com.yubico.webauthn.data.ByteArray;
+import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 import com.yubico.webauthn.data.UserVerificationRequirement;
 import com.yubico.webauthn.exception.AssertionFailedException;
 
@@ -37,6 +41,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @SuppressWarnings({"nls"})
 public class AuthenticationService {
+	private static final int NUM_RANDOM_BYTES_SESSION_TOKEN = 32;
+
 	@Autowired
 	private PrettyJson prettyJson;
 	@Autowired
@@ -53,10 +59,7 @@ public class AuthenticationService {
 	 * @throws MalformedURLException
 	 * @throws JsonProcessingException
 	 */
-	public AuthenticationRequest start(
-		@NotBlank final String username,
-		@NotBlank final String requestUrl
-	) throws MalformedURLException, JsonProcessingException {
+	public AuthenticationRequest start(@NotBlank final String username, @NotBlank final String requestUrl) {
 		final boolean isUsernameRequest = Strings.isNotBlank(username);
 		if (isUsernameRequest) {
 			final Set<CredentialOrm> credentials = this.credentialRepositoryOrm.getByUsername(username);
@@ -73,31 +76,25 @@ public class AuthenticationService {
 			.username(isUsernameRequest ? username : null)
 			.userHandle(Optional.empty())
 			.userVerification(UserVerificationRequirement.DISCOURAGED)
-//			.extensions(
-//				AssertionExtensionInputs.builder()
-//					.appid(this.relyingParty.getAppId())
-//					.uvm()
-//					.build()
-//			)
 			.build();
 		final AssertionRequest assertionRequest = this.relyingParty.startAssertion(startAssertionOptions);
 
-		final String sessionToken = "AuthnSessionToken:" + randomByteArray(32).getBase64Url();
+		final String sessionToken = "AuthnSessionToken:" + randomByteArray(NUM_RANDOM_BYTES_SESSION_TOKEN).getBase64Url();
+		final PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions = assertionRequest.getPublicKeyCredentialRequestOptions();
+		final AuthenticationRequest.Actions actions = new AuthenticationRequest.Actions(requestUrl);
 		final AuthenticationRequest authenticationRequest = AuthenticationRequest.builder()
 			.sessionToken(sessionToken)
 			.request(assertionRequest)
-			.publicKeyCredentialRequestOptions(assertionRequest.getPublicKeyCredentialRequestOptions())
+			.publicKeyCredentialRequestOptions(publicKeyCredentialRequestOptions)
 			.username(Optional.ofNullable(username))
-			.actions(new AuthenticationRequest.Actions(requestUrl))
+			.actions(actions)
 			.build();
 		this.authenticationRepositoryOrm.add(sessionToken, authenticationRequest);
 		this.prettyJson.log(authenticationRequest);
 		return authenticationRequest;
 	}
 
-	public AuthenticationSuccess finish(
-		@NotNull AuthenticationResponse authenticationResponse
-	) {
+	public AuthenticationSuccess finish(@NotNull AuthenticationResponse authenticationResponse) {
 		try {
 			this.prettyJson.log(authenticationResponse);
 
@@ -112,18 +109,23 @@ public class AuthenticationService {
 			);
 			this.prettyJson.log(authenticationResult);
 
-			final Set<CredentialOrm> registrationsByUserHandle = this.credentialRepositoryOrm.getRegistrationsByUserHandle(authenticationResult.getCredential().getUserHandle());
-			final AuthenticationSuccess authenticationSuccess = new AuthenticationSuccess(
-				true,
-				authenticationRequest,
-				authenticationResponse,
-				registrationsByUserHandle.stream().map(CredentialOrm::toRegisteredCredential).collect(Collectors.toSet()),
-				authenticationResponse.getCredential().getResponse().getParsedAuthenticatorData(),
-				authenticationRequest.getUsername().orElse(null),
-				authenticationRequest.getRequestId()
+			final ByteArray                 userHandle                = authenticationResult.getCredential().getUserHandle();
+			final Set<CredentialOrm>        registrationsByUserHandle = this.credentialRepositoryOrm.getRegistrationsByUserHandle(userHandle);
+			final Set<RegisteredCredential> registeredCredentials     = registrationsByUserHandle.stream().map(CredentialOrm::toRegisteredCredential).collect(Collectors.toSet());
+			final AuthenticatorData         authenticatorData         = authenticationResponse.getCredential().getResponse().getParsedAuthenticatorData();
+			final String                    username                  = authenticationRequest.getUsername().orElse(null);
+			final String                    requestId                 = authenticationRequest.getRequestId();
+			return this.prettyJson.log(
+				AuthenticationSuccess.builder()
+					.success(true)
+//					.request(authenticationRequest)
+//					.response(authenticationResponse)
+					.registrations(registeredCredentials)
+					.authData(authenticatorData)
+					.username(username)
+					.sessionToken(requestId)
+					.build()
 			);
-			this.prettyJson.log(authenticationSuccess);
-	        return authenticationSuccess;
 		} catch (AssertionFailedException e) {
 			log.info("Finish authentication exception", e);
 			if (e.getCause().getMessage().equals("Username not found for userHandle: Optional.empty")) {

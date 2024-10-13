@@ -61,9 +61,13 @@ public class AuthenticationRequest {
 	public static class Actions {
 		public URL finish;
 
-		public Actions(final String url) throws MalformedURLException {
+		public Actions(final String url) {
 			final String slash = url.endsWith("/") ? "" : "/";
-			this.finish = URI.create(url + slash + "finish").toURL();
+			try {
+				this.finish = URI.create(url + slash + "finish").toURL();
+			} catch (MalformedURLException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 }
