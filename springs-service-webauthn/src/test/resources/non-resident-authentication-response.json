@@ -1,0 +1,17 @@
+{
+  "credential": {
+    "type": "public-key",
+    "id": "fb0v7AfgNw8GpCfW8Qp7tQ",
+    "rawId": "fb0v7AfgNw8GpCfW8Qp7tQ",
+    "response": {
+      "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiX1ZMZmx6ZXZiZ016Q0VwM1NKUlB4VXdZWWVJU0JhOWg0Q2RxaEsxZzBINCIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+      "authenticatorData": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MZAAAAAA",
+      "signature": "MEUCIQCclJ3QBeZRFjWDhfo8jNBmlq0y5ifQchftmOhVnrEMKwIgWo0oRDXZBdznERpF0k6i8qrcY4-Fdf22N4R_2NYxG1s",
+      "userHandle": "wP28aIl8spjMb2K4A09OceAYxhnKkRagA8Ji9aEGAms"
+    },
+    "clientExtensionResults": {
+      "appid": false
+    }
+  },
+  "sessionToken": "AuthnSessionToken:JMfHyNU6VHdLICCyi_pG6g"
+}

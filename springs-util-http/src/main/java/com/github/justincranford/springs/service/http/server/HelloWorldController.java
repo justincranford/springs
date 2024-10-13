@@ -1,14 +1,15 @@
 package com.github.justincranford.springs.service.http.server;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @SuppressWarnings({"nls", "static-method"})
 public class HelloWorldController {
-	@GetMapping
-	@RequestMapping(HelloWorldController.Constants.PATH)
+	@GetMapping(
+		value={HelloWorldController.Constants.PATH},
+		produces={"plain/text; charset=UTF-8"}
+	)
 	public String helloWorld() {
 		return HelloWorldController.Constants.RESPONSE_BODY;
 	}

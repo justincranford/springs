@@ -1,0 +1,27 @@
+{
+  "success" : true,
+  "sessionToken" : "AuthnSessionToken:cb7EyCsQJnRgeHYHv7Yn7Q",
+  "request" : {
+    "publicKeyCredentialRequestOptions" : {
+      "challenge" : "Ciwl-QZtN0sjdw61cJYaYMDHay_jwr38elZ1Q_8wd-g",
+      "timeout" : 300000,
+      "rpId" : "localhost",
+      "userVerification" : "discouraged",
+      "extensions" : {
+        "appid" : "https://localhost"
+      }
+    }
+  },
+  "publicKeyCredentialRequestOptions" : {
+    "challenge" : "Ciwl-QZtN0sjdw61cJYaYMDHay_jwr38elZ1Q_8wd-g",
+    "timeout" : 300000,
+    "rpId" : "localhost",
+    "userVerification" : "discouraged",
+    "extensions" : {
+      "appid" : "https://localhost"
+    }
+  },
+  "actions" : {
+    "finish" : "https://localhost:8443/api/v1/authenticate/finish"
+  }
+}

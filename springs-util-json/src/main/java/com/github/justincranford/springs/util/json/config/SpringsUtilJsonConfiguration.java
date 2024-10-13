@@ -2,6 +2,7 @@ package com.github.justincranford.springs.util.json.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -13,8 +14,9 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Configuration
+@Import({PrettyJson.class})
+@SuppressWarnings({"static-method"})
 public class SpringsUtilJsonConfiguration {
-	@SuppressWarnings("static-method")
 	@Bean
 	@Primary
 	public ObjectMapper objectMapper(/* final Jackson2ObjectMapperBuilder builder */) {

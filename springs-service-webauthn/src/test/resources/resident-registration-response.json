@@ -1,0 +1,17 @@
+{
+  "credential" : {
+    "id" : "9Ej_VwFjNPExWA946yT_2Q",
+    "response" : {
+      "attestationObject" : "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YViUSZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2NZAAAAAOqbjWZNAR0hPOS2tIy1ddQAEPRI_1cBYzTxMVgPeOsk_9mlAQIDJiABIVggY4ejggcqcbuxYg1PcEuwFMqTbRUKa1uiQheRdN-Z3qoiWCDtMdOjgAM3jj-JVKzwPXoT_jECTsRglI1-exc6oBTTOQ",
+      "clientDataJSON" : "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoicUNUM0xQNzA4LTVBTVN1WlhINGxsTnB2YkVkVWwwenhOTzdkbHdkT1pVSSIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+      "transports" : [ "hybrid", "internal" ]
+    },
+    "clientExtensionResults" : {
+      "credProps" : {
+        "rk" : true
+      }
+    },
+    "type" : "public-key"
+  },
+  "sessionToken" : "RegSessionTokenl3a1F0PMy2htbN3K5XrBXQ"
+}

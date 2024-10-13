@@ -1,0 +1,67 @@
+{
+  "success" : true,
+  "request" : {
+    "success" : true,
+    "sessionToken" : "AuthnSessionToken:cb7EyCsQJnRgeHYHv7Yn7Q",
+    "request" : {
+      "publicKeyCredentialRequestOptions" : {
+        "challenge" : "Ciwl-QZtN0sjdw61cJYaYMDHay_jwr38elZ1Q_8wd-g",
+        "timeout" : 300000,
+        "rpId" : "localhost",
+        "userVerification" : "discouraged",
+        "extensions" : {
+          "appid" : "https://localhost"
+        }
+      }
+    },
+    "publicKeyCredentialRequestOptions" : {
+      "challenge" : "Ciwl-QZtN0sjdw61cJYaYMDHay_jwr38elZ1Q_8wd-g",
+      "timeout" : 300000,
+      "rpId" : "localhost",
+      "userVerification" : "discouraged",
+      "extensions" : {
+        "appid" : "https://localhost"
+      }
+    },
+    "actions" : {
+      "finish" : "https://localhost:8443/api/v1/authenticate/finish"
+    }
+  },
+  "response" : {
+    "credential" : {
+      "id" : "9Ej_VwFjNPExWA946yT_2Q",
+      "response" : {
+        "authenticatorData" : "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MZAAAAAA",
+        "clientDataJSON" : "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiQ2l3bC1RWnROMHNqZHc2MWNKWWFZTURIYXlfandyMzhlbFoxUV84d2QtZyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJjcm9zc09yaWdpbiI6ZmFsc2UsIm90aGVyX2tleXNfY2FuX2JlX2FkZGVkX2hlcmUiOiJkbyBub3QgY29tcGFyZSBjbGllbnREYXRhSlNPTiBhZ2FpbnN0IGEgdGVtcGxhdGUuIFNlZSBodHRwczovL2dvby5nbC95YWJQZXgifQ",
+        "signature" : "MEQCIDviqN1mWDjYtcGOactXcX6WH-P_R63ZGq4Q8CE_RrKGAiARH3118Qm3YlOt_jDzsNrbp0BaGqQluAC4LnYg_GCH-A",
+        "userHandle" : "Z7DZF45sTiQJdt6e_J6rPBr9xOIoDgtNFCf3VvV0BeA"
+      },
+      "clientExtensionResults" : {
+        "appid" : false
+      },
+      "type" : "public-key"
+    },
+    "sessionToken" : "AuthnSessionToken:cb7EyCsQJnRgeHYHv7Yn7Q"
+  },
+  "registrations" : [ {
+    "credentialId" : "9Ej_VwFjNPExWA946yT_2Q",
+    "userHandle" : "Z7DZF45sTiQJdt6e_J6rPBr9xOIoDgtNFCf3VvV0BeA",
+    "publicKeyCose" : "pQECAyYgASFYIGOHo4IHKnG7sWINT3BLsBTKk20VCmtbokIXkXTfmd6qIlgg7THTo4ADN44_iVSs8D16E_4xAk7EYJSNfnsXOqAU0zk",
+    "signatureCount" : 0,
+    "backupEligible" : true,
+    "backupState" : true
+  } ],
+  "authData" : {
+    "rpIdHash" : "49960de5880e8c687434170f6476605b8fe4aeb9a28632c7995cf3ba831d9763",
+    "flags" : {
+      "value" : 25,
+      "UP" : true,
+      "UV" : false,
+      "BE" : true,
+      "BS" : true,
+      "AT" : false,
+      "ED" : false
+    },
+    "signatureCounter" : 0
+  }
+}

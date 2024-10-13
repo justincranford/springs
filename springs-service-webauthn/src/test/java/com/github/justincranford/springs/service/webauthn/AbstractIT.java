@@ -1,5 +1,7 @@
 package com.github.justincranford.springs.service.webauthn;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -45,8 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings({"nls", "static-method"})
 @Slf4j
 public class AbstractIT {
-	@Autowired
-	private ObjectMapper objectMapper;
+	private static final AtomicBoolean BEFORE_EACH_LOG_ONCE = new AtomicBoolean(true);
 
 	@LocalServerPort
 	private long localServerPort;
@@ -75,6 +76,9 @@ public class AbstractIT {
 	@Qualifier("stlsRestTemplate")
 	private RestTemplate stlsRestTemplate;
 
+	@Autowired
+	private ObjectMapper objectMapper;
+
 	private String httpBaseUrl;
 	private String httpsBaseUrl;
 
@@ -82,8 +86,10 @@ public class AbstractIT {
 	public void beforeEach() {
 		this.httpBaseUrl  = "http://"  + this.serverAddress + ":" + this.localServerPort;
 		this.httpsBaseUrl = "https://" + this.serverAddress + ":" + this.localServerPort;
-		log.info("httpsBaseUrl: {}", this.httpsBaseUrl);
-		log.info("httpBaseUrl: {}", this.httpBaseUrl);
+		if (BEFORE_EACH_LOG_ONCE.get()) {
+			log.info("httpBaseUrl: {}, httpsBaseUrl: {}", this.httpBaseUrl, this.httpsBaseUrl);
+			BEFORE_EACH_LOG_ONCE.set(false);
+		}
 	}
 
     @Configuration

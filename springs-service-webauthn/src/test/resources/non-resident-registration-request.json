@@ -1,0 +1,50 @@
+{
+  "success" : true,
+  "userIdentity" : {
+    "name" : "My Username",
+    "displayName" : "My Display Name",
+    "id" : "wP28aIl8spjMb2K4A09OceAYxhnKkRagA8Ji9aEGAms"
+  },
+  "username" : "My Username",
+  "displayName" : "My Display Name",
+  "credentialNickname" : "My Credential Nickname",
+  "sessionToken" : "RegSessionTokenthVy_MyLeGoAxI389l8o4Q",
+  "request" : {
+    "publicKeyCredentialCreationOptions" : {
+      "rp" : {
+        "name" : "springs-service-webauthn",
+        "id" : "localhost"
+      },
+      "user" : {
+        "name" : "My Username",
+        "displayName" : "My Display Name",
+        "id" : "wP28aIl8spjMb2K4A09OceAYxhnKkRagA8Ji9aEGAms"
+      },
+      "challenge" : "z2hCD5-zmETX8sftEvYUK_TOZie4on1h8CLjqq7INWA",
+      "pubKeyCredParams" : [ {
+        "alg" : -8,
+        "type" : "public-key"
+      }, {
+        "alg" : -7,
+        "type" : "public-key"
+      }, {
+        "alg" : -257,
+        "type" : "public-key"
+      } ],
+      "timeout" : 300000,
+      "authenticatorSelection" : {
+        "requireResidentKey" : false,
+        "residentKey" : "preferred",
+        "userVerification" : "discouraged"
+      },
+      "attestation" : "none",
+      "extensions" : {
+        "appidExclude" : "https://localhost",
+        "credProps" : true
+      }
+    }
+  },
+  "actions" : {
+    "finish" : "https://localhost:8443/api/v1/register/finish"
+  }
+}

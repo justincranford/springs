@@ -1,0 +1,16 @@
+{
+  "credential" : {
+    "id" : "9Ej_VwFjNPExWA946yT_2Q",
+    "response" : {
+      "authenticatorData" : "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MZAAAAAA",
+      "clientDataJSON" : "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiQ2l3bC1RWnROMHNqZHc2MWNKWWFZTURIYXlfandyMzhlbFoxUV84d2QtZyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJjcm9zc09yaWdpbiI6ZmFsc2UsIm90aGVyX2tleXNfY2FuX2JlX2FkZGVkX2hlcmUiOiJkbyBub3QgY29tcGFyZSBjbGllbnREYXRhSlNPTiBhZ2FpbnN0IGEgdGVtcGxhdGUuIFNlZSBodHRwczovL2dvby5nbC95YWJQZXgifQ",
+      "signature" : "MEQCIDviqN1mWDjYtcGOactXcX6WH-P_R63ZGq4Q8CE_RrKGAiARH3118Qm3YlOt_jDzsNrbp0BaGqQluAC4LnYg_GCH-A",
+      "userHandle" : "Z7DZF45sTiQJdt6e_J6rPBr9xOIoDgtNFCf3VvV0BeA"
+    },
+    "clientExtensionResults" : {
+      "appid" : false
+    },
+    "type" : "public-key"
+  },
+  "sessionToken" : "AuthnSessionToken:cb7EyCsQJnRgeHYHv7Yn7Q"
+}

@@ -1,0 +1,99 @@
+{
+  "success" : false,
+  "request" : {
+    "success" : true,
+    "userIdentity" : {
+      "name" : "My Username",
+      "displayName" : "My Display Name",
+      "id" : "wP28aIl8spjMb2K4A09OceAYxhnKkRagA8Ji9aEGAms"
+    },
+    "username" : "My Username",
+    "displayName" : "My Display Name",
+    "credentialNickname" : "My Credential Nickname",
+    "sessionToken" : "RegSessionTokenthVy_MyLeGoAxI389l8o4Q",
+    "request" : {
+      "publicKeyCredentialCreationOptions" : {
+        "rp" : {
+          "name" : "springs-service-webauthn",
+          "id" : "localhost"
+        },
+        "user" : {
+          "name" : "My Username",
+          "displayName" : "My Display Name",
+          "id" : "wP28aIl8spjMb2K4A09OceAYxhnKkRagA8Ji9aEGAms"
+        },
+        "challenge" : "z2hCD5-zmETX8sftEvYUK_TOZie4on1h8CLjqq7INWA",
+        "pubKeyCredParams" : [ {
+          "alg" : -8,
+          "type" : "public-key"
+        }, {
+          "alg" : -7,
+          "type" : "public-key"
+        }, {
+          "alg" : -257,
+          "type" : "public-key"
+        } ],
+        "timeout" : 300000,
+        "authenticatorSelection" : {
+          "requireResidentKey" : false,
+          "residentKey" : "preferred",
+          "userVerification" : "discouraged"
+        },
+        "attestation" : "none",
+        "extensions" : {
+          "appidExclude" : "https://localhost",
+          "credProps" : true
+        }
+      }
+    },
+    "actions" : {
+      "finish" : "https://localhost:8443/api/v1/register/finish"
+    }
+  },
+  "response" : {
+    "credential" : {
+      "id" : "fb0v7AfgNw8GpCfW8Qp7tQ",
+      "response" : {
+        "attestationObject" : "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YViUSZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2NZAAAAAOqbjWZNAR0hPOS2tIy1ddQAEH29L-wH4DcPBqQn1vEKe7WlAQIDJiABIVggS-AmPVeiAPlsFL2ms3KhKViRkLevfqFI4Nrj0-kzroAiWCCEQ8XWYZJZYyv34tw3Avf47pUXEXfqn4hS2HgCtDq60g",
+        "clientDataJSON" : "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiejJoQ0Q1LXptRVRYOHNmdEV2WVVLX1RPWmllNG9uMWg4Q0xqcXE3SU5XQSIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJjcm9zc09yaWdpbiI6ZmFsc2UsIm90aGVyX2tleXNfY2FuX2JlX2FkZGVkX2hlcmUiOiJkbyBub3QgY29tcGFyZSBjbGllbnREYXRhSlNPTiBhZ2FpbnN0IGEgdGVtcGxhdGUuIFNlZSBodHRwczovL2dvby5nbC95YWJQZXgifQ",
+        "transports" : [ "hybrid", "internal" ]
+      },
+      "clientExtensionResults" : {
+        "credProps" : {
+          "rk" : true
+        }
+      },
+      "type" : "public-key"
+    },
+    "sessionToken" : "RegSessionTokenthVy_MyLeGoAxI389l8o4Q"
+  },
+  "registration" : {
+    "credentialId" : "fb0v7AfgNw8GpCfW8Qp7tQ",
+    "userHandle" : "wP28aIl8spjMb2K4A09OceAYxhnKkRagA8Ji9aEGAms",
+    "publicKeyCose" : "pQECAyYgASFYIEvgJj1XogD5bBS9prNyoSlYkZC3r36hSODa49PpM66AIlgghEPF1mGSWWMr9-LcNwL3-O6VFxF36p-IUth4ArQ6utI",
+    "signatureCount" : 0,
+    "backupEligible" : true,
+    "backupState" : true
+  },
+  "attestationTrusted" : true,
+  "authData" : {
+    "rpIdHash" : "49960de5880e8c687434170f6476605b8fe4aeb9a28632c7995cf3ba831d9763",
+    "flags" : {
+      "value" : 89,
+      "UP" : true,
+      "UV" : false,
+      "BE" : true,
+      "BS" : true,
+      "AT" : true,
+      "ED" : false
+    },
+    "signatureCounter" : 0,
+    "attestedCredentialData" : {
+      "aaguid" : "ea9b8d664d011d213ce4b6b48cb575d4",
+      "credentialId" : "7dbd2fec07e0370f06a427d6f10a7bb5",
+      "publicKey" : "a50102032620012158204be0263d57a200f96c14bda6b372a129589190b7af7ea148e0dae3d3e933ae802258208443c5d6619259632bf7e2dc3702f7f8ee95171177ea9f8852d87802b43abad2"
+    }
+  },
+  "username" : "My Username",
+  "sessionToken" : "RegSessionTokenthVy_MyLeGoAxI389l8o4Q"
+}

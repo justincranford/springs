@@ -66,7 +66,7 @@ public class RestTemplateUtil {
 			log.debug("Method: [{}], URL: [{}], entity: [{}], class: [{}]", method, url, entity, clazz);
 			final ResponseEntity<RESPONSE> response = restTemplate.exchange(url, method, entity, clazz);
 			final RESPONSE body = response.getBody();
-			log.debug("Status Code: {}\nResponse Headers: {}\nResponse Body: {}\nResponse Body: {}", response.getStatusCode(), response.getHeaders(), body);
+			log.debug("Success\nStatus Code: {}\nResponse Headers: {}\nResponse Body: {}", response.getStatusCode(), response.getHeaders(), body);
 			return body;
 		} catch (HttpStatusCodeException e) {
         	log.error("Error Response: [" + e.getStatusCode() + "]\nResponse headers:\n" + e.getResponseHeaders() + "\nResponse body: " + e.getResponseBodyAsString());

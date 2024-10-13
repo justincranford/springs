@@ -33,8 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @SuppressWarnings({"nls", "hiding"})
 public class RegistrationSuccess {
-	@Builder.Default
-	private boolean success = true;
+	private boolean success;
 	private RegistrationRequest request;
 	private RegistrationResponse response;
 	private RegisteredCredential registration;
@@ -48,7 +47,8 @@ public class RegistrationSuccess {
 	private String sessionToken;
 
 	@JsonCreator
-	public RegistrationSuccess(RegistrationRequest request, RegistrationResponse response, RegisteredCredential registration, boolean attestationTrusted, String sessionToken) {
+	public RegistrationSuccess(boolean success, RegistrationRequest request, RegistrationResponse response, RegisteredCredential registration, boolean attestationTrusted, String sessionToken) {
+		this.success = success;
 		this.request = request;
 		this.response = response;
 		this.registration = registration;

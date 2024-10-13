@@ -1,0 +1,11 @@
+{
+  "actions" : {
+    "authenticate" : "https://localhost:8443/api/v1/authenticate",
+    "deleteAccount" : "https://localhost:8443/api/v1/delete-account",
+    "deregister" : "https://localhost:8443/api/v1/action/deregister",
+    "register" : "https://localhost:8443/api/v1/register"
+  },
+  "info" : {
+    "version" : "https://localhost:8443/api/v1/version"
+  }
+}

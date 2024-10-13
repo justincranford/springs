@@ -1,0 +1,99 @@
+{
+  "success" : true,
+  "request" : {
+    "success" : true,
+    "userIdentity" : {
+      "name" : "My Username",
+      "displayName" : "My Display Name",
+      "id" : "Z7DZF45sTiQJdt6e_J6rPBr9xOIoDgtNFCf3VvV0BeA"
+    },
+    "username" : "My Username",
+    "displayName" : "My Display Name",
+    "credentialNickname" : "My Credential Nickname",
+    "sessionToken" : "RegSessionTokenl3a1F0PMy2htbN3K5XrBXQ",
+    "request" : {
+      "publicKeyCredentialCreationOptions" : {
+        "rp" : {
+          "name" : "springs-service-webauthn",
+          "id" : "localhost"
+        },
+        "user" : {
+          "name" : "My Username",
+          "displayName" : "My Display Name",
+          "id" : "Z7DZF45sTiQJdt6e_J6rPBr9xOIoDgtNFCf3VvV0BeA"
+        },
+        "challenge" : "qCT3LP708-5AMSuZXH4llNpvbEdUl0zxNO7dlwdOZUI",
+        "pubKeyCredParams" : [ {
+          "alg" : -8,
+          "type" : "public-key"
+        }, {
+          "alg" : -7,
+          "type" : "public-key"
+        }, {
+          "alg" : -257,
+          "type" : "public-key"
+        } ],
+        "timeout" : 300000,
+        "authenticatorSelection" : {
+          "requireResidentKey" : false,
+          "residentKey" : "preferred",
+          "userVerification" : "discouraged"
+        },
+        "attestation" : "none",
+        "extensions" : {
+          "appidExclude" : "https://localhost",
+          "credProps" : true
+        }
+      }
+    },
+    "actions" : {
+      "finish" : "https://localhost:8443/api/v1/register/finish"
+    }
+  },
+  "response" : {
+    "credential" : {
+      "id" : "9Ej_VwFjNPExWA946yT_2Q",
+      "response" : {
+        "attestationObject" : "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YViUSZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2NZAAAAAOqbjWZNAR0hPOS2tIy1ddQAEPRI_1cBYzTxMVgPeOsk_9mlAQIDJiABIVggY4ejggcqcbuxYg1PcEuwFMqTbRUKa1uiQheRdN-Z3qoiWCDtMdOjgAM3jj-JVKzwPXoT_jECTsRglI1-exc6oBTTOQ",
+        "clientDataJSON" : "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoicUNUM0xQNzA4LTVBTVN1WlhINGxsTnB2YkVkVWwwenhOTzdkbHdkT1pVSSIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "transports" : [ "hybrid", "internal" ]
+      },
+      "clientExtensionResults" : {
+        "credProps" : {
+          "rk" : true
+        }
+      },
+      "type" : "public-key"
+    },
+    "sessionToken" : "RegSessionTokenl3a1F0PMy2htbN3K5XrBXQ"
+  },
+  "registration" : {
+    "credentialId" : "9Ej_VwFjNPExWA946yT_2Q",
+    "userHandle" : "Z7DZF45sTiQJdt6e_J6rPBr9xOIoDgtNFCf3VvV0BeA",
+    "publicKeyCose" : "pQECAyYgASFYIGOHo4IHKnG7sWINT3BLsBTKk20VCmtbokIXkXTfmd6qIlgg7THTo4ADN44_iVSs8D16E_4xAk7EYJSNfnsXOqAU0zk",
+    "signatureCount" : 0,
+    "backupEligible" : true,
+    "backupState" : true
+  },
+  "attestationTrusted" : true,
+  "authData" : {
+    "rpIdHash" : "49960de5880e8c687434170f6476605b8fe4aeb9a28632c7995cf3ba831d9763",
+    "flags" : {
+      "value" : 89,
+      "UP" : true,
+      "UV" : false,
+      "BE" : true,
+      "BS" : true,
+      "AT" : true,
+      "ED" : false
+    },
+    "signatureCounter" : 0,
+    "attestedCredentialData" : {
+      "aaguid" : "ea9b8d664d011d213ce4b6b48cb575d4",
+      "credentialId" : "f448ff57016334f131580f78eb24ffd9",
+      "publicKey" : "a50102032620012158206387a382072a71bbb1620d4f704bb014ca936d150a6b5ba242179174df99deaa225820ed31d3a38003378e3f8954acf03d7a13fe31024ec460948d7e7b173aa014d339"
+    }
+  },
+  "username" : "My Username",
+  "sessionToken" : "RegSessionTokenl3a1F0PMy2htbN3K5XrBXQ"
+}

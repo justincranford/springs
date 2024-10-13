@@ -1,7 +1,7 @@
 package com.github.justincranford.springs.service.webauthn.util;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.yubico.webauthn.data.ByteArray;
@@ -17,7 +17,7 @@ public class ByteArrayUtil {
 			return ByteArray.fromBase64Url(idBase64Url);
 		} catch (Base64UrlException e) {
 			log.info("Decode base64url exception", e);
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Decode base64url exception");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
 		}
 	}
 

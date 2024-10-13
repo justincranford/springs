@@ -1,0 +1,80 @@
+{
+  "success" : true,
+  "request" : {
+    "success" : true,
+    "sessionToken" : "AuthnSessionToken:JMfHyNU6VHdLICCyi_pG6g",
+    "request" : {
+      "publicKeyCredentialRequestOptions" : {
+        "challenge" : "_VLflzevbgMzCEp3SJRPxUwYYeISBa9h4CdqhK1g0H4",
+        "timeout" : 300000,
+        "rpId" : "localhost",
+        "allowCredentials" : [ {
+          "type" : "public-key",
+          "id" : "fb0v7AfgNw8GpCfW8Qp7tQ",
+          "transports" : [ "hybrid", "internal" ]
+        } ],
+        "userVerification" : "discouraged",
+        "extensions" : {
+          "appid" : "https://localhost"
+        }
+      },
+      "username" : "My Username"
+    },
+    "publicKeyCredentialRequestOptions" : {
+      "challenge" : "_VLflzevbgMzCEp3SJRPxUwYYeISBa9h4CdqhK1g0H4",
+      "timeout" : 300000,
+      "rpId" : "localhost",
+      "allowCredentials" : [ {
+        "type" : "public-key",
+        "id" : "fb0v7AfgNw8GpCfW8Qp7tQ",
+        "transports" : [ "hybrid", "internal" ]
+      } ],
+      "userVerification" : "discouraged",
+      "extensions" : {
+        "appid" : "https://localhost"
+      }
+    },
+    "username" : "My Username",
+    "actions" : {
+      "finish" : "https://localhost:8443/api/v1/authenticate/finish"
+    }
+  },
+  "response" : {
+    "credential" : {
+      "id" : "fb0v7AfgNw8GpCfW8Qp7tQ",
+      "response" : {
+        "authenticatorData" : "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MZAAAAAA",
+        "clientDataJSON" : "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiX1ZMZmx6ZXZiZ016Q0VwM1NKUlB4VXdZWWVJU0JhOWg0Q2RxaEsxZzBINCIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature" : "MEUCIQCclJ3QBeZRFjWDhfo8jNBmlq0y5ifQchftmOhVnrEMKwIgWo0oRDXZBdznERpF0k6i8qrcY4-Fdf22N4R_2NYxG1s",
+        "userHandle" : "wP28aIl8spjMb2K4A09OceAYxhnKkRagA8Ji9aEGAms"
+      },
+      "clientExtensionResults" : {
+        "appid" : false
+      },
+      "type" : "public-key"
+    },
+    "sessionToken" : "AuthnSessionToken:JMfHyNU6VHdLICCyi_pG6g"
+  },
+  "registrations" : [ {
+    "credentialId" : "fb0v7AfgNw8GpCfW8Qp7tQ",
+    "userHandle" : "wP28aIl8spjMb2K4A09OceAYxhnKkRagA8Ji9aEGAms",
+    "publicKeyCose" : "pQECAyYgASFYIEvgJj1XogD5bBS9prNyoSlYkZC3r36hSODa49PpM66AIlgghEPF1mGSWWMr9-LcNwL3-O6VFxF36p-IUth4ArQ6utI",
+    "signatureCount" : 0,
+    "backupEligible" : true,
+    "backupState" : true
+  } ],
+  "authData" : {
+    "rpIdHash" : "49960de5880e8c687434170f6476605b8fe4aeb9a28632c7995cf3ba831d9763",
+    "flags" : {
+      "value" : 25,
+      "UP" : true,
+      "UV" : false,
+      "BE" : true,
+      "BS" : true,
+      "AT" : false,
+      "ED" : false
+    },
+    "signatureCounter" : 0
+  },
+  "username" : "My Username"
+}

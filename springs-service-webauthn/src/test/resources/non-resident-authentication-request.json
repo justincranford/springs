@@ -1,0 +1,39 @@
+{
+  "success" : true,
+  "sessionToken" : "AuthnSessionToken:JMfHyNU6VHdLICCyi_pG6g",
+  "request" : {
+    "publicKeyCredentialRequestOptions" : {
+      "challenge" : "_VLflzevbgMzCEp3SJRPxUwYYeISBa9h4CdqhK1g0H4",
+      "timeout" : 300000,
+      "rpId" : "localhost",
+      "allowCredentials" : [ {
+        "type" : "public-key",
+        "id" : "fb0v7AfgNw8GpCfW8Qp7tQ",
+        "transports" : [ "hybrid", "internal" ]
+      } ],
+      "userVerification" : "discouraged",
+      "extensions" : {
+        "appid" : "https://localhost"
+      }
+    },
+    "username" : "My Username"
+  },
+  "publicKeyCredentialRequestOptions" : {
+    "challenge" : "_VLflzevbgMzCEp3SJRPxUwYYeISBa9h4CdqhK1g0H4",
+    "timeout" : 300000,
+    "rpId" : "localhost",
+    "allowCredentials" : [ {
+      "type" : "public-key",
+      "id" : "fb0v7AfgNw8GpCfW8Qp7tQ",
+      "transports" : [ "hybrid", "internal" ]
+    } ],
+    "userVerification" : "discouraged",
+    "extensions" : {
+      "appid" : "https://localhost"
+    }
+  },
+  "username" : "My Username",
+  "actions" : {
+    "finish" : "https://localhost:8443/api/v1/authenticate/finish"
+  }
+}

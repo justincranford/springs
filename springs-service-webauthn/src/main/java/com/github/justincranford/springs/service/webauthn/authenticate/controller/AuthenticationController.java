@@ -10,53 +10,54 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationRequest;
 import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationResponse;
 import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationSuccess;
 import com.github.justincranford.springs.service.webauthn.authenticate.service.AuthenticationService;
 
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(value="/")
-@Slf4j
 @SuppressWarnings({"nls"})
 public class AuthenticationController {
-	@Autowired
-	private ObjectMapper objectMapper;
 	@Autowired
 	private AuthenticationService authenticationService;
 
 	@PostMapping(
-		value={"/api/v1/authenticate", "/api/v1/authenticate/"},
-		consumes={"application/x-www-form-urlencoded"},
-		produces={"application/json"}
+		value={StartConstants.PATH, StartConstants.PATH + "/"},
+		consumes={StartConstants.CONSUMES},
+		produces={StartConstants.PRODUCES}
 	)
-	public String startAuthentication(
-		final HttpServletRequest request,
+	public AuthenticationRequest startAuthentication(
+		@Nonnull                                final HttpServletRequest request,
 		@Nullable @RequestParam(required=false) final String username
 	) throws JsonProcessingException, MalformedURLException {
-		final AuthenticationRequest authenticationRequest = this.authenticationService.start(username, request.getRequestURL().toString());
-		final String authenticationRequestJson = this.objectMapper.writeValueAsString(authenticationRequest);
-		log.info("authenticationRequestJson: {}", authenticationRequestJson);
-		return authenticationRequestJson;
+		return this.authenticationService.start(username, request.getRequestURL().toString());
 	}
 
 	@PostMapping(
-		value={"/api/v1/authenticate/finish","/api/v1/authenticate/finish/"},
-		consumes={"text/plain;charset=UTF-8"},
-		produces={"application/json"}
+		value={FinishConstants.PATH, FinishConstants.PATH + "/"},
+		consumes={FinishConstants.CONSUMES},
+		produces={FinishConstants.PRODUCES}
 	)
-	public AuthenticationSuccess finishAuthentication(@RequestBody final String authenticationResponseJson) throws JsonMappingException, JsonProcessingException {
-		log.info("authenticationResponseJson: {}", authenticationResponseJson);
-
-		final AuthenticationResponse authenticationResponse = this.objectMapper.readValue(authenticationResponseJson, AuthenticationResponse.class);
-		log.info("authenticationResponse: {}", authenticationResponse);
-
+	public AuthenticationSuccess finishAuthentication(
+		@Nonnull @RequestBody final AuthenticationResponse authenticationResponse
+	) {
 		return this.authenticationService.finish(authenticationResponse);
+	}
+
+	public static class StartConstants {
+		private static final String PATH     = "/api/v1/authenticate";
+		private static final String CONSUMES = "application/x-www-form-urlencoded; charset=UTF-8";
+		private static final String PRODUCES = "application/json; charset=UTF-8";
+	}
+
+	public static class FinishConstants {
+		private static final String PATH     = "/api/v1/authenticate/finish";
+		private static final String CONSUMES = "application/json; charset=UTF-8";
+		private static final String PRODUCES = "application/json; charset=UTF-8";
 	}
 }
