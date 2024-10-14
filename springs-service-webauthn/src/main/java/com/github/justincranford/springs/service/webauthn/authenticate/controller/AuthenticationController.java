@@ -1,7 +1,5 @@
 package com.github.justincranford.springs.service.webauthn.authenticate.controller;
 
-import java.net.MalformedURLException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationRequest;
 import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationResponse;
 import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationSuccess;
@@ -34,7 +31,7 @@ public class AuthenticationController {
 	public AuthenticationRequest startAuthentication(
 		@Nonnull                                final HttpServletRequest request,
 		@Nullable @RequestParam(required=false) final String username
-	) throws JsonProcessingException, MalformedURLException {
+	) {
 		return this.authenticationService.start(username, request.getRequestURL().toString());
 	}
 

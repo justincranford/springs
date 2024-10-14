@@ -10,9 +10,9 @@ import org.springframework.web.server.ResponseStatusException;
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationClientStart;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationRequest;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationResponse;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationSuccess;
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationServerStart;
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationClientFinish;
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationServerFinish;
 import com.github.justincranford.springs.service.webauthn.register.repository.RegistrationRepositoryOrm;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
@@ -49,7 +49,7 @@ public class RegistrationService {
 	@Autowired
 	private CredentialRepositoryOrm credentialRepositoryOrm;
 
-	public RegistrationRequest start(@Nonnull final RegistrationClientStart registrationClientStart) {
+	public RegistrationServerStart start(@Nonnull final RegistrationClientStart registrationClientStart) {
 		try {
 			final String sessionToken = "RegSessionToken:" + randomByteArray(NUM_RANDOM_BYTES_SESSION_TOKEN).getBase64Url();
 			final UserIdentity userIdentity = UserIdentity.builder()
@@ -68,34 +68,34 @@ public class RegistrationService {
 				)
 				.build();
 			final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = this.relyingParty.startRegistration(startRegistrationOptions);
-			final RegistrationRequest registrationRequest = RegistrationRequest.builder()
+			final RegistrationServerStart registrationServerStart = RegistrationServerStart.builder()
 				.sessionToken(sessionToken)
 				.userIdentity(userIdentity)
 				.publicKeyCredentialCreationOptions(publicKeyCredentialCreationOptions)
 				.build();
-			this.registrationRepositoryOrm.add(sessionToken, registrationRequest);
-			this.prettyJson.log(registrationRequest);
-			return registrationRequest;
+			this.registrationRepositoryOrm.add(sessionToken, registrationServerStart);
+			this.prettyJson.log(registrationServerStart);
+			return registrationServerStart;
 		} catch (Exception e) {
 			log.info("Finish registration exception", e);
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Finish registration exception");
 		}
 	}
 
-	public RegistrationSuccess finish(@Nonnull RegistrationResponse registrationResponse) {
+	public RegistrationServerFinish finish(@Nonnull RegistrationClientFinish registrationClientFinish) {
 		try {
-			this.prettyJson.log(registrationResponse);
-    		final String sessionToken = registrationResponse.getSessionToken();
+			this.prettyJson.log(registrationClientFinish);
+    		final String sessionToken = registrationClientFinish.getSessionToken();
 
-			final RegistrationRequest registrationRequest = this.registrationRepositoryOrm.remove(sessionToken);
-			if (registrationRequest == null) {
+			final RegistrationServerStart registrationServerStart = this.registrationRepositoryOrm.remove(sessionToken);
+			if (registrationServerStart == null) {
 				log.error("Invalid sessionToken: {}", sessionToken);
 				throw new RegistrationFailedException(new IllegalArgumentException("Invalid sessionToken"));
 			}
-			this.prettyJson.log(registrationRequest);
+			this.prettyJson.log(registrationServerStart);
 
-			final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = registrationRequest.getPublicKeyCredentialCreationOptions();
-			final PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> publicKeyCredential = registrationResponse.getPublicKeyCredential();
+			final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = registrationServerStart.getPublicKeyCredentialCreationOptions();
+			final PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> publicKeyCredential = registrationClientFinish.getPublicKeyCredential();
 			final RegistrationResult registrationResult = this.relyingParty
 				.finishRegistration(
 					FinishRegistrationOptions.builder().request(publicKeyCredentialCreationOptions).response(publicKeyCredential).build()
@@ -103,11 +103,11 @@ public class RegistrationService {
 			this.prettyJson.log(registrationResult);
 
 			final CredentialOrm credentialOrm = CredentialOrm.builder()
-				.username(registrationRequest.getUserIdentity().getName())
-				.displayName(registrationRequest.getUserIdentity().getDisplayName())
-				.userHandle(registrationRequest.getUserIdentity().getId().getBase64Url())
+				.username(registrationServerStart.getUserIdentity().getName())
+				.displayName(registrationServerStart.getUserIdentity().getDisplayName())
+				.userHandle(registrationServerStart.getUserIdentity().getId().getBase64Url())
 				.credentialId(registrationResult.getKeyId().getId().getBase64Url())
-				.transports(registrationResponse.getPublicKeyCredential().getResponse().getTransports())
+				.transports(registrationClientFinish.getPublicKeyCredential().getResponse().getTransports())
 				.publicKeyCose(registrationResult.getPublicKeyCose().getBase64Url())
 				.signatureCount(Long.valueOf(registrationResult.getSignatureCount()))
 				.backupEligible(Boolean.valueOf(registrationResult.isBackupEligible()))
@@ -116,13 +116,13 @@ public class RegistrationService {
 				.build();
 			this.prettyJson.log(credentialOrm);
 
-			this.credentialRepositoryOrm.addByUsername(registrationRequest.getUserIdentity().getName(), credentialOrm);
-			final RegistrationSuccess registrationSuccess = RegistrationSuccess.builder()
+			this.credentialRepositoryOrm.addByUsername(registrationServerStart.getUserIdentity().getName(), credentialOrm);
+			final RegistrationServerFinish registrationServerFinish = RegistrationServerFinish.builder()
 				.registeredCredential(credentialOrm.toRegisteredCredential())
 				.build();
-			this.prettyJson.log(registrationSuccess);
+			this.prettyJson.log(registrationServerFinish);
 
-			return registrationSuccess;
+			return registrationServerFinish;
 		} catch (RegistrationFailedException e) {
 			log.info("Finish registration exception", e);
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);

@@ -4,19 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationClientFinish;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationClientStart;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationRequest;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationResponse;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationSuccess;
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationServerFinish;
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationServerStart;
 import com.github.justincranford.springs.service.webauthn.register.service.RegistrationService;
 
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.NotEmpty;
 
 @RestController
 @RequestMapping(value="/")
@@ -30,7 +26,7 @@ public class RegisterController {
 		consumes={StartConstants.CONSUMES},
 		produces={StartConstants.PRODUCES}
 	)
-	public RegistrationRequest startRegistration(
+	public RegistrationServerStart startRegistration(
 		@Nonnull @RequestBody final RegistrationClientStart registrationClientStart
 	) {
 		return this.registrationService.start(registrationClientStart);
@@ -41,8 +37,8 @@ public class RegisterController {
 		consumes={FinishConstants.CONSUMES},
 		produces={FinishConstants.PRODUCES}
 	)
-	public RegistrationSuccess finishRegistration(
-		@Nonnull @RequestBody final RegistrationResponse registrationResponse
+	public RegistrationServerFinish finishRegistration(
+		@Nonnull @RequestBody final RegistrationClientFinish registrationResponse
 	) {
 		return this.registrationService.finish(registrationResponse);
 	}
