@@ -1,5 +1,7 @@
 package com.github.justincranford.springs.service.http;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings({"nls"})
 @Slf4j
 public class AbstractIT {
+	private static final AtomicBoolean BEFORE_EACH_LOG_ONCE = new AtomicBoolean(true);
+
 	@LocalServerPort
 	private long localServerPort;
 
@@ -45,6 +49,10 @@ public class AbstractIT {
 	public void beforeEach() {
 		this.httpBaseUrl  = "http://"  + this.serverAddress + ":" + this.localServerPort;
 		this.httpsBaseUrl = "https://" + this.serverAddress + ":" + this.localServerPort;
+		if (BEFORE_EACH_LOG_ONCE.get()) {
+			log.info("httpBaseUrl: {}, httpsBaseUrl: {}", this.httpBaseUrl, this.httpsBaseUrl);
+			BEFORE_EACH_LOG_ONCE.set(false);
+		}
 	}
 
 	@EnableAutoConfiguration

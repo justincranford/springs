@@ -67,6 +67,11 @@
 		    <artifactId>jackson-dataformat-cbor</artifactId>
 		</dependency>
 
+        <dependency>
+            <groupId>com.github.justincranford.springs</groupId>
+            <artifactId>springs-persistence-orm-base</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-util-basic</artifactId>

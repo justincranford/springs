@@ -1,7 +1,8 @@
 package com.github.justincranford.springs.service.webauthn.register.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.yubico.webauthn.RegisteredCredential;
+import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
+import com.yubico.webauthn.data.UserIdentity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,8 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @Builder(toBuilder=true)
-public class RegistrationSuccess {
-	private RegisteredCredential registeredCredential;
+public class RegistrationClientStart {
+	private String username;
+	private String displayName;
+	private String credentialNickname;
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationClientStart;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationRequest;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationResponse;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationSuccess;
@@ -30,13 +31,9 @@ public class RegisterController {
 		produces={StartConstants.PRODUCES}
 	)
 	public RegistrationRequest startRegistration(
-		                                        final HttpServletRequest request,
-		@NotEmpty @RequestParam                 final String username,
-		@NotEmpty @RequestParam                 final String displayName,
-		@Nullable @RequestParam(required=false) final String credentialNickname
+		@Nonnull @RequestBody final RegistrationClientStart registrationClientStart
 	) {
-		final String requestUrl = request.getRequestURL().toString();
-		return this.registrationService.start(username, displayName, credentialNickname, requestUrl);
+		return this.registrationService.start(registrationClientStart);
 	}
 
 	@PostMapping(
@@ -51,8 +48,8 @@ public class RegisterController {
 	}
 
 	public static class StartConstants {
-		private static final String PATH     = "/api/v1/register";
-		private static final String CONSUMES = "application/x-www-form-urlencoded; charset=UTF-8";
+		private static final String PATH     = "/api/v1/register/start";
+		private static final String CONSUMES = "application/json; charset=UTF-8";
 		private static final String PRODUCES = "application/json; charset=UTF-8";
 	}
 
