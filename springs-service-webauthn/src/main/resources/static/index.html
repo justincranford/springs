@@ -1,198 +1,292 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <title>WebAuthn Demo</title>
-  <link href="css/bootstrap.min.css" rel="stylesheet" media="screen"/>
-  <link href="css/bootstrap-yubico.css" rel="stylesheet"/>
-  <style type="text/css">
-	.row {
-	  display: table-row;
-	}
-	.row > * {
-	  display: table-cell;
-	  padding: 0.2em;
-	}
-	
-	input[type="text"] {
-	  height: 2em;
-	  margin: 0;
-	}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebAuthn Login & Registration</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .container { max-width: 800px; }
+    .card { margin-bottom: 20px; }
+    .card-title { text-align: left; }
   </style>
-
-  <script type="module">
-function base64urlToUint8Array(base64url) {
-    // base64url to base64
-    base64url = base64url.replace(/-/g, '+').replace(/_/g, '/');
-    const padding = '='.repeat((4 - (base64url.length % 4)) % 4);
-    const base64 = base64url + padding;
-
-    // base64 to binary
-    const binaryString = atob(base64);
-
-    // binary to byte array
-    const bytes = [];
-    for (let i = 0; i < binaryString.length; i++) {
-        bytes.push(binaryString.charCodeAt(i));
-    }
-
-    // byte array to Uint8Array
-    return new Uint8Array(bytes);
-}
-function uint8ArrayToBase64url(uint8Array) {
-    // Uint8Array to a binary string
-    let binaryString = '';
-    for (let i = 0; i < uint8Array.length; i++) {
-        binaryString += String.fromCharCode(uint8Array[i]);
-    }
-
-    // Encode the binary string as Base64
-    const base64String = btoa(binaryString);
-
-    // Convert Base64 to Base64URL format
-    return base64String
-        .replace(/\+/g, '-')  // Replace + with -
-        .replace(/\//g, '_')  // Replace / with _
-        .replace(/=+$/, '');  // Remove padding '='
-}
-
-function getRegistrationStartClient() {
-    const username                = document.getElementById('username').value;
-    const displayName             = document.getElementById('displayName').value;
-    const credentialNickname      = document.getElementById('credentialNickname').value;
-    const residentKeyRequirement  = document.getElementById('residentKeyRequirement').value;
-    const registrationStartClient = { username, displayName, credentialNickname, residentKeyRequirement };
-    console.log('registrationStartClient:', JSON.stringify(registrationStartClient));
-    return registrationStartClient;
-}
-
-async function getRegistrationStartServer(registrationStartClient) {
-    const httpResponse = await fetch('/api/v1/register/start', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Accept':       'application/json; charset=UTF-8'
-        },
-        body: JSON.stringify(registrationStartClient)
-    });
-    if (!httpResponse.ok) throw new Error(`Registration request failed: ${httpResponse.statusText}`);
-    const registrationStartServer = await httpResponse.json();
-    console.log('registrationStartServer:', JSON.stringify(registrationStartServer));
-    return await registrationStartServer;
-}
-
-function toPublicKeyCredentialCreationOptions(publicKeyCredentialCreationOptions) {
-    publicKeyCredentialCreationOptions.user.id   = base64urlToUint8Array(publicKeyCredentialCreationOptions.user.id);
-    publicKeyCredentialCreationOptions.challenge = base64urlToUint8Array(publicKeyCredentialCreationOptions.challenge);
-    if (Array.isArray(publicKeyCredentialCreationOptions.excludeCredentials)) {
-        publicKeyCredentialCreationOptions.excludeCredentials.forEach(excludeCredential => {
-            console.log('excludeCredential:', JSON.stringify(excludeCredential));
-            excludeCredential.id = base64urlToUint8Array(excludeCredential.id);
-        });
-    }
-    const creationOptions = { publicKey: publicKeyCredentialCreationOptions };
-    console.log('creationOptions:', JSON.stringify(creationOptions));
-    return creationOptions;
-}
-
-async function navigatorCredentialsCreate(publicKeyCredentialCreationOptions) {
-    const publicKeyCredential = await navigator.credentials.create(publicKeyCredentialCreationOptions);
-    if (!publicKeyCredential) throw new Error('Failed to create credential.');
-    console.log('publicKeyCredential:', JSON.stringify(publicKeyCredential));
-    return publicKeyCredential;
-}
-
-function fromPublicKeyCredential(sessionToken, publicKeyCredential) {
-    const registrationFinishClient  = {
-        sessionToken: sessionToken,
-        publicKeyCredential: {
-            id: publicKeyCredential.id,
-            rawId: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.rawId)),
-            response: {
-                attestationObject: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.response.attestationObject)),
-                clientDataJSON: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.response.clientDataJSON))
-            },
-            clientExtensionResults: publicKeyCredential.getClientExtensionResults(),
-            type: publicKeyCredential.type
-        }
-    };
-    console.log('registrationFinishClient:', JSON.stringify(registrationFinishClient));
-    return registrationFinishClient;
-}
-
-async function getRegistrationFinishServer(registrationFinishClient) {
-    const httpResponse = await fetch('/api/v1/register/finish', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Accept':       'application/json; charset=UTF-8'
-        },
-        body: JSON.stringify(registrationFinishClient)
-    });
-
-    if (!httpResponse.ok) throw new Error(`Request failed: ${httpResponse.statusText}`);
-    const registrationFinishServer = await httpResponse.json();
-    console.log('registrationFinishServer:', JSON.stringify(registrationFinishServer));
-    return registrationFinishServer;
-}
-
-async function register() {
-    try {
-        const registrationStartClient            = getRegistrationStartClient();
-        const registrationStartServer            = await getRegistrationStartServer(registrationStartClient);
-        const publicKeyCredentialCreationOptions = toPublicKeyCredentialCreationOptions(registrationStartServer.publicKeyCredentialCreationOptions);
-        const publicKeyCredential                = await navigatorCredentialsCreate(publicKeyCredentialCreationOptions);
-        const registrationFinishClient           = fromPublicKeyCredential(registrationStartServer.sessionToken, publicKeyCredential);
-        const registrationFinishServer           = await getRegistrationFinishServer(registrationFinishClient);
-    } catch (error) {
-        console.error('Registration Error:', error);
-        alert(error);
-    }
-}
-
-function init() {
-  document.getElementById("registerButton").onclick = register;
-  return false;
-}
-window.onload = init;
-</script>
-
+  <title>Login Page</title>
 </head>
-	<body>
-		<div class="base">
-			<div class="content">
-				<h1>WebAuthn Demo</h1>
-				<form class="horizontal">
-					<div class="row">
-						<label for="username">Username:</label>
-						<div><input type="text" id="username" value="My Username" /></div>
-					</div>
-					<div class="row">
-						<label for="displayName">Display name:</label>
-						<div><input type="text" id="displayName" value="My Display Name" /></div>
-					</div>
-	
-					<div class="row">
-						<label for="credentialNickname">Credential nickname:</label>
-						<div><input type="text" id="credentialNickname"value="My Credential Nickname" /></div>
-					</div>
-	
-					<div class="row">
-						<label for="residentKeyRequirement">Resident key requirement:</label>
-						<div>
-							<select id="residentKeyRequirement" name="residentKeyRequirement">
-								<option value="discouraged">Discouraged</option>
-								<option value="preferred">Preferred</option>
-								<option value="required" selected>Required</option>
-							</select>
-						</div>
-					</div>
-	
-					<div class="row">
-						<label for="register">Register:</label>
-						<button type="button" id="registerButton">Register</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</body>
+
+<body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+	function base64urlToUint8Array(base64url) {
+	    // base64url to base64
+	    base64url = base64url.replace(/-/g, '+').replace(/_/g, '/');
+	    const padding = '='.repeat((4 - (base64url.length % 4)) % 4);
+	    const base64 = base64url + padding;
+
+	    // base64 to binary
+	    const binaryString = atob(base64);
+
+	    // binary to byte array
+	    const bytes = [];
+	    for (let i = 0; i < binaryString.length; i++) {
+	        bytes.push(binaryString.charCodeAt(i));
+	    }
+
+	    // byte array to Uint8Array
+	    return new Uint8Array(bytes);
+	}
+	function uint8ArrayToBase64url(uint8Array) {
+	    // Uint8Array to a binary string
+	    let binaryString = '';
+	    for (let i = 0; i < uint8Array.length; i++) {
+	        binaryString += String.fromCharCode(uint8Array[i]);
+	    }
+
+	    // Encode the binary string as Base64
+	    const base64String = btoa(binaryString);
+
+	    // Convert Base64 to Base64URL format
+	    return base64String
+	        .replace(/\+/g, '-')  // Replace + with -
+	        .replace(/\//g, '_')  // Replace / with _
+	        .replace(/=+$/, '');  // Remove padding '='
+	}
+
+	function getRegistrationStartClient(username, displayName, credentialNickname, residentKeyRequirement) {
+	    const registrationStartClient = { username, displayName, credentialNickname, residentKeyRequirement };
+	    console.log('registrationStartClient:', JSON.stringify(registrationStartClient));
+	    return registrationStartClient;
+	}
+
+	async function getRegistrationStartServer(registrationStartClient) {
+	    const httpResponse = await fetch('/api/v1/register/start', {
+	        method: 'POST',
+	        headers: {
+	            'Content-Type': 'application/json; charset=UTF-8',
+	            'Accept':       'application/json; charset=UTF-8'
+	        },
+	        body: JSON.stringify(registrationStartClient)
+	    });
+	    if (!httpResponse.ok) throw new Error(`Registration request failed: ${httpResponse.statusText}`);
+	    const registrationStartServer = await httpResponse.json();
+	    console.log('registrationStartServer:', JSON.stringify(registrationStartServer));
+	    return await registrationStartServer;
+	}
+
+	function toPublicKeyCredentialCreationOptions(publicKeyCredentialCreationOptions) {
+	    publicKeyCredentialCreationOptions.user.id   = base64urlToUint8Array(publicKeyCredentialCreationOptions.user.id);
+	    publicKeyCredentialCreationOptions.challenge = base64urlToUint8Array(publicKeyCredentialCreationOptions.challenge);
+	    if (Array.isArray(publicKeyCredentialCreationOptions.excludeCredentials)) {
+	        publicKeyCredentialCreationOptions.excludeCredentials.forEach(excludeCredential => {
+	            console.log('excludeCredential:', JSON.stringify(excludeCredential));
+	            excludeCredential.id = base64urlToUint8Array(excludeCredential.id);
+	        });
+	    }
+	    const creationOptions = { publicKey: publicKeyCredentialCreationOptions };
+	    console.log('creationOptions:', JSON.stringify(creationOptions));
+	    return creationOptions;
+	}
+
+	async function navigatorCredentialsCreate(publicKeyCredentialCreationOptions) {
+	    const publicKeyCredential = await navigator.credentials.create(publicKeyCredentialCreationOptions);
+	    if (!publicKeyCredential) throw new Error('Failed to create credential.');
+	    console.log('publicKeyCredential:', JSON.stringify(publicKeyCredential));
+	    return publicKeyCredential;
+	}
+
+	function fromPublicKeyCredential(sessionToken, publicKeyCredential) {
+	    const registrationFinishClient  = {
+	        sessionToken: sessionToken,
+	        publicKeyCredential: {
+	            id: publicKeyCredential.id,
+	            rawId: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.rawId)),
+	            response: {
+	                attestationObject: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.response.attestationObject)),
+	                clientDataJSON: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.response.clientDataJSON))
+	            },
+	            clientExtensionResults: publicKeyCredential.getClientExtensionResults(),
+	            type: publicKeyCredential.type
+	        }
+	    };
+	    console.log('registrationFinishClient:', JSON.stringify(registrationFinishClient));
+	    return registrationFinishClient;
+	}
+
+	async function getRegistrationFinishServer(registrationFinishClient) {
+	    const httpResponse = await fetch('/api/v1/register/finish', {
+	        method: 'POST',
+	        headers: {
+	            'Content-Type': 'application/json; charset=UTF-8',
+	            'Accept':       'application/json; charset=UTF-8'
+	        },
+	        body: JSON.stringify(registrationFinishClient)
+	    });
+
+	    if (!httpResponse.ok) throw new Error(`Request failed: ${httpResponse.statusText}`);
+	    const registrationFinishServer = await httpResponse.json();
+	    console.log('registrationFinishServer:', JSON.stringify(registrationFinishServer));
+	    return registrationFinishServer;
+	}
+
+	async function register(registrationStartClient) {
+	    try {
+	        const registrationStartServer            = await getRegistrationStartServer(registrationStartClient);
+	        const publicKeyCredentialCreationOptions = toPublicKeyCredentialCreationOptions(registrationStartServer.publicKeyCredentialCreationOptions);
+	        const publicKeyCredential                = await navigatorCredentialsCreate(publicKeyCredentialCreationOptions);
+	        const registrationFinishClient           = fromPublicKeyCredential(registrationStartServer.sessionToken, publicKeyCredential);
+	        const registrationFinishServer           = await getRegistrationFinishServer(registrationFinishClient);
+	    } catch (error) {
+	        console.error('Registration Error:', error);
+	        alert(error);
+	    }
+	}
+
+	function nonResidentRegister(event) {
+      const username                = document.getElementById('nonResidentRegisterUsername').value;
+      const displayName             = document.getElementById('nonResidentRegisterDisplayName').value;
+      const credentialNickname      = document.getElementById('nonResidentRegisterCredentialNickname').value;
+      const registrationStartClient = getRegistrationStartClient(username, displayName, credentialNickname, 'discouraged')
+      register(registrationStartClient);
+    }
+
+    function residentRegister(event) {
+      const username                = document.getElementById('residentRegisterUsername').value;
+      const displayName             = document.getElementById('residentRegisterDisplayName').value;
+      const credentialNickname      = document.getElementById('residentRegisterCredentialNickname').value;
+      const registrationStartClient = getRegistrationStartClient(username, displayName, credentialNickname, 'required')
+      register(registrationStartClient);
+    }
+
+    function nonResidentLogin(event) {
+      alert("Non-Resident Login submitted!");
+      event.preventDefault();
+      return false;
+    }
+
+    function residentLogin(event) {
+      alert("Resident Login submitted!");
+      event.preventDefault();
+      return false;
+    }
+
+    const displayNames = ["Alex Johnson", "Taylor Smith", "Chris Lee", "Jordan Brown"];
+    const credentialNicknames = ["Work Key", "Personal Key", "Main Key", "Backup Key"];
+
+    function randomUsername() {
+        return `user${1000000 + Math.floor(Math.random() * 1000000)}`;
+    }
+    function randomDisplayName() {
+        return displayNames[Math.floor(Math.random() * displayNames.length)];
+    }
+    function randomCredentialNickname() {
+        return credentialNicknames[Math.floor(Math.random() * credentialNicknames.length)];
+    }
+
+    function nonResidentRegisterRandomize() {
+      document.getElementById('nonResidentRegisterUsername').value = randomUsername();
+      document.getElementById('nonResidentRegisterDisplayName').value = randomDisplayName();
+      document.getElementById('nonResidentRegisterCredentialNickname').value = randomCredentialNickname();
+      document.getElementById('nonResidentLoginUsername').value = document.getElementById('nonResidentRegisterUsername').value;
+    }
+    function residentRegisterRandomize() {
+      document.getElementById('residentRegisterUsername').value = randomUsername();
+      document.getElementById('residentRegisterDisplayName').value = randomDisplayName();
+      document.getElementById('residentRegisterCredentialNickname').value = randomCredentialNickname();
+    }
+    function registerRandomize() {
+    	nonResidentRegisterRandomize();
+    	residentRegisterRandomize();
+    }
+
+    window.onload = registerRandomize;
+  </script>
+
+<div class="container mt-5">
+    <!-- Header Row -->
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <h3>Non-Resident WebAuthn</h3>
+      </div>
+      <div class="col-md-6">
+        <h3>Resident WebAuthn</h3>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Non-Resident WebAuthn Login -->
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <form>
+              <div class="mb-3">
+                <label for="nonResidentLoginUsername" class="form-label">Username</label>
+                <input type="text" class="form-control" id="nonResidentLoginUsername" required>
+              </div>
+              <button type="button" class="btn btn-primary" onclick="nonResidentLogin(event)">Login</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resident WebAuthn Login -->
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <form>
+              <button type="button" class="btn btn-primary" onclick="residentLogin(event)">Login</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Non-Resident WebAuthn Registration -->
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <form>
+              <div class="mb-3">
+                <label for="nonResidentRegisterUsername" class="form-label">Username</label>
+                <input type="text" class="form-control" id="nonResidentRegisterUsername" required>
+              </div>
+              <div class="mb-3">
+                <label for="nonResidentRegisterDisplayName" class="form-label">Display Name</label>
+                <input type="text" class="form-control" id="nonResidentRegisterDisplayName" required>
+              </div>
+              <div class="mb-3">
+                <label for="nonResidentRegisterCredentialNickname" class="form-label">Credential Nickname (Optional)</label>
+                <input type="text" class="form-control" id="nonResidentRegisterCredentialNickname">
+              </div>
+              <button type="button" class="btn btn-primary" onclick="nonResidentRegister(event)">Register</button>
+              <button type="button" class="btn btn-secondary generate-btn" onclick="nonResidentRegisterRandomize()">Randomize</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resident WebAuthn Registration -->
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <form>
+              <div class="mb-3">
+                <label for="residentRegisterUsername" class="form-label">Username</label>
+                <input type="text" class="form-control" id="residentRegisterUsername" required>
+              </div>
+              <div class="mb-3">
+                <label for="residentRegisterDisplayName" class="form-label">Display Name</label>
+                <input type="text" class="form-control" id="residentRegisterDisplayName" required>
+              </div>
+              <div class="mb-3">
+                <label for="residentRegisterCredentialNickname" class="form-label">Credential Nickname (Optional)</label>
+                <input type="text" class="form-control" id="residentRegisterCredentialNickname">
+              </div>
+              <button type="button" class="btn btn-primary" onclick="residentRegister(event)">Register</button>
+              <button type="button" class="btn btn-secondary generate-btn" onclick="residentRegisterRandomize()">Randomize</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
 </html>
