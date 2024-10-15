@@ -11,13 +11,16 @@ public class UserIdentityRepositoryOrm {
 		.expireAfterAccess(1, TimeUnit.DAYS)
 		.build();
 
-    public boolean create(final UserIdentityOrm userIdentityOrm) {
+    public boolean insert(final UserIdentityOrm userIdentityOrm) {
         if (this.users.getIfPresent(userIdentityOrm.username()) == null) {
         	this.users.put(userIdentityOrm.username(), userIdentityOrm);
             return true;
         }
         return false;
     }
+	public UserIdentityOrm read(final String username) {
+	    return this.users.getIfPresent(username);
+	}
     public boolean update(final UserIdentityOrm userIdentityOrm) {
         if (this.users.getIfPresent(userIdentityOrm.username()) != null) {
         	this.users.put(userIdentityOrm.username(), userIdentityOrm);
@@ -25,9 +28,6 @@ public class UserIdentityRepositoryOrm {
         }
         return false;
     }
-	public UserIdentityOrm get(final String username) {
-	    return this.users.getIfPresent(username);
-	}
 	public void delete(final String username) {
 		this.users.invalidate(username);
 	}

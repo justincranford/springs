@@ -34,7 +34,6 @@ import com.yubico.webauthn.data.UserVerificationRequirement;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 
 import jakarta.annotation.Nonnull;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -139,14 +138,14 @@ public class RegistrationService {
 	}
 
 	private UserIdentityOrm getOrCreate(final String username, final String displayName) {
-		UserIdentityOrm userIdentityOrm = this.userIdentityRepositoryOrm.get(username);
+		UserIdentityOrm userIdentityOrm = this.userIdentityRepositoryOrm.read(username);
 		if (userIdentityOrm == null) {
 			userIdentityOrm = UserIdentityOrm.builder()
 				.username(username)
 				.displayName(displayName)
 				.userHandle(SecureRandomUtil.randomBytes(NUM_RANDOM_BYTES_CREDENTIAL_ID))
 				.build();
-			this.userIdentityRepositoryOrm.create(userIdentityOrm);
+			this.userIdentityRepositoryOrm.insert(userIdentityOrm);
 		} else {
 			log.warn("Different displayName");
 		}
