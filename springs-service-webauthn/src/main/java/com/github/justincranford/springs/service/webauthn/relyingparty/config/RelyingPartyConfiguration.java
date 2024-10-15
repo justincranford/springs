@@ -44,14 +44,14 @@ public class RelyingPartyConfiguration {
     		)
 		    .preferredPubkeyParams(
 		    	List.of(
-	    			 PublicKeyCredentialParameters.EdDSA // -8
-//	    			,PublicKeyCredentialParameters.ES512 // -36
-//	    			,PublicKeyCredentialParameters.ES384 // -35
+	    			 PublicKeyCredentialParameters.EdDSA // -80
+	    			,PublicKeyCredentialParameters.ES512 // -36
+	    			,PublicKeyCredentialParameters.ES384 // -35
 	    			,PublicKeyCredentialParameters.ES256 // -7
-//	    			,PublicKeyCredentialParameters.RS512 // -259
-//	    			,PublicKeyCredentialParameters.RS384 // -258
+	    			,PublicKeyCredentialParameters.RS512 // -259
+	    			,PublicKeyCredentialParameters.RS384 // -258
 	    			,PublicKeyCredentialParameters.RS256 // -257
-//	    			,PublicKeyCredentialParameters.RS1   // -65535
+	    			,PublicKeyCredentialParameters.RS1   // -65535
 				)
     		)
 		    .clock(Clock.systemUTC())

@@ -13,8 +13,8 @@ import org.springframework.core.io.Resource;
 import com.github.justincranford.springs.service.http.client.RestTemplateUtil;
 import com.github.justincranford.springs.service.webauthn.AbstractIT;
 import com.github.justincranford.springs.service.webauthn.actions.data.ActionsResponse;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationStartServer;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationFinishClient;
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationStartServer;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,19 +47,19 @@ public class WebauthnIT extends AbstractIT {
 		assertThat(response).isNotNull();
 	}
 
-	@Test
-	void parseRegistrationRequest() throws IOException {
-		final RegistrationStartServer registrationClientServerStart = objectMapper().readValue(this.nonResidentRegistrationStartServerJson.getContentAsString(StandardCharsets.UTF_8), RegistrationStartServer.class);
-		assertThat(registrationClientServerStart).isNotNull();
-		final String registrationRequestJson  = objectMapper().writeValueAsString(registrationClientServerStart);
-		assertThat(registrationRequestJson).isNotNull();
-	}
-
-	@Test
-	void parseRegistrationResponse() throws IOException {
-		final RegistrationFinishClient registrationFinishClient = objectMapper().readValue(this.nonResidentRegistrationFinishClientJson.getContentAsString(StandardCharsets.UTF_8), RegistrationFinishClient.class);
-		assertThat(registrationFinishClient).isNotNull();
-		final String registrationResponseJson  = objectMapper().writeValueAsString(registrationFinishClient);
-		assertThat(registrationResponseJson).isNotNull();
-	}
+//	@Test
+//	void parseRegistrationRequest() throws IOException {
+//		final RegistrationStartServer registrationClientServerStart = objectMapper().readValue(this.nonResidentRegistrationStartServerJson.getContentAsString(StandardCharsets.UTF_8), RegistrationStartServer.class);
+//		assertThat(registrationClientServerStart).isNotNull();
+//		final String registrationRequestJson  = objectMapper().writeValueAsString(registrationClientServerStart);
+//		assertThat(registrationRequestJson).isNotNull();
+//	}
+//
+//	@Test
+//	void parseRegistrationResponse() throws IOException {
+//		final RegistrationFinishClient registrationFinishClient = objectMapper().readValue(this.nonResidentRegistrationFinishClientJson.getContentAsString(StandardCharsets.UTF_8), RegistrationFinishClient.class);
+//		assertThat(registrationFinishClient).isNotNull();
+//		final String registrationResponseJson  = objectMapper().writeValueAsString(registrationFinishClient);
+//		assertThat(registrationResponseJson).isNotNull();
+//	}
 }

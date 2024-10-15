@@ -16,7 +16,6 @@ import com.github.justincranford.springs.service.webauthn.register.data.Registra
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationStartClient;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationStartServer;
 import com.github.justincranford.springs.service.webauthn.register.repository.RegistrationRepositoryOrm;
-import com.github.justincranford.springs.util.basic.DateTimeUtil;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
 import com.yubico.webauthn.FinishRegistrationOptions;
@@ -103,12 +102,15 @@ public class RegistrationService {
 			}
 			this.prettyJson.log(registrationStartServer);
 
-			final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = registrationStartServer.getPublicKeyCredentialCreationOptions();
-			final PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> publicKeyCredential = registrationFinishClient.getPublicKeyCredential();
-			final RegistrationResult registrationResult = this.relyingParty
-				.finishRegistration(
-					FinishRegistrationOptions.builder().request(publicKeyCredentialCreationOptions).response(publicKeyCredential).build()
-				);
+			final PublicKeyCredentialCreationOptions                                                        publicKeyCredentialCreationOptions = registrationStartServer.getPublicKeyCredentialCreationOptions();
+			final PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> publicKeyCredential                = registrationFinishClient.getPublicKeyCredential();
+
+			final RegistrationResult registrationResult = this.relyingParty.finishRegistration(
+				FinishRegistrationOptions.builder()
+					.request(publicKeyCredentialCreationOptions)
+					.response(publicKeyCredential)
+					.build()
+			);
 			this.prettyJson.logAndSave(registrationResult);
 
 			final UserIdentity userIdentity = registrationStartServer.getPublicKeyCredentialCreationOptions().getUser();
@@ -122,7 +124,8 @@ public class RegistrationService {
 				.signatureCount(Long.valueOf(registrationResult.getSignatureCount()))
 				.backupEligible(Boolean.valueOf(registrationResult.isBackupEligible()))
 				.backupState(Boolean.valueOf(registrationResult.isBackedUp()))
-				.registrationTime(DateTimeUtil.nowUtcTruncatedToMilliseconds())
+				.attestationObject(registrationFinishClient.getPublicKeyCredential().getResponse().getAuthenticatorData().getBytes())
+				.clientDataJSON(registrationFinishClient.getPublicKeyCredential().getResponse().getClientDataJSON().getBytes())
 				.build();
 			this.prettyJson.log(credentialOrm);
 			this.credentialRepositoryOrm.addByUsername(userIdentity.getName(), credentialOrm);
