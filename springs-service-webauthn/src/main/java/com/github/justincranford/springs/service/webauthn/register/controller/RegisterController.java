@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationClientFinish;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationClientStart;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationServerFinish;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationServerStart;
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationFinishClient;
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationStartClient;
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationFinishServer;
+import com.github.justincranford.springs.service.webauthn.register.data.RegistrationStartServer;
 import com.github.justincranford.springs.service.webauthn.register.service.RegistrationService;
 
 import jakarta.annotation.Nonnull;
@@ -21,37 +21,19 @@ public class RegisterController {
 	@Autowired
 	private RegistrationService registrationService;
 
-	@PostMapping(
-		value={StartConstants.PATH, StartConstants.PATH + "/"},
-		consumes={StartConstants.CONSUMES},
-		produces={StartConstants.PRODUCES}
-	)
-	public RegistrationServerStart startRegistration(
-		@Nonnull @RequestBody final RegistrationClientStart registrationClientStart
-	) {
-		return this.registrationService.start(registrationClientStart);
+	@PostMapping(value={Constants.START, Constants.START + "/"}, consumes={Constants.JSON}, produces={Constants.JSON})
+	public RegistrationStartServer startRegistration(@Nonnull @RequestBody final RegistrationStartClient registrationStartClient) {
+		return this.registrationService.start(registrationStartClient);
 	}
 
-	@PostMapping(
-		value={FinishConstants.PATH, FinishConstants.PATH + "/"},
-		consumes={FinishConstants.CONSUMES},
-		produces={FinishConstants.PRODUCES}
-	)
-	public RegistrationServerFinish finishRegistration(
-		@Nonnull @RequestBody final RegistrationClientFinish registrationResponse
-	) {
+	@PostMapping(value={Constants.FINISH, Constants.FINISH + "/"}, consumes={Constants.JSON}, produces={Constants.JSON})
+	public RegistrationFinishServer finishRegistration(@Nonnull @RequestBody final RegistrationFinishClient registrationResponse) {
 		return this.registrationService.finish(registrationResponse);
 	}
 
-	public static class StartConstants {
-		private static final String PATH     = "/api/v1/register/start";
-		private static final String CONSUMES = "application/json; charset=UTF-8";
-		private static final String PRODUCES = "application/json; charset=UTF-8";
-	}
-
-	public static class FinishConstants {
-		private static final String PATH     = "/api/v1/register/finish";
-		private static final String CONSUMES = "application/json; charset=UTF-8";
-		private static final String PRODUCES = "application/json; charset=UTF-8";
+	public static class Constants {
+		private static final String START  = "/api/v1/register/start";
+		private static final String FINISH = "/api/v1/register/finish";
+		private static final String JSON   = "application/json; charset=UTF-8";
 	}
 }

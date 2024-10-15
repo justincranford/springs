@@ -30,7 +30,6 @@
 			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-util-basic</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>

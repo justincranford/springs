@@ -63,34 +63,41 @@ function uint8ArrayToBase64url(uint8Array) {
         .replace(/=+$/, '');  // Remove padding '='
 }
 
-function getRegistrationClientStart() {
+function getRegistrationStartClient() {
     const username                = document.getElementById('username').value;
     const displayName             = document.getElementById('displayName').value;
     const credentialNickname      = document.getElementById('credentialNickname').value;
-    const registrationClientStart = { username, displayName, credentialNickname };
-    console.log('registrationClientStartJson:', JSON.stringify(registrationClientStart));
-    return registrationClientStart;
+    const residentKeyRequirement  = document.getElementById('residentKeyRequirement').value;
+    const registrationStartClient = { username, displayName, credentialNickname, residentKeyRequirement };
+    console.log('registrationStartClient:', JSON.stringify(registrationStartClient));
+    return registrationStartClient;
 }
 
-async function getRegistrationServerStart(registrationClientStart) {
+async function getRegistrationStartServer(registrationStartClient) {
     const httpResponse = await fetch('/api/v1/register/start', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json; charset=UTF-8',
             'Accept':       'application/json; charset=UTF-8'
         },
-        body: JSON.stringify(registrationClientStart)
+        body: JSON.stringify(registrationStartClient)
     });
     if (!httpResponse.ok) throw new Error(`Registration request failed: ${httpResponse.statusText}`);
-    const registrationServerStart = await httpResponse.json();
-    console.log('registrationServerStart:', JSON.stringify(registrationServerStart));
-    return await registrationServerStart;
+    const registrationStartServer = await httpResponse.json();
+    console.log('registrationStartServer:', JSON.stringify(registrationStartServer));
+    return await registrationStartServer;
 }
 
 function toPublicKeyCredentialCreationOptions(publicKeyCredentialCreationOptions) {
     publicKeyCredentialCreationOptions.user.id   = base64urlToUint8Array(publicKeyCredentialCreationOptions.user.id);
     publicKeyCredentialCreationOptions.challenge = base64urlToUint8Array(publicKeyCredentialCreationOptions.challenge);
-    const creationOptions  = { publicKey: publicKeyCredentialCreationOptions };
+    if (Array.isArray(publicKeyCredentialCreationOptions.excludeCredentials)) {
+        publicKeyCredentialCreationOptions.excludeCredentials.forEach(excludeCredential => {
+            console.log('excludeCredential:', JSON.stringify(excludeCredential));
+            excludeCredential.id = base64urlToUint8Array(excludeCredential.id);
+        });
+    }
+    const creationOptions = { publicKey: publicKeyCredentialCreationOptions };
     console.log('creationOptions:', JSON.stringify(creationOptions));
     return creationOptions;
 }
@@ -103,7 +110,7 @@ async function navigatorCredentialsCreate(publicKeyCredentialCreationOptions) {
 }
 
 function fromPublicKeyCredential(sessionToken, publicKeyCredential) {
-    const registrationClientFinish  = {
+    const registrationFinishClient  = {
         sessionToken: sessionToken,
         publicKeyCredential: {
             id: publicKeyCredential.id,
@@ -116,36 +123,37 @@ function fromPublicKeyCredential(sessionToken, publicKeyCredential) {
             type: publicKeyCredential.type
         }
     };
-    console.log('registrationClientFinish:', JSON.stringify(registrationClientFinish));
-    return registrationClientFinish;
+    console.log('registrationFinishClient:', JSON.stringify(registrationFinishClient));
+    return registrationFinishClient;
 }
 
-async function getRegistrationServerFinish(registrationClientFinish) {
+async function getRegistrationFinishServer(registrationFinishClient) {
     const httpResponse = await fetch('/api/v1/register/finish', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json; charset=UTF-8',
             'Accept':       'application/json; charset=UTF-8'
         },
-        body: JSON.stringify(registrationClientFinish)
+        body: JSON.stringify(registrationFinishClient)
     });
 
     if (!httpResponse.ok) throw new Error(`Request failed: ${httpResponse.statusText}`);
-    const registrationServerFinish = await httpResponse.json();
-    console.log('registrationServerFinish:', JSON.stringify(registrationServerFinish));
-    return registrationServerFinish;
+    const registrationFinishServer = await httpResponse.json();
+    console.log('registrationFinishServer:', JSON.stringify(registrationFinishServer));
+    return registrationFinishServer;
 }
 
 async function register() {
     try {
-        const registrationClientStart            = getRegistrationClientStart();
-        const registrationServerStart            = await getRegistrationServerStart(registrationClientStart);
-        const publicKeyCredentialCreationOptions = toPublicKeyCredentialCreationOptions(registrationServerStart.publicKeyCredentialCreationOptions);
+        const registrationStartClient            = getRegistrationStartClient();
+        const registrationStartServer            = await getRegistrationStartServer(registrationStartClient);
+        const publicKeyCredentialCreationOptions = toPublicKeyCredentialCreationOptions(registrationStartServer.publicKeyCredentialCreationOptions);
         const publicKeyCredential                = await navigatorCredentialsCreate(publicKeyCredentialCreationOptions);
-        const registrationClientFinish           = fromPublicKeyCredential(registrationServerStart.sessionToken, publicKeyCredential);
-        const registrationServerFinish           = await getRegistrationServerFinish(registrationClientFinish);
+        const registrationFinishClient           = fromPublicKeyCredential(registrationStartServer.sessionToken, publicKeyCredential);
+        const registrationFinishServer           = await getRegistrationFinishServer(registrationFinishClient);
     } catch (error) {
         console.error('Registration Error:', error);
+        alert(error);
     }
 }
 
@@ -174,6 +182,17 @@ window.onload = init;
 					<div class="row">
 						<label for="credentialNickname">Credential nickname:</label>
 						<div><input type="text" id="credentialNickname"value="My Credential Nickname" /></div>
+					</div>
+	
+					<div class="row">
+						<label for="residentKeyRequirement">Resident key requirement:</label>
+						<div>
+							<select id="residentKeyRequirement" name="residentKeyRequirement">
+								<option value="discouraged">Discouraged</option>
+								<option value="preferred">Preferred</option>
+								<option value="required" selected>Required</option>
+							</select>
+						</div>
 					</div>
 	
 					<div class="row">
