@@ -22,14 +22,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @SuppressWarnings({ "nls" })
 public class CredentialRepositoryOrm implements CredentialRepository {
-	private final Cache<String, Set<CredentialOrm>> storage = CacheBuilder.newBuilder()
+	private final Cache<String, Set<CredentialOrm>> credentials = CacheBuilder.newBuilder()
 		.maximumSize(1000)
 		.expireAfterAccess(1, TimeUnit.DAYS)
 		.build();
 
 	@Override
 	public Set<PublicKeyCredentialDescriptor> getCredentialIdsForUsername(final String username) {
-		final Set<CredentialOrm> credentialOrms = this.storage.getIfPresent(username);
+		final Set<CredentialOrm> credentialOrms = this.credentials.getIfPresent(username);
         if (credentialOrms == null) {
             return Set.of();
         }
@@ -42,7 +42,7 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 
 	@Override
 	public Optional<String> getUsernameForUserHandle(final ByteArray userHandle) {
-		final Optional<String> optionalUsername = this.storage.asMap().entrySet().stream()
+		final Optional<String> optionalUsername = this.credentials.asMap().entrySet().stream()
 			.filter(usernameToCredentialOrms -> {
 				for (final CredentialOrm credentialOrm : usernameToCredentialOrms.getValue()) {
 					if (userHandle.equals(decodeBase64Url(credentialOrm.getUserHandle()))) {
@@ -59,7 +59,7 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 
 	@Override
 	public Optional<ByteArray> getUserHandleForUsername(final String username) {
-		final Set<CredentialOrm> oredentialOrms = this.storage.getIfPresent(username);
+		final Set<CredentialOrm> oredentialOrms = this.credentials.getIfPresent(username);
         if (oredentialOrms == null) {
             return Optional.empty();
         }
@@ -78,7 +78,7 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 
 	@Override
 	public Optional<RegisteredCredential> lookup(final ByteArray credentialId, final ByteArray userHandle) {
-		final Optional<RegisteredCredential> optionalCredentialOrm = this.storage
+		final Optional<RegisteredCredential> optionalCredentialOrm = this.credentials
 			.asMap().values().stream().flatMap(Collection::stream)
 			.filter(credentialOrm ->
 				credentialId.getBase64Url().equals(credentialOrm.getCredentialId()) &&
@@ -92,7 +92,7 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 
 	@Override
 	public Set<RegisteredCredential> lookupAll(final ByteArray credentialId) {
-		final Set<RegisteredCredential> credentialOrms = this.storage
+		final Set<RegisteredCredential> credentialOrms = this.credentials
 			.asMap().values().stream().flatMap(Collection::stream)
 			.filter(credentialOrm ->
 				credentialId.getBase64Url().equals(credentialOrm.getCredentialId())
@@ -109,13 +109,13 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 
 	public boolean credentialIdExists(ByteArray credentialId) {
 	final String base64Url = credentialId.getBase64Url();
-		return this.storage.asMap().values().stream().flatMap(Collection::stream)
+		return this.credentials.asMap().values().stream().flatMap(Collection::stream)
 			.anyMatch(reg -> reg.getCredentialId().equals(base64Url));
 	}
 
 	public boolean addByUsername(final String username, final CredentialOrm CredentialOrm) {
 		try {
-			return this.storage.get(username, HashSet::new).add(CredentialOrm);
+			return this.credentials.get(username, HashSet::new).add(CredentialOrm);
 		} catch (ExecutionException e) {
 			log.error("Failed to add registration", e);
 			throw new RuntimeException(e);
@@ -124,7 +124,7 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 
 	public Set<CredentialOrm> getByUsername(String username) {
 		try {
-			return this.storage.get(username, HashSet::new);
+			return this.credentials.get(username, HashSet::new);
 		} catch (ExecutionException e) {
 			log.error("Registration lookup failed", e);
 			throw new RuntimeException(e);
@@ -132,7 +132,7 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 	}
 
 	public Set<CredentialOrm> getRegistrationsByUserHandle(final ByteArray userHandle) {
-		final Set<CredentialOrm> credentialOrms = this.storage
+		final Set<CredentialOrm> credentialOrms = this.credentials
 			.asMap().values().stream().flatMap(Collection::stream)
 			.filter(credentialOrm ->
 				userHandle.getBase64Url().equals(credentialOrm.getUserHandle())
@@ -145,7 +145,7 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 	public Optional<CredentialOrm> getRegistrationByUsernameAndCredentialId(String username, ByteArray id) {
 		try {
 			final String credentialId = id.getBase64Url();
-			return this.storage.get(username, HashSet::new).stream().filter(credReg -> credentialId.equals(credReg.getCredentialId())).findFirst();
+			return this.credentials.get(username, HashSet::new).stream().filter(credReg -> credentialId.equals(credReg.getCredentialId())).findFirst();
 		} catch (ExecutionException e) {
 			log.error("Registration lookup failed", e);
 			throw new RuntimeException(e);
@@ -154,7 +154,7 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 
 	public boolean removeRegistrationByUsername(String username, CredentialOrm credentialRegistration) {
 		try {
-			return this.storage.get(username, HashSet::new).remove(credentialRegistration);
+			return this.credentials.get(username, HashSet::new).remove(credentialRegistration);
 		} catch (ExecutionException e) {
 			log.error("Failed to remove registration", e);
 			throw new RuntimeException(e);
@@ -162,7 +162,7 @@ public class CredentialRepositoryOrm implements CredentialRepository {
 	}
 
 	public boolean removeAllRegistrations(String username) {
-		this.storage.invalidate(username);
+		this.credentials.invalidate(username);
 		return true;
 	}
 
