@@ -1,7 +1,6 @@
 package com.github.justincranford.springs.persistenceorm.example.config;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
@@ -16,9 +15,6 @@ import com.github.justincranford.springs.util.observability.config.SpringsUtilOb
 
 @Configuration
 @EnableConfigurationProperties
-//@ComponentScan(
-//	basePackageClasses = {SpringsPersistenceOrmExampleProperties.class}
-//)
 @EnableJpaRepositories(
 	basePackageClasses = {AppleOrm.class, BushelOrm.class},
 	repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class
@@ -26,7 +22,8 @@ import com.github.justincranford.springs.util.observability.config.SpringsUtilOb
 @Import({
 	SpringsPersistenceOrmBaseConfiguration.class,
 	SpringsUtilJsonConfiguration.class,
-	SpringsUtilObservabilityConfiguration.class
+	SpringsUtilObservabilityConfiguration.class,
+	SpringsPersistenceOrmExampleProperties.class
 })
 public class SpringsPersistenceOrmExampleConfiguration {
 	// do nothing
