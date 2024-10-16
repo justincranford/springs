@@ -32,7 +32,7 @@ import lombok.experimental.Accessors;
 
 @Entity
 @Audited
-@Table(name = "user_identity")
+@Table(name = "credential")
 @Getter(onMethod=@__(@JsonProperty))
 @Setter
 @ToString(callSuper=true)
@@ -40,9 +40,9 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-@SQLDelete(sql="UPDATE user_identity SET pre_delete_date_time=NOW() WHERE internal_id=? AND version=?")
+@SQLDelete(sql="UPDATE credential SET pre_delete_date_time=NOW() WHERE internal_id=? AND version=?")
 @SQLRestriction(AbstractEntity.WHERE_CLAUSE)
-@SequenceGenerator(sequenceName="user_identity_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
+@SequenceGenerator(sequenceName="credential_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 @SuppressWarnings({"deprecation"})
 public class CredentialOrm extends AbstractEntity {
 	private String                      credentialNickname;

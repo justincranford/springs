@@ -3,6 +3,7 @@ package com.github.justincranford.springs.service.webauthn.authenticate.service;
 import static com.github.justincranford.springs.service.webauthn.util.ByteArrayUtil.randomByteArray;
 
 import java.net.MalformedURLException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,7 +63,7 @@ public class AuthenticationService {
 	public AuthenticationRequest start(@NotBlank final String username, @NotBlank final String requestUrl) {
 		final boolean isUsernameRequest = Strings.isNotBlank(username);
 		if (isUsernameRequest) {
-			final Set<CredentialOrm> credentials = this.credentialRepositoryOrm.getByUsername(username);
+			final List<CredentialOrm> credentials = this.credentialRepositoryOrm.findByUsernameOrderByCreatedDateDesc(username);
 			if (credentials.isEmpty()) {
 				log.warn("Authenticate with username {} won't work because it does not exist", username);
 			} else {
@@ -110,7 +111,7 @@ public class AuthenticationService {
 			this.prettyJson.log(authenticationResult);
 
 			final ByteArray                 userHandle                = authenticationResult.getCredential().getUserHandle();
-			final Set<CredentialOrm>        registrationsByUserHandle = this.credentialRepositoryOrm.getRegistrationsByUserHandle(userHandle);
+			final List<CredentialOrm>       registrationsByUserHandle = this.credentialRepositoryOrm.findByUserHandleOrderByCreatedDateDesc(userHandle.getBase64Url());
 			final Set<RegisteredCredential> registeredCredentials     = registrationsByUserHandle.stream().map(CredentialOrm::toRegisteredCredential).collect(Collectors.toSet());
 			final AuthenticatorData         authenticatorData         = authenticationResponse.getCredential().getResponse().getParsedAuthenticatorData();
 			final String                    username                  = authenticationRequest.getUsername().orElse(null);

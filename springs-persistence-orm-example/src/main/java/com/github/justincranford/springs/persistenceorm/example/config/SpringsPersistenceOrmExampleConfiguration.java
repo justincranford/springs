@@ -16,9 +16,9 @@ import com.github.justincranford.springs.util.observability.config.SpringsUtilOb
 
 @Configuration
 @EnableConfigurationProperties
-@ComponentScan(
-	basePackageClasses = {SpringsPersistenceOrmExampleProperties.class}
-)
+//@ComponentScan(
+//	basePackageClasses = {SpringsPersistenceOrmExampleProperties.class}
+//)
 @EnableJpaRepositories(
 	basePackageClasses = {AppleOrm.class, BushelOrm.class},
 	repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class

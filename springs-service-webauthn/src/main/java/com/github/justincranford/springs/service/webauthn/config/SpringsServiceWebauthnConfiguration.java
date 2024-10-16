@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import com.github.justincranford.springs.persistenceorm.base.config.SpringsPersistenceOrmBaseConfiguration;
 import com.github.justincranford.springs.service.webauthn.actions.config.ActionsConfiguration;
 import com.github.justincranford.springs.service.webauthn.authenticate.config.AuthenticationConfiguration;
 import com.github.justincranford.springs.service.webauthn.credential.config.CredentialConfiguration;
@@ -15,6 +16,7 @@ import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfigu
 @Configuration
 @EnableConfigurationProperties
 @Import(value = {
+    SpringsPersistenceOrmBaseConfiguration.class,
 	SpringsUtilHttpsConfiguration.class,
 	SpringsUtilJsonConfiguration.class,
 	RelyingPartyConfiguration.class,

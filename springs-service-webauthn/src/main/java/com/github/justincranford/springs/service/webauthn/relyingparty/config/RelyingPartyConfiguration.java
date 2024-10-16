@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
+import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialRepositoryFacade;
 import com.yubico.webauthn.CredentialRepository;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.data.PublicKeyCredentialParameters;
@@ -15,6 +17,7 @@ import com.yubico.webauthn.extension.appid.AppId;
 import com.yubico.webauthn.extension.appid.InvalidAppIdException;
 
 @Configuration
+@Import({CredentialRepositoryFacade.class})
 @SuppressWarnings({"nls"})
 public class RelyingPartyConfiguration {
 	@Value("${server.address}")

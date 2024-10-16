@@ -33,6 +33,7 @@ import com.yubico.webauthn.data.UserVerificationRequirement;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 
 import jakarta.annotation.Nonnull;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -54,6 +55,7 @@ public class RegistrationService {
 	@Autowired
 	private CredentialRepositoryOrm credentialRepositoryOrm;
 
+	@Transactional
 	public RegistrationStartServer start(@Nonnull final RegistrationStartClient registrationStartClient) {
 		try {
 			this.prettyJson.logAndSave(registrationStartClient);
@@ -90,6 +92,7 @@ public class RegistrationService {
 		}
 	}
 
+	@Transactional
 	public RegistrationFinishServer finish(@Nonnull RegistrationFinishClient registrationFinishClient) {
 		try {
 			this.prettyJson.logAndSave(registrationFinishClient);
@@ -128,7 +131,7 @@ public class RegistrationService {
 				.clientDataJSON(registrationFinishClient.getPublicKeyCredential().getResponse().getClientDataJSON().getBytes())
 				.build();
 			this.prettyJson.log(credentialOrm);
-			this.credentialRepositoryOrm.addByUsername(userIdentity.getName(), credentialOrm);
+			this.credentialRepositoryOrm.save(credentialOrm);
 
 			final RegistrationFinishServer registrationFinishServer = RegistrationFinishServer.builder().registeredCredential(credentialOrm.toRegisteredCredential()).build();
 			this.prettyJson.logAndSave(registrationFinishServer);
