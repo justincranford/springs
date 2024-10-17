@@ -2,6 +2,8 @@ package com.github.justincranford.springs.service.webauthn.register.service;
 
 import static com.github.justincranford.springs.service.webauthn.util.ByteArrayUtil.randomByteArray;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -144,18 +146,21 @@ public class RegistrationService {
 	}
 
 	private UserIdentityOrm getOrCreate(final String username, final String displayName) {
-		UserIdentityOrm userIdentityOrm = this.userIdentityRepositoryOrm.read(username);
-		if (userIdentityOrm == null) {
-			userIdentityOrm = UserIdentityOrm.builder()
+		final Optional<UserIdentityOrm> optionalUserIdentityOrm = this.userIdentityRepositoryOrm.findByUsername(username);
+		if (optionalUserIdentityOrm.isPresent()) {
+			final UserIdentityOrm userIdentityOrm = optionalUserIdentityOrm.get();
+			if (!userIdentityOrm.displayName().equals(displayName)) {
+				log.warn("Supplied displayName {} for username {} does not match in the existing user identity: {}", displayName, username, userIdentityOrm);
+			}
+			return userIdentityOrm;
+		}
+		return this.userIdentityRepositoryOrm.save(
+			UserIdentityOrm.builder()
 				.username(username)
 				.displayName(displayName)
 				.userHandle(SecureRandomUtil.randomBytes(NUM_RANDOM_BYTES_CREDENTIAL_ID))
-				.build();
-			this.userIdentityRepositoryOrm.insert(userIdentityOrm);
-		} else {
-			log.warn("Different displayName");
-		}
-		return userIdentityOrm;
+				.build()
+		);
 	}
 
 	private static UserIdentity toUserIdentity(final UserIdentityOrm userIdentityOrm) {

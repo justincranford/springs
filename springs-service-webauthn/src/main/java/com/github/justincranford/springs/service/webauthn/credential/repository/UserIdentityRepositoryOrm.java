@@ -1,40 +1,13 @@
 package com.github.justincranford.springs.service.webauthn.credential.repository;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Optional;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.history.RevisionRepository;
+import org.springframework.stereotype.Repository;
 
-public class UserIdentityRepositoryOrm {
-	private final Cache<String, UserIdentityOrm> users = CacheBuilder.newBuilder()
-		.maximumSize(1000)
-		.expireAfterAccess(1, TimeUnit.DAYS)
-		.build();
-
-    public boolean insert(final UserIdentityOrm userIdentityOrm) {
-        if (this.users.getIfPresent(userIdentityOrm.username()) == null) {
-        	this.users.put(userIdentityOrm.username(), userIdentityOrm);
-            return true;
-        }
-        return false;
-    }
-	public UserIdentityOrm read(final String username) {
-	    return this.users.getIfPresent(username);
-	}
-    public boolean update(final UserIdentityOrm userIdentityOrm) {
-        if (this.users.getIfPresent(userIdentityOrm.username()) != null) {
-        	this.users.put(userIdentityOrm.username(), userIdentityOrm);
-            return true;
-        }
-        return false;
-    }
-	public void delete(final String username) {
-		this.users.invalidate(username);
-	}
-	public boolean exists(final String username) {
-	    return this.users.getIfPresent(username) != null;
-	}
-    public void upsert(final UserIdentityOrm userIdentityOrm) {
-    	this.users.put(userIdentityOrm.username(), userIdentityOrm);
-	}
+@Repository
+public interface UserIdentityRepositoryOrm extends ListCrudRepository<UserIdentityOrm, Long>, RevisionRepository<UserIdentityOrm, Long, Long> {
+	Optional<UserIdentityOrm> findByUserHandle(byte[] userHandle);
+	Optional<UserIdentityOrm> findByUsername(String username);
 }

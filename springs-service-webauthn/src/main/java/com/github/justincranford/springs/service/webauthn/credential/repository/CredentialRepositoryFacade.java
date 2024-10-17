@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.github.justincranford.springs.service.webauthn.util.ByteArrayUtil;
 import com.yubico.webauthn.CredentialRepository;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.ByteArray;
@@ -18,19 +17,17 @@ import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 public class CredentialRepositoryFacade implements CredentialRepository {
 	@Autowired
 	private CredentialRepositoryOrm credentialRepositoryOrm;
+	@Autowired
+	private UserIdentityRepositoryOrm userIdentityRepositoryOrm;
 
 	@Override
 	public Optional<String> getUsernameForUserHandle(final ByteArray userHandle) {
-		return this.credentialRepositoryOrm.findUserHandleByUsername(userHandle.getBase64Url());
+		return this.userIdentityRepositoryOrm.findByUserHandle(userHandle.getBytes()).map(userIdentityOrm -> userIdentityOrm.username());
 	}
 
 	@Override
 	public Optional<ByteArray> getUserHandleForUsername(final String username) {
-		final Optional<String> userHandle = this.credentialRepositoryOrm.findUserHandleByUsername(username);
-		if (userHandle.isEmpty()) {
-			return Optional.empty();
-		}
-		return Optional.of(ByteArrayUtil.decodeBase64Url(userHandle.get()));
+		return this.userIdentityRepositoryOrm.findByUsername(username).map(userIdentityOrm -> new ByteArray(userIdentityOrm.userHandle()));
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import com.github.justincranford.springs.service.webauthn.authenticate.data.Auth
 import com.github.justincranford.springs.service.webauthn.authenticate.repository.AuthenticationRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialRepositoryOrm;
+import com.github.justincranford.springs.service.webauthn.credential.repository.UserIdentityRepositoryOrm;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
@@ -52,6 +53,8 @@ public class AuthenticationService {
 	private AuthenticationRepositoryOrm authenticationRepositoryOrm;
 	@Autowired
 	private CredentialRepositoryOrm credentialRepositoryOrm;
+	@Autowired
+	private UserIdentityRepositoryOrm userIdentityRepositoryOrm;
 
 	/**
 	 * 
