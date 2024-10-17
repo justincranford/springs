@@ -2,8 +2,6 @@ package com.github.justincranford.springs.service.webauthn.register.service;
 
 import static com.github.justincranford.springs.service.webauthn.util.ByteArrayUtil.randomByteArray;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,7 +24,6 @@ import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartRegistrationOptions;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
 import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
-import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
@@ -64,8 +61,16 @@ public class RegistrationService {
 
 			final String sessionToken = "Register:" + randomByteArray(NUM_RANDOM_BYTES_SESSION_TOKEN).getBase64Url();
 
-			final UserIdentityOrm userIdentityOrm = getOrCreate(registrationStartClient.getUsername(), registrationStartClient.getDisplayName());
-			final UserIdentity    userIdentity    = toUserIdentity(userIdentityOrm);
+			final UserIdentity userIdentity = this.userIdentityRepositoryOrm.findByUsername(registrationStartClient.getUsername())
+				.map(UserIdentityOrm::toUserIdentity).orElseGet(() -> 
+					this.userIdentityRepositoryOrm.save(
+				        UserIdentityOrm.builder()
+				            .username(registrationStartClient.getUsername())
+				            .displayName(registrationStartClient.getDisplayName())
+				            .userHandle(SecureRandomUtil.randomBytes(NUM_RANDOM_BYTES_CREDENTIAL_ID))
+				            .build()
+					).toUserIdentity()
+				);
 
 			final StartRegistrationOptions startRegistrationOptions = StartRegistrationOptions.builder().user(userIdentity)
 				.timeout(TIMEOUT_MILLIS)
@@ -118,11 +123,11 @@ public class RegistrationService {
 			);
 			this.prettyJson.logAndSave(registrationResult);
 
-			final UserIdentity userIdentity = registrationStartServer.getPublicKeyCredentialCreationOptions().getUser();
+			final UserIdentity    userIdentity    = registrationStartServer.getPublicKeyCredentialCreationOptions().getUser();
+			final UserIdentityOrm userIdentityOrm = this.userIdentityRepositoryOrm.findByUsername(userIdentity.getName()).orElseThrow();
+
 			final CredentialOrm credentialOrm = CredentialOrm.builder()
-				.username(userIdentity.getName())
-				.displayName(userIdentity.getDisplayName())
-				.userHandle(userIdentity.getId().getBase64Url())
+				.userIdentity(userIdentityOrm)
 				.credentialId(registrationResult.getKeyId().getId().getBase64Url())
 				.transports(registrationFinishClient.getPublicKeyCredential().getResponse().getTransports())
 				.publicKeyCose(registrationResult.getPublicKeyCose().getBase64Url())
@@ -143,32 +148,5 @@ public class RegistrationService {
 			log.info("Finish registration exception", e);
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
 		}
-	}
-
-	private UserIdentityOrm getOrCreate(final String username, final String displayName) {
-		final Optional<UserIdentityOrm> optionalUserIdentityOrm = this.userIdentityRepositoryOrm.findByUsername(username);
-		if (optionalUserIdentityOrm.isPresent()) {
-			final UserIdentityOrm userIdentityOrm = optionalUserIdentityOrm.get();
-			if (!userIdentityOrm.displayName().equals(displayName)) {
-				log.warn("Supplied displayName {} for username {} does not match in the existing user identity: {}", displayName, username, userIdentityOrm);
-			}
-			return userIdentityOrm;
-		}
-		return this.userIdentityRepositoryOrm.save(
-			UserIdentityOrm.builder()
-				.username(username)
-				.displayName(displayName)
-				.userHandle(SecureRandomUtil.randomBytes(NUM_RANDOM_BYTES_CREDENTIAL_ID))
-				.build()
-		);
-	}
-
-	private static UserIdentity toUserIdentity(final UserIdentityOrm userIdentityOrm) {
-		final UserIdentity userIdentity = UserIdentity.builder()
-			.name(userIdentityOrm.username())
-			.displayName(userIdentityOrm.displayName())
-			.id(new ByteArray(userIdentityOrm.userHandle()))
-			.build();
-		return userIdentity;
 	}
 }

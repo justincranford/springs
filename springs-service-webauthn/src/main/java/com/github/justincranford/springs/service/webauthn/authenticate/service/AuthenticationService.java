@@ -20,7 +20,9 @@ import com.github.justincranford.springs.service.webauthn.authenticate.data.Auth
 import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationSuccess;
 import com.github.justincranford.springs.service.webauthn.authenticate.repository.AuthenticationRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialOrm;
+import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialRepositoryFacade;
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialRepositoryOrm;
+import com.github.justincranford.springs.service.webauthn.credential.repository.UserIdentityOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.UserIdentityRepositoryOrm;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
 import com.yubico.webauthn.AssertionRequest;
@@ -31,6 +33,7 @@ import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.data.AuthenticatorData;
 import com.yubico.webauthn.data.ByteArray;
+import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 import com.yubico.webauthn.data.UserVerificationRequirement;
 import com.yubico.webauthn.exception.AssertionFailedException;
@@ -55,6 +58,8 @@ public class AuthenticationService {
 	private CredentialRepositoryOrm credentialRepositoryOrm;
 	@Autowired
 	private UserIdentityRepositoryOrm userIdentityRepositoryOrm;
+	@Autowired
+	private CredentialRepositoryFacade credentialRepositoryFacade;
 
 	/**
 	 * 
@@ -66,8 +71,8 @@ public class AuthenticationService {
 	public AuthenticationRequest start(@NotBlank final String username, @NotBlank final String requestUrl) {
 		final boolean isUsernameRequest = Strings.isNotBlank(username);
 		if (isUsernameRequest) {
-			final List<CredentialOrm> credentials = this.credentialRepositoryOrm.findByUsernameOrderByCreatedDateDesc(username);
-			if (credentials.isEmpty()) {
+			final Set<PublicKeyCredentialDescriptor> publicKeyCredentialDescriptors = this.credentialRepositoryFacade.getCredentialIdsForUsername(username);
+			if (publicKeyCredentialDescriptors.isEmpty()) {
 				log.warn("Authenticate with username {} won't work because it does not exist", username);
 			} else {
 				log.info("Authenticate with username {} may work because it exists", username);
@@ -114,7 +119,8 @@ public class AuthenticationService {
 			this.prettyJson.log(authenticationResult);
 
 			final ByteArray                 userHandle                = authenticationResult.getCredential().getUserHandle();
-			final List<CredentialOrm>       registrationsByUserHandle = this.credentialRepositoryOrm.findByUserHandleOrderByCreatedDateDesc(userHandle.getBase64Url());
+			final UserIdentityOrm           userIdentityOrm           = this.userIdentityRepositoryOrm.findByUserHandle(userHandle.getBytes()).orElseThrow();
+			final List<CredentialOrm>       registrationsByUserHandle = this.credentialRepositoryOrm.findByUserIdentityOrderByCreatedDateDesc(userIdentityOrm);
 			final Set<RegisteredCredential> registeredCredentials     = registrationsByUserHandle.stream().map(CredentialOrm::toRegisteredCredential).collect(Collectors.toSet());
 			final AuthenticatorData         authenticatorData         = authenticationResponse.getCredential().getResponse().getParsedAuthenticatorData();
 			final String                    username                  = authenticationRequest.getUsername().orElse(null);

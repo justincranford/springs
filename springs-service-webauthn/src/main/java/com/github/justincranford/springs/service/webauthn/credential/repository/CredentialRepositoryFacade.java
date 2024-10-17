@@ -1,6 +1,7 @@
 package com.github.justincranford.springs.service.webauthn.credential.repository;
 
-import java.util.List;
+import java.security.MessageDigest;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,19 +33,30 @@ public class CredentialRepositoryFacade implements CredentialRepository {
 
 	@Override
 	public Set<PublicKeyCredentialDescriptor> getCredentialIdsForUsername(final String username) {
-		final List<CredentialOrm> credentialOrms = this.credentialRepositoryOrm.findByUsernameOrderByCreatedDateDesc(username);
-        return credentialOrms.stream().map(CredentialOrm::toPublicKeyCredentialDescriptor).collect(Collectors.toSet());
+	    return this.userIdentityRepositoryOrm.findByUsername(username)
+    		.map(userIdentityOrm -> 
+		        this.credentialRepositoryOrm.findByUserIdentityOrderByCreatedDateDesc(userIdentityOrm)
+		            .stream()
+		            .map(CredentialOrm::toPublicKeyCredentialDescriptor)
+		            .collect(Collectors.toCollection(LinkedHashSet::new))
+	        )
+	        .orElseGet(LinkedHashSet::new);			
 	}
 
 	@Override
 	public Optional<RegisteredCredential> lookup(final ByteArray credentialId, final ByteArray userHandle) {
-		final List<CredentialOrm> credentialOrms = this.credentialRepositoryOrm.findByCredentialIdAndUserHandleOrderByCreatedDateDesc(credentialId.getBase64Url(), userHandle.getBase64Url());
-        return credentialOrms.stream().map(CredentialOrm::toRegisteredCredential).findAny();
+	    return this.credentialRepositoryOrm.findByCredentialIdOrderByCreatedDateDesc(credentialId.getBase64Url())
+    		.stream()
+    		.filter(credentialOrm -> MessageDigest.isEqual(credentialOrm.userIdentity().userHandle(), userHandle.getBytes()))
+    		.map(CredentialOrm::toRegisteredCredential)
+    		.findFirst();
 	}
 
 	@Override
 	public Set<RegisteredCredential> lookupAll(final ByteArray credentialId) {
-		final List<CredentialOrm> credentialOrms = this.credentialRepositoryOrm.findByCredentialIdOrderByCreatedDateDesc(credentialId.getBase64Url());
-        return credentialOrms.stream().map(CredentialOrm::toRegisteredCredential).collect(Collectors.toSet());
+        return this.credentialRepositoryOrm.findByCredentialIdOrderByCreatedDateDesc(credentialId.getBase64Url())
+    		.stream()
+    		.map(CredentialOrm::toRegisteredCredential)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 }

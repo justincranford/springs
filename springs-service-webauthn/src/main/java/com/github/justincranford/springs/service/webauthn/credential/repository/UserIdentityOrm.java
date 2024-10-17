@@ -1,14 +1,23 @@
 package com.github.justincranford.springs.service.webauthn.credential.repository;
+
+import java.util.List;
+
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.Audited;
 import org.springframework.lang.NonNull;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
+import com.yubico.webauthn.data.ByteArray;
+import com.yubico.webauthn.data.UserIdentity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
@@ -48,4 +57,16 @@ public class UserIdentityOrm extends AbstractEntity {
 	@NonNull
 	@Size(min=32,max=64)
     private byte[] userHandle;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy="userIdentity",cascade=CascadeType.ALL,orphanRemoval=true)
+    private List<CredentialOrm> credentials;
+
+	public UserIdentity toUserIdentity() {
+		return UserIdentity.builder()
+			.name(this.username)
+			.displayName(this.displayName)
+			.id(new ByteArray(this.userHandle))
+			.build();
+	}
 }

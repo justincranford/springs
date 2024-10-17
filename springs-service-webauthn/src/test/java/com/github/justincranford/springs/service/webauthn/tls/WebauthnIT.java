@@ -2,9 +2,6 @@ package com.github.justincranford.springs.service.webauthn.tls;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +10,6 @@ import org.springframework.core.io.Resource;
 import com.github.justincranford.springs.service.http.client.RestTemplateUtil;
 import com.github.justincranford.springs.service.webauthn.AbstractIT;
 import com.github.justincranford.springs.service.webauthn.actions.data.ActionsResponse;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationFinishClient;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationStartServer;
 
 import lombok.extern.slf4j.Slf4j;
 
