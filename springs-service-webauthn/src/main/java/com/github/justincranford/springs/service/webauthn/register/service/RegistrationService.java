@@ -2,11 +2,17 @@ package com.github.justincranford.springs.service.webauthn.register.service;
 
 import static com.github.justincranford.springs.service.webauthn.util.ByteArrayUtil.randomByteArray;
 
+import java.util.Map;
+import java.util.SortedSet;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.UserIdentityOrm;
@@ -24,6 +30,7 @@ import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartRegistrationOptions;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
 import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
+import com.yubico.webauthn.data.AuthenticatorTransport;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
@@ -43,6 +50,8 @@ public class RegistrationService {
 	private static final int NUM_RANDOM_BYTES_SESSION_TOKEN = 32;
 	private static final long TIMEOUT_MILLIS = 300_000L; // 5 minutes
 
+	@Autowired
+	private ObjectMapper objectMapper;
 	@Autowired
 	private PrettyJson prettyJson;
 	@Autowired
@@ -113,7 +122,7 @@ public class RegistrationService {
 			this.prettyJson.log(registrationStartServer);
 
 			final PublicKeyCredentialCreationOptions                                                        publicKeyCredentialCreationOptions = registrationStartServer.getPublicKeyCredentialCreationOptions();
-			final PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> publicKeyCredential                = registrationFinishClient.getPublicKeyCredential();
+			final PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> publicKeyCredential                = decodeJson(registrationFinishClient.getPublicKeyCredentialEncoded().replaceAll("\\\\", ""));
 
 			final RegistrationResult registrationResult = this.relyingParty.finishRegistration(
 				FinishRegistrationOptions.builder()
@@ -126,16 +135,19 @@ public class RegistrationService {
 			final UserIdentity    userIdentity    = registrationStartServer.getPublicKeyCredentialCreationOptions().getUser();
 			final UserIdentityOrm userIdentityOrm = this.userIdentityRepositoryOrm.findByUsername(userIdentity.getName()).orElseThrow();
 
+			final SortedSet<AuthenticatorTransport> transports = publicKeyCredential.getResponse().getTransports();
+			log.info("transports: {}", transports);
+			this.prettyJson.log(transports);
 			final CredentialOrm credentialOrm = CredentialOrm.builder()
 				.userIdentity(userIdentityOrm)
 				.credentialId(registrationResult.getKeyId().getId().getBase64Url())
-				.transports(registrationFinishClient.getPublicKeyCredential().getResponse().getTransports())
+				.transports(transports)
 				.publicKeyCose(registrationResult.getPublicKeyCose().getBase64Url())
 				.signatureCount(Long.valueOf(registrationResult.getSignatureCount()))
 				.backupEligible(Boolean.valueOf(registrationResult.isBackupEligible()))
 				.backupState(Boolean.valueOf(registrationResult.isBackedUp()))
-				.attestationObject(registrationFinishClient.getPublicKeyCredential().getResponse().getAuthenticatorData().getBytes())
-				.clientDataJSON(registrationFinishClient.getPublicKeyCredential().getResponse().getClientDataJSON().getBytes())
+				.attestationObject(publicKeyCredential.getResponse().getAuthenticatorData().getBytes())
+				.clientDataJSON(publicKeyCredential.getResponse().getClientDataJSON().getBytes())
 				.build();
 			this.prettyJson.log(credentialOrm);
 			this.credentialRepositoryOrm.save(credentialOrm);
@@ -148,5 +160,25 @@ public class RegistrationService {
 			log.info("Finish registration exception", e);
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
 		}
+	}
+
+	private PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> decodeJson(final String encoded) throws JsonProcessingException {
+		log.info(encoded);
+
+		// remove data not supported by the server-side PublicKeyCredential implementation
+		final Map<String, Map<String, Object>> publicKeyCredentialMap = this.objectMapper.readValue(encoded, Map.class);
+		final Object authenticatorData = publicKeyCredentialMap.get("response").remove("authenticatorData");
+		log.info("Removed unsupported authenticatorData: {}", authenticatorData);
+		final Object publicKey = publicKeyCredentialMap.get("response").remove("publicKey");
+		log.info("Removed unsupported publicKey: {}", publicKey);
+		final Object publicKeyAlgorithm = publicKeyCredentialMap.get("response").remove("publicKeyAlgorithm");
+		log.info("Removed unsupported publicKeyAlgorithm: {}", publicKeyAlgorithm);
+
+		// convert remaining data to PublicKeyCredential
+		final TypeReference<PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs>> valueTypeRef = new TypeReference<>() {/*empty block*/};
+		final PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> publicKeyCredential = this.objectMapper.convertValue(publicKeyCredentialMap, valueTypeRef);
+		this.prettyJson.log(publicKeyCredential);
+
+		return publicKeyCredential;
 	}
 }

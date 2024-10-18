@@ -23,5 +23,6 @@ import lombok.ToString;
 @Builder(toBuilder=true)
 public class RegistrationFinishClient {
 	private String sessionToken;
-	private PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> publicKeyCredential;
+	private String publicKeyCredentialEncoded;
+//	private PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> publicKeyCredential;
 }

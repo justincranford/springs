@@ -17,17 +17,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @SuppressWarnings({"nls"})
 public class WebauthnIT extends AbstractIT {
-    @Value("classpath:non-resident-registration-request.json")
+    @Value("classpath:non-resident-registration-start-client.json")
+    private Resource nonResidentRegistrationStartClientJson;
+
+    @Value("classpath:non-resident-registration-start-server.json")
     private Resource nonResidentRegistrationStartServerJson;
 
-    @Value("classpath:non-resident-registration-response.json")
+    @Value("classpath:non-resident-registration-finish-client.json")
     private Resource nonResidentRegistrationFinishClientJson;
 
-    @Value("classpath:non-resident-authentication-request.json")
-    private Resource nonResidentAuthenticationRequestJson;
-
-    @Value("classpath:non-resident-authentication-response.json")
-    private Resource nonResidentAuthenticationResponseJson;
+    @Value("classpath:non-resident-registration-finish-server.json")
+    private Resource nonResidentRegistrationFinishServerJson;
 
     @Test
 	void testHome() {

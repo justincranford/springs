@@ -97,16 +97,22 @@
 	function fromPublicKeyCredential(sessionToken, publicKeyCredential) {
 	    const registrationFinishClient  = {
 	        sessionToken: sessionToken,
-	        publicKeyCredential: {
-	            id: publicKeyCredential.id,
-	            rawId: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.rawId)),
-	            response: {
-	                attestationObject: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.response.attestationObject)),
-	                clientDataJSON: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.response.clientDataJSON))
-	            },
-	            clientExtensionResults: publicKeyCredential.getClientExtensionResults(),
-	            type: publicKeyCredential.type
-	        }
+	        publicKeyCredentialEncoded: JSON.stringify(publicKeyCredential),
+//	        publicKeyCredential: {
+//	            id: publicKeyCredential.id,
+//	            rawId: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.rawId)),
+//	            response: {
+//	                attestationObject: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.response.attestationObject)),
+//	                clientDataJSON: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.response.clientDataJSON)),
+////	                authenticatorData: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.response.authenticatorData)),
+////	                publicKey: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.response.publicKey)),
+////	                publicKeyAlgorithm: publicKeyCredential.response.publicKeyAlgorithm,
+//	                transports: publicKeyCredential.response.transports
+//	            },
+//				authenticatorAttachment: publicKeyCredential.authenticatorAttachment,
+//	            clientExtensionResults: publicKeyCredential.getClientExtensionResults(),
+//	            type: publicKeyCredential.type
+//	        }
 	    };
 	    console.log('registrationFinishClient:', JSON.stringify(registrationFinishClient));
 	    return registrationFinishClient;
