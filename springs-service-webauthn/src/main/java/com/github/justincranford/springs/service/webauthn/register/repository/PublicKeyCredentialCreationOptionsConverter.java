@@ -9,6 +9,7 @@ import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 
 import jakarta.persistence.Converter;
 
+// TODO Use this in RegistrationOrm
 @Component
 @Converter
 public class PublicKeyCredentialCreationOptionsConverter extends JsonConverterDelegate<PublicKeyCredentialCreationOptions> {
