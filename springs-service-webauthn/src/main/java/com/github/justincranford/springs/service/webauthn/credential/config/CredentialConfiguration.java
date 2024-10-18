@@ -11,11 +11,12 @@ import com.github.justincranford.springs.service.webauthn.credential.repository.
 import com.github.justincranford.springs.service.webauthn.credential.repository.UserIdentityOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.UserIdentityRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.converter.SetAuthenticatorTransportConverter;
+import com.github.justincranford.springs.service.webauthn.register.repository.RegistrationRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.register.service.RegistrationService;
 
 @Configuration
 @EnableJpaRepositories(
-	basePackageClasses = {CredentialRepositoryOrm.class, UserIdentityRepositoryOrm.class},
+	basePackageClasses = {CredentialRepositoryOrm.class, UserIdentityRepositoryOrm.class, RegistrationRepositoryOrm.class},
 	repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class
 )
 @Import(value = {

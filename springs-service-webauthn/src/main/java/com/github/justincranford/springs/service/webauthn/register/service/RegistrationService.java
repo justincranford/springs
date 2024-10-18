@@ -3,6 +3,7 @@ package com.github.justincranford.springs.service.webauthn.register.service;
 import static com.github.justincranford.springs.service.webauthn.util.ByteArrayUtil.randomByteArray;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import com.github.justincranford.springs.service.webauthn.register.data.Registra
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationFinishServer;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationStartClient;
 import com.github.justincranford.springs.service.webauthn.register.data.RegistrationStartServer;
+import com.github.justincranford.springs.service.webauthn.register.repository.RegistrationOrm;
 import com.github.justincranford.springs.service.webauthn.register.repository.RegistrationRepositoryOrm;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
@@ -92,13 +94,19 @@ public class RegistrationService {
 
 			final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = this.relyingParty.startRegistration(startRegistrationOptions);
 
+			final RegistrationOrm registrationOrm = RegistrationOrm.builder()
+				.sessionToken(sessionToken)
+				.publicKeyCredentialCreationOptions(publicKeyCredentialCreationOptions)
+				.build();
+			this.prettyJson.logAndSave(registrationOrm);
+			this.registrationRepositoryOrm.save(registrationOrm);
+
 			final RegistrationStartServer registrationStartServer = RegistrationStartServer.builder()
 				.sessionToken(sessionToken)
 				.publicKeyCredentialCreationOptions(publicKeyCredentialCreationOptions)
 				.build();
 			this.prettyJson.logAndSave(registrationStartServer);
 
-			this.registrationRepositoryOrm.add(sessionToken, registrationStartServer);
 			return registrationStartServer;
 		} catch (Exception e) {
 			log.info("Finish registration exception", e);
@@ -115,13 +123,13 @@ public class RegistrationService {
 			final PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> publicKeyCredential = cleanAndDecode(publicKeyCredentialJson);
 			this.prettyJson.logAndSave(publicKeyCredential);
 
-			final RegistrationStartServer registrationStartServer = this.registrationRepositoryOrm.remove(sessionToken);
-			if (registrationStartServer == null) {
+			final Optional<RegistrationOrm> registrationOrm = this.registrationRepositoryOrm.findBySessionToken(sessionToken);
+			if (registrationOrm.isEmpty()) {
 				log.error("Invalid sessionToken: {}", sessionToken);
 				throw new RegistrationFailedException(new IllegalArgumentException("Invalid sessionToken"));
 			}
-			this.prettyJson.log(registrationStartServer);
-			final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = registrationStartServer.getPublicKeyCredentialCreationOptions();
+			this.prettyJson.log(registrationOrm);
+			final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = registrationOrm.get().publicKeyCredentialCreationOptions();
 			this.prettyJson.log(publicKeyCredentialCreationOptions);
 
 			final RegistrationResult registrationResult = this.relyingParty.finishRegistration(
@@ -132,7 +140,7 @@ public class RegistrationService {
 			);
 			this.prettyJson.logAndSave(registrationResult);
 
-			final UserIdentity    userIdentity    = registrationStartServer.getPublicKeyCredentialCreationOptions().getUser();
+			final UserIdentity    userIdentity    = publicKeyCredentialCreationOptions.getUser();
 			final UserIdentityOrm userIdentityOrm = this.userIdentityRepositoryOrm.findByUsername(userIdentity.getName()).orElseThrow();
 
 			final CredentialOrm credentialOrm = CredentialOrm.builder()
