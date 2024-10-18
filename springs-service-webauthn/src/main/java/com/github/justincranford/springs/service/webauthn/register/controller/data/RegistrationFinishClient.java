@@ -1,9 +1,6 @@
-package com.github.justincranford.springs.service.webauthn.register.data;
+package com.github.justincranford.springs.service.webauthn.register.controller.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
-import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
-import com.yubico.webauthn.data.PublicKeyCredential;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,5 +21,4 @@ import lombok.ToString;
 public class RegistrationFinishClient {
 	private String sessionToken;
 	private String publicKeyCredentialEncoded;
-//	private PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> publicKeyCredential;
 }

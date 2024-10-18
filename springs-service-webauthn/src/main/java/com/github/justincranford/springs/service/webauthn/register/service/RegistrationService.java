@@ -17,10 +17,10 @@ import com.github.justincranford.springs.service.webauthn.credential.repository.
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.UserIdentityOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.UserIdentityRepositoryOrm;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationFinishClient;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationFinishServer;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationStartClient;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationStartServer;
+import com.github.justincranford.springs.service.webauthn.register.controller.data.RegistrationFinishClient;
+import com.github.justincranford.springs.service.webauthn.register.controller.data.RegistrationFinishServer;
+import com.github.justincranford.springs.service.webauthn.register.controller.data.RegistrationStartClient;
+import com.github.justincranford.springs.service.webauthn.register.controller.data.RegistrationStartServer;
 import com.github.justincranford.springs.service.webauthn.register.repository.RegistrationOrm;
 import com.github.justincranford.springs.service.webauthn.register.repository.RegistrationRepositoryOrm;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;

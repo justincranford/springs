@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationFinishClient;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationStartClient;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationFinishServer;
-import com.github.justincranford.springs.service.webauthn.register.data.RegistrationStartServer;
+import com.github.justincranford.springs.service.webauthn.register.controller.data.RegistrationFinishClient;
+import com.github.justincranford.springs.service.webauthn.register.controller.data.RegistrationFinishServer;
+import com.github.justincranford.springs.service.webauthn.register.controller.data.RegistrationStartClient;
+import com.github.justincranford.springs.service.webauthn.register.controller.data.RegistrationStartServer;
 import com.github.justincranford.springs.service.webauthn.register.service.RegistrationService;
 
 import jakarta.annotation.Nonnull;
