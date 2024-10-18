@@ -12,15 +12,19 @@ import org.hibernate.envers.Audited;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
+import com.github.justincranford.springs.service.webauthn.credential.repository.converter.ClientRegistrationExtensionOutputsConverter;
 import com.github.justincranford.springs.service.webauthn.credential.repository.converter.SetAuthenticatorTransportConverter;
 import com.yubico.webauthn.RegisteredCredential;
+import com.yubico.webauthn.data.AuthenticatorAttachment;
 import com.yubico.webauthn.data.AuthenticatorTransport;
 import com.yubico.webauthn.data.ByteArray;
+import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import com.yubico.webauthn.data.PublicKeyCredentialType;
 
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -49,33 +53,42 @@ import lombok.experimental.Accessors;
 @SequenceGenerator(sequenceName="credential_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 @SuppressWarnings({"deprecation"})
 public class CredentialOrm extends AbstractEntity {
-	private String                      credentialNickname;
+	private String                             credentialNickname;
 
 	@JsonBackReference
 	@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_identity_id",nullable=false)
-    public UserIdentityOrm              userIdentity;        // RegisteredCredential.userHandle, UserIdentity.username/id/displayName
+    public UserIdentityOrm                     userIdentity;            // RegisteredCredential.userHandle, UserIdentity.username/id/displayName
 
 	// TODO byte[]
-	private String                      credentialId;        // RegisteredCredential.credentialId, PublicKeyCredentialDescriptor.id
+	private String                             credentialId;            // RegisteredCredential.credentialId, PublicKeyCredentialDescriptor.id
 
 	@Convert(converter = SetAuthenticatorTransportConverter.class)
-	private Set<AuthenticatorTransport> transports;          // PublicKeyCredentialDescriptor.transports
+	private Set<AuthenticatorTransport>        transports;              // PublicKeyCredentialDescriptor.transports
 
 	// TODO byte[]
-	private String                      publicKeyCose;       // RegisteredCredential.publicKeyCose
+	private String                             publicKeyCose;           // RegisteredCredential.publicKeyCose
 
-	private Long                        signatureCount;      // RegisteredCredential.signatureCount
+	private Long                               signatureCount;          // RegisteredCredential.signatureCount
 
-	private Boolean                     backupEligible;      // RegisteredCredential.backupEligible
+	private Boolean                            backupEligible;          // RegisteredCredential.backupEligible
 
-	private Boolean                     backupState;         // RegisteredCredential.backupState
+	private Boolean                            backupState;             // RegisteredCredential.backupState
 
-	private Boolean                     discoverable;        // Passkey?
+	private Boolean                            discoverable;            // Passkey?
 
-	private byte[]                      attestationObject;   // for future reference
+	private byte[]                             attestationObject;       // for future reference
 
-	private byte[]                      clientDataJSON;      // for re-verify signature
+	private byte[]                             clientDataJSON;          // for re-verify signature
+
+	@Enumerated
+	private AuthenticatorAttachment            authenticatorAttachment; // platform, cross-platform
+
+	@Enumerated
+	private PublicKeyCredentialType            type;                    // public-key
+
+	@Convert(converter = ClientRegistrationExtensionOutputsConverter.class)
+	private ClientRegistrationExtensionOutputs clientExtensionResults;
 
 	public PublicKeyCredentialDescriptor toPublicKeyCredentialDescriptor() {
 		return PublicKeyCredentialDescriptor.builder()
