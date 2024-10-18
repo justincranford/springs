@@ -52,6 +52,101 @@
 	        .replace(/=+$/, '');  // Remove padding '='
 	}
 
+	// LOGIN
+	
+	function getAuthenticationStartClient(username) {
+	    const authenticationStartClient = username == null ? { } : { username };
+	    console.log('authenticationStartClient:', JSON.stringify(authenticationStartClient));
+	    return authenticationStartClient;
+	}
+
+	async function getAuthenticationStartServer(authenticationStartClient) {
+	    const httpResponse = await fetch('/api/v1/authenticate/start', {
+	        method: 'POST',
+	        headers: {
+	            'Content-Type': 'application/json; charset=UTF-8',
+	            'Accept':       'application/json; charset=UTF-8'
+	        },
+	        body: JSON.stringify(authenticationStartClient)
+	    });
+	    if (!httpResponse.ok) throw new Error(`Authentication request failed: ${httpResponse.statusText}`);
+	    const authenticationStartServer = await httpResponse.json();
+	    console.log('authenticationStartServer:', JSON.stringify(authenticationStartServer));
+	    return await authenticationStartServer;
+	}
+
+	function toPublicKeyCredentialRequestOptions(publicKeyCredentialRequestOptions) {
+//		webauthnJson.get({ publicKey: request.publicKeyCredentialRequestOptions });
+//	    publicKeyCredentialRequestOptions.user.id   = base64urlToUint8Array(publicKeyCredentialRequestOptions.user.id);
+	    publicKeyCredentialRequestOptions.challenge = base64urlToUint8Array(publicKeyCredentialRequestOptions.challenge);
+	    if (Array.isArray(publicKeyCredentialRequestOptions.allowCredentials)) {
+	        publicKeyCredentialRequestOptions.allowCredentials.forEach(allowCredential => {
+	            console.log('allowCredential:', JSON.stringify(allowCredential));
+	            allowCredential.id = base64urlToUint8Array(allowCredential.id);
+	        });
+	    }
+	    const requestOptions = { publicKey: publicKeyCredentialRequestOptions };
+	    console.log('requestOptions:', JSON.stringify(requestOptions));
+	    return requestOptions;
+	}
+
+	async function navigatorCredentialsGet(publicKeyCredentialRequestOptions) {
+	    const publicKeyCredential = await navigator.credentials.get(publicKeyCredentialRequestOptions);
+	    if (!publicKeyCredential) throw new Error('Failed to get credential.');
+	    console.log('publicKeyCredential:', JSON.stringify(publicKeyCredential));
+	    return publicKeyCredential;
+	}
+
+	function fromPublicKeyCredential(sessionToken, publicKeyCredential) {
+	    const authenticationFinishClient  = {
+	        sessionToken: sessionToken,
+	        publicKeyCredentialEncoded: JSON.stringify(publicKeyCredential),
+	    };
+	    console.log('authenticationFinishClient:', JSON.stringify(authenticationFinishClient));
+	    return authenticationFinishClient;
+	}
+
+	async function getAuthenticationFinishServer(authenticationFinishClient) {
+	    const httpResponse = await fetch('/api/v1/authenticate/finish', {
+	        method: 'POST',
+	        headers: {
+	            'Content-Type': 'application/json; charset=UTF-8',
+	            'Accept':       'application/json; charset=UTF-8'
+	        },
+	        body: JSON.stringify(authenticationFinishClient)
+	    });
+
+	    if (!httpResponse.ok) throw new Error(`Request failed: ${httpResponse.statusText}`);
+	    const authenticationFinishServer = await httpResponse.json();
+	    console.log('authenticationFinishServer:', JSON.stringify(authenticationFinishServer));
+	    return authenticationFinishServer;
+	}
+
+	async function authenticate(authenticationStartClient) {
+	    try {
+	        const authenticationStartServer         = await getAuthenticationStartServer(authenticationStartClient);
+	        const publicKeyCredentialRequestOptions = toPublicKeyCredentialRequestOptions(authenticationStartServer.publicKeyCredentialRequestOptions);
+	        const publicKeyCredential               = await navigatorCredentialsGet(publicKeyCredentialRequestOptions);
+	        const authenticationFinishClient        = fromPublicKeyCredential(authenticationStartServer.sessionToken, publicKeyCredential);
+	        const authenticationFinishServer        = await getAuthenticationFinishServer(authenticationFinishClient);
+	    } catch (error) {
+	        console.error('Authentication Error:', error);
+	        alert(error);
+	    }
+	}
+
+	function nonResidentAuthenticate(event) {
+      const username                  = document.getElementById('nonResidentAuthenticateUsername').value;
+      const authenticationStartClient = getAuthenticationStartClient(username)
+      authenticate(authenticationStartClient);
+    }
+
+    function residentAuthenticate(event) {
+      const authenticationStartClient = getAuthenticationStartClient(null)
+      authenticate(authenticationStartClient);
+    }
+
+	// REGISTER
 	function getRegistrationStartClient(username, displayName, credentialNickname, residentKeyRequirement) {
 	    const registrationStartClient = { username, displayName, credentialNickname, residentKeyRequirement };
 	    console.log('registrationStartClient:', JSON.stringify(registrationStartClient));
@@ -98,21 +193,6 @@
 	    const registrationFinishClient  = {
 	        sessionToken: sessionToken,
 	        publicKeyCredentialEncoded: JSON.stringify(publicKeyCredential),
-//	        publicKeyCredential: {
-//	            id: publicKeyCredential.id,
-//	            rawId: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.rawId)),
-//	            response: {
-//	                attestationObject: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.response.attestationObject)),
-//	                clientDataJSON: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.response.clientDataJSON)),
-////	                authenticatorData: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.response.authenticatorData)),
-////	                publicKey: uint8ArrayToBase64url(new Uint8Array(publicKeyCredential.response.publicKey)),
-////	                publicKeyAlgorithm: publicKeyCredential.response.publicKeyAlgorithm,
-//	                transports: publicKeyCredential.response.transports
-//	            },
-//				authenticatorAttachment: publicKeyCredential.authenticatorAttachment,
-//	            clientExtensionResults: publicKeyCredential.getClientExtensionResults(),
-//	            type: publicKeyCredential.type
-//	        }
 	    };
 	    console.log('registrationFinishClient:', JSON.stringify(registrationFinishClient));
 	    return registrationFinishClient;
@@ -161,18 +241,6 @@
       const credentialNickname      = document.getElementById('residentRegisterCredentialNickname').value;
       const registrationStartClient = getRegistrationStartClient(username, displayName, credentialNickname, 'required')
       register(registrationStartClient);
-    }
-
-    function nonResidentLogin(event) {
-      alert("Non-Resident Login submitted!");
-      event.preventDefault();
-      return false;
-    }
-
-    function residentLogin(event) {
-      alert("Resident Login submitted!");
-      event.preventDefault();
-      return false;
     }
 
     const firstNames = [
@@ -236,7 +304,7 @@
       document.getElementById('nonResidentRegisterUsername').value = randomUsername();
       document.getElementById('nonResidentRegisterDisplayName').value = randomDisplayName();
       document.getElementById('nonResidentRegisterCredentialNickname').value = randomCredentialNickname();
-      document.getElementById('nonResidentLoginUsername').value = document.getElementById('nonResidentRegisterUsername').value;
+      document.getElementById('nonResidentAuthenticateUsername').value = document.getElementById('nonResidentRegisterUsername').value;
     }
     function residentRegisterRandomize() {
       document.getElementById('residentRegisterUsername').value = randomUsername();
@@ -301,10 +369,10 @@
           <div class="card-body">
             <form>
               <div class="mb-3">
-                <label for="nonResidentLoginUsername" class="form-label">Username</label>
-                <input type="text" class="form-control" id="nonResidentLoginUsername" required>
+                <label for="nonResidentAuthenticateUsername" class="form-label">Username</label>
+                <input type="text" class="form-control" id="nonResidentAuthenticateUsername" required>
               </div>
-              <button type="button" class="btn btn-primary" onclick="nonResidentLogin(event)">Login</button>
+              <button type="button" class="btn btn-primary" onclick="nonResidentAuthenticate(event)">Login</button>
             </form>
           </div>
         </div>
@@ -315,7 +383,7 @@
         <div class="card">
           <div class="card-body">
             <form>
-              <button type="button" class="btn btn-primary" onclick="residentLogin(event)">Login</button>
+              <button type="button" class="btn btn-primary" onclick="residentAuthenticate(event)">Login</button>
             </form>
           </div>
         </div>

@@ -109,8 +109,8 @@ public class RegistrationService {
 
 			return registrationStartServer;
 		} catch (Exception e) {
-			log.info("Finish registration exception", e);
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Finish registration exception");
+			log.info("Start registration exception", e);
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Start registration exception");
 		}
 	}
 

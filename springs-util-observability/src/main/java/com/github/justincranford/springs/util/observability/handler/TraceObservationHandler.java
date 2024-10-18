@@ -12,12 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 public class TraceObservationHandler implements ObservationHandler<Observation.Context> {
 	@Override
     public void onStart(final Observation.Context context) {
-        log.info("Before running the observation for context [{}], userType [{}]", context.getName());
+        log.trace("Before running the observation for context [{}], userType [{}]", context.getName());
     }
 
     @Override
     public void onStop(final Observation.Context context) {
-        log.info("After running the observation for context [{}], userType [{}]", context.getName());
+        log.trace("After running the observation for context [{}], userType [{}]", context.getName());
     }
 
     @Override

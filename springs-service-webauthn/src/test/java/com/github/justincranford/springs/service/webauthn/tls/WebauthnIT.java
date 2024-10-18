@@ -9,7 +9,6 @@ import org.springframework.core.io.Resource;
 
 import com.github.justincranford.springs.service.http.client.RestTemplateUtil;
 import com.github.justincranford.springs.service.webauthn.AbstractIT;
-import com.github.justincranford.springs.service.webauthn.actions.data.ActionsResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,13 +32,6 @@ public class WebauthnIT extends AbstractIT {
 	void testHome() {
 		final String response = RestTemplateUtil.plainGet(stlsRestTemplate(), httpsBaseUrl() + "/index.html", String.class);
 		assertThat(response).contains("WebAuthn");
-	}
-
-	@Test
-	void testActionsApi() {
-		final ActionsResponse response = RestTemplateUtil.anyGet(stlsRestTemplate(), httpsBaseUrl() + "/api/v1", ActionsResponse.class);
-		log.info("response: {}", response);
-		assertThat(response).isNotNull();
 	}
 
 //	@Test

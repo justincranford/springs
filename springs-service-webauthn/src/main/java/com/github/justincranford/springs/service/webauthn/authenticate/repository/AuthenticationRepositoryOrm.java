@@ -1,26 +1,13 @@
 package com.github.justincranford.springs.service.webauthn.authenticate.repository;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Optional;
 
-import com.github.justincranford.springs.service.webauthn.authenticate.data.AuthenticationRequest;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.history.RevisionRepository;
+import org.springframework.stereotype.Repository;
 
-@SuppressWarnings({"nls"})
-public class AuthenticationRepositoryOrm {
-	private final Cache<String, AuthenticationRequest> startedAuthentications = CacheBuilder.newBuilder().maximumSize(1000)
-			.expireAfterAccess(1, TimeUnit.DAYS).build();
-
-	public void add(final String sessionToken, final AuthenticationRequest registrationRequest) {
-		this.startedAuthentications.put(sessionToken, registrationRequest);
-	}
-
-	public AuthenticationRequest remove(final String sessionToken) {
-		final AuthenticationRequest authenticationRequest = this.startedAuthentications.getIfPresent(sessionToken);
-		if (authenticationRequest == null) {
-			throw new RuntimeException("Authentication does not exist");
-		}
-		this.startedAuthentications.invalidate(sessionToken);
-		return authenticationRequest;
-	}
+@Repository
+public interface AuthenticationRepositoryOrm extends ListCrudRepository<AuthenticationOrm, Long>, RevisionRepository<AuthenticationOrm, Long, Long> {
+	Optional<AuthenticationOrm> findBySessionToken(String SessionToken);
 }
+

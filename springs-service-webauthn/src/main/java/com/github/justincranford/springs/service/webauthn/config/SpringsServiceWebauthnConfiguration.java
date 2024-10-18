@@ -7,12 +7,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.github.justincranford.springs.persistenceorm.base.config.SpringsPersistenceOrmBaseConfiguration;
-import com.github.justincranford.springs.service.http.server.HelloWorldController;
-import com.github.justincranford.springs.service.webauthn.actions.config.ActionsConfiguration;
 import com.github.justincranford.springs.service.webauthn.authenticate.config.AuthenticationConfiguration;
 import com.github.justincranford.springs.service.webauthn.credential.config.CredentialConfiguration;
 import com.github.justincranford.springs.service.webauthn.register.config.RegistrationConfiguration;
@@ -24,21 +24,24 @@ import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @EnableAutoConfiguration(
-		exclude = {
-			UserDetailsServiceAutoConfiguration.class
-		}
-	)
+	exclude = {
+		UserDetailsServiceAutoConfiguration.class
+	}
+)
 @EnableConfigurationProperties
+@EnableJpaRepositories(
+	basePackageClasses = {},
+	repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class
+)
 @Import(value = {
     SpringsPersistenceOrmBaseConfiguration.class,
 	SpringsUtilHttpsConfiguration.class,
 	SpringsUtilJsonConfiguration.class,
-	RelyingPartyConfiguration.class,
-	ActionsConfiguration.class,
 	CredentialConfiguration.class,
 	RegistrationConfiguration.class,
 	AuthenticationConfiguration.class,
-	HelloWorldController.class
+	RelyingPartyConfiguration.class
+//	HelloWorldController.class
 })
 @Slf4j
 @SuppressWarnings({"nls", "static-method"})

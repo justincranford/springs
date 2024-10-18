@@ -26,36 +26,36 @@ public class EntityListener {
 	@PrePersist
 	public void prePersist(final AbstractEntity entity) throws JsonProcessingException {
 		entity.prePersistDateTime(DateTimeUtil.nowUtcTruncatedToMicroseconds());
-		log.info("prePersist entity: {}", this.objectMapper.writeValueAsString(entity));
+		log.trace("prePersist entity: {}", this.objectMapper.writeValueAsString(entity));
 	}
 	@PostPersist
 	public void postPersist(final AbstractEntity entity) throws JsonProcessingException {
 		entity.postPersistDateTime(DateTimeUtil.nowUtcTruncatedToMicroseconds());
-		log.info("postPersist entity: {}", this.objectMapper.writeValueAsString(entity));
+		log.trace("postPersist entity: {}", this.objectMapper.writeValueAsString(entity));
 	}
 	@PreUpdate
 	public void preUpdate(final AbstractEntity entity) throws JsonProcessingException {
 		entity.preUpdateDateTime(DateTimeUtil.nowUtcTruncatedToMicroseconds());
-		log.info("preUpdate entity: {}", this.objectMapper.writeValueAsString(entity));
+		log.trace("preUpdate entity: {}", this.objectMapper.writeValueAsString(entity));
 	}
 	@PostUpdate
 	public void postUpdate(final AbstractEntity entity) throws JsonProcessingException {
 		entity.postUpdateDateTime(DateTimeUtil.nowUtcTruncatedToMicroseconds());
-		log.info("postUpdate entity: {}", this.objectMapper.writeValueAsString(entity));
+		log.trace("postUpdate entity: {}", this.objectMapper.writeValueAsString(entity));
 	}
 	@PreRemove
 	public void preDelete(final AbstractEntity entity) throws JsonProcessingException {
 		entity.preDeleteDateTime(DateTimeUtil.nowUtcTruncatedToMicroseconds());
-		log.info("preDelete entity: {}", this.objectMapper.writeValueAsString(entity));
+		log.trace("preDelete entity: {}", this.objectMapper.writeValueAsString(entity));
 	}
 	@PostRemove
 	public void postDelete(final AbstractEntity entity) throws JsonProcessingException {
 		entity.postDeleteDateTime(DateTimeUtil.nowUtcTruncatedToMicroseconds());
-		log.info("postDelete entity: {}", this.objectMapper.writeValueAsString(entity));
+		log.trace("postDelete entity: {}", this.objectMapper.writeValueAsString(entity));
 	}
 	@PostLoad
 	public void postLoad(final AbstractEntity entity) throws JsonProcessingException {
 		entity.postLoadDateTime(DateTimeUtil.nowUtcTruncatedToMicroseconds());
-		log.info("postLoad entity: {}", this.objectMapper.writeValueAsString(entity));
+		log.trace("postLoad entity: {}", this.objectMapper.writeValueAsString(entity));
 	}
 }
