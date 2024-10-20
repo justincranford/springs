@@ -16,340 +16,54 @@
 <body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@latest/dist/fp.min.js"></script>
+<script src="/js/random.js"></script>
+<script src="/js/fingerprint.js"></script>
+<script src="/js/base64.js"></script>
+<script src="/js/register.js"></script>
+<script src="/js/authenticate.js"></script>
+
 <script>
-	function base64urlToUint8Array(base64url) {
-	    // base64url to base64
-	    base64url = base64url.replace(/-/g, '+').replace(/_/g, '/');
-	    const padding = '='.repeat((4 - (base64url.length % 4)) % 4);
-	    const base64 = base64url + padding;
-
-	    // base64 to binary
-	    const binaryString = atob(base64);
-
-	    // binary to byte array
-	    const bytes = [];
-	    for (let i = 0; i < binaryString.length; i++) {
-	        bytes.push(binaryString.charCodeAt(i));
-	    }
-
-	    // byte array to Uint8Array
-	    return new Uint8Array(bytes);
+	function nonResidentRegisterRandomize() {
+		document.getElementById('nonResidentRegisterUsername').value = randomUsername();
+		document.getElementById('nonResidentRegisterDisplayName').value = randomDisplayName();
+		document.getElementById('nonResidentRegisterCredentialNickname').value = randomCredentialNickname();
+		document.getElementById('nonResidentAuthenticateUsername').value = document.getElementById('nonResidentRegisterUsername').value;
 	}
-	function uint8ArrayToBase64url(uint8Array) {
-	    // Uint8Array to a binary string
-	    let binaryString = '';
-	    for (let i = 0; i < uint8Array.length; i++) {
-	        binaryString += String.fromCharCode(uint8Array[i]);
-	    }
-
-	    // Encode the binary string as Base64
-	    const base64String = btoa(binaryString);
-
-	    // Convert Base64 to Base64URL format
-	    return base64String
-	        .replace(/\+/g, '-')  // Replace + with -
-	        .replace(/\//g, '_')  // Replace / with _
-	        .replace(/=+$/, '');  // Remove padding '='
+	function residentRegisterRandomize() {
+		document.getElementById('residentRegisterUsername').value = randomUsername();
+		document.getElementById('residentRegisterDisplayName').value = randomDisplayName();
+		document.getElementById('residentRegisterCredentialNickname').value = randomCredentialNickname();
 	}
-
-	// LOGIN
-	
-	function getAuthenticationStartClient(username) {
-	    const authenticationStartClient = username == null ? { } : { username };
-	    console.log('authenticationStartClient:', JSON.stringify(authenticationStartClient));
-	    return authenticationStartClient;
+	function registerRandomize() {
+		fingerprintVisitor();
+		nonResidentRegisterRandomize();
+		residentRegisterRandomize();
 	}
-
-	async function getAuthenticationStartServer(authenticationStartClient) {
-	    const httpResponse = await fetch('/api/v1/authenticate/start', {
-	        method: 'POST',
-	        headers: {
-	            'Content-Type': 'application/json; charset=UTF-8',
-	            'Accept':       'application/json; charset=UTF-8'
-	        },
-	        body: JSON.stringify(authenticationStartClient)
-	    });
-	    if (!httpResponse.ok) throw new Error(`Authentication request failed: ${httpResponse.statusText}`);
-	    const authenticationStartServer = await httpResponse.json();
-	    console.log('authenticationStartServer:', JSON.stringify(authenticationStartServer));
-	    return await authenticationStartServer;
-	}
-
-	function toPublicKeyCredentialRequestOptions(publicKeyCredentialRequestOptions) {
-//		webauthnJson.get({ publicKey: request.publicKeyCredentialRequestOptions });
-//	    publicKeyCredentialRequestOptions.user.id   = base64urlToUint8Array(publicKeyCredentialRequestOptions.user.id);
-	    publicKeyCredentialRequestOptions.challenge = base64urlToUint8Array(publicKeyCredentialRequestOptions.challenge);
-	    if (Array.isArray(publicKeyCredentialRequestOptions.allowCredentials)) {
-	        publicKeyCredentialRequestOptions.allowCredentials.forEach(allowCredential => {
-	            console.log('allowCredential:', JSON.stringify(allowCredential));
-	            allowCredential.id = base64urlToUint8Array(allowCredential.id);
-	        });
-	    }
-	    const requestOptions = { publicKey: publicKeyCredentialRequestOptions };
-	    console.log('requestOptions:', JSON.stringify(requestOptions));
-	    return requestOptions;
-	}
-
-	async function navigatorCredentialsGet(publicKeyCredentialRequestOptions) {
-	    const publicKeyCredential = await navigator.credentials.get(publicKeyCredentialRequestOptions);
-	    if (!publicKeyCredential) throw new Error('Failed to get credential.');
-	    console.log('publicKeyCredential:', JSON.stringify(publicKeyCredential));
-	    return publicKeyCredential;
-	}
-
-	function fromPublicKeyCredential(sessionToken, publicKeyCredential) {
-	    const authenticationFinishClient  = {
-	        sessionToken: sessionToken,
-	        publicKeyCredentialEncoded: JSON.stringify(publicKeyCredential),
-	    };
-	    console.log('authenticationFinishClient:', JSON.stringify(authenticationFinishClient));
-	    return authenticationFinishClient;
-	}
-
-	async function getAuthenticationFinishServer(authenticationFinishClient) {
-	    const httpResponse = await fetch('/api/v1/authenticate/finish', {
-	        method: 'POST',
-	        headers: {
-	            'Content-Type': 'application/json; charset=UTF-8',
-	            'Accept':       'application/json; charset=UTF-8'
-	        },
-	        body: JSON.stringify(authenticationFinishClient)
-	    });
-
-	    if (!httpResponse.ok) throw new Error(`Request failed: ${httpResponse.statusText}`);
-	    const authenticationFinishServer = await httpResponse.json();
-	    console.log('authenticationFinishServer:', JSON.stringify(authenticationFinishServer));
-	    return authenticationFinishServer;
-	}
-
-	async function authenticate(authenticationStartClient) {
-	    try {
-	        const authenticationStartServer         = await getAuthenticationStartServer(authenticationStartClient);
-	        const publicKeyCredentialRequestOptions = toPublicKeyCredentialRequestOptions(authenticationStartServer.publicKeyCredentialRequestOptions);
-	        const publicKeyCredential               = await navigatorCredentialsGet(publicKeyCredentialRequestOptions);
-	        const authenticationFinishClient        = fromPublicKeyCredential(authenticationStartServer.sessionToken, publicKeyCredential);
-	        const authenticationFinishServer        = await getAuthenticationFinishServer(authenticationFinishClient);
-	    } catch (error) {
-	        console.error('Authentication Error:', error);
-	        alert(error);
-	    }
-	}
-
-	function nonResidentAuthenticate(event) {
-      const username                  = document.getElementById('nonResidentAuthenticateUsername').value;
-      const authenticationStartClient = getAuthenticationStartClient(username)
-      authenticate(authenticationStartClient);
-    }
-
-    function residentAuthenticate(event) {
-      const authenticationStartClient = getAuthenticationStartClient(null)
-      authenticate(authenticationStartClient);
-    }
-
-	// REGISTER
-	function getRegistrationStartClient(username, displayName, credentialNickname, residentKeyRequirement) {
-	    const registrationStartClient = { username, displayName, credentialNickname, residentKeyRequirement };
-	    console.log('registrationStartClient:', JSON.stringify(registrationStartClient));
-	    return registrationStartClient;
-	}
-
-	async function getRegistrationStartServer(registrationStartClient) {
-	    const httpResponse = await fetch('/api/v1/register/start', {
-	        method: 'POST',
-	        headers: {
-	            'Content-Type': 'application/json; charset=UTF-8',
-	            'Accept':       'application/json; charset=UTF-8'
-	        },
-	        body: JSON.stringify(registrationStartClient)
-	    });
-	    if (!httpResponse.ok) throw new Error(`Registration request failed: ${httpResponse.statusText}`);
-	    const registrationStartServer = await httpResponse.json();
-	    console.log('registrationStartServer:', JSON.stringify(registrationStartServer));
-	    return await registrationStartServer;
-	}
-
-	function toPublicKeyCredentialCreationOptions(publicKeyCredentialCreationOptions) {
-	    publicKeyCredentialCreationOptions.user.id   = base64urlToUint8Array(publicKeyCredentialCreationOptions.user.id);
-	    publicKeyCredentialCreationOptions.challenge = base64urlToUint8Array(publicKeyCredentialCreationOptions.challenge);
-	    if (Array.isArray(publicKeyCredentialCreationOptions.excludeCredentials)) {
-	        publicKeyCredentialCreationOptions.excludeCredentials.forEach(excludeCredential => {
-	            console.log('excludeCredential:', JSON.stringify(excludeCredential));
-	            excludeCredential.id = base64urlToUint8Array(excludeCredential.id);
-	        });
-	    }
-	    const creationOptions = { publicKey: publicKeyCredentialCreationOptions };
-	    console.log('creationOptions:', JSON.stringify(creationOptions));
-	    return creationOptions;
-	}
-
-	async function navigatorCredentialsCreate(publicKeyCredentialCreationOptions) {
-	    const publicKeyCredential = await navigator.credentials.create(publicKeyCredentialCreationOptions);
-	    if (!publicKeyCredential) throw new Error('Failed to create credential.');
-	    console.log('publicKeyCredential:', JSON.stringify(publicKeyCredential));
-	    return publicKeyCredential;
-	}
-
-	function fromPublicKeyCredential(sessionToken, publicKeyCredential) {
-	    const registrationFinishClient  = {
-	        sessionToken: sessionToken,
-	        publicKeyCredentialEncoded: JSON.stringify(publicKeyCredential),
-	    };
-	    console.log('registrationFinishClient:', JSON.stringify(registrationFinishClient));
-	    return registrationFinishClient;
-	}
-
-	async function getRegistrationFinishServer(registrationFinishClient) {
-	    const httpResponse = await fetch('/api/v1/register/finish', {
-	        method: 'POST',
-	        headers: {
-	            'Content-Type': 'application/json; charset=UTF-8',
-	            'Accept':       'application/json; charset=UTF-8'
-	        },
-	        body: JSON.stringify(registrationFinishClient)
-	    });
-
-	    if (!httpResponse.ok) throw new Error(`Request failed: ${httpResponse.statusText}`);
-	    const registrationFinishServer = await httpResponse.json();
-	    console.log('registrationFinishServer:', JSON.stringify(registrationFinishServer));
-	    return registrationFinishServer;
-	}
-
-	async function register(registrationStartClient) {
-	    try {
-	        const registrationStartServer            = await getRegistrationStartServer(registrationStartClient);
-	        const publicKeyCredentialCreationOptions = toPublicKeyCredentialCreationOptions(registrationStartServer.publicKeyCredentialCreationOptions);
-	        const publicKeyCredential                = await navigatorCredentialsCreate(publicKeyCredentialCreationOptions);
-	        const registrationFinishClient           = fromPublicKeyCredential(registrationStartServer.sessionToken, publicKeyCredential);
-	        const registrationFinishServer           = await getRegistrationFinishServer(registrationFinishClient);
-	    } catch (error) {
-	        console.error('Registration Error:', error);
-	        alert(error);
-	    }
-	}
-
+	document.addEventListener("DOMContentLoaded", registerRandomize);
 	function nonResidentRegister(event) {
-      const username                = document.getElementById('nonResidentRegisterUsername').value;
-      const displayName             = document.getElementById('nonResidentRegisterDisplayName').value;
-      const credentialNickname      = document.getElementById('nonResidentRegisterCredentialNickname').value;
-      const registrationStartClient = getRegistrationStartClient(username, displayName, credentialNickname, 'discouraged')
-      register(registrationStartClient);
-    }
-
-    function residentRegister(event) {
-      const username                = document.getElementById('residentRegisterUsername').value;
-      const displayName             = document.getElementById('residentRegisterDisplayName').value;
-      const credentialNickname      = document.getElementById('residentRegisterCredentialNickname').value;
-      const registrationStartClient = getRegistrationStartClient(username, displayName, credentialNickname, 'required')
-      register(registrationStartClient);
-    }
-
-    const firstNames = [
-    	  "Aaron", "Adam", "Adrian", "Aiden", "Alexander", "Andrew", "Angel", "Anthony", "Asher", "Austin", "Axel",
-    	  "Beau", "Benjamin", "Bennett", "Brooks", "Caleb", "Cameron", "Carlie", "Carley", "Carson", "Carter", "Charles",
-    	  "Christian", "Christopher", "Colton", "Connor", "Cooper", "Damian", "Daniel", "David", "Declan", "Dylan",
-    	  "Easton", "Eli", "Elijah", "Elias", "Elvis", "Emmett", "Ethan", "Everett", "Ezra", "Gabriel", "Grace",
-    	  "Grayson", "Greyson", "Henry", "Hudson", "Hunter", "Ian", "Isaac", "Isaiah", "Jack", "Jackson", "Jacob",
-    	  "Jace", "James", "Jameson", "Jayden", "Jeremiah", "John", "Jonathan", "Jordan", "Joseph", "Josiah",
-    	  "Joshua", "Julian", "Justin", "Kai", "Kayden", "Landon", "Leo", "Leonardo", "Levi", "Liam", "Lincoln",
-    	  "Logan", "Lucas", "Luke", "Mary", "Mateo", "Matthew", "Maverick", "Michael", "Micah", "Miles", "Nathan",
-    	  "Nicholas", "Nolan", "Noah", "Owen", "Parker", "Robert", "Roman", "Ryan", "Samuel", "Santiago",
-    	  "Sebastian", "Silas", "Theodore", "Thomas", "Waylon", "Wesley", "Weston", "William", "Wyatt", "Xavier"
-    	];
-    const lastNames = [
-    	  "Adams", "Alvarez", "Allen", "Anderson", "Bailey", "Baker", "Barnes", "Bell", "Bennett", "Brown",
-    	  "Butler", "Campbell", "Carter", "Castillo", "Chavez", "Clark", "Coleman", "Collins", "Cook", "Cooper",
-    	  "Cox", "Cranford", "Cruz", "Davis", "Diaz", "Edwards", "Evans", "Flores", "Foster", "Garcia", "Gomez",
-    	  "Gonzalez", "Gray", "Green", "Gutierrez", "Hall", "Harris", "Henderson", "Hernandez", "Hill", "Howard",
-    	  "Hughes", "Jackson", "James", "Jenkins", "Jimenez", "Johnson", "Jones", "Kelly", "Kim", "King",
-    	  "Lee", "Lewis", "Long", "Lopez", "Martinez", "Martin", "Martinez", "Mendoza", "Miller", "Mitchell",
-    	  "Moore", "Morales", "Morgan", "Morris", "Murphy", "Myers", "Nelson", "Nguyen", "Ortiz", "Parker",
-    	  "Patel", "Perez", "Perry", "Peterson", "Phillips", "Powell", "Price", "Ramirez", "Ramos", "Reed",
-    	  "Reyes", "Richardson", "Rivera", "Roberts", "Robinson", "Rodriguez", "Rogers", "Ross", "Russell", "Ruiz",
-    	  "Sanchez", "Sanders", "Scott", "Smith", "Stewart", "Sullivan", "Taylor", "Thomas", "Thompson", "Torres",
-    	  "Turner", "Walker", "Ward", "Watson", "White", "Williams", "Wilson", "Wood", "Wright", "Young"
-    	];
-    const credentialNames = [
-    	  "Access", "Admin", "Alternate", "Authenticator", "Auth", "Authn", "Backup", "Biometric", 
-    	  "Bluetooth", "Browser", "Cloud", "Code", "Compliance", "Contactless", "CrossPlatform", 
-    	  "Credential", "Custom", "Device", "DeviceLock", "Digital", "Face", "FIDO", 
-    	  "Fast", "Fingerprint", "Hardware", "Identity", "Local", "Login", "Main", "Manager", 
-    	  "Master", "Mobile", "Network", "NFC", "Passkey", "Passwordless", "Personal", "Persistent", 
-    	  "Physical", "PlatformKey", "Primary", "ProtectedKey", "Recovery", "ResidentKey", 
-    	  "SecondFactor", "Secure", "SecureCredential", "Secure", "Security", "Service", 
-    	  "Session", "SingleSignOn", "SmartCard", "SSO", "Temporary", "Temp", "Touch", 
-    	  "Transient", "Trusted", "TrustedAuthenticator", "USB", "User", "Verification", 
-    	  "Virtual", "Voice", "Web", "WebAuthnKey", "Work"
-    	];
-    const credentialTypes = [
-    	  "Card", "Certificate", "Credential", "Cryptography", "Device", "Gesture", "Hardware",
-    	  "Key", "Key Pair", "Keychain", "Lock", "Mechanism", "Module", "Node", "Object", "Passkey",
-    	  "Protocol", "PublicKey", "Smartcard", "SSO", "Token", "Tool", "Trust", "Wallet"
-    	];
-
-    function randomUsername() {
-        return `user${1000000 + Math.floor(Math.random() * 1000000)}`;
-    }
-    function randomDisplayName() {
-        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-        const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-        return firstName + ' ' + lastName;
-    }
-    function randomCredentialNickname() {
-        const credentialName = credentialNames[Math.floor(Math.random() * credentialNames.length)];
-        const credentialType = credentialTypes[Math.floor(Math.random() * credentialTypes.length)];
-        return credentialName + ' ' + credentialType;
-    }
-
-    function nonResidentRegisterRandomize() {
-      document.getElementById('nonResidentRegisterUsername').value = randomUsername();
-      document.getElementById('nonResidentRegisterDisplayName').value = randomDisplayName();
-      document.getElementById('nonResidentRegisterCredentialNickname').value = randomCredentialNickname();
-      document.getElementById('nonResidentAuthenticateUsername').value = document.getElementById('nonResidentRegisterUsername').value;
-    }
-    function residentRegisterRandomize() {
-      document.getElementById('residentRegisterUsername').value = randomUsername();
-      document.getElementById('residentRegisterDisplayName').value = randomDisplayName();
-      document.getElementById('residentRegisterCredentialNickname').value = randomCredentialNickname();
-    }
-    function fingerprintVisitor() {
-        FingerprintJS.load().then(fp => {
-            fp.get().then(result => {
-                const fingerprintData = {
-                    visitorId: result.visitorId,
-                    userAgent: navigator.userAgent,
-                    screenResolution: {
-                        width: window.screen.width,
-                        height: window.screen.height,
-                    },
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    language: navigator.language || navigator.userLanguage,
-                    platform: navigator.platform,
-                    plugins: Array.from(navigator.plugins).map(plugin => plugin.name),
-                    hardwareConcurrency: navigator.hardwareConcurrency || null,
-                    cookieEnabled: navigator.cookieEnabled,
-                    touchSupport: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
-                    webGLVendor: (() => {
-                        const canvas = document.createElement('canvas');
-                        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                        if (!gl) return null;
-                        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                        return debugInfo ? gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) : null;
-                    })(),
-                    components: result.components,
-                };
-                console.log('Fingerprint Data:', JSON.stringify(fingerprintData));
-            });
-        });
-    };
-    function registerRandomize() {
-    	nonResidentRegisterRandomize();
-    	residentRegisterRandomize();
-    	fingerprintVisitor();
-    }
-
-    document.addEventListener("DOMContentLoaded", registerRandomize);
-//  window.onload = registerRandomize;
-  </script>
+		const username = document.getElementById('nonResidentRegisterUsername').value;
+		const displayName = document.getElementById('nonResidentRegisterDisplayName').value;
+		const credentialNickname = document.getElementById('nonResidentRegisterCredentialNickname').value;
+		const registrationStartClient = getRegistrationStartClient(username, displayName, credentialNickname, 'discouraged')
+		register(registrationStartClient);
+	}
+	function residentRegister(event) {
+		const username = document.getElementById('residentRegisterUsername').value;
+		const displayName = document.getElementById('residentRegisterDisplayName').value;
+		const credentialNickname = document.getElementById('residentRegisterCredentialNickname').value;
+		const registrationStartClient = getRegistrationStartClient(username,displayName, credentialNickname, 'required')
+		register(registrationStartClient);
+	}
+	function nonResidentAuthenticate(event) {
+		const username = document.getElementById('nonResidentAuthenticateUsername').value;
+		const authenticationStartClient = getAuthenticationStartClient(username)
+		authenticate(authenticationStartClient);
+	}
+	function residentAuthenticate(event) {
+		const authenticationStartClient = getAuthenticationStartClient(null)
+		authenticate(authenticationStartClient);
+	}
+</script>
 
 <div class="container mt-5">
     <!-- Header Row -->

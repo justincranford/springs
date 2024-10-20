@@ -7,8 +7,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -47,10 +49,43 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings({"nls", "static-method"})
 public class SpringsServiceWebauthnConfiguration {
 	@Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	@Order(1)
+	public SecurityFilterChain securityFilterChainStaticResources(HttpSecurity http) throws Exception {
+	    http.securityMatcher("/static/**")
+	    	.authorizeHttpRequests(authorizeHttpRequestsCustomizer -> authorizeHttpRequestsCustomizer
+	    		.requestMatchers("/static/**").permitAll()
+	            .anyRequest().authenticated()
+	        )
+	    	.csrf(csrf -> csrf.disable());
+	    return http.build();
+	}
+
+    @Bean
+	@Order(3)
+    public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/admin/**")
+            .authorizeHttpRequests(authorizeHttpRequestsCustomizer -> authorizeHttpRequestsCustomizer
+        		.anyRequest()
+        		.hasRole("ADMIN")
+    		)
+            .formLogin(Customizer.withDefaults());
+        return http.build();
+    }
+
+    @Bean
+	@Order(4)
+    public SecurityFilterChain userSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/user/**")
+            .authorizeHttpRequests(authorizeHttpRequestsCustomizer -> authorizeHttpRequestsCustomizer.anyRequest().authenticated())
+            .httpBasic(Customizer.withDefaults());
+        return http.build();
+    }
+
+    @Bean
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-        	.authorizeHttpRequests(authz -> authz.anyRequest().permitAll())
-        	.csrf(csrf -> csrf.disable());
+            .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
+            .csrf(csrf -> csrf.disable());
         return http.build();
     }
 
