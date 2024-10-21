@@ -27,7 +27,6 @@ import com.github.justincranford.springs.service.webauthn.credential.repository.
 import com.github.justincranford.springs.service.webauthn.credential.repository.CredentialRepositoryOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.UserIdentityOrm;
 import com.github.justincranford.springs.service.webauthn.credential.repository.UserIdentityRepositoryOrm;
-import com.github.justincranford.springs.service.webauthn.register.repository.RegistrationOrm;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
@@ -47,7 +46,6 @@ import com.yubico.webauthn.exception.RegistrationFailedException;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
