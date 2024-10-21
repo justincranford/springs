@@ -1,6 +1,8 @@
 package com.github.justincranford.springs.util.certs.server;
 
 import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
@@ -13,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
@@ -84,47 +89,87 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 			final String httpsClientCertPem             = PemUtil.toPem(httpsClientCert);
 			final String httpsClientPrivateKeyPem       = PemUtil.toPem(httpsClientKeyPair.getPrivate());
 
-			log.info("HTTPS Server Root CA:\n{}{}", httpsServerRootCaCertPem, log.isTraceEnabled() ? httpsServerRootCaPrivateKeyPem : "");
-			log.info("HTTPS Server:\n{}{}",         httpsServerCertPem,       log.isTraceEnabled() ? httpsServerPrivateKeyPem       : "");
-			log.info("HTTPS Client Root CA:\n{}{}", httpsClientRootCaCertPem, log.isTraceEnabled() ? httpsClientRootCaPrivateKeyPem : "");
-			log.info("HTTPS Client:\n{}{}",         httpsClientCertPem,       log.isTraceEnabled() ? httpsClientPrivateKeyPem       : "");
+	        final SecretKey preSharedKey    = generatePreSharedKey("HmacSHA512", 100);
+			final String    preSharedKeyPem = PemUtil.toPem(preSharedKey);
 
-	        prependPropertySource(readWritePropertySources, httpsServerRootCaCertPem, httpsServerCertPem,
-					httpsServerPrivateKeyPem, httpsClientRootCaCertPem, httpsClientCertPem, httpsClientPrivateKeyPem);
+			log.info("HTTPS Server Root CA:\n{}{}", httpsServerRootCaCertPem, log.isTraceEnabled() ? httpsServerRootCaPrivateKeyPem : "REDACTED");
+			log.info("HTTPS Server:\n{}{}",         httpsServerCertPem,       log.isTraceEnabled() ? httpsServerPrivateKeyPem       : "REDACTED");
+			log.info("HTTPS Client Root CA:\n{}{}", httpsClientRootCaCertPem, log.isTraceEnabled() ? httpsClientRootCaPrivateKeyPem : "REDACTED");
+			log.info("HTTPS Client:\n{}{}",         httpsClientCertPem,       log.isTraceEnabled() ? httpsClientPrivateKeyPem       : "REDACTED");
+			log.info("HTTPS PSK:\n{}   ",                                     log.isTraceEnabled() ? preSharedKeyPem                : "REDACTED");
+
+	        prependPropertySource(readWritePropertySources,
+        		httpsServerRootCaCertPem, httpsServerCertPem, httpsServerPrivateKeyPem,
+        		httpsClientRootCaCertPem, httpsClientCertPem, httpsClientPrivateKeyPem,
+        		preSharedKeyPem
+    		);
 		} catch(Exception e) {
 			throw new RuntimeException(e);
 		}
     }
 
-	private void prependPropertySource(
+    private void prependPropertySource(
 		final MutablePropertySources mutablePropertySources,
 		final String httpsServerRootCaCertPem, final String httpsServerCertPem, final String httpsServerPrivateKeyPem,
-		final String httpsClientRootCaCertPem, final String httpsClientCertPem, final String httpsClientPrivateKeyPem
+		final String httpsClientRootCaCertPem, final String httpsClientCertPem, final String httpsClientPrivateKeyPem,
+		final String httpsClientPskPem
 	) {
 		// properties map containing 3 SSL bundles and helper properties
 		final Map<String, Object> tlsProperties = new LinkedHashMap<>();
 
 		// Client Bundle for performing HTTP/TLS Server Authentication
-		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_STLS + ".truststore.certificate", httpsServerRootCaCertPem);
+		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_STLS_CERT + ".truststore.certificate", httpsServerRootCaCertPem);
 
 		// Client Bundle for performing HTTP/TLS Mutual Authentication
-		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_MTLS + ".keystore.certificate",   httpsClientCertPem);
-		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_MTLS + ".keystore.privateKey",    httpsClientPrivateKeyPem);
-		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_MTLS + ".truststore.certificate", httpsServerRootCaCertPem);
+		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_MTLS_CERT + ".keystore.certificate",   httpsClientCertPem);
+		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_MTLS_CERT + ".keystore.privateKey",    httpsClientPrivateKeyPem);
+		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_MTLS_CERT + ".truststore.certificate", httpsServerRootCaCertPem);
 
 		// Server Bundle for listening to HTTP/TLS client requests
-		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS + ".keystore.certificate",   httpsServerCertPem);
-		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS + ".keystore.privateKey",    httpsServerPrivateKeyPem);
-		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS + ".truststore.certificate", httpsClientRootCaCertPem);
+		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS_CERT + ".keystore.certificate",    httpsServerCertPem);
+		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS_CERT + ".keystore.privateKey",     httpsServerPrivateKeyPem);
+		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS_CERT + ".truststore.certificate",  httpsClientRootCaCertPem);
+
+		// Client Bundle for performing HTTP/TLS PSK Authentication
+//		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_TLS_PSK  + ".keystore.certificate",    httpsClientPskPem);
+
+		// Server Bundle for listening to HTTP/TLS PSK requests
+//		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS_PSK  + ".truststore.certificate",  httpsClientPskPem);
 
 		// Server HTTP/TLS configuration to enable TLS, use the server bundle, and accept clients performing sTLS or mTLS
 		tlsProperties.put("server.ssl.enabled",          Boolean.TRUE);
 		tlsProperties.put("server.ssl.protocol",         "TLSv1.3");
 		tlsProperties.put("server.ssl.enabledProtocols", "TLSv1.3,TLSv1.2");
-		tlsProperties.put("server.ssl.bundle",           SslBundleNames.SERVER_TLS);
+		tlsProperties.put("server.ssl.bundle",           SslBundleNames.SERVER_TLS_CERT);
 		tlsProperties.put("server.ssl.clientAuth",       ClientAuth.WANT.name());
 
 		mutablePropertySources.addFirst(new OriginTrackedMapPropertySource("tomcat-tls", tlsProperties));
+	}
+//
+//    public static void main(String[] args) throws Exception {
+//
+//        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+//        keyStore.load(null, null);  // Initialize keystore
+//
+//        // Store the AES key in the keystore with an alias and a password
+//        KeyStore.ProtectionParameter protectionParam = 
+//                new KeyStore.PasswordProtection("keyPassword".toCharArray());
+//        KeyStore.SecretKeyEntry secretKeyEntry = 
+//                new KeyStore.SecretKeyEntry(secretKey);
+//        keyStore.setEntry("tlspsk", secretKeyEntry, protectionParam);
+//
+//        // Save the keystore to a file
+//        try (FileOutputStream fos = new FileOutputStream("keystore.p12")) {
+//            keyStore.store(fos, "keystorePassword".toCharArray());
+//        }
+//
+//        System.out.println("Keystore created and saved as keystore.p12");
+//    }
+
+	private static SecretKey generatePreSharedKey(final String algorithm, final int keyLengthBytes) throws NoSuchAlgorithmException {
+		final KeyGenerator keyGen = KeyGenerator.getInstance(algorithm);
+        keyGen.init(keyLengthBytes * 8);
+        return keyGen.generateKey();
 	}
 
     private static X509Certificate httpsServerRootCaCert(final KeyPair serverCaKeyPair) throws Exception {
@@ -187,13 +232,18 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 		public static final String ALGORITHM      = "server.ssl.auto-config.algorithm";
 		public static final String SERVER_ADDRESS = "server.address";
 		public static final String CLIENT_EMAIL   = "client.ssl.auto-config.email";
-		public static final List<String> NAMES = List.of(ENABLED, ALGORITHM, SERVER_ADDRESS, CLIENT_EMAIL);
+		public static final String CLIENT_PSK     = "client.ssl.auto-config.psk";
+		public static final String SERVER_PSK     = "server.ssl.auto-config.psk";
+		public static final List<String> NAMES = List.of(ENABLED, ALGORITHM, SERVER_ADDRESS, CLIENT_EMAIL, CLIENT_PSK, SERVER_PSK);
 	}
 
     public static class SslBundleNames {
-	    public static final String CLIENT_STLS = "myclient-stls";
-	    public static final String CLIENT_MTLS = "myclient-mtls";
-	    public static final String SERVER_TLS  = "myserver";
+	    public static final String CLIENT_STLS_CERT = "myclient-server-authentication-tls-cert";
+	    public static final String CLIENT_MTLS_CERT = "myclient-mutual-authentication-tls-cert";
+	    public static final String SERVER_TLS_CERT  = "myserver-tls-cert";
+
+	    public static final String CLIENT_TLS_PSK   = "myclient-tls-psk";
+	    public static final String SERVER_TLS_PSK   = "myserver-tls-psk";
 	}
 
 }

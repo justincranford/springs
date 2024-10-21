@@ -6,6 +6,8 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
+import javax.crypto.SecretKey;
+
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 
 import com.github.justincranford.springs.util.basic.Base64Util;
@@ -32,6 +34,10 @@ public class PemUtil {
 			privateKey.getAlgorithm().toUpperCase() + " PRIVATE KEY", // RSA, EC, ED, DSA, etc
 			PrivateKeyInfo.getInstance(privateKey.getEncoded()).parsePrivateKey().toASN1Primitive().getEncoded()
 		);
+	}
+
+	public static String toPem(final SecretKey key) {
+		return toPem("SECRET KEY", key.getEncoded()); // AES, 3DES
 	}
 
 	private static String toPem(final String type, final byte[] payload) {

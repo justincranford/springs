@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import com.github.justincranford.springs.util.certs.server.TomcatTlsInitializer;
 
 @Configuration
-@SuppressWarnings({"static-method"})
+@SuppressWarnings({"nls", "static-method"})
 public class SpringsUtilHttpsClientsConfiguration {
 	/**
 	 * @param restTemplateBuilder From Spring auto-configuration
@@ -25,7 +25,7 @@ public class SpringsUtilHttpsClientsConfiguration {
 	@Bean
 	public RestTemplate stlsRestTemplate(final RestTemplateBuilder restTemplateBuilder, final SslBundles sslBundles) {
 		// lookup client sTLS bundle registered by TomcatTlsInitializer#prependPropertySource
-        final SslBundle clientSslBundle = sslBundles.getBundle(TomcatTlsInitializer.SslBundleNames.CLIENT_STLS);
+        final SslBundle clientSslBundle = sslBundles.getBundle(TomcatTlsInitializer.SslBundleNames.CLIENT_STLS_CERT);
 		return restTemplateBuilder.setSslBundle(clientSslBundle).build();
 	}
 
@@ -40,7 +40,7 @@ public class SpringsUtilHttpsClientsConfiguration {
 	@Bean
 	public RestTemplate mtlsRestTemplate(final RestTemplateBuilder restTemplateBuilder, final SslBundles sslBundles) {
 		// lookup client mTLS bundle registered by TomcatTlsInitializer#prependPropertySource
-        final SslBundle clientSslBundle = sslBundles.getBundle(TomcatTlsInitializer.SslBundleNames.CLIENT_MTLS);
+        final SslBundle clientSslBundle = sslBundles.getBundle(TomcatTlsInitializer.SslBundleNames.CLIENT_MTLS_CERT);
 		return restTemplateBuilder.setSslBundle(clientSslBundle).build();
 	}
 }
