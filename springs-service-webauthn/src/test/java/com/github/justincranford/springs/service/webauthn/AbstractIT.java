@@ -16,7 +16,7 @@ import com.github.justincranford.springs.service.http.client.config.SpringsUtilH
 import com.github.justincranford.springs.service.http.server.HelloWorldController;
 import com.github.justincranford.springs.service.webauthn.config.SpringsServiceWebauthnConfiguration;
 import com.github.justincranford.springs.util.certs.client.config.SpringsUtilHttpsClientsConfiguration;
-import com.github.justincranford.springs.util.certs.server.TomcatTlsInitializer;
+import com.github.justincranford.springs.util.certs.server.TlsInitializer;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 	}
 )
 @ContextConfiguration(
-	initializers={TomcatTlsInitializer.class}
+	initializers={TlsInitializer.class}
 )
 @Import({HelloWorldController.class})
 @Getter

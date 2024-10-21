@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 import com.github.justincranford.springs.service.webauthn.config.SpringsServiceWebauthnConfiguration;
-import com.github.justincranford.springs.util.certs.server.TomcatTlsInitializer;
+import com.github.justincranford.springs.util.certs.server.TlsInitializer;
 
 @SpringBootApplication
 @Import({SpringsServiceWebauthnConfiguration.class})
@@ -13,7 +13,7 @@ import com.github.justincranford.springs.util.certs.server.TomcatTlsInitializer;
 public class SpringServiceWebauthnMain {
 	public static void main(final String[] args) {
 		final SpringApplication springApplication = new SpringApplication(SpringServiceWebauthnMain.class);
-		springApplication.addInitializers(new TomcatTlsInitializer());
+		springApplication.addInitializers(new TlsInitializer());
 		springApplication.run(args);
 	}
 }

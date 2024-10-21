@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import com.github.justincranford.springs.service.http.client.config.SpringsUtilHttpClientConfiguration;
 import com.github.justincranford.springs.util.certs.client.config.SpringsUtilHttpsClientsConfiguration;
 import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
-import com.github.justincranford.springs.util.certs.server.TomcatTlsInitializer;
+import com.github.justincranford.springs.util.certs.server.TlsInitializer;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -33,7 +33,7 @@ import lombok.experimental.Accessors;
 )
 // TODO Fix configuration so this isn't needed
 @ContextConfiguration(
-	initializers={TomcatTlsInitializer.class}
+	initializers={TlsInitializer.class}
 )
 @Getter
 @Accessors(fluent = true)
@@ -43,7 +43,7 @@ public class AbstractIT {
 	@LocalServerPort
 	private long localServerPort;
 
-	@Value("${" + TomcatTlsInitializer.SslAutoConfigPropertyNames.ENABLED + ":false}")
+	@Value("${" + TlsInitializer.SslAutoConfigPropertyNames.ENABLED + ":false}")
 	private boolean sslAutoConfigEnabled;
 
 	@Value("${server.address}")

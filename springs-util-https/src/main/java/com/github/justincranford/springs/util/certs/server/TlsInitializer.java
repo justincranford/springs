@@ -1,19 +1,14 @@
 package com.github.justincranford.springs.util.certs.server;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyPair;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -48,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings({"nls", "static-method"})
-public class TomcatTlsInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class TlsInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
     @Override
     public void initialize(final ConfigurableApplicationContext configurableApplicationContext) {
 		try {
@@ -187,7 +182,7 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 		tlsProperties.put("server.ssl.bundle",           SslBundleNames.SERVER_TLS_CERT);
 		tlsProperties.put("server.ssl.clientAuth",       ClientAuth.WANT.name());
 
-		mutablePropertySources.addFirst(new OriginTrackedMapPropertySource("tomcat-tls", tlsProperties));
+		mutablePropertySources.addFirst(new OriginTrackedMapPropertySource("auto-config-tls", tlsProperties));
 	}
 //
 	private static SecretKey generatePreSharedKey(final String algorithm, final int keyLengthBytes) throws NoSuchAlgorithmException {
