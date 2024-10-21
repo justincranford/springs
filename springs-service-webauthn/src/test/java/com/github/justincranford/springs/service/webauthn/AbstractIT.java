@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -43,6 +44,9 @@ public class AbstractIT {
 
 	@Value("${server.address}")
 	private String serverAddress;
+
+	@Autowired
+	private WebServerApplicationContext webServerApplicationContext;
 
 	/**
 	 * @see SpringsUtilHttpClientConfiguration#httpRestTemplate
