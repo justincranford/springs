@@ -1,10 +1,19 @@
 package com.github.justincranford.springs.util.certs.server;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.KeyPair;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -89,30 +98,57 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 			final String httpsClientCertPem             = PemUtil.toPem(httpsClientCert);
 			final String httpsClientPrivateKeyPem       = PemUtil.toPem(httpsClientKeyPair.getPrivate());
 
-	        final SecretKey preSharedKey    = generatePreSharedKey("HmacSHA512", 100);
-			final String    preSharedKeyPem = PemUtil.toPem(preSharedKey);
+			final String    httpsClientServerPreSharedKeyStoreType     = "PKCS12";
+			final String    httpsClientServerPreSharedKeyStorePassword = "pskKeyStorePwd";
+			final String    httpsClientServerPreSharedKeyAlias         = "pskAlias";
+			final String    httpsClientServerPreSharedKeyPassword      = "pskKeyPwd";
+	        final SecretKey httpsClientServerPreSharedKey              = generatePreSharedKey("HmacSHA512", 100);
+			final String    httpsClientServerPreSharedKeyStoreFile     = writePskKeyStore(
+				httpsClientServerPreSharedKeyStoreType, httpsClientServerPreSharedKeyStorePassword,
+				httpsClientServerPreSharedKeyAlias, httpsClientServerPreSharedKeyPassword, httpsClientServerPreSharedKey
+			);
+			final String    httpsClientServerPreSharedKeyPem           = PemUtil.toPem(httpsClientServerPreSharedKey);
 
-			log.info("HTTPS Server Root CA:\n{}{}", httpsServerRootCaCertPem, log.isTraceEnabled() ? httpsServerRootCaPrivateKeyPem : "REDACTED");
-			log.info("HTTPS Server:\n{}{}",         httpsServerCertPem,       log.isTraceEnabled() ? httpsServerPrivateKeyPem       : "REDACTED");
-			log.info("HTTPS Client Root CA:\n{}{}", httpsClientRootCaCertPem, log.isTraceEnabled() ? httpsClientRootCaPrivateKeyPem : "REDACTED");
-			log.info("HTTPS Client:\n{}{}",         httpsClientCertPem,       log.isTraceEnabled() ? httpsClientPrivateKeyPem       : "REDACTED");
-			log.info("HTTPS PSK:\n{}   ",                                     log.isTraceEnabled() ? preSharedKeyPem                : "REDACTED");
+			log.info("HTTPS Server Root CA:\n{}{}", httpsServerRootCaCertPem, log.isTraceEnabled() ? httpsServerRootCaPrivateKeyPem   : "REDACTED");
+			log.info("HTTPS Server:\n{}{}",         httpsServerCertPem,       log.isTraceEnabled() ? httpsServerPrivateKeyPem         : "REDACTED");
+			log.info("HTTPS Client Root CA:\n{}{}", httpsClientRootCaCertPem, log.isTraceEnabled() ? httpsClientRootCaPrivateKeyPem   : "REDACTED");
+			log.info("HTTPS Client:\n{}{}",         httpsClientCertPem,       log.isTraceEnabled() ? httpsClientPrivateKeyPem         : "REDACTED");
+			log.info("HTTPS PSK:\n{}   ",                                     log.isTraceEnabled() ? httpsClientServerPreSharedKeyPem : "REDACTED");
 
 	        prependPropertySource(readWritePropertySources,
         		httpsServerRootCaCertPem, httpsServerCertPem, httpsServerPrivateKeyPem,
         		httpsClientRootCaCertPem, httpsClientCertPem, httpsClientPrivateKeyPem,
-        		preSharedKeyPem
+        		httpsClientServerPreSharedKeyStoreFile, httpsClientServerPreSharedKeyStoreType, httpsClientServerPreSharedKeyStorePassword,
+        		httpsClientServerPreSharedKeyAlias, httpsClientServerPreSharedKeyPassword
     		);
 		} catch(Exception e) {
 			throw new RuntimeException(e);
 		}
     }
 
+	private String writePskKeyStore(
+		final String httpsClientServerPreSharedKeyStoreType, final String keyStorePassword,
+		final String alias, final String keyPassword, final SecretKey secretKey
+	) throws Exception {
+		final KeyStore keyStore = KeyStore.getInstance(httpsClientServerPreSharedKeyStoreType);
+		keyStore.load(null, null);
+		keyStore.setEntry(alias, new KeyStore.SecretKeyEntry(secretKey), new KeyStore.PasswordProtection(keyPassword.toCharArray()));
+		final Path path = Files.createTempFile("psk-", ".p12");
+		try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(path.toFile()))) {
+			keyStore.store(bos, keyStorePassword.toCharArray());
+		}
+		return path.toAbsolutePath().toString();
+	}
+
     private void prependPropertySource(
 		final MutablePropertySources mutablePropertySources,
 		final String httpsServerRootCaCertPem, final String httpsServerCertPem, final String httpsServerPrivateKeyPem,
 		final String httpsClientRootCaCertPem, final String httpsClientCertPem, final String httpsClientPrivateKeyPem,
-		final String httpsClientPskPem
+		final String httpsClientServerPskKeyStoreTypeFilePath,
+		final String httpsClientServerPskKeyStoreType,
+		final String pskKeyStorePassword,
+		final String pskKeyAlias,
+		final String pskKeyPassword
 	) {
 		// properties map containing 3 SSL bundles and helper properties
 		final Map<String, Object> tlsProperties = new LinkedHashMap<>();
@@ -130,11 +166,19 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS_CERT + ".keystore.privateKey",     httpsServerPrivateKeyPem);
 		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS_CERT + ".truststore.certificate",  httpsClientRootCaCertPem);
 
-		// Client Bundle for performing HTTP/TLS PSK Authentication
-//		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_TLS_PSK  + ".keystore.certificate",    httpsClientPskPem);
+    	// Client Bundle for performing HTTP/TLS PSK Authentication
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK  + ".key.alias",               pskKeyAlias);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK  + ".key.password",            pskKeyPassword);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK  + ".keystore.location",       httpsClientServerPskKeyStoreTypeFilePath);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK  + ".keystore.password",       pskKeyStorePassword);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK  + ".keystore.type",           httpsClientServerPskKeyStoreType);
 
 		// Server Bundle for listening to HTTP/TLS PSK requests
-//		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS_PSK  + ".truststore.certificate",  httpsClientPskPem);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK  + ".key.alias",               pskKeyAlias);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK  + ".key.password",            pskKeyPassword);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK  + ".keystore.location",       httpsClientServerPskKeyStoreTypeFilePath);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK  + ".keystore.password",       pskKeyStorePassword);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK  + ".keystore.type",           httpsClientServerPskKeyStoreType);
 
 		// Server HTTP/TLS configuration to enable TLS, use the server bundle, and accept clients performing sTLS or mTLS
 		tlsProperties.put("server.ssl.enabled",          Boolean.TRUE);
@@ -146,26 +190,6 @@ public class TomcatTlsInitializer implements ApplicationContextInitializer<Confi
 		mutablePropertySources.addFirst(new OriginTrackedMapPropertySource("tomcat-tls", tlsProperties));
 	}
 //
-//    public static void main(String[] args) throws Exception {
-//
-//        KeyStore keyStore = KeyStore.getInstance("PKCS12");
-//        keyStore.load(null, null);  // Initialize keystore
-//
-//        // Store the AES key in the keystore with an alias and a password
-//        KeyStore.ProtectionParameter protectionParam = 
-//                new KeyStore.PasswordProtection("keyPassword".toCharArray());
-//        KeyStore.SecretKeyEntry secretKeyEntry = 
-//                new KeyStore.SecretKeyEntry(secretKey);
-//        keyStore.setEntry("tlspsk", secretKeyEntry, protectionParam);
-//
-//        // Save the keystore to a file
-//        try (FileOutputStream fos = new FileOutputStream("keystore.p12")) {
-//            keyStore.store(fos, "keystorePassword".toCharArray());
-//        }
-//
-//        System.out.println("Keystore created and saved as keystore.p12");
-//    }
-
 	private static SecretKey generatePreSharedKey(final String algorithm, final int keyLengthBytes) throws NoSuchAlgorithmException {
 		final KeyGenerator keyGen = KeyGenerator.getInstance(algorithm);
         keyGen.init(keyLengthBytes * 8);
