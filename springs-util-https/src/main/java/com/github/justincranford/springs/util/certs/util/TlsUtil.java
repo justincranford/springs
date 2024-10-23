@@ -21,7 +21,9 @@ import com.google.common.collect.Sets;
 
 @SuppressWarnings("nls")
 public class TlsUtil {
-    // Mozilla recommended "intermediate" ciphersuites (January 2023)
+	public static final String TLS_PROTOCOL = "TLSv1.3";
+
+  // Mozilla recommended "intermediate" ciphersuites (January 2023)
 	private static final Set<String> PROTOCOLS_TLS13  = Sets.newLinkedHashSet(List.of("TLSv1.3"));
 //    private static final Set<String> PROTOCOLS_TLS12  = Sets.newLinkedHashSet(List.of("TLSv1.2"));
 //    private static final Set<String> PROTOCOLS_TLS13_TLS12 = Sets.newLinkedHashSet(List.of("TLSv1.3", "TLSv1.2"));
@@ -46,7 +48,7 @@ public class TlsUtil {
 	}
 
 	private static SSLContext sslContext(final KeyManager[] keyManagers, final TrustManager[] trustManagers) throws Exception {
-		final SSLContext sslContext = SSLContext.getInstance("TLSv1.3", "SunJSSE");
+		final SSLContext sslContext = SSLContext.getInstance(TLS_PROTOCOL, "SunJSSE");
 		sslContext.init(keyManagers, trustManagers, SecureRandomUtil.SECURE_RANDOM);
 		return sslContext;
 	}

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Import;
 import com.github.justincranford.springs.util.certs.server.TlsInitializer;
 
 @Configuration
-@Import({TlsInitializer.class})
+@Import({TlsInitializer.class, SpringsUtilHttpsServerPskConfiguration.class})
 public class SpringsUtilHttpsServerConfiguration {
 	// do nothing
 }

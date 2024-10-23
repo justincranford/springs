@@ -97,24 +97,41 @@
 				<artifactId>testcontainers-keycloak</artifactId>
 				<version>3.4.0</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on -->
+			<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-debug-jdk18on -->
+			<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-debug-jdk18on -->
+			<!-- https://mvnrepository.com/artifact/org.bouncycastle/bctls-debug-jdk18on -->
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-debug-jdk18on</artifactId>
+				<version>1.78.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpkix-debug-jdk18on</artifactId>
+				<version>1.78.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bctls-debug-jdk18on</artifactId>
+				<version>1.78.1</version>
+			</dependency>
+			<!--
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcpkix-jdk18on</artifactId>
 				<version>1.78.1</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on -->
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcprov-jdk18on</artifactId>
 				<version>1.78.1</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on -->
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bctls-jdk18on</artifactId>
 				<version>1.78.1</version>
 			</dependency>
+			-->
 			<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
 			<dependency>
 				<groupId>com.google.guava</groupId>

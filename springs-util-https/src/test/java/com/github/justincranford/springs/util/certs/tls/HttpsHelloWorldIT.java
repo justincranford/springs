@@ -29,12 +29,14 @@ import lombok.extern.slf4j.Slf4j;
 public class HttpsHelloWorldIT extends AbstractIT {
 	private String httpUrl;
 	private String httpsUrl;
+	private String httpsPskUrl;
 
 	@BeforeEach
 	public void beforeEach() {
-		this.httpUrl  = "http://"  + serverAddress() + ":" + localServerPort() + "/helloworld";
-		this.httpsUrl = "https://" + serverAddress() + ":" + localServerPort() + "/helloworld";
-		log.info("urls, http: {}, https: {}", this.httpUrl, this.httpsUrl);
+		this.httpUrl     = "http://"  + serverAddress() + ":" + localServerPort() + "/helloworld";
+		this.httpsUrl    = "https://" + serverAddress() + ":" + localServerPort() + "/helloworld";
+		this.httpsPskUrl = "https://" + serverAddress() + ":" + "9443"            + "/helloworld";
+		log.info("urls, http: {}, https: {}, httpsPsk: {}", this.httpUrl, this.httpsUrl, this.httpsPskUrl);
 	}
 
 	@Nested
@@ -81,6 +83,26 @@ public class HttpsHelloWorldIT extends AbstractIT {
 			)));
 			try {
 				final ResponseEntity<String> x = httpRestTemplate().exchange(HttpsHelloWorldIT.this.httpUrl, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+				log.info("HTTPS Status Code: {}\nResponse Headers: {}\nResponse Body: {}", x.getStatusCode(), x.getHeaders(), x.getBody());
+				assertThat(x.getBody()).isEqualTo(HelloWorldController.Constants.RESPONSE_BODY);
+	        } catch (HttpStatusCodeException e) {
+	        	log.error("HTTP Error Response: [" + e.getStatusCode() + "]\nResponse headers:\n" + e.getResponseHeaders() + "\nResponse body: " + e.getResponseBodyAsString());
+	            throw new RuntimeException("HTTP Error Response: [" + e.getStatusCode() + "]", e);
+			}
+		}
+	}
+
+	@Nested
+	public class HttpsPskTls {
+		@Test
+		void testHttpTlsPsk() {
+			assumeThat(sslAutoConfigEnabled()).isTrue();
+			final HttpHeaders headers = new HttpHeaders(CollectionUtils.toMultiValueMap(Map.of(
+				"Host",   List.of(serverAddress() + ":" + localServerPort()),
+				"Accept", List.of("*/*")
+			)));
+			try {
+				final ResponseEntity<String> x = ptlsRestTemplate().exchange(HttpsHelloWorldIT.this.httpsPskUrl, HttpMethod.GET, new HttpEntity<>(headers), String.class);
 				log.info("HTTPS Status Code: {}\nResponse Headers: {}\nResponse Body: {}", x.getStatusCode(), x.getHeaders(), x.getBody());
 				assertThat(x.getBody()).isEqualTo(HelloWorldController.Constants.RESPONSE_BODY);
 	        } catch (HttpStatusCodeException e) {

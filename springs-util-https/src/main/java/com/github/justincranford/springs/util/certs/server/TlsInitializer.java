@@ -9,6 +9,7 @@ import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,6 +24,8 @@ import java.util.concurrent.Future;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.context.ApplicationContextInitializer;
@@ -46,6 +49,8 @@ import lombok.extern.slf4j.Slf4j;
 public class TlsInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
     @Override
     public void initialize(final ConfigurableApplicationContext configurableApplicationContext) {
+    	Security.addProvider(new BouncyCastleProvider());
+    	Security.addProvider(new BouncyCastleJsseProvider());
 		try {
 			// Used for auto-configuration properties lookup, and prepending a new property source containing 3 dynamically created SSL bundles
 	        final MutablePropertySources readWritePropertySources = configurableApplicationContext.getEnvironment().getPropertySources();
@@ -97,7 +102,7 @@ public class TlsInitializer implements ApplicationContextInitializer<Configurabl
 			final String    httpsClientServerPreSharedKeyStorePassword = "pskKeyStorePwd";
 			final String    httpsClientServerPreSharedKeyAlias         = "pskAlias";
 			final String    httpsClientServerPreSharedKeyPassword      = "pskKeyPwd";
-	        final SecretKey httpsClientServerPreSharedKey              = generatePreSharedKey("HmacSHA512", 100);
+	        final SecretKey httpsClientServerPreSharedKey              = generatePreSharedKey("AES", 32);
 			final String    httpsClientServerPreSharedKeyStoreFile     = writePskKeyStore(
 				httpsClientServerPreSharedKeyStoreType, httpsClientServerPreSharedKeyStorePassword,
 				httpsClientServerPreSharedKeyAlias, httpsClientServerPreSharedKeyPassword, httpsClientServerPreSharedKey

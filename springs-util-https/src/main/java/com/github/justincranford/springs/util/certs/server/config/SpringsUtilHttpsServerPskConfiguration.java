@@ -1,34 +1,38 @@
 package com.github.justincranford.springs.util.certs.server.config;
 
-//import java.security.KeyStore;
-//
-//import javax.crypto.SecretKey;
-//import javax.net.ssl.KeyManager;
-//import javax.net.ssl.SSLContext;
-//
-////import org.apache.catalina.Context;
-////import org.apache.catalina.connector.Connector;
-////import org.apache.tomcat.util.net.SSLHostConfig;
-//import org.bouncycastle.tls.BasicTlsPSKIdentity;
-//import org.bouncycastle.tls.TlsPSKIdentity;
-//import org.springframework.boot.ssl.SslBundle;
-//import org.springframework.boot.ssl.SslBundleKey;
-//import org.springframework.boot.ssl.SslBundles;
-//import org.springframework.boot.ssl.SslStoreBundle;
-//import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-//import org.springframework.context.annotation.Bean;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
+import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-//import org.springframework.util.Assert;
-//
-//import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-//import com.github.justincranford.springs.util.certs.server.TlsInitializer;
-//
-//import lombok.Getter;
-//import lombok.RequiredArgsConstructor;
 
+import com.github.justincranford.springs.util.certs.server.TlsInitializer;
+import com.github.justincranford.springs.util.certs.util.TlsPskUtil;
+
+@SuppressWarnings({"static-method", "resource"})
 @Configuration
-@SuppressWarnings({"nls", "static-method"})
 public class SpringsUtilHttpsServerPskConfiguration {
+    @Bean
+    public JettyServletWebServerFactory jettyServletWebServerFactory(final SslBundles sslBundles) {
+		final JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
+        factory.addServerCustomizers(new JettyServerCustomizer() {
+			@Override
+            public void customize(Server server) {
+				final SslBundle                serverTlsPskBundle = sslBundles.getBundle(TlsInitializer.SslBundleNames.SERVER_TLS_PSK);
+				final SslContextFactory.Server sslContextFactory  = TlsPskUtil.createServerSslContextFactory(serverTlsPskBundle);
+
+				final ServerConnector serverConnector = new ServerConnector(server, sslContextFactory);
+                serverConnector.setPort(9443);
+                server.addConnector(serverConnector);
+            }
+        });
+        return factory;
+    }
+
 //    @Bean
 //    public TomcatServletWebServerFactory servletContainer2(final SslBundles sslBundles) {
 //        final TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
@@ -67,25 +71,7 @@ public class SpringsUtilHttpsServerPskConfiguration {
 //            }
 //        };
 //    }
-//    public static SSLContext createPskSslContext(final SslBundle sslBundle) {
-//		try {
-//	        final SslStoreBundle sslStoreBundle  = sslBundle.getStores();
-//	        final KeyStore       keyStore        = sslStoreBundle.getKeyStore();
-//	        Assert.isNull(sslStoreBundle.getTrustStore(), "TLS PSK TrustStore expected to be null");
-//	        final SslBundleKey sslBundleKey = sslBundle.getKey();
-//			final String keyAlias    = sslBundleKey.getAlias();
-//			final char[] keyPassword = sslBundleKey.getPassword().toCharArray();
-//	        final SecretKey secretKey = (SecretKey) keyStore.getKey(keyAlias, keyPassword);
-//	        final TlsPSKIdentity pskIdentityManager = new BasicTlsPSKIdentity(keyAlias.getBytes(), secretKey.getEncoded());
-//			final PSKKeyManager pskKeyManager = new PSKKeyManager(pskIdentityManager.getPSKIdentity(), pskIdentityManager.getPSK());
-//			final SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
-//			sslContext.init(new KeyManager[] {pskKeyManager}, null, SecureRandomUtil.SECURE_RANDOM);
-//			return sslContext;
-//		} catch (Exception e) {
-//			throw new RuntimeException(e);
-//		}
-//	}
-//
+
 //	@RequiredArgsConstructor
 //	@Getter
 //	public static class PSKKeyManager implements KeyManager {

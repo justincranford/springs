@@ -1,39 +1,20 @@
 package com.github.justincranford.springs.util.certs.client.config;
 
-import java.security.KeyStore;
-
-import javax.crypto.SecretKey;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.SSLContext;
-
-import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.client5.http.config.TlsConfig;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.io.HttpClientConnectionManager;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
-import org.apache.hc.core5.http.ssl.TLS;
-import org.apache.hc.core5.util.Timeout;
-import org.bouncycastle.tls.BasicTlsPSKIdentity;
-import org.bouncycastle.tls.TlsPSKIdentity;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.util.Assert;
+import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.certs.server.TlsInitializer;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.github.justincranford.springs.util.certs.util.TlsPskUtil;
 
 @Configuration
 @SuppressWarnings({"nls", "static-method"})
@@ -73,40 +54,27 @@ public class SpringsUtilHttpsClientsConfiguration {
 	@Qualifier("ptlsRestTemplate")
 	@Bean
 	public RestTemplate ptlsRestTemplate(final SslBundles sslBundles) {
-		final SSLContext sslContext = createPskSslContext(sslBundles.getBundle(TlsInitializer.SslBundleNames.CLIENT_TLS_PSK));
-        final SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext);
-        final HttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
-            .setSSLSocketFactory(sslSocketFactory)
-            .setDefaultTlsConfig(TlsConfig.custom().setHandshakeTimeout(Timeout.ofSeconds(30)).setSupportedProtocols(TLS.V_1_3).build())
-            .build();
-        final HttpClient httpClient = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
-        final HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        return new RestTemplate(factory);
-	}
+		final SslBundle                  serverTlsPskBundle = sslBundles.getBundle(TlsInitializer.SslBundleNames.SERVER_TLS_PSK);
+		final SslContextFactory.Client   sslContextFactory  = TlsPskUtil.createClientSslContextFactory(serverTlsPskBundle);
 
-	public static SSLContext createPskSslContext(final SslBundle sslBundle) {
-		try {
-	        final SslStoreBundle sslStoreBundle  = sslBundle.getStores();
-	        final KeyStore       keyStore        = sslStoreBundle.getKeyStore();
-	        Assert.isNull(sslStoreBundle.getTrustStore(), "TLS PSK TrustStore expected to be null");
-	        final SslBundleKey sslBundleKey = sslBundle.getKey();
-			final String keyAlias    = sslBundleKey.getAlias();
-			final char[] keyPassword = sslBundleKey.getPassword().toCharArray();
-	        final SecretKey secretKey = (SecretKey) keyStore.getKey(keyAlias, keyPassword);
-	        final TlsPSKIdentity pskIdentityManager = new BasicTlsPSKIdentity(keyAlias.getBytes(), secretKey.getEncoded());
-			final PSKKeyManager pskKeyManager = new PSKKeyManager(pskIdentityManager.getPSKIdentity(), pskIdentityManager.getPSK());
-			final SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
-			sslContext.init(new KeyManager[] {pskKeyManager}, null, SecureRandomUtil.SECURE_RANDOM);
-			return sslContext;
+		// Apache HTTP Client
+//		final SSLConnectionSocketFactory sslSocketFactory   = new SSLConnectionSocketFactory(sslContextFactory.getSslContext());
+//		final HttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+//            .setSSLSocketFactory(sslSocketFactory)
+//            .build();
+//        final HttpClient httpClient = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+//        final HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+
+		// Jetty HTTP Client
+		HttpClient httpClient = new HttpClient();
+		httpClient.setSslContextFactory(sslContextFactory);
+        try {
+			httpClient.start();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
 
-	@RequiredArgsConstructor
-	@Getter
-	public static class PSKKeyManager implements KeyManager {
-	    private final byte[] identity;
-	    private final byte[] psk;
+        final JettyClientHttpRequestFactory factory = new JettyClientHttpRequestFactory(httpClient);
+        return new RestTemplate(factory);
 	}
 }

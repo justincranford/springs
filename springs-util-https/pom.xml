@@ -19,11 +19,15 @@
     <dependencies>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk18on</artifactId>
+            <artifactId>bcprov-debug-jdk18on</artifactId>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bctls-jdk18on</artifactId>
+            <artifactId>bcpkix-debug-jdk18on</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bctls-debug-jdk18on</artifactId>
         </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
