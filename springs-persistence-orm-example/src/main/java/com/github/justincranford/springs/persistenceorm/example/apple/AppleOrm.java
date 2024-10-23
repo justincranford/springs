@@ -6,7 +6,6 @@ import java.util.List;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.Audited;
-import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,6 +22,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -64,12 +64,12 @@ public class AppleOrm extends AbstractEntity {
 
 	@Column(length=Type.MAX_LENGTH,nullable=false)
 	@Enumerated(EnumType.STRING)
-	@NonNull
+	@NotNull
 	private Type type;
   
 	@Column(length=255,nullable=false)
 	@Size(min=0,max=255)
-	@NonNull
+	@NotNull
 	@Builder.Default
 	private String description = "";
 

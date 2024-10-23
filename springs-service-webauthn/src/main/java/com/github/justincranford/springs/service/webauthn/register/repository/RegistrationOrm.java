@@ -3,7 +3,7 @@ package com.github.justincranford.springs.service.webauthn.register.repository;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.Audited;
-import org.springframework.lang.NonNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
@@ -45,6 +45,6 @@ public class RegistrationOrm extends AbstractEntity {
 
 	@Convert(converter = PublicKeyCredentialCreationOptionsConverter.class)
 	@Column(length=65535,nullable=false,updatable=false)
-	@NonNull
+	@NotNull
 	private PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
 }

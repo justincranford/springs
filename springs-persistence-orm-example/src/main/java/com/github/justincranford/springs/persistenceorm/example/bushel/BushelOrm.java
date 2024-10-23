@@ -6,7 +6,6 @@ import java.util.Set;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.Audited;
-import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
@@ -18,6 +17,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,7 +46,7 @@ import lombok.experimental.Accessors;
 public class BushelOrm extends AbstractEntity {
 	@OneToMany(mappedBy="bushel",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
 //	@JoinColumn(name="bushel_id")
-	@NonNull
+	@NotNull
 	@Builder.Default
 	private Set<AppleOrm> apples = new HashSet<>();
 

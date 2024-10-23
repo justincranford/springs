@@ -136,9 +136,9 @@ public class SpringsServiceWebauthnConfiguration {
     @Bean
 	@Order(2)
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/api/admin/**")
+        http.securityMatcher("/api/v1/admin/**")
             .authorizeHttpRequests(authorizeHttpRequestsCustomizer -> authorizeHttpRequestsCustomizer
-        		.requestMatchers("/api/admin/**").hasRole("ADMIN")
+        		.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
         		.anyRequest().authenticated()
     		)
             .csrf(csrf -> csrf.disable())
@@ -150,9 +150,9 @@ public class SpringsServiceWebauthnConfiguration {
     @Bean
 	@Order(3)
     public SecurityFilterChain userSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/api/user/**")
+        http.securityMatcher("/api/v1/user/**")
             .authorizeHttpRequests(authorizeHttpRequestsCustomizer -> authorizeHttpRequestsCustomizer
-           		.requestMatchers("/api/user/**").hasRole("USER")
+           		.requestMatchers("/api/v1/user/**").hasRole("USER")
         		.anyRequest().authenticated()
     		)
             .csrf(csrf -> csrf.disable())
@@ -165,8 +165,8 @@ public class SpringsServiceWebauthnConfiguration {
     public SecurityFilterChain registerSecurityFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/api/v1/register/**")
         	.authorizeHttpRequests(authorize -> authorize
-        			.anyRequest().permitAll()
-    			)
+    			.anyRequest().permitAll()
+			)
             .csrf(csrf -> csrf.disable());
         return http.build();
     }

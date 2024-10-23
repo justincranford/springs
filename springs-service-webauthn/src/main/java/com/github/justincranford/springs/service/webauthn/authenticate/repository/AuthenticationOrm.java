@@ -3,7 +3,6 @@ package com.github.justincranford.springs.service.webauthn.authenticate.reposito
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.Audited;
-import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
@@ -15,6 +14,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,6 +45,6 @@ public class AuthenticationOrm extends AbstractEntity {
 
 	@Convert(converter = PublicKeyCredentialRequestOptionsConverter.class)
 	@Column(length=65535,nullable=false,updatable=false)
-	@NonNull
+	@NotNull
 	private PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions;
 }
