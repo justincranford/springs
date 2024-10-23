@@ -44,6 +44,7 @@ import com.yubico.webauthn.data.UserVerificationRequirement;
 import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -121,7 +122,7 @@ public class AuthenticationService {
 	}
 
 	@Transactional
-	public AuthenticationFinishServer finish(@NotNull AuthenticationFinishClient authenticationFinishClient) {
+	public AuthenticationFinishServer finish(@NotNull AuthenticationFinishClient authenticationFinishClient, @NotNull HttpSession httpSession) {
 		try {
 			this.prettyJson.log(authenticationFinishClient);
     		final String sessionToken = authenticationFinishClient.getSessionToken();
@@ -129,13 +130,14 @@ public class AuthenticationService {
 			final PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> publicKeyCredential = cleanAndDecode(publicKeyAssertionJson);
 			this.prettyJson.logAndSave(publicKeyCredential);
 
-			final Optional<AuthenticationOrm> authenticationOrm = this.authenticationRepositoryOrm.findBySessionToken(sessionToken);
-			if (authenticationOrm.isEmpty()) {
+			final AuthenticationOrm authenticationOrm = this.authenticationRepositoryOrm.findBySessionToken(sessionToken).orElseGet(() -> {
 				log.error("Invalid sessionToken: {}", sessionToken);
-				throw new AssertionFailedException(new IllegalArgumentException("Invalid sessionToken"));
-			}
+				throw new IllegalArgumentException("Invalid sessionToken");
+			});
 			this.prettyJson.log(authenticationOrm);
-			final PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions = authenticationOrm.get().publicKeyCredentialRequestOptions();
+			this.authenticationRepositoryOrm.delete(authenticationOrm);
+
+			final PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions = authenticationOrm.publicKeyCredentialRequestOptions();
 			this.prettyJson.log(publicKeyCredentialRequestOptions);
 
 			final String credentialId = publicKeyCredential.getId().getBase64Url();
@@ -174,12 +176,37 @@ public class AuthenticationService {
 			final AuthenticationFinishServer authenticationFinishServer = AuthenticationFinishServer.builder().registeredCredential(registeredCredential).build();
 			this.prettyJson.log(authenticationFinishServer);
 
+			httpSession.setAttribute("username", username);
+			httpSession.setAttribute("userHandle", userHandle);
+			httpSession.setAttribute("authenticationOrm", authenticationOrm);
+			httpSession.setAttribute("userIdentityOrm", userIdentityOrm);
+			httpSession.setAttribute("credentialOrm", credentialOrm);
+			httpSession.setAttribute("registeredCredential", registeredCredential);
+
 			return authenticationFinishServer;
 		} catch (Exception e) {
 			log.info("Finish authentication exception", e);
 			if (e.getCause().getMessage().equals("Username not found for userHandle: Optional.empty")) {
 				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
 			}
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+		}
+	}
+
+	@Transactional
+	public String status(@NotNull HttpSession httpSession) {
+		if (httpSession == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session is null");
+		} else if (httpSession.isNew()) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session is new");
+		} else if (httpSession.getAttribute("username") == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session username is new");
+		}
+		try {
+			this.prettyJson.log(httpSession);
+			return this.prettyJson.pretty(httpSession);
+		} catch (Exception e) {
+			log.info("Authentication status exception", e);
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
 		}
 	}
