@@ -30,7 +30,7 @@ import lombok.experimental.Accessors;
 
 @Entity
 @Audited
-@Table(name = "user_identity")
+@Table(name="user_identity")
 @Getter(onMethod=@__(@JsonProperty))
 @Setter
 @ToString(callSuper=true)

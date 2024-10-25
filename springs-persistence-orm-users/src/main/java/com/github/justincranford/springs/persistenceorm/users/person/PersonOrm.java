@@ -9,6 +9,7 @@ import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.Status;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -88,18 +89,4 @@ public class PersonOrm extends AbstractEntity {
     @CollectionTable(name="timezones")
     @OrderColumn
     private List<String> timezones;
-
-    @ElementCollection
-    @CollectionTable(name="otpsecrets")
-    @OrderColumn
-    private List<OTPSecret> otpSecrets;
-
-    @ElementCollection
-    @CollectionTable(name="webauthncredentials")
-    @OrderColumn
-    private List<WebAuthnCredential> webAuthnCredentials;
-
-    @ElementCollection
-    @CollectionTable(name="otps")
-    private List<OTP> otps;
 }

@@ -14,7 +14,8 @@ public class SmokeIT extends AbstractIT {
 	void testBeans() {
 		assertThat(super.meterRegistry()).isNotNull();
 		assertThat(super.applicationContext()).isNotNull();
-		assertThat(super.appleOrmRepository()).isNotNull();
+		assertThat(super.personOrmRepository()).isNotNull();
+		assertThat(super.personaOrmRepository()).isNotNull();
 		assertThat(super.springsPersistenceOrmBaseProperties()).isNotNull();
 	}
 }

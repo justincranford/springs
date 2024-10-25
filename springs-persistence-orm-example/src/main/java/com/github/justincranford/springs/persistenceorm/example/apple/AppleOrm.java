@@ -73,7 +73,7 @@ public class AppleOrm extends AbstractEntity {
 	@Builder.Default
 	private String description = "";
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="bushel_id",foreignKey=@ForeignKey(name="fk_apple_bushelid_2_bushel_id"))
     private BushelOrm bushel;
 }

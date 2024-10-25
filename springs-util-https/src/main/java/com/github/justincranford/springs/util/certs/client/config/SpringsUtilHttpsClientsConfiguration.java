@@ -9,7 +9,6 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,7 +16,7 @@ import com.github.justincranford.springs.util.certs.server.TlsInitializer;
 import com.github.justincranford.springs.util.certs.util.TlsPskUtil;
 
 @Configuration
-@SuppressWarnings({"nls", "static-method"})
+@SuppressWarnings({"static-method"})
 public class SpringsUtilHttpsClientsConfiguration {
 	/**
 	 * @param restTemplateBuilder From Spring auto-configuration

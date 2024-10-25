@@ -13,7 +13,7 @@ import com.github.justincranford.springs.util.basic.DateTimeUtil;
 @EnableJpaAuditing(dateTimeProviderRef = "auditingDateTimeProvider")
 public class SpringsPersistenceOrmBaseJpaAuditingConfiguration {
 	@SuppressWarnings("static-method")
-	@Bean(name = "auditingDateTimeProvider")
+	@Bean(name="auditingDateTimeProvider")
 	public DateTimeProvider dateTimeProvider() {
 		return () -> Optional.of(DateTimeUtil.nowUtcTruncatedToMicroseconds());
 	}

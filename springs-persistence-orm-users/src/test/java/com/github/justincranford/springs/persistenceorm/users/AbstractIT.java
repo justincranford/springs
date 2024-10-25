@@ -18,6 +18,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
 import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
+import com.github.justincranford.springs.persistenceorm.users.person.PersonaOrmRepository;
 import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -50,7 +51,9 @@ public class AbstractIT {
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
-    private PersonOrmRepository appleOrmRepository;
+    private PersonOrmRepository personOrmRepository;
+    @Autowired
+    private PersonaOrmRepository personaOrmRepository;
     @Autowired
     private SpringsPersistenceOrmBaseProperties springsPersistenceOrmBaseProperties;
 

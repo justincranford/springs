@@ -26,7 +26,7 @@ import lombok.experimental.Accessors;
 
 @Entity
 @Audited
-@Table(name = "authentication")
+@Table(name="authentication")
 @Getter(onMethod=@__(@JsonProperty))
 @Setter
 @ToString(callSuper=true)

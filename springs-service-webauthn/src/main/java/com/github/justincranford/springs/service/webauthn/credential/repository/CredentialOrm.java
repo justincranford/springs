@@ -40,7 +40,7 @@ import lombok.experimental.Accessors;
 
 @Entity
 @Audited
-@Table(name = "credential")
+@Table(name="credential")
 @Getter(onMethod=@__(@JsonProperty))
 @Setter
 @ToString(callSuper=true)
