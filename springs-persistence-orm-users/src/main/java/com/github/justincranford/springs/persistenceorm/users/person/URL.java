@@ -8,6 +8,7 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +27,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent=true)
 class URL {
     @Column(length=256,nullable=false)
+    @Size(min=11,max=256)
     @NotNull
     private String url;
 
