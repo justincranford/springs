@@ -30,6 +30,7 @@
 		<module>springs-util-security-hashes</module>
 		<module>springs-persistence-orm-base</module>
 		<module>springs-persistence-orm-example</module>
+		<module>springs-persistence-orm-users</module>
 		<module>springs-service-webauthn</module>
 		<module>springs-service-chatbot</module>
 		<module>springs-service-ollama</module>
