@@ -1,3 +1,3 @@
 package com.github.justincranford.springs.persistenceorm.users.person.enums;
 
-public enum EmailType { PERSONAL, WORK, FAMILY, GROUP, OTHER }
+public enum LocationAddressType { HOME, WORK, VACATION, PO_BOX, OTHER }

@@ -1,5 +1,6 @@
 package com.github.justincranford.springs.persistenceorm.users.person;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.SQLDelete;
@@ -17,12 +18,14 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,24 +49,56 @@ import lombok.experimental.Accessors;
 @SequenceGenerator(sequenceName="persona_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 public class PersonaOrm extends AbstractEntity {
     @ElementCollection
-    @CollectionTable(name="email_addresses")
+    @CollectionTable(
+		name="email_addresses",
+    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
+    	foreignKey=@ForeignKey(name = "fk_persona_internal_id"),
+    	indexes={@Index(name="idx_email_addresses_persona_internal_id_rank",columnList="persona_internal_id,rank")}
+    )
+    @OrderColumn(name="rank")
     @NotNull
-    private List<Email> emailAddresses;
+    @Size(min=1,max=5)
+    @Builder.Default
+    private List<@NotNull EmailAddress> emailAddresses = new ArrayList<>();
 
     @ElementCollection
-    @CollectionTable(name="phone_numbers")
+    @CollectionTable(
+		name="phone_numbers",
+    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
+    	foreignKey=@ForeignKey(name = "fk_persona_internal_id"),
+    	indexes= {@Index(name="idx_phone_numbers_persona_internal_id_rank",columnList="persona_internal_id,rank")}
+    )
+    @OrderColumn(name="rank")
     @NotNull
-    private List<Phone> phoneNumbers;
+    @Size(min=1,max=5)
+    @Builder.Default
+    private List<@NotNull PhoneNumbersOrm> phoneNumbers = new ArrayList<>();
 
     @ElementCollection
-    @CollectionTable(name="addresses")
+    @CollectionTable(
+		name="location_addresses",
+    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
+    	foreignKey=@ForeignKey(name = "fk_persona_internal_id"),
+    	indexes= {@Index(name="idx_location_addresses_persona_internal_id_rank",columnList="persona_internal_id,rank")}
+    )
+    @OrderColumn(name="rank")
     @NotNull
-    private List<Address> addresses;
+    @Size(min=1,max=4)
+    @Builder.Default
+    private List<@NotNull LocationAddressOrm> locationAddresses = new ArrayList<>();
 
     @ElementCollection
-    @CollectionTable(name="urls",joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),foreignKey=@ForeignKey(name = "fk_persona_internal_id")) // not searchable
-    @Null
-    private List<URL> urls;
+    @CollectionTable(
+		name="urls",
+    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
+    	foreignKey=@ForeignKey(name = "fk_persona_internal_id"),
+    	indexes= {@Index(name="idx_urls_persona_internal_id_rank",columnList="persona_internal_id,rank")}
+    )
+    @OrderColumn(name="rank")
+    @NotNull
+    @Size(min=0,max=5)
+    @Builder.Default
+    private List<@NotNull URL> urls = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @NotNull

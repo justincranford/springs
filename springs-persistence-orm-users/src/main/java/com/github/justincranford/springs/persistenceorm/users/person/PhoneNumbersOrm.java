@@ -1,14 +1,14 @@
 package com.github.justincranford.springs.persistenceorm.users.person;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.AddressType;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.PhoneNumberType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,29 +25,16 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-class Address {
-    @Column(length=64,nullable=false)
-    @NotNull
-    private String street1;
+class PhoneNumbersOrm {
+    @Pattern(regexp = "\\+?[0-9]*")
+    @Column(nullable = false)
+    private String phoneNumber;
 
-    @Column(length=64)
-    @Null
-    private String street2;
-
-    @Column(length=64,nullable=false)
-    @NotNull
-    private String city;
-
-    @Column(length=64,nullable=false)
-    @NotNull
-    private String state;
-
-    @Column(length=64,nullable=false)
-    @NotNull
-    private String country;
+    @Column(nullable = false)
+    private String countryCode;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false)
+    @Column(name="phone_number_type",nullable=false,columnDefinition="VARCHAR(13)")
     @NotNull
-    private AddressType type;
+    private PhoneNumberType type;
 }

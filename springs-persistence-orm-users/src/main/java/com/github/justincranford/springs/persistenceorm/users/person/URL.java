@@ -32,6 +32,7 @@ class URL {
     private String url;
 
     @Enumerated(EnumType.STRING)
+    @Column(name="url_type",nullable=false,columnDefinition="VARCHAR(16)")
     @NotNull
     private URLType type;
 }

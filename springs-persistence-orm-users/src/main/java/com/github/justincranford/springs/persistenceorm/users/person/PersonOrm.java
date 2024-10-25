@@ -1,6 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.users.person;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.SQLDelete;
@@ -20,6 +21,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.OrderColumn;
@@ -81,12 +85,28 @@ public class PersonOrm extends AbstractEntity {
     private List<PersonaOrm> personas;
 
     @ElementCollection
-    @CollectionTable(name="languages")
-    @OrderColumn
-    private List<Language> languages;
+    @CollectionTable(
+		name="languages",
+    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
+    	foreignKey=@ForeignKey(name = "fk_persona_internal_id"),
+    	indexes= {@Index(name="idx_languages_persona_internal_id_rank",columnList="persona_internal_id,rank")}
+    )
+    @OrderColumn(name="rank")
+    @NotNull
+    @Size(min=1,max=4)
+    @Builder.Default
+    private List<@NotNull Language> languages = new ArrayList<>();
 
     @ElementCollection
-    @CollectionTable(name="timezones")
-    @OrderColumn
-    private List<String> timezones;
+    @CollectionTable(
+		name="timezones",
+    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
+    	foreignKey=@ForeignKey(name = "fk_persona_internal_id"),
+    	indexes= {@Index(name="idx_timezones_persona_internal_id_rank",columnList="persona_internal_id,rank")}
+    )
+    @OrderColumn(name="rank")
+    @NotNull
+    @Size(min=1,max=4)
+    @Builder.Default
+    private List<@NotNull String> timezones = new ArrayList<>();
 }
