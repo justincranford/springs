@@ -97,30 +97,30 @@ public enum I18nLanguage {
     }
 
     public String getAbbreviation() {
-        return abbreviation;
+        return this.abbreviation;
     }
 
     public long getCount() {
-        return count;
+        return this.count;
     }
 
     public String getNativeValue() {
-        return nativeValue;
+        return this.nativeValue;
     }
 
     public String getEnglish() {
-        return english;
+        return this.english;
     }
 
     public String getFrench() {
-        return french;
+        return this.french;
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
     
     public String getSpanishTranslation() {
-        return spanishTranslation;
+        return this.spanishTranslation;
     }
 }

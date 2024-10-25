@@ -25,7 +25,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-class LocationAddressOrm {
+class LocationAddress {
     @Column(length=64,nullable=false)
     @NotNull
     private String street1;
@@ -47,7 +47,7 @@ class LocationAddressOrm {
     private String country;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="location_address_type",nullable=false,columnDefinition="VARCHAR(8)")
+    @Column(name="location_address_type",nullable=false,columnDefinition="VARCHAR(3)")
     @NotNull
     private LocationAddressType type;
 }

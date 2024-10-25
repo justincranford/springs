@@ -75,8 +75,9 @@ public class PersonOrm extends AbstractEntity {
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
-    @Column
-	@NotNull
+    @Column(nullable=false,length=50)
+    @Size(min=3,max=50)
+    @NotNull
     private Status status;
 
     @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)

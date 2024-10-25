@@ -85,7 +85,7 @@ public class PersonaOrm extends AbstractEntity {
     @NotNull
     @Size(min=1,max=4)
     @Builder.Default
-    private List<@NotNull LocationAddressOrm> locationAddresses = new ArrayList<>();
+    private List<@NotNull LocationAddress> locationAddresses = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(
