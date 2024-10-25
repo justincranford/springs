@@ -19,6 +19,7 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.OrderColumn;
@@ -56,13 +57,12 @@ public class PersonOrm extends AbstractEntity {
 	@NotBlank
     private String username;
 
-    @Column(length=64,nullable=false)
+    @Column(length=64)
 	@Size(min=8,max=64)
-	@NotNull
-	@NotBlank
+	@Null
     private String password;
 
-    @Embedded
+    @Embedded // TODO OneToOne?
 	@Null
     private Name name;
 
@@ -75,8 +75,8 @@ public class PersonOrm extends AbstractEntity {
 	@NotNull
     private Status status;
 
-    @OneToMany(cascade=CascadeType.ALL,orphanRemoval=true)
-    @OrderBy("id")
+    @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
+    @OrderBy("internalId")
 	@Null
     private List<PersonaOrm> personas;
 
