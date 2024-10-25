@@ -61,7 +61,7 @@ public class PersonaOrm extends AbstractEntity {
     private List<Address> addresses;
 
     @ElementCollection
-    @CollectionTable(name="urls")
+    @CollectionTable(name="urls",joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),foreignKey=@ForeignKey(name = "fk_persona_internal_id")) // not searchable
     @Null
     private List<URL> urls;
 
