@@ -20,6 +20,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -51,16 +52,19 @@ class EmailAddressOrm extends AbstractEntity {
     @Column(length=320,nullable=false) // 64+1+255
     @Size(min=3,max=320) // RFC 5321
     @NotNull
+	@NotBlank
     private String emailAddress;
 
     @Enumerated(EnumType.STRING)
     @Column(name="email_address_type",length=3,nullable=false,columnDefinition="CHAR(3)")
     @Size(min=3,max=3)
     @NotNull
+	@NotBlank
     private EmailAddressType type;
 
 	@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="persona_id",foreignKey=@ForeignKey(name="fk_email_address_persona_id_2_persona_id"))
+    @NotNull
     private PersonaOrm persona;
 
 }

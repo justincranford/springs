@@ -78,9 +78,9 @@ public class PersonaOrm extends AbstractEntity {
 		name="location_address",
     	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
     	foreignKey=@ForeignKey(name="fk_location_address_persona_id"),
-    	indexes={@Index(name="idx_location_address_persona_id_rank",columnList="persona_id,rank")}
+		uniqueConstraints={@UniqueConstraint(name="idx_location_address_persona_id_rank",columnNames={"persona_id","rank"})}
     )
-    @OrderColumn(name="rank")
+    @OrderBy("personaId,rank")
     @NotNull
     @Size(min=1,max=4)
     @Builder.Default
@@ -91,9 +91,9 @@ public class PersonaOrm extends AbstractEntity {
 		name="url",
     	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
     	foreignKey=@ForeignKey(name = "fk_url_persona_id"),
-    	indexes={@Index(name="idx_url_persona_id_rank",columnList="persona_id,rank")}
+		uniqueConstraints={@UniqueConstraint(name="idx_url_persona_id_rank",columnNames={"persona_id","rank"})}
     )
-    @OrderColumn(name="rank")
+    @OrderBy("personaId,rank")
     @NotNull
     @Size(min=0,max=5)
     @Builder.Default

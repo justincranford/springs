@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -26,14 +27,19 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(fluent=true)
 class URL {
+    @Column(nullable=false)
+    private int rank;
+
     @Column(length=2048,nullable=false)
     @Size(min=8,max=2048) // http://a
     @NotNull
+	@NotBlank
     private String url;
 
     @Enumerated(EnumType.STRING)
     @Column(name="url_type",length=16,nullable=false)
     @Size(min=2,max=16)
     @NotNull
+	@NotBlank
     private URLType type;
 }

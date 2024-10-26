@@ -34,11 +34,14 @@ class PhoneNumber {
 	@Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Phone number must be in valid E.164 format. Optional + prefix, non-zero first digit, 1-15 digits total.")
     @Column(length=16,nullable=false)
 	@Size(min=8,max=16) // +, then a non-zero digit, then up to 14 additional digits
+	@NotNull
+	@NotBlank
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(name="phone_number_type",length=16,nullable=false)
 	@Size(min=2,max=16)
     @NotNull
+	@NotBlank
     private PhoneNumberType type;
 }

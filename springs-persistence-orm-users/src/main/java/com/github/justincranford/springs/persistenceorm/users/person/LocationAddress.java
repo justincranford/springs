@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
@@ -27,8 +28,12 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(fluent=true)
 class LocationAddress {
+    @Column(nullable=false)
+    private int rank;
+
     @Column(length=64,nullable=false)
     @NotNull
+	@NotBlank
     private String street1;
 
     @Column(length=64)
@@ -37,19 +42,23 @@ class LocationAddress {
 
     @Column(length=64,nullable=false)
     @NotNull
+	@NotBlank
     private String city;
 
     @Column(length=64,nullable=false)
     @NotNull
+	@NotBlank
     private String state;
 
     @Column(length=64,nullable=false)
     @NotNull
+	@NotBlank
     private String country;
 
     @Enumerated(EnumType.STRING)
     @Column(name="location_address_type",length=3,nullable=false,columnDefinition="CHAR(3)")
     @Size(min=3,max=3)
     @NotNull
+	@NotBlank
     private LocationAddressType type;
 }
