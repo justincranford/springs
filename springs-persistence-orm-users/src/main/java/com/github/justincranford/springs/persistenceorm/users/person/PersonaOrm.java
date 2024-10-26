@@ -64,6 +64,7 @@ public class PersonaOrm extends AbstractEntity {
     	foreignKey=@ForeignKey(name="fk_phone_number_persona_id"),
 		uniqueConstraints={@UniqueConstraint(name="idx_phone_number_persona_id_rank",columnNames={"persona_id","rank"})}
     )
+    @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
     @OrderBy("personaId,rank")
     @NotNull
     @Size(min=1,max=5)
@@ -77,6 +78,7 @@ public class PersonaOrm extends AbstractEntity {
     	foreignKey=@ForeignKey(name="fk_location_address_persona_id"),
 		uniqueConstraints={@UniqueConstraint(name="idx_location_address_persona_id_rank",columnNames={"persona_id","rank"})}
     )
+    @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
     @OrderBy("personaId,rank")
     @NotNull
     @Size(min=1,max=4)
@@ -90,6 +92,7 @@ public class PersonaOrm extends AbstractEntity {
     	foreignKey=@ForeignKey(name = "fk_url_persona_id"),
 		uniqueConstraints={@UniqueConstraint(name="idx_url_persona_id_rank",columnNames={"persona_id","rank"})}
     )
+    @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
     @OrderBy("personaId,rank")
     @NotNull
     @Size(min=0,max=5)
