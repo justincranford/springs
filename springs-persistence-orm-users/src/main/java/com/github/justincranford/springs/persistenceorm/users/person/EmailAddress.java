@@ -1,12 +1,13 @@
 package com.github.justincranford.springs.persistenceorm.users.person;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.URLType;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.EmailAddressType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -26,20 +27,22 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-class URL {
+class EmailAddress {
 	@Column(nullable=false,columnDefinition="TINYINT")
-    private int rank;
+	private int rank;
 
-    @Column(length=2048,nullable=false)
-    @Size(min=8,max=2048) // http://a
+    @Email
+    @Column(length=320,nullable=false) // 64+1+255
+    @Size(min=3,max=320) // RFC 5321
     @NotNull
 	@NotBlank
-    private String url;
+    private String emailAddress;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="url_type",length=16,nullable=false)
-    @Size(min=2,max=16)
+    @Column(name="email_address_type",length=3,nullable=false,columnDefinition="CHAR(3)")
+    @Size(min=3,max=3)
     @NotNull
 	@NotBlank
-    private URLType type;
+    private EmailAddressType type;
+
 }

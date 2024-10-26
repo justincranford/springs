@@ -28,7 +28,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(fluent=true)
 class LocationAddress {
-    @Column(nullable=false)
+	@Column(nullable=false,columnDefinition="TINYINT")
     private int rank;
 
     @Column(length=64,nullable=false)

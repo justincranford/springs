@@ -28,7 +28,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(fluent=true)
 class PhoneNumber {
-    @Column(nullable=false)
+	@Column(nullable=false,columnDefinition="TINYINT")
     private int rank;
 
 	@Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Phone number must be in valid E.164 format. Optional + prefix, non-zero first digit, 1-15 digits total.")

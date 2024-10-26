@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonaType;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -21,7 +20,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -50,12 +48,19 @@ import lombok.experimental.Accessors;
 @SQLRestriction(AbstractEntity.WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="persona_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 public class PersonaOrm extends AbstractEntity {
-    @OneToMany(mappedBy="persona",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
+    @ElementCollection
+    @CollectionTable(
+		name="email_address",
+    	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
+    	foreignKey=@ForeignKey(name="fk_email_address_persona_id"),
+		uniqueConstraints={@UniqueConstraint(name="idx_email_address_persona_id_rank",columnNames={"persona_id","rank"})}
+    )
+    @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @OrderBy("personaId,rank")
+    @NotNull
     @Size(min=1,max=5)
-    @OrderBy("rank")
-	@NotNull
     @Builder.Default
-    private List<@NotNull EmailAddressOrm> emailAddresses = new ArrayList<>();
+    private List<@NotNull EmailAddress> emailAddresses = new ArrayList<>(2);
 
     @ElementCollection
     @CollectionTable(
@@ -69,7 +74,7 @@ public class PersonaOrm extends AbstractEntity {
     @NotNull
     @Size(min=1,max=5)
     @Builder.Default
-    private List<@NotNull PhoneNumber> phoneNumbers = new ArrayList<>();
+    private List<@NotNull PhoneNumber> phoneNumbers = new ArrayList<>(1);
 
     @ElementCollection
     @CollectionTable(
@@ -83,7 +88,7 @@ public class PersonaOrm extends AbstractEntity {
     @NotNull
     @Size(min=1,max=4)
     @Builder.Default
-    private List<@NotNull LocationAddress> locationAddresses = new ArrayList<>();
+    private List<@NotNull LocationAddress> locationAddresses = new ArrayList<>(1);
 
     @ElementCollection
     @CollectionTable(
@@ -97,7 +102,7 @@ public class PersonaOrm extends AbstractEntity {
     @NotNull
     @Size(min=0,max=5)
     @Builder.Default
-    private List<@NotNull URL> urls = new ArrayList<>();
+    private List<@NotNull URL> urls = new ArrayList<>(0);
 
     @Enumerated(EnumType.STRING)
     @NotNull
