@@ -87,7 +87,7 @@ public class Password {
         private Set<Integer> specials;
 
         @Override
-        public void initialize(PasswordStrength constraintAnnotation) {
+        public void initialize(final PasswordStrength constraintAnnotation) {
             this.minLength = constraintAnnotation.minLength();
             this.maxLength = constraintAnnotation.maxLength();
             this.minUppers = constraintAnnotation.minUppers();

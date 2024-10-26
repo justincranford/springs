@@ -5,9 +5,9 @@ import com.github.justincranford.springs.persistenceorm.users.person.enums.Email
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -31,12 +31,8 @@ class EmailAddress {
 	@Column(nullable=false,columnDefinition="TINYINT")
 	private int rank;
 
-    @Email
-    @Column(length=320,nullable=false) // 64+1+255
-    @Size(min=3,max=320) // RFC 5321
-    @NotNull
-	@NotBlank
-    private String emailAddress;
+	@Embedded
+    private EmailAddressRfc5321 emailAddress;
 
     @Enumerated(EnumType.STRING)
     @Column(name="email_address_type",length=3,nullable=false,columnDefinition="CHAR(3)")
@@ -44,5 +40,4 @@ class EmailAddress {
     @NotNull
 	@NotBlank
     private EmailAddressType type;
-
 }
