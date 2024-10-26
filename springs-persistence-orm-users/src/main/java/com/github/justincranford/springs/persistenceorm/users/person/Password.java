@@ -37,7 +37,6 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-@SuppressWarnings({"nls"})
 public class Password {
     @PasswordStrength
     @Column(length=64)
@@ -46,7 +45,7 @@ public class Password {
     private String password;
 
     @Documented
-    @Constraint(validatedBy = Validator.class)
+    @Constraint(validatedBy = PasswordStrengthValidator.class)
     @Target({ElementType.METHOD, ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)
     public static @interface PasswordStrength {
@@ -67,10 +66,10 @@ public class Password {
         int maxWhitespace() default Integer.MAX_VALUE;
         int maxAnywhereRepeats() default 3;
         int maxConsecutiveRepeats() default 2;
-        String specials() default "@$!%*?&";
+        String specials() default "~`!@#$%^&*()_-+={}[]|\\\"':;?/<>,.";
     }
 
-    public static class Validator implements ConstraintValidator<PasswordStrength, String> {
+    public static class PasswordStrengthValidator implements ConstraintValidator<PasswordStrength, String> {
         private int minLength;
         private int maxLength;
         private int minUppers;
