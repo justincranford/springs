@@ -10,6 +10,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,6 +29,8 @@ import lombok.experimental.Accessors;
 @Accessors(fluent=true)
 class Name {
     @Enumerated(EnumType.STRING)
+    @Column(length=64)
+    @Size(min=2,max=64)
     @Null
     private Salutation salutation;
 
@@ -44,6 +47,8 @@ class Name {
     private String last;
 
     @Enumerated(EnumType.STRING)
+    @Column(length=5)
+    @Size(min=1,max=5)
     @Null
     private Suffix suffix;
 }

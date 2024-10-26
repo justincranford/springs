@@ -9,6 +9,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,7 +48,8 @@ class LocationAddress {
     private String country;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="location_address_type",nullable=false,columnDefinition="VARCHAR(3)")
+    @Column(name="location_address_type",length=3,nullable=false,columnDefinition="CHAR(3)")
+    @Size(min=3,max=3)
     @NotNull
     private LocationAddressType type;
 }

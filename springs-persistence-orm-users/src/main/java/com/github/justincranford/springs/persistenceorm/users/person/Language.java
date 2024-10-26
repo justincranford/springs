@@ -9,6 +9,7 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,20 +28,28 @@ import lombok.experimental.Accessors;
 @Accessors(fluent=true)
 class Language {
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false)
+    @Column(length=2,nullable=false,columnDefinition="CHAR(2)")
+    @Size(min=2,max=2)
     @NotNull
     private I18nLanguage i18n;
 
     @Enumerated(EnumType.STRING)
-    @Column
+    @Column(length=2,nullable=false,columnDefinition="CHAR(2)")
+    @Size(min=2,max=2)
     @NotNull
     private L10nRegion l10n;
 
     @Column(nullable=false)
     @NotNull
-    private boolean talk;
+    private boolean canSpeak;
 
     @Column(nullable=false)
     @NotNull
-    private boolean text;
+    private boolean canListen;
+
+    @Column(nullable=false)
+    private boolean canRead;
+
+    @Column(nullable=false)
+    private boolean canWrite;
 }

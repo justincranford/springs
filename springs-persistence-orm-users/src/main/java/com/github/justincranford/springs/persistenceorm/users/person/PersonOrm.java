@@ -61,13 +61,11 @@ public class PersonOrm extends AbstractEntity {
 	@NotBlank
     private String username;
 
-    @Column(length=64)
-	@Size(min=8,max=64)
-	@Null
-    private String password;
+    @Embedded
+    private Password password;
 
-    @Embedded // TODO OneToOne?
-	@Null
+    @Embedded // TODO Use @OneToOne if Name will be an independent entity
+	//@Null // Only appliable if Name will be an independent entity
     private Name name;
 
     @Column
@@ -75,8 +73,8 @@ public class PersonOrm extends AbstractEntity {
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false,length=50)
-    @Size(min=3,max=50)
+    @Column(nullable=false,length=6)
+    @Size(min=2,max=6)
     @NotNull
     private Status status;
 

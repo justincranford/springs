@@ -26,13 +26,14 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(fluent=true)
 class URL {
-    @Column(length=256,nullable=false)
-    @Size(min=11,max=256)
+    @Column(length=2048,nullable=false)
+    @Size(min=8,max=2048) // http://a
     @NotNull
     private String url;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="url_type",nullable=false,columnDefinition="VARCHAR(16)")
+    @Column(name="url_type",length=16,nullable=false)
+    @Size(min=2,max=16)
     @NotNull
     private URLType type;
 }
