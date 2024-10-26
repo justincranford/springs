@@ -26,7 +26,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-class PhoneNumbersOrm {
+class PhoneNumber {
 	@Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Phone number must be in valid E.164 format. Optional + prefix, non-zero first digit, 1-15 digits total.")
     @Column(length=16,nullable=false)
 	@Size(min=8,max=16) // +, then a non-zero digit, then up to 14 additional digits

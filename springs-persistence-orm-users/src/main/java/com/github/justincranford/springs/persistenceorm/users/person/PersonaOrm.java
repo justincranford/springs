@@ -70,7 +70,7 @@ public class PersonaOrm extends AbstractEntity {
     @NotNull
     @Size(min=1,max=5)
     @Builder.Default
-    private List<@NotNull PhoneNumbersOrm> phoneNumbers = new ArrayList<>();
+    private List<@NotNull PhoneNumber> phoneNumbers = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(
