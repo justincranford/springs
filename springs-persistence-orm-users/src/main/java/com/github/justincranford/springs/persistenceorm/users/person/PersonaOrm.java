@@ -57,7 +57,7 @@ public class PersonaOrm extends AbstractEntity {
     @OrderBy("rank")
 	@NotNull
     @Builder.Default
-    private List<@NotNull EmailAddress> emailAddresses = new ArrayList<>();
+    private List<@NotNull EmailAddressOrm> emailAddresses = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(
