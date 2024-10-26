@@ -27,6 +27,7 @@ import jakarta.persistence.OrderBy;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
@@ -61,12 +62,12 @@ public class PersonaOrm extends AbstractEntity {
 
     @ElementCollection
     @CollectionTable(
-		name="phone_numbers",
+		name="phone_number",
     	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name = "fk_persona_id"),
-    	indexes= {@Index(name="idx_phone_numbers_persona_id_rank",columnList="persona_id,rank")}
+    	foreignKey=@ForeignKey(name="fk_phone_number_persona_id"),
+		uniqueConstraints={@UniqueConstraint(name="idx_phone_number_persona_id_rank",columnNames={"persona_id","rank"})}
     )
-    @OrderColumn(name="rank")
+    @OrderBy("personaId,rank")
     @NotNull
     @Size(min=1,max=5)
     @Builder.Default
@@ -74,10 +75,10 @@ public class PersonaOrm extends AbstractEntity {
 
     @ElementCollection
     @CollectionTable(
-		name="location_addresses",
+		name="location_address",
     	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name = "fk_persona_id"),
-    	indexes= {@Index(name="idx_location_addresses_persona_id_rank",columnList="persona_id,rank")}
+    	foreignKey=@ForeignKey(name="fk_location_address_persona_id"),
+    	indexes={@Index(name="idx_location_address_persona_id_rank",columnList="persona_id,rank")}
     )
     @OrderColumn(name="rank")
     @NotNull
@@ -87,10 +88,10 @@ public class PersonaOrm extends AbstractEntity {
 
     @ElementCollection
     @CollectionTable(
-		name="urls",
+		name="url",
     	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name = "fk_persona_id"),
-    	indexes= {@Index(name="idx_urls_persona_id_rank",columnList="persona_id,rank")}
+    	foreignKey=@ForeignKey(name = "fk_url_persona_id"),
+    	indexes={@Index(name="idx_url_persona_id_rank",columnList="persona_id,rank")}
     )
     @OrderColumn(name="rank")
     @NotNull
