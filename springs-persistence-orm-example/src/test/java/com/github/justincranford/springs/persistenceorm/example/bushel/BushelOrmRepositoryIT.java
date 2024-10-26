@@ -47,28 +47,28 @@ public class BushelOrmRepositoryIT extends AbstractIT {
 		log.info("args: {}", args);
 		IntStream.range(bushelOffsetStart, bushelOffsetStart + args.numBushels()).forEach(bushelOffset -> {
 			final BushelOrm savedBushel = super.bushelOrmRepository().save(BushelOrm.builder().build());
-			final Optional<BushelOrm> bushelById = super.bushelOrmRepository().findById(savedBushel.internalId());
+			final Optional<BushelOrm> bushelById = super.bushelOrmRepository().findById(savedBushel.id());
 			assertThat(bushelById).isPresent();
-			log.info("Bushel By ID: {}\n{}\n", savedBushel.internalId(), bushelById.orElseThrow());
+			log.info("Bushel By ID: {}\n{}\n", savedBushel.id(), bushelById.orElseThrow());
 			IntStream.range(appleOffsetStart, appleOffsetStart + args.numApples()).forEach(appleOffset -> {
 				final Type type = SecureRandomUtil.randomEnumElement(AppleOrm.Type.class);
 				final AppleOrm savedApple = super.appleOrmRepository().save(AppleOrm.builder().type(type).description(description + "_" + appleOffset).build());
 				savedBushel.addApple(savedApple);
-				final Optional<AppleOrm> appleById = super.appleOrmRepository().findById(savedApple.internalId());
+				final Optional<AppleOrm> appleById = super.appleOrmRepository().findById(savedApple.id());
 				assertThat(appleById).isPresent();
-				log.info("Apple By ID: {}\n{}\n", savedApple.internalId(), appleById.orElseThrow());
+				log.info("Apple By ID: {}\n{}\n", savedApple.id(), appleById.orElseThrow());
 			});
 			IntStream.range(appleOffsetStart, appleOffsetStart + args.numApples()).forEach(appleOffset -> {
 				final Type type = SecureRandomUtil.randomEnumElement(AppleOrm.Type.class);
 				final AppleOrm savedApple = super.appleOrmRepository().save(AppleOrm.builder().type(type).description("").build());
 				savedBushel.addApple(savedApple);
-				final Optional<AppleOrm> appleById = super.appleOrmRepository().findById(savedApple.internalId());
+				final Optional<AppleOrm> appleById = super.appleOrmRepository().findById(savedApple.id());
 				assertThat(appleById).isPresent();
-				log.info("Apple By ID: {}\n{}\n", savedApple.internalId(), appleById.orElseThrow());
+				log.info("Apple By ID: {}\n{}\n", savedApple.id(), appleById.orElseThrow());
 			});
-			final Optional<BushelOrm> bushelById2 = super.bushelOrmRepository().findById(savedBushel.internalId());
+			final Optional<BushelOrm> bushelById2 = super.bushelOrmRepository().findById(savedBushel.id());
 			assertThat(bushelById2).isPresent();
-			log.info("Bushel By ID: {}\n{}\n", savedBushel.internalId(), bushelById2.orElseThrow());
+			log.info("Bushel By ID: {}\n{}\n", savedBushel.id(), bushelById2.orElseThrow());
 		});
 		final List<BushelOrm> bushelsAll = super.bushelOrmRepository().findAll();
 		assertThat(bushelsAll).isNotNull().hasSize(args.numBushels());

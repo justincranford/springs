@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonaType;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -21,10 +22,13 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,29 +48,23 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-@SQLDelete(sql="UPDATE persona SET pre_delete_date_time=NOW() WHERE internal_id=? AND version=?")
+@SQLDelete(sql="UPDATE persona SET pre_delete_date_time=NOW() WHERE id=? AND version=?")
 @SQLRestriction(AbstractEntity.WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="persona_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 public class PersonaOrm extends AbstractEntity {
-    @ElementCollection
-    @CollectionTable(
-		name="email_addresses",
-    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
-    	foreignKey=@ForeignKey(name = "fk_persona_internal_id"),
-    	indexes={@Index(name="idx_email_addresses_persona_internal_id_rank",columnList="persona_internal_id,rank")}
-    )
-    @OrderColumn(name="rank")
-    @NotNull
+    @OneToMany(mappedBy="persona",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
     @Size(min=1,max=5)
+    @OrderBy("rank")
+	@NotNull
     @Builder.Default
     private List<@NotNull EmailAddress> emailAddresses = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(
 		name="phone_numbers",
-    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
-    	foreignKey=@ForeignKey(name = "fk_persona_internal_id"),
-    	indexes= {@Index(name="idx_phone_numbers_persona_internal_id_rank",columnList="persona_internal_id,rank")}
+    	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
+    	foreignKey=@ForeignKey(name = "fk_persona_id"),
+    	indexes= {@Index(name="idx_phone_numbers_persona_id_rank",columnList="persona_id,rank")}
     )
     @OrderColumn(name="rank")
     @NotNull
@@ -77,9 +75,9 @@ public class PersonaOrm extends AbstractEntity {
     @ElementCollection
     @CollectionTable(
 		name="location_addresses",
-    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
-    	foreignKey=@ForeignKey(name = "fk_persona_internal_id"),
-    	indexes= {@Index(name="idx_location_addresses_persona_internal_id_rank",columnList="persona_internal_id,rank")}
+    	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
+    	foreignKey=@ForeignKey(name = "fk_persona_id"),
+    	indexes= {@Index(name="idx_location_addresses_persona_id_rank",columnList="persona_id,rank")}
     )
     @OrderColumn(name="rank")
     @NotNull
@@ -90,9 +88,9 @@ public class PersonaOrm extends AbstractEntity {
     @ElementCollection
     @CollectionTable(
 		name="urls",
-    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
-    	foreignKey=@ForeignKey(name = "fk_persona_internal_id"),
-    	indexes= {@Index(name="idx_urls_persona_internal_id_rank",columnList="persona_internal_id,rank")}
+    	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
+    	foreignKey=@ForeignKey(name = "fk_persona_id"),
+    	indexes= {@Index(name="idx_urls_persona_id_rank",columnList="persona_id,rank")}
     )
     @OrderColumn(name="rank")
     @NotNull

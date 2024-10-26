@@ -43,16 +43,16 @@ public class AppleOrmRepositoryIT extends AbstractIT {
 		IntStream.range(appleOffsetStart, appleOffsetStart + args.numApples()).forEach(appleOffset -> {
 			final Type type = SecureRandomUtil.randomEnumElement(AppleOrm.Type.class);
 			final AppleOrm savedApple = super.appleOrmRepository().save(AppleOrm.builder().type(type).description(description + "_" + appleOffset).build());
-			final Optional<AppleOrm> appleById = super.appleOrmRepository().findById(savedApple.internalId());
+			final Optional<AppleOrm> appleById = super.appleOrmRepository().findById(savedApple.id());
 			assertThat(appleById).isPresent();
-			log.info("Apple By ID: {}\n{}\n", savedApple.internalId(), appleById.orElseThrow());
+			log.info("Apple By ID: {}\n{}\n", savedApple.id(), appleById.orElseThrow());
 		});
 		IntStream.range(appleOffsetStart, appleOffsetStart + args.numApples()).forEach(appleOffset -> {
 			final Type type = SecureRandomUtil.randomEnumElement(AppleOrm.Type.class);
 			final AppleOrm savedApple = super.appleOrmRepository().save(AppleOrm.builder().type(type).description("").build());
-			final Optional<AppleOrm> appleById = super.appleOrmRepository().findById(savedApple.internalId());
+			final Optional<AppleOrm> appleById = super.appleOrmRepository().findById(savedApple.id());
 			assertThat(appleById).isPresent();
-			log.info("Apple By ID: {}\n{}\n", savedApple.internalId(), appleById.orElseThrow());
+			log.info("Apple By ID: {}\n{}\n", savedApple.id(), appleById.orElseThrow());
 		});
 		final List<AppleOrm> applesAll = super.appleOrmRepository().findAll();
 		assertThat(applesAll).isNotNull().hasSize(args.numApples() * 2);

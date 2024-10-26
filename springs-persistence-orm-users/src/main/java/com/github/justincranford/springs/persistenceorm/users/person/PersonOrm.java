@@ -51,7 +51,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-@SQLDelete(sql="UPDATE person SET pre_delete_date_time=NOW() WHERE internal_id=? AND version=?")
+@SQLDelete(sql="UPDATE person SET pre_delete_date_time=NOW() WHERE id=? AND version=?")
 @SQLRestriction(AbstractEntity.WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="person_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 public class PersonOrm extends AbstractEntity {
@@ -79,16 +79,16 @@ public class PersonOrm extends AbstractEntity {
     private Status status;
 
     @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
-    @OrderBy("internalId")
+    @OrderBy("id")
 	@Null
     private List<PersonaOrm> personas;
 
     @ElementCollection
     @CollectionTable(
 		name="languages",
-    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
-    	foreignKey=@ForeignKey(name = "fk_persona_internal_id"),
-    	indexes= {@Index(name="idx_languages_persona_internal_id_rank",columnList="persona_internal_id,rank")}
+    	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
+    	foreignKey=@ForeignKey(name = "fk_persona_id"),
+    	indexes= {@Index(name="idx_languages_persona_id_rank",columnList="persona_id,rank")}
     )
     @OrderColumn(name="rank")
     @NotNull
@@ -99,9 +99,9 @@ public class PersonOrm extends AbstractEntity {
     @ElementCollection
     @CollectionTable(
 		name="timezones",
-    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
-    	foreignKey=@ForeignKey(name = "fk_persona_internal_id"),
-    	indexes= {@Index(name="idx_timezones_persona_internal_id_rank",columnList="persona_internal_id,rank")}
+    	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
+    	foreignKey=@ForeignKey(name = "fk_persona_id"),
+    	indexes= {@Index(name="idx_timezones_persona_id_rank",columnList="persona_id,rank")}
     )
     @OrderColumn(name="rank")
     @NotNull

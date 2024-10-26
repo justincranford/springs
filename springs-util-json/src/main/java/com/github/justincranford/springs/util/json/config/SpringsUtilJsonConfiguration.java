@@ -22,7 +22,7 @@ public class SpringsUtilJsonConfiguration {
 	public ObjectMapper objectMapper(/* final Jackson2ObjectMapperBuilder builder */) {
 		return new ObjectMapper()
 			.enable(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION)
-//			.addMixIn(AbstractEntity.class, AbstractEntityMixin.class) // public abstract class AbstractEntityMixin { @JsonProperty("id") String internalId; }
+//			.addMixIn(AbstractEntity.class, AbstractEntityMixin.class) // public abstract class AbstractEntityMixin { @JsonProperty("id") String id; }
 //			.setSerializationInclusion(JsonInclude.Include.ALWAYS)
 			.setSerializationInclusion(JsonInclude.Include.NON_EMPTY) // WebAuthn RegistrationRequest.allowCredentials=null breaks JavaScript 
 //			.configure(SerializationFeature.WRAP_ROOT_VALUE, true) // true breaks WebAuthn
