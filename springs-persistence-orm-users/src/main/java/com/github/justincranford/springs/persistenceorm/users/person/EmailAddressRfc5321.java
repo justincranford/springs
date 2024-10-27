@@ -41,7 +41,7 @@ import lombok.experimental.Accessors;
 public class EmailAddressRfc5321 {
 	@EmailRfc5321 // N.B. applied before converter
 	@Convert(converter=LowercaseStringConverter.class) // N.B. applied after validator
-    @Column(length=254,nullable=false) // RFCs 5321 & 5322
+    @Column(length=254,nullable=false,unique=true) // RFCs 5321 & 5322
     @Size(min=3,max=254) // EX: 64 local @ 189 domain, 1 local @ 252 domain
     @NotNull
 	@NotBlank
