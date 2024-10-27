@@ -7,12 +7,14 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.github.justincranford.springs.persistenceorm.base.config.SpringsPersistenceOrmBaseConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
+import com.github.justincranford.springs.persistenceorm.users.person.PersonaOrm;
+import com.github.justincranford.springs.persistenceorm.users.session.SessionOrm;
 import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
 import com.github.justincranford.springs.util.observability.config.SpringsUtilObservabilityConfiguration;
 
 @Configuration
 @EnableJpaRepositories(
-	basePackageClasses = {PersonOrm.class},
+	basePackageClasses = {PersonOrm.class,PersonaOrm.class,SessionOrm.class},
 	repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class
 )
 @Import({

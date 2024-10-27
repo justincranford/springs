@@ -84,7 +84,7 @@ public class PersonOrm extends AbstractEntity {
     @CollectionTable(
 		name="languages",
     	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name = "fk_persona_id"),
+    	foreignKey=@ForeignKey(name = "fk_languages_persona_id"),
     	indexes= {@Index(name="idx_languages_persona_id_rank",columnList="persona_id,rank")}
     )
     @OrderColumn(name="rank")
@@ -97,7 +97,7 @@ public class PersonOrm extends AbstractEntity {
     @CollectionTable(
 		name="timezones",
     	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name = "fk_persona_id"),
+    	foreignKey=@ForeignKey(name = "fk_timezones_persona_id"),
     	indexes= {@Index(name="idx_timezones_persona_id_rank",columnList="persona_id,rank")}
     )
     @OrderColumn(name="rank")
