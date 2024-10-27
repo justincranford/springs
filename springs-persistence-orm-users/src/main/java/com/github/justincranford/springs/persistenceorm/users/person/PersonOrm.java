@@ -11,6 +11,7 @@ import org.hibernate.envers.Audited;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.Status;
+import com.github.justincranford.springs.persistenceorm.users.session.SessionOrm;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -54,6 +55,7 @@ import lombok.experimental.Accessors;
 @SQLDelete(sql="UPDATE person SET pre_delete_date_time=NOW() WHERE id=? AND version=?")
 @SQLRestriction(AbstractEntity.WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="person_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
+@SuppressWarnings({"static-method"})
 public class PersonOrm extends AbstractEntity {
     @Column(length=64,nullable=false,unique=true)
 	@Size(min=8,max=64)
@@ -64,7 +66,7 @@ public class PersonOrm extends AbstractEntity {
     @Embedded
     private Password password;
 
-    @Embedded // TODO Use @OneToOne if Name will be an independent entity
+    @Embedded // Use @OneToOne if Name will be an independent entity
 	//@Null // Only appliable if Name will be an independent entity
     private Name name;
 
@@ -77,11 +79,6 @@ public class PersonOrm extends AbstractEntity {
     @Size(min=2,max=6)
     @NotNull
     private Status status;
-
-    @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
-    @OrderBy("id,rank")
-	@Null
-    private List<PersonaOrm> personas;
 
     @ElementCollection
     @CollectionTable(
@@ -108,4 +105,42 @@ public class PersonOrm extends AbstractEntity {
     @Size(min=1,max=4)
     @Builder.Default
     private List<@NotNull String> timezones = new ArrayList<>();
+
+    @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
+    @OrderBy("id,rank")
+    @NotNull
+    @Size(min=1,max=4)
+	@Builder.Default
+    private List<PersonaOrm> personas = new ArrayList<>(1);
+
+    @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
+    @OrderBy("createdAt DESC")
+    @NotNull
+    @Size(min=0,max=Integer.MAX_VALUE)
+    private List<SessionOrm> sessions;
+
+    public void addSession(final SessionOrm session) {
+    	this.addSession(session, this.personas.get(0));
+	}
+    public void addSession(final SessionOrm session, final PersonaOrm persona) {
+        this.addSessionWithOptionalCascade(session, persona, true);
+	}
+    public void deleteSession(final SessionOrm session) {
+    	this.deleteSessionWithOptionalCascade(session, true);
+    }
+
+	/*package*/ void addSessionWithOptionalCascade(final SessionOrm session, final PersonaOrm persona, final boolean cascade) {
+		this.sessions.add(session);
+        session.person(this);
+        if (cascade) {
+            persona.addSessionWithOptionalCascade(session, false);
+        }
+	}
+	/*package*/ void deleteSessionWithOptionalCascade(final SessionOrm session, final boolean cascade) {
+		this.sessions.remove(session);
+    	session.person(null);
+    	if (cascade) {
+        	session.persona().deleteSession(session);
+    	}
+	}
 }
