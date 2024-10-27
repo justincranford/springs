@@ -70,8 +70,8 @@ public class AbstractEntity {
 	@Nonnull
 	@NotNull
 	@NotEmpty
-	@Size(min=32,max=32)
-    @Column(length=32,unique=true,nullable=false,updatable=false,columnDefinition="BINARY(32)")
+	@Size(min=40,max=40)
+    @Column(length=40,unique=true,nullable=false,updatable=false,columnDefinition="BINARY(40)")
     private byte[] externalId;
 
 	@Column(updatable=false,nullable=false)
@@ -113,7 +113,7 @@ public class AbstractEntity {
 
     @PrePersist
 	public void prePersist() {
-		this.externalId = SecureRandomUtil.randomBytes(32);
+		this.externalId = SecureRandomUtil.timeStampBytesAndRandomBytes(8, 32);
 		this.prePersistDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
 	}
 	@PostPersist
