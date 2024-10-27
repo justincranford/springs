@@ -79,7 +79,7 @@ public class PersonOrm extends AbstractEntity {
     private Status status;
 
     @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
-    @OrderBy("id")
+    @OrderBy("id,rank")
 	@Null
     private List<PersonaOrm> personas;
 

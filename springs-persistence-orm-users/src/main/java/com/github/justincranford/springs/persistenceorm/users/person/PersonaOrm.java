@@ -12,6 +12,7 @@ import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEnti
 import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonaType;
 
 import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -48,6 +49,9 @@ import lombok.experimental.Accessors;
 @SQLRestriction(AbstractEntity.WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="persona_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 public class PersonaOrm extends AbstractEntity {
+	@Column(nullable=false,columnDefinition="TINYINT")
+	private int rank;
+
     @ElementCollection
     @CollectionTable(
 		name="email_address",
