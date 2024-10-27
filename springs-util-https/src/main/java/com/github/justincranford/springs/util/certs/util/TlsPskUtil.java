@@ -25,14 +25,14 @@ import lombok.RequiredArgsConstructor;
 
 @SuppressWarnings("nls")
 public class TlsPskUtil {
-	public static final String PSK_TLS_PROTOCOL = "TLSv1.2";
+	public static final String PSK_TLS_PROTOCOL = "TLSv1.3";
 	public static final String[] PSK_TLS_PROTOCOLS = new String[] {PSK_TLS_PROTOCOL};
 	public static final String[] PSK_SUPPORTED_CIPHER_SUITES = new String[] {
-	    "TLS_CHACHA20_POLY1305_SHA256", // TLS 1.3, {0x13, 0x03}
+//	    "TLS_CHACHA20_POLY1305_SHA256", // TLS 1.3, {0x13, 0x03}
 	    "TLS_AES_256_GCM_SHA384",       // TLS 1.3, {0x13, 0x02}
-	    "TLS_AES_128_GCM_SHA256",       // TLS 1.3, {0x13, 0x01}
-	    "TLS_PSK_WITH_AES_128_CBC_SHA256",
-	    "TLS_PSK_WITH_NULL_SHA256",
+//	    "TLS_AES_128_GCM_SHA256",       // TLS 1.3, {0x13, 0x01}
+//	    "TLS_PSK_WITH_AES_128_CBC_SHA256",
+//	    "TLS_PSK_WITH_NULL_SHA256",
 //	    "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256", // TLS 1.2, {0xcc, 0xa9}
 //	    "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",       // TLS 1.2, {0xc0, 0x2c}
 //	    "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",       // TLS 1.2, {0xc0, 0x2b}
