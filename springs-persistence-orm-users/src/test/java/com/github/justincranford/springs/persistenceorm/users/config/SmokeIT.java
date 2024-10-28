@@ -16,6 +16,7 @@ public class SmokeIT extends AbstractIT {
 		assertThat(super.applicationContext()).isNotNull();
 		assertThat(super.personOrmRepository()).isNotNull();
 		assertThat(super.personaOrmRepository()).isNotNull();
+		assertThat(super.personProperties()).isNotNull();
 		assertThat(super.springsPersistenceOrmBaseProperties()).isNotNull();
 	}
 }

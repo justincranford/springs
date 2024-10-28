@@ -13,10 +13,10 @@ import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfigu
 import com.github.justincranford.springs.util.observability.config.SpringsUtilObservabilityConfiguration;
 
 @Configuration
-@EnableConfigurationProperties
 @ComponentScan(
 	basePackageClasses = {SpringsPersistenceOrmBaseProperties.class}
 )
+@EnableConfigurationProperties
 @EnableJpaRepositories(
 	basePackageClasses = {AbstractEntity.class},
 	repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class

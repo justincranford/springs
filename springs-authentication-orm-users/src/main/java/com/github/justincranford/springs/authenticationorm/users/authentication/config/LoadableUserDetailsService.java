@@ -21,6 +21,7 @@ import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PhoneNumberOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.UrlOrm;
+import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersProperties;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
@@ -29,7 +30,7 @@ import jakarta.transaction.Transactional;
 @SuppressWarnings({"nls"})
 public class LoadableUserDetailsService implements UserDetailsService {
 	@Autowired
-    private PersonProperties personProperties;
+    private SpringsPersistenceOrmUsersProperties personProperties;
     @Autowired
     private PersonOrmRepository personOrmRepository;
     @Autowired
@@ -43,9 +44,9 @@ public class LoadableUserDetailsService implements UserDetailsService {
     @PostConstruct
     @Transactional
     public void loadUsers() {
-        final List<PersonProperties.Person> users = this.personProperties.getUsers();
+        final List<SpringsPersistenceOrmUsersProperties.Person> users = this.personProperties.getUsers();
         
-        for (final PersonProperties.Person user : users) {
+        for (final SpringsPersistenceOrmUsersProperties.Person user : users) {
             final PersonOrm createPersonOrm = new PersonOrm();
             createPersonOrm.username(user.getUsername());
             createPersonOrm.password(new PasswordOrm(user.getPassword()));
@@ -57,7 +58,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
             final PersonOrm createdPersonOrm = this.personOrmRepository.save(createPersonOrm);
 
             int rank = 0;
-            for (PersonProperties.Person.Persona persona : user.getPersonas()) {
+            for (SpringsPersistenceOrmUsersProperties.Person.Persona persona : user.getPersonas()) {
             	final PersonaOrm createPersonaOrm = new PersonaOrm();
                 createPersonaOrm.rank(rank++);
                 createPersonaOrm.emailAddresses(emailAddressesPropertiesToOrm(persona.getEmailAddresses()));
@@ -72,7 +73,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
         }
     }
 
-    private static NameOrm namePropertiesToOrm(PersonProperties.Person.Name nameProperties) {
+    private static NameOrm namePropertiesToOrm(SpringsPersistenceOrmUsersProperties.Person.Name nameProperties) {
 		return NameOrm.builder()
 			.salutation(nameProperties.getSalutation())
 			.first(nameProperties.getFirst())
@@ -81,7 +82,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
 			.suffix(nameProperties.getSuffix())
 			.build();
 	}
-    private static List<LanguageOrm> languagesPropertiesToOrm(List<PersonProperties.Person.Language> languagesProperties) {
+    private static List<LanguageOrm> languagesPropertiesToOrm(List<SpringsPersistenceOrmUsersProperties.Person.Language> languagesProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return languagesProperties.stream()
     		.map(languageProperties ->
@@ -97,7 +98,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
     		)
     		.toList();
 	}
-    private static List<EmailAddressOrm> emailAddressesPropertiesToOrm(List<PersonProperties.Person.Persona.EmailAddress> emailAddressesProperties) {
+    private static List<EmailAddressOrm> emailAddressesPropertiesToOrm(List<SpringsPersistenceOrmUsersProperties.Person.Persona.EmailAddress> emailAddressesProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return emailAddressesProperties.stream()
     		.map(emailAddressProperties ->
@@ -109,7 +110,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
     		)
     		.toList();
 	}
-    private static List<PhoneNumberOrm> phoneNumberPropertiesToOrm(List<PersonProperties.Person.Persona.PhoneNumber> phoneNumbersProperties) {
+    private static List<PhoneNumberOrm> phoneNumberPropertiesToOrm(List<SpringsPersistenceOrmUsersProperties.Person.Persona.PhoneNumber> phoneNumbersProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return phoneNumbersProperties.stream()
     		.map(phoneNumberProperties ->
@@ -121,7 +122,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
     		)
     		.toList();
 	}
-    private static List<LocationAddressOrm> locationAddressPropertiesToOrm(List<PersonProperties.Person.Persona.LocationAddress> locationAddresssProperties) {
+    private static List<LocationAddressOrm> locationAddressPropertiesToOrm(List<SpringsPersistenceOrmUsersProperties.Person.Persona.LocationAddress> locationAddresssProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return locationAddresssProperties.stream()
     		.map(locationAddressProperties ->
@@ -137,7 +138,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
     		)
     		.toList();
 	}
-    private static List<UrlOrm> urlPropertiesToOrm(List<PersonProperties.Person.Persona.URL> urlsProperties) {
+    private static List<UrlOrm> urlPropertiesToOrm(List<SpringsPersistenceOrmUsersProperties.Person.Persona.URL> urlsProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return urlsProperties.stream()
     		.map(urlProperties ->

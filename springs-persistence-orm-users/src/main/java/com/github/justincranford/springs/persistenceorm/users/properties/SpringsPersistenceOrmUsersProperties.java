@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.authenticationorm.users.authentication.config;
+package com.github.justincranford.springs.persistenceorm.users.properties;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,8 +28,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Component
-@ConfigurationProperties(prefix="springs.authenticationorm",ignoreUnknownFields=false,ignoreInvalidFields=false)
-@PropertySource("classpath:springs-authentication-orm-users.properties")
+@ConfigurationProperties(prefix="springs.persistenceorm",ignoreUnknownFields=false,ignoreInvalidFields=false)
+@PropertySource("classpath:springs-persistence-orm-users.properties")
 @Validated
 @Getter
 @Setter
@@ -37,14 +37,14 @@ import lombok.ToString;
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonProperties {
+public class SpringsPersistenceOrmUsersProperties {
     @NotNull
     @NotEmpty
-    private List<PersonProperties.Person> users;
-    public List<PersonProperties.Person> getUsers() {
+    private List<SpringsPersistenceOrmUsersProperties.Person> users;
+    public List<SpringsPersistenceOrmUsersProperties.Person> getUsers() {
         return this.users;
     }
-    public void setUsers(List<PersonProperties.Person> _users) {
+    public void setUsers(List<SpringsPersistenceOrmUsersProperties.Person> _users) {
         this.users = _users;
     }
 

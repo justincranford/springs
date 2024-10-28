@@ -19,6 +19,7 @@ import com.github.justincranford.springs.persistenceorm.base.properties.SpringsP
 import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
+import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersProperties;
 import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -56,6 +57,8 @@ public class AbstractIT {
     private PersonaOrmRepository personaOrmRepository;
     @Autowired
     private SpringsPersistenceOrmBaseProperties springsPersistenceOrmBaseProperties;
+    @Autowired
+    private SpringsPersistenceOrmUsersProperties personProperties;
 
     @BeforeAll
     private static void beforeAll() {
