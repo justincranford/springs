@@ -1,7 +1,6 @@
 package com.github.justincranford.springs.authenticationorm.users.authentication.config;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
@@ -15,7 +14,7 @@ import com.github.justincranford.springs.persistenceorm.users.person.enums.Locat
 import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonaType;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.PhoneNumberType;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.Salutation;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.Status;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonStatus;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.Suffix;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.URLType;
 
@@ -56,7 +55,7 @@ public class PersonProperties {
         private String password;
         private Name name;
         private LocalDate dateOfBirth;
-        private Status status;
+        private PersonStatus status;
         private List<Language> languages;
         private List<String> timezones;
         private List<Persona> personas;
@@ -90,41 +89,41 @@ public class PersonProperties {
             private List<LocationAddress> locationAddresses;
             private List<URL> urls;
             private PersonaType personaType;
-        }
 
-        @Getter
-        @Setter
-        public static class EmailAddress {
-            private String emailAddress;
-            private EmailAddressType type;
-        }
+            @Getter
+            @Setter
+            public static class EmailAddress {
+                private String emailAddress;
+                private EmailAddressType type;
+            }
 
-        @Getter
-        @Setter
-        public static class PhoneNumber {
-            private String phoneNumber;
-            private boolean canTalk;
-            private boolean canText;
-            private boolean hasData;
-            private PhoneNumberType type;
-        }
+            @Getter
+            @Setter
+            public static class PhoneNumber {
+                private String phoneNumber;
+                private boolean canTalk;
+                private boolean canText;
+                private boolean hasData;
+                private PhoneNumberType type;
+            }
 
-        @Getter
-        @Setter
-        public static class LocationAddress {
-            private String street1;
-            private String street2;
-            private String city;
-            private String state;
-            private String country;
-            private LocationAddressType type;
-        }
+            @Getter
+            @Setter
+            public static class LocationAddress {
+                private String street1;
+                private String street2;
+                private String city;
+                private String state;
+                private String country;
+                private LocationAddressType type;
+            }
 
-        @Getter
-        @Setter
-        public static class URL {
-            private String url;
-            private URLType type;
+            @Getter
+            @Setter
+            public static class URL {
+                private String url;
+                private URLType type;
+            }
         }
     }
 }

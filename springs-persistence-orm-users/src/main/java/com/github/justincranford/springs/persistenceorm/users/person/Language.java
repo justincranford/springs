@@ -27,6 +27,9 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(fluent=true)
 public class Language {
+	@Column(nullable=false,columnDefinition="TINYINT")
+	private int rank;
+
     @Enumerated(EnumType.STRING)
     @Column(length=2,nullable=false,columnDefinition="CHAR(2)")
     @Size(min=2,max=2)

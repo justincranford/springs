@@ -38,16 +38,16 @@ import lombok.experimental.Accessors;
 @Entity
 @Audited
 @Table(name="persona")
-@Getter(onMethod=@__(@JsonProperty))
-@Setter
 @ToString(callSuper=true)
 @Builder(toBuilder=true)
-@NoArgsConstructor
-@AllArgsConstructor
-@Accessors(fluent=true)
 @SQLDelete(sql="UPDATE persona SET pre_delete_date_time=NOW() WHERE id=? AND version=?")
 @SQLRestriction(AbstractEntity.WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="persona_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter(onMethod=@__(@JsonProperty))
+@Setter
+@Accessors(fluent=true)
 public class PersonaOrm extends AbstractEntity {
 	@Column(nullable=false,columnDefinition="TINYINT")
 	private int rank;

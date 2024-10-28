@@ -10,7 +10,7 @@ import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.Status;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -44,19 +44,19 @@ import lombok.experimental.Accessors;
 @Entity
 @Audited
 @Table(name="person")
-@Getter(onMethod=@__(@JsonProperty))
-@Setter
 @ToString(callSuper=true)
-@Builder(toBuilder=true)
-@NoArgsConstructor
-@AllArgsConstructor
-@Accessors(fluent=true)
 @SQLDelete(sql="UPDATE person SET pre_delete_date_time=NOW() WHERE id=? AND version=?")
 @SQLRestriction(AbstractEntity.WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="person_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
+@Builder(toBuilder=true)
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter(onMethod=@__(@JsonProperty))
+@Setter
+@Accessors(fluent=true)
 public class PersonOrm extends AbstractEntity {
     @Column(length=64,nullable=false,unique=true)
-	@Size(min=8,max=64)
+	@Size(min=1,max=64)
 	@NotNull
 	@NotBlank
     private String username;
@@ -65,18 +65,17 @@ public class PersonOrm extends AbstractEntity {
     private Password password;
 
     @Embedded // Use @OneToOne if Name will be an independent entity
-	//@Null // Only appliable if Name will be an independent entity
     private Name name;
 
     @Column
-	@Null
+//	@Null
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false,length=6)
-    @Size(min=2,max=6)
+//    @Size(min=2,max=6)
     @NotNull
-    private Status status;
+    private PersonStatus status;
 
     @ElementCollection
     @CollectionTable(
@@ -85,7 +84,8 @@ public class PersonOrm extends AbstractEntity {
     	foreignKey=@ForeignKey(name = "fk_languages_persona_id"),
     	indexes= {@Index(name="idx_languages_persona_id_rank",columnList="persona_id,rank")}
     )
-    @OrderColumn(name="rank")
+    @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @OrderBy("personaId,rank")
     @NotNull
     @Size(min=1,max=4)
     @Builder.Default
@@ -107,7 +107,7 @@ public class PersonOrm extends AbstractEntity {
     @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
     @OrderBy("id,rank")
     @NotNull
-    @Size(min=1,max=4)
+    @Size(min=0,max=4)
 	@Builder.Default
     private List<PersonaOrm> personas = new ArrayList<>(1);
 

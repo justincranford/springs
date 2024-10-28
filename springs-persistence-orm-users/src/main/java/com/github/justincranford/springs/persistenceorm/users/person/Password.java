@@ -45,7 +45,7 @@ public class Password {
     @PasswordStrength
     @Column(length=64)
     @Size(min=8,max=64)
-    @Null
+//    @Null
     private String password;
 
     @Documented

@@ -37,7 +37,7 @@ public class LocationAddress {
     private String street1;
 
     @Column(length=64)
-    @Null
+//    @Null
     private String street2;
 
     @Column(length=64,nullable=false)

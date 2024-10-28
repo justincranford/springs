@@ -1,7 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.users.person.enums;
 
 @SuppressWarnings({"nls", "hiding"})
-public enum Status { 
+public enum PersonStatus { 
     ACT("Activated", "Activé", "Activado", "The account is active and fully functional."),
     SUS("Suspended", "Suspendu", "Suspendido", "The account is temporarily suspended."),
     LCK("Locked", "Verrouillé", "Bloqueado", "The account is locked and requires user action to unlock."),
@@ -37,7 +37,7 @@ public enum Status {
     private final String spanish;
     private final String description;
 
-    Status(final String english, final String french, final String spanish, final String description) {
+    PersonStatus(final String english, final String french, final String spanish, final String description) {
         this.english = english;
         this.french = french;
         this.spanish = spanish;

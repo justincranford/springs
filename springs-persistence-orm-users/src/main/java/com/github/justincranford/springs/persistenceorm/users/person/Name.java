@@ -31,7 +31,7 @@ public class Name {
     @Enumerated(EnumType.STRING)
     @Column(length=64)
     @Size(min=2,max=64)
-    @Null
+//    @Null
     private Salutation salutation;
 
     @Column(length=64,nullable=false)
@@ -39,16 +39,16 @@ public class Name {
     private String first;
 
     @Column(length=64)
-    @Null
+//    @Null
     private String middle;
 
     @Column(length=64)
-    @Null
+//    @Null
     private String last;
 
     @Enumerated(EnumType.STRING)
     @Column(length=5)
     @Size(min=1,max=5)
-    @Null
+//    @Null
     private Suffix suffix;
 }
