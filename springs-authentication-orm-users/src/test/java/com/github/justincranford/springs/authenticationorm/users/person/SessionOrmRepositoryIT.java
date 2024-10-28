@@ -11,7 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings("nls")
+@SuppressWarnings({"unused"})
 public class SessionOrmRepositoryIT extends AbstractIT {
 	public record Args(int numSessions) {}
 	public static Stream<Args> args() {

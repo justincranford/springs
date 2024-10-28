@@ -1,9 +1,10 @@
 package com.github.justincranford.springs.service.webauthn.register.controller.data;
 
+import org.springframework.lang.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yubico.webauthn.data.ResidentKeyRequirement;
 
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

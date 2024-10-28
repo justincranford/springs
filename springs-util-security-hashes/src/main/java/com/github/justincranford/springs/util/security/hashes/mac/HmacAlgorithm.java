@@ -10,6 +10,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.springframework.lang.Nullable;
 
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.security.hashes.asn1.Asn1Util;
@@ -17,7 +18,6 @@ import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgor
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 
 @SuppressWarnings({"nls"})
 public enum HmacAlgorithm implements MacAlgorithm {
@@ -87,7 +87,7 @@ public enum HmacAlgorithm implements MacAlgorithm {
 	}
 
 	@Override
-	public SecretKeySpec secretKeyFromDataChunks(@Null DigestAlgorithm secretKeyDigest, @NotEmpty final byte[][] dataChunks) {
+	public SecretKeySpec secretKeyFromDataChunks(@Nullable DigestAlgorithm secretKeyDigest, @NotEmpty final byte[][] dataChunks) {
 		final byte[] dataChunkBytes = ArrayUtil.concat(dataChunks);
 		final byte[] hmacKeyBytes = (secretKeyDigest == null) ? dataChunkBytes : secretKeyDigest.compute(dataChunkBytes);
 		return new SecretKeySpec(hmacKeyBytes, this.algorithm);

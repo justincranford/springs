@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.lang.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 
@@ -22,7 +24,6 @@ import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
-import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,7 +46,7 @@ public class PasswordOrm {
     @PasswordStrength
     @Column(length=64)
     @Size(min=8,max=64)
-//    @Null
+    @Nullable
     private String password;
 
     @Documented

@@ -1,5 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.users.person;
 
+import org.springframework.lang.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.Salutation;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.Suffix;
@@ -9,7 +11,6 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +32,7 @@ public class NameOrm {
     @Enumerated(EnumType.STRING)
     @Column(length=64)
     @Size(min=2,max=64)
-//    @Null
+    @Nullable
     private Salutation salutation;
 
     @Column(length=64,nullable=false)
@@ -39,16 +40,16 @@ public class NameOrm {
     private String first;
 
     @Column(length=64)
-//    @Null
+    @Nullable
     private String middle;
 
     @Column(length=64)
-//    @Null
+    @Nullable
     private String last;
 
     @Enumerated(EnumType.STRING)
     @Column(length=5)
     @Size(min=1,max=5)
-//    @Null
+    @Nullable
     private Suffix suffix;
 }

@@ -1,5 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.users.persona;
 
+import org.springframework.lang.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.LocationAddressType;
 
@@ -9,7 +11,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +38,7 @@ public class LocationAddressOrm {
     private String street1;
 
     @Column(length=64)
-//    @Null
+    @Nullable
     private String street2;
 
     @Column(length=64,nullable=false)
