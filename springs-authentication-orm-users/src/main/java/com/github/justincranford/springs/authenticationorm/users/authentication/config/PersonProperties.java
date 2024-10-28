@@ -40,13 +40,13 @@ import lombok.ToString;
 @AllArgsConstructor
 public class PersonProperties {
     @NotNull
-	@NotEmpty
-    private Map<String, Person> users;
-    public Map<String, Person> getUsers() {
+    @NotEmpty
+    private Person[] users;
+    public Person[] getUsers() {
         return this.users;
     }
-    public void setUsers(Map<String, Person> users0) {
-        this.users = users0;
+    public void setUsers(Person[] users) {
+        this.users = users;
     }
 
     @Getter

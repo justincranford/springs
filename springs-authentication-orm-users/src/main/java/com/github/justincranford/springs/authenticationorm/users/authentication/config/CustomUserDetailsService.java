@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
-import java.util.Map;
 
 @Service
 @SuppressWarnings({"nls"})
@@ -17,7 +16,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @PostConstruct
     public void loadUsers() {
-        Map<String, PersonProperties.Person> users = this.personProperties.getUsers();
+        PersonProperties.Person[] users = this.personProperties.getUsers();
     }
 
 	@Override
