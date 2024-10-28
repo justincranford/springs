@@ -38,6 +38,16 @@ public class PhoneNumber {
 	@NotBlank
     private String phoneNumber;
 
+    @Column(nullable=false)
+    @NotNull
+    private boolean canTalk;
+
+    @Column(nullable=false)
+    private boolean canText;
+
+    @Column(nullable=false)
+    private boolean hasData;
+
     @Enumerated(EnumType.STRING)
     @Column(name="phone_number_type",length=16,nullable=false)
 	@Size(min=2,max=16)

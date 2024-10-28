@@ -103,6 +103,9 @@ public class PersonProperties {
         @Setter
         public static class PhoneNumber {
             private String phoneNumber;
+            private boolean canTalk;
+            private boolean canText;
+            private boolean hasData;
             private PhoneNumberType type;
         }
 
