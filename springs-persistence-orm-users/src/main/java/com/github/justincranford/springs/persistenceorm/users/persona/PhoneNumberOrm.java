@@ -1,7 +1,7 @@
-package com.github.justincranford.springs.persistenceorm.users.person;
+package com.github.justincranford.springs.persistenceorm.users.persona;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.PhoneNumberType;
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.PhoneNumberType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

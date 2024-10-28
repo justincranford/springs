@@ -7,16 +7,16 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-import com.github.justincranford.springs.persistenceorm.users.person.enums.EmailAddressType;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.I18nLanguage;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.L10nRegion;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.LocationAddressType;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonaType;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.PhoneNumberType;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.Salutation;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonStatus;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.Suffix;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.URLType;
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.EmailAddressType;
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.LocationAddressType;
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.PersonaType;
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.PhoneNumberType;
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.URLType;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

@@ -12,12 +12,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.github.justincranford.springs.persistenceorm.users.person.EmailAddressRfc5321Orm;
 import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonaOrm;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonaOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonaType;
+import com.github.justincranford.springs.persistenceorm.users.persona.EmailAddressRfc5321Orm;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.PersonaType;
 
 @Component
 @SuppressWarnings({"nls"})

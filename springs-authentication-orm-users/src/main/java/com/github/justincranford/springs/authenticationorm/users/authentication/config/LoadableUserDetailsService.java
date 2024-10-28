@@ -9,18 +9,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.github.justincranford.springs.persistenceorm.users.person.EmailAddressOrm;
-import com.github.justincranford.springs.persistenceorm.users.person.EmailAddressRfc5321Orm;
 import com.github.justincranford.springs.persistenceorm.users.person.LanguageOrm;
-import com.github.justincranford.springs.persistenceorm.users.person.LocationAddressOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.NameOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonaOrm;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonaOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.person.PhoneNumberOrm;
-import com.github.justincranford.springs.persistenceorm.users.person.UrlOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.EmailAddressOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.EmailAddressRfc5321Orm;
+import com.github.justincranford.springs.persistenceorm.users.persona.LocationAddressOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
+import com.github.justincranford.springs.persistenceorm.users.persona.PhoneNumberOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.UrlOrm;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;

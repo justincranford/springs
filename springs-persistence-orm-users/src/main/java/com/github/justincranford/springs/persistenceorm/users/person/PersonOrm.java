@@ -11,6 +11,7 @@ import org.hibernate.envers.Audited;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonStatus;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;

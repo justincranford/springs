@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.users.person.enums;
+package com.github.justincranford.springs.persistenceorm.users.persona.enums;
 
 @SuppressWarnings({"nls", "hiding"})
 public enum PersonaType {

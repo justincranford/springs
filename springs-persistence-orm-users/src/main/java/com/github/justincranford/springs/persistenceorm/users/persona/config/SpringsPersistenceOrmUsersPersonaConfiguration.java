@@ -1,18 +1,21 @@
-package com.github.justincranford.springs.persistenceorm.users.person;
+package com.github.justincranford.springs.persistenceorm.users.persona.config;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
+
 @Configuration
 @EntityScan(
-	basePackageClasses={PersonOrm.class, PersonaOrm.class}
+	basePackageClasses={PersonaOrm.class}
 )
 @EnableJpaRepositories(
-	basePackageClasses = {PersonOrmRepository.class,PersonaOrmRepository.class},
+	basePackageClasses = {PersonaOrmRepository.class},
 	repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class
 )
-public class SpringsPersistenceOrmUsersPersonConfiguration {
+public class SpringsPersistenceOrmUsersPersonaConfiguration {
 	// do nothing
 }

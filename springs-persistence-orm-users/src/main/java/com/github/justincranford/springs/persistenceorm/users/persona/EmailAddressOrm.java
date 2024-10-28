@@ -1,15 +1,15 @@
-package com.github.justincranford.springs.persistenceorm.users.person;
+package com.github.justincranford.springs.persistenceorm.users.persona;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.LocationAddressType;
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.EmailAddressType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,38 +27,17 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-public class LocationAddressOrm {
+public class EmailAddressOrm {
 	@Column(nullable=false,columnDefinition="TINYINT")
-    private int rank;
+	private int rank;
 
-    @Column(length=64,nullable=false)
-    @NotNull
-	@NotBlank
-    private String street1;
-
-    @Column(length=64)
-//    @Null
-    private String street2;
-
-    @Column(length=64,nullable=false)
-    @NotNull
-	@NotBlank
-    private String city;
-
-    @Column(length=64,nullable=false)
-    @NotNull
-	@NotBlank
-    private String state;
-
-    @Column(length=64,nullable=false)
-    @NotNull
-	@NotBlank
-    private String country;
+	@Embedded
+    private EmailAddressRfc5321Orm emailAddress;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="location_address_type",length=3,nullable=false,columnDefinition="CHAR(3)")
+    @Column(name="email_address_type",length=3,nullable=false,columnDefinition="CHAR(3)")
     @Size(min=3,max=3)
     @NotNull
 	@NotBlank
-    private LocationAddressType type;
+    private EmailAddressType type;
 }

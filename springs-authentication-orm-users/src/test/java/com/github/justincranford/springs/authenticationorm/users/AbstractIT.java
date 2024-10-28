@@ -19,7 +19,7 @@ import com.github.justincranford.springs.authenticationorm.users.config.SpringsA
 import com.github.justincranford.springs.authenticationorm.users.session.SessionOrmRepository;
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonaOrmRepository;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
 
 import io.micrometer.core.instrument.MeterRegistry;

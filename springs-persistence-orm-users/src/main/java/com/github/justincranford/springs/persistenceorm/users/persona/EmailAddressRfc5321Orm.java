@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.users.person;
+package com.github.justincranford.springs.persistenceorm.users.persona;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

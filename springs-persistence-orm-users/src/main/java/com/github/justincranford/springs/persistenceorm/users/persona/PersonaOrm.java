@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.users.person;
+package com.github.justincranford.springs.persistenceorm.users.persona;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,8 @@ import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonaType;
+import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.PersonaType;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -64,7 +65,7 @@ public class PersonaOrm extends AbstractEntity {
     @NotNull
     @Size(min=1,max=5)
     @Builder.Default
-    private List<@NotNull EmailAddressOrm> emailAddresses = new ArrayList<>(2);
+    private List<com.github.justincranford.springs.persistenceorm.users.persona.EmailAddressOrm> emailAddresses = new ArrayList<>(2);
 
     @ElementCollection
     @CollectionTable(
@@ -78,7 +79,7 @@ public class PersonaOrm extends AbstractEntity {
     @NotNull
     @Size(min=1,max=5)
     @Builder.Default
-    private List<@NotNull PhoneNumberOrm> phoneNumbers = new ArrayList<>(1);
+    private List<com.github.justincranford.springs.persistenceorm.users.persona.PhoneNumberOrm> phoneNumbers = new ArrayList<>(1);
 
     @ElementCollection
     @CollectionTable(
@@ -92,7 +93,7 @@ public class PersonaOrm extends AbstractEntity {
     @NotNull
     @Size(min=1,max=4)
     @Builder.Default
-    private List<@NotNull LocationAddressOrm> locationAddresses = new ArrayList<>(1);
+    private List<com.github.justincranford.springs.persistenceorm.users.persona.LocationAddressOrm> locationAddresses = new ArrayList<>(1);
 
     @ElementCollection
     @CollectionTable(
@@ -106,7 +107,7 @@ public class PersonaOrm extends AbstractEntity {
     @NotNull
     @Size(min=0,max=5)
     @Builder.Default
-    private List<@NotNull UrlOrm> urls = new ArrayList<>(0);
+    private List<com.github.justincranford.springs.persistenceorm.users.persona.UrlOrm> urls = new ArrayList<>(0);
 
     @Enumerated(EnumType.STRING)
     @NotNull
