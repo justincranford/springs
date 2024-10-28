@@ -3,8 +3,8 @@ package com.github.justincranford.springs.persistenceorm.users.person;
 import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.Salutation;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.Suffix;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.SalutationType;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.SuffixType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -33,7 +33,7 @@ public class NameOrm {
     @Column(length=64)
     @Size(min=2,max=64)
     @Nullable
-    private Salutation salutation;
+    private SalutationType salutation;
 
     @Column(length=64,nullable=false)
     @NotNull
@@ -51,5 +51,5 @@ public class NameOrm {
     @Column(length=5)
     @Size(min=1,max=5)
     @Nullable
-    private Suffix suffix;
+    private SuffixType suffix;
 }

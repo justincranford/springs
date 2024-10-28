@@ -1,7 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.users.person.enums;
 
 @SuppressWarnings({"nls", "hiding"})
-public enum Salutation {
+public enum SalutationType {
     DR("Doctor"),
     MR("Mister"),
     MRS("Missus"),
@@ -705,7 +705,7 @@ public enum Salutation {
 
     private final String value;
 
-    Salutation(final String value) {
+    SalutationType(final String value) {
         this.value = value;
     }
 

@@ -11,7 +11,7 @@ import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonStatus;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonStatusType;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
 
 import jakarta.persistence.CascadeType;
@@ -76,7 +76,7 @@ public class PersonOrm extends AbstractEntity {
     @Column(nullable=false,length=6)
 //    @Size(min=2,max=6)
     @NotNull
-    private PersonStatus status;
+    private PersonStatusType status;
 
     @ElementCollection
     @CollectionTable(

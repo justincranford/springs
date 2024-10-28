@@ -1,7 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.users.person.enums;
 
 @SuppressWarnings({"nls", "hiding"})
-public enum Suffix {
+public enum SuffixType {
     JR("Junior"),
     SR("Senior"),
     II("Second"),
@@ -27,7 +27,7 @@ public enum Suffix {
 
     private final String value;
 
-    Suffix(final String value) {
+    SuffixType(final String value) {
         this.value = value;
     }
 

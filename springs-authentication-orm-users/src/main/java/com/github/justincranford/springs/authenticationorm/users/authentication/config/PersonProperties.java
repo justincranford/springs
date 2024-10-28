@@ -7,11 +7,11 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-import com.github.justincranford.springs.persistenceorm.users.person.enums.I18nLanguage;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.L10nRegion;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.Salutation;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonStatus;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.Suffix;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.I18nLanguageType;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.L10nRegionType;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.SalutationType;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonStatusType;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.SuffixType;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.EmailAddressType;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.LocationAddressType;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.PersonaType;
@@ -55,7 +55,7 @@ public class PersonProperties {
         private String password;
         private Name name;
         private LocalDate dateOfBirth;
-        private PersonStatus status;
+        private PersonStatusType status;
         private List<Language> languages;
         private List<String> timezones;
         private List<Persona> personas;
@@ -63,8 +63,8 @@ public class PersonProperties {
         @Getter
         @Setter
         public static class Language {
-            private I18nLanguage i18n;
-            private L10nRegion l10n;
+            private I18nLanguageType i18n;
+            private L10nRegionType l10n;
             private boolean canSpeak;
             private boolean canListen;
             private boolean canRead;
@@ -74,11 +74,11 @@ public class PersonProperties {
         @Getter
         @Setter
         public static class Name {
-            private Salutation salutation;
+            private SalutationType salutation;
             private String first;
             private String middle;
             private String last;
-            private Suffix suffix;
+            private SuffixType suffix;
         }
 
         @Getter

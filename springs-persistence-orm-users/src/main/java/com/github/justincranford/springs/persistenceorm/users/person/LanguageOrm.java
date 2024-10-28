@@ -1,8 +1,8 @@
 package com.github.justincranford.springs.persistenceorm.users.person;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.I18nLanguage;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.L10nRegion;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.I18nLanguageType;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.L10nRegionType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -34,13 +34,13 @@ public class LanguageOrm {
     @Column(length=2,nullable=false,columnDefinition="CHAR(2)")
     @Size(min=2,max=2)
     @NotNull
-    private I18nLanguage i18n;
+    private I18nLanguageType i18n;
 
     @Enumerated(EnumType.STRING)
     @Column(length=2,nullable=false,columnDefinition="CHAR(2)")
     @Size(min=2,max=2)
     @NotNull
-    private L10nRegion l10n;
+    private L10nRegionType l10n;
 
     @Column(nullable=false)
     @NotNull

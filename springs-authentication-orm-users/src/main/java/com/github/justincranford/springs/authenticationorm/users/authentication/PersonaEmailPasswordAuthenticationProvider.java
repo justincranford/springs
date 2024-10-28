@@ -12,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.github.justincranford.springs.authenticationorm.users.authentication.exception.PersonaEmailNotFoundException;
 import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.EmailAddressRfc5321Orm;
