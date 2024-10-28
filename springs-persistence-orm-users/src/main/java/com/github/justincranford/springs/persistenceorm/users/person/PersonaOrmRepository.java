@@ -15,5 +15,5 @@ public interface PersonaOrmRepository extends ListCrudRepository<PersonaOrm, Lon
     Optional<PersonOrm> findPersonByEmailAddress(@Param("emailAddress") String emailAddress);
 
     @Query("SELECT p.password FROM PersonaOrm po JOIN po.person p JOIN po.emailAddresses ea WHERE ea.emailAddress = :emailAddress")
-    Optional<Password> findPasswordByEmailAddress(@Param("emailAddress") String emailAddress);
+    Optional<PasswordOrm> findPasswordByEmailAddress(@Param("emailAddress") String emailAddress);
 }

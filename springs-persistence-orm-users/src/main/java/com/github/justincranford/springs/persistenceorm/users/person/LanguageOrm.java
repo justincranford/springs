@@ -26,7 +26,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-public class Language {
+public class LanguageOrm {
 	@Column(nullable=false,columnDefinition="TINYINT")
 	private int rank;
 

@@ -41,7 +41,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(fluent=true)
 @SuppressWarnings({"nls"})
-public class Password {
+public class PasswordOrm {
     @PasswordStrength
     @Column(length=64)
     @Size(min=8,max=64)

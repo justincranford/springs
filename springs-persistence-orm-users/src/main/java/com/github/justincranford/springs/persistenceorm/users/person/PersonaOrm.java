@@ -64,7 +64,7 @@ public class PersonaOrm extends AbstractEntity {
     @NotNull
     @Size(min=1,max=5)
     @Builder.Default
-    private List<@NotNull EmailAddress> emailAddresses = new ArrayList<>(2);
+    private List<@NotNull EmailAddressOrm> emailAddresses = new ArrayList<>(2);
 
     @ElementCollection
     @CollectionTable(
@@ -78,7 +78,7 @@ public class PersonaOrm extends AbstractEntity {
     @NotNull
     @Size(min=1,max=5)
     @Builder.Default
-    private List<@NotNull PhoneNumber> phoneNumbers = new ArrayList<>(1);
+    private List<@NotNull PhoneNumberOrm> phoneNumbers = new ArrayList<>(1);
 
     @ElementCollection
     @CollectionTable(
@@ -92,7 +92,7 @@ public class PersonaOrm extends AbstractEntity {
     @NotNull
     @Size(min=1,max=4)
     @Builder.Default
-    private List<@NotNull LocationAddress> locationAddresses = new ArrayList<>(1);
+    private List<@NotNull LocationAddressOrm> locationAddresses = new ArrayList<>(1);
 
     @ElementCollection
     @CollectionTable(
@@ -106,7 +106,7 @@ public class PersonaOrm extends AbstractEntity {
     @NotNull
     @Size(min=0,max=5)
     @Builder.Default
-    private List<@NotNull URL> urls = new ArrayList<>(0);
+    private List<@NotNull UrlOrm> urls = new ArrayList<>(0);
 
     @Enumerated(EnumType.STRING)
     @NotNull

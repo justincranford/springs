@@ -12,8 +12,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.github.justincranford.springs.persistenceorm.users.person.EmailAddressRfc5321;
-import com.github.justincranford.springs.persistenceorm.users.person.Password;
+import com.github.justincranford.springs.persistenceorm.users.person.EmailAddressRfc5321Orm;
+import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonaOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonaOrmRepository;
@@ -25,7 +25,7 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
     @Autowired private PersonaOrmRepository personaRepository;
     @Autowired private PasswordEncoder passwordEncoder;
 
-    private EmailAddressRfc5321.EmailConverter emailConverter = new EmailAddressRfc5321.EmailConverter(); 
+    private EmailAddressRfc5321Orm.EmailConverter emailConverter = new EmailAddressRfc5321Orm.EmailConverter(); 
 
 	@Override
     public Authentication authenticate(final Authentication unauthenticated) throws AuthenticationException {
@@ -37,7 +37,7 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 		final String      personaEmail   = unauthenticatedEmail;
         final PersonaType personaType    = persona.personaType();
         final PersonOrm   person         = persona.person();
-		final Password    personPassword = person.password();
+		final PasswordOrm    personPassword = person.password();
 		if (this.passwordEncoder.matches(unauthenticatedPassword, personPassword.password())) {
 			return PersonaEmailPasswordAuthenticatedToken.authenticated(personaEmail, personPassword, List.of(new SimpleGrantedAuthority(personaType.name())));
         }

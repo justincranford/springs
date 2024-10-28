@@ -62,10 +62,10 @@ public class PersonOrm extends AbstractEntity {
     private String username;
 
     @Embedded
-    private Password password;
+    private PasswordOrm password;
 
     @Embedded // Use @OneToOne if Name will be an independent entity
-    private Name name;
+    private NameOrm name;
 
     @Column
 //	@Null
@@ -89,7 +89,7 @@ public class PersonOrm extends AbstractEntity {
     @NotNull
     @Size(min=1,max=4)
     @Builder.Default
-    private List<@NotNull Language> languages = new ArrayList<>();
+    private List<@NotNull LanguageOrm> languages = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(

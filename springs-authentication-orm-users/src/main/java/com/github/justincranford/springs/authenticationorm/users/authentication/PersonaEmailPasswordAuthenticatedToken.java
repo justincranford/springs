@@ -6,28 +6,28 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 
-import com.github.justincranford.springs.persistenceorm.users.person.Password;
+import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
 
 @SuppressWarnings({"nls","hiding"})
 public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = -4662613398693032846L;
 
-	public static PersonaEmailPasswordAuthenticatedToken authenticated(final String principal, final Password password, final Collection<? extends GrantedAuthority> authorities) {
+	public static PersonaEmailPasswordAuthenticatedToken authenticated(final String principal, final PasswordOrm password, final Collection<? extends GrantedAuthority> authorities) {
 		return new PersonaEmailPasswordAuthenticatedToken(principal, password, authorities);
 	}
-	public static PersonaEmailPasswordAuthenticatedToken unauthenticated(final String principal, final Password password) {
+	public static PersonaEmailPasswordAuthenticatedToken unauthenticated(final String principal, final PasswordOrm password) {
 		return new PersonaEmailPasswordAuthenticatedToken(principal, password);
 	}
 
 	private final String emailAddress;
-	private Password password;
-	private PersonaEmailPasswordAuthenticatedToken(final String emailAddress, final Password password) {
+	private PasswordOrm password;
+	private PersonaEmailPasswordAuthenticatedToken(final String emailAddress, final PasswordOrm password) {
 		super(null);
 		this.emailAddress = emailAddress;
 		this.password = password;
 		setAuthenticated(false);
 	}
-	private PersonaEmailPasswordAuthenticatedToken(final String emailAddress, final Password password, Collection<? extends GrantedAuthority> authorities) {
+	private PersonaEmailPasswordAuthenticatedToken(final String emailAddress, final PasswordOrm password, Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
 		this.emailAddress = emailAddress;
 		this.password = password;

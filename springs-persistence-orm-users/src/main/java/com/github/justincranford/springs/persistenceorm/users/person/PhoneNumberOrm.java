@@ -1,7 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.users.person;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.LocationAddressType;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.PhoneNumberType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -9,7 +9,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,38 +27,31 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-public class LocationAddress {
+public class PhoneNumberOrm {
 	@Column(nullable=false,columnDefinition="TINYINT")
     private int rank;
 
-    @Column(length=64,nullable=false)
-    @NotNull
+	@Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Phone number must be in valid E.164 format. Optional + prefix, non-zero first digit, 1-15 digits total.")
+    @Column(length=16,nullable=false)
+	@Size(min=8,max=16) // +, then a non-zero digit, then up to 14 additional digits
+	@NotNull
 	@NotBlank
-    private String street1;
+    private String phoneNumber;
 
-    @Column(length=64)
-//    @Null
-    private String street2;
-
-    @Column(length=64,nullable=false)
+    @Column(nullable=false)
     @NotNull
-	@NotBlank
-    private String city;
+    private boolean canTalk;
 
-    @Column(length=64,nullable=false)
-    @NotNull
-	@NotBlank
-    private String state;
+    @Column(nullable=false)
+    private boolean canText;
 
-    @Column(length=64,nullable=false)
-    @NotNull
-	@NotBlank
-    private String country;
+    @Column(nullable=false)
+    private boolean hasData;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="location_address_type",length=3,nullable=false,columnDefinition="CHAR(3)")
-    @Size(min=3,max=3)
+    @Column(name="phone_number_type",length=16,nullable=false)
+	@Size(min=2,max=16)
     @NotNull
 	@NotBlank
-    private LocationAddressType type;
+    private PhoneNumberType type;
 }

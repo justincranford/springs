@@ -9,18 +9,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.github.justincranford.springs.persistenceorm.users.person.EmailAddress;
-import com.github.justincranford.springs.persistenceorm.users.person.EmailAddressRfc5321;
-import com.github.justincranford.springs.persistenceorm.users.person.Language;
-import com.github.justincranford.springs.persistenceorm.users.person.LocationAddress;
-import com.github.justincranford.springs.persistenceorm.users.person.Name;
-import com.github.justincranford.springs.persistenceorm.users.person.Password;
+import com.github.justincranford.springs.persistenceorm.users.person.EmailAddressOrm;
+import com.github.justincranford.springs.persistenceorm.users.person.EmailAddressRfc5321Orm;
+import com.github.justincranford.springs.persistenceorm.users.person.LanguageOrm;
+import com.github.justincranford.springs.persistenceorm.users.person.LocationAddressOrm;
+import com.github.justincranford.springs.persistenceorm.users.person.NameOrm;
+import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonaOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonaOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.person.PhoneNumber;
-import com.github.justincranford.springs.persistenceorm.users.person.URL;
+import com.github.justincranford.springs.persistenceorm.users.person.PhoneNumberOrm;
+import com.github.justincranford.springs.persistenceorm.users.person.UrlOrm;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
@@ -48,7 +48,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
         for (final PersonProperties.Person user : users) {
             final PersonOrm createPersonOrm = new PersonOrm();
             createPersonOrm.username(user.getUsername());
-            createPersonOrm.password(new Password(user.getPassword()));
+            createPersonOrm.password(new PasswordOrm(user.getPassword()));
             createPersonOrm.name(namePropertiesToOrm(user.getName()));
             createPersonOrm.dateOfBirth(user.getDateOfBirth());
             createPersonOrm.status(user.getStatus());
@@ -72,8 +72,8 @@ public class LoadableUserDetailsService implements UserDetailsService {
         }
     }
 
-    private static Name namePropertiesToOrm(PersonProperties.Person.Name nameProperties) {
-		return Name.builder()
+    private static NameOrm namePropertiesToOrm(PersonProperties.Person.Name nameProperties) {
+		return NameOrm.builder()
 			.salutation(nameProperties.getSalutation())
 			.first(nameProperties.getFirst())
 			.middle(nameProperties.getMiddle())
@@ -81,11 +81,11 @@ public class LoadableUserDetailsService implements UserDetailsService {
 			.suffix(nameProperties.getSuffix())
 			.build();
 	}
-    private static List<Language> languagesPropertiesToOrm(List<PersonProperties.Person.Language> languagesProperties) {
+    private static List<LanguageOrm> languagesPropertiesToOrm(List<PersonProperties.Person.Language> languagesProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return languagesProperties.stream()
     		.map(languageProperties ->
-    			Language.builder()
+    			LanguageOrm.builder()
 					.rank(rank.getAndIncrement())
 					.i18n(languageProperties.getI18n())
 					.l10n(languageProperties.getL10n())
@@ -97,23 +97,23 @@ public class LoadableUserDetailsService implements UserDetailsService {
     		)
     		.toList();
 	}
-    private static List<EmailAddress> emailAddressesPropertiesToOrm(List<PersonProperties.Person.Persona.EmailAddress> emailAddressesProperties) {
+    private static List<EmailAddressOrm> emailAddressesPropertiesToOrm(List<PersonProperties.Person.Persona.EmailAddress> emailAddressesProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return emailAddressesProperties.stream()
     		.map(emailAddressProperties ->
-    			EmailAddress.builder()
+    			EmailAddressOrm.builder()
     				.rank(rank.getAndIncrement())
-					.emailAddress(new EmailAddressRfc5321(emailAddressProperties.getEmailAddress()))
+					.emailAddress(new EmailAddressRfc5321Orm(emailAddressProperties.getEmailAddress()))
 					.type(emailAddressProperties.getType())
 					.build()
     		)
     		.toList();
 	}
-    private static List<PhoneNumber> phoneNumberPropertiesToOrm(List<PersonProperties.Person.Persona.PhoneNumber> phoneNumbersProperties) {
+    private static List<PhoneNumberOrm> phoneNumberPropertiesToOrm(List<PersonProperties.Person.Persona.PhoneNumber> phoneNumbersProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return phoneNumbersProperties.stream()
     		.map(phoneNumberProperties ->
-    			PhoneNumber.builder()
+    			PhoneNumberOrm.builder()
     				.rank(rank.getAndIncrement())
 					.phoneNumber(phoneNumberProperties.getPhoneNumber())
 					.type(phoneNumberProperties.getType())
@@ -121,11 +121,11 @@ public class LoadableUserDetailsService implements UserDetailsService {
     		)
     		.toList();
 	}
-    private static List<LocationAddress> locationAddressPropertiesToOrm(List<PersonProperties.Person.Persona.LocationAddress> locationAddresssProperties) {
+    private static List<LocationAddressOrm> locationAddressPropertiesToOrm(List<PersonProperties.Person.Persona.LocationAddress> locationAddresssProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return locationAddresssProperties.stream()
     		.map(locationAddressProperties ->
-    			LocationAddress.builder()
+    			LocationAddressOrm.builder()
 					.rank(rank.getAndIncrement())
 					.street1(locationAddressProperties.getStreet1())
 					.street2(locationAddressProperties.getStreet2())
@@ -137,11 +137,11 @@ public class LoadableUserDetailsService implements UserDetailsService {
     		)
     		.toList();
 	}
-    private static List<URL> urlPropertiesToOrm(List<PersonProperties.Person.Persona.URL> urlsProperties) {
+    private static List<UrlOrm> urlPropertiesToOrm(List<PersonProperties.Person.Persona.URL> urlsProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return urlsProperties.stream()
     		.map(urlProperties ->
-    			URL.builder()
+    			UrlOrm.builder()
     				.rank(rank.getAndIncrement())
 					.url(urlProperties.getUrl())
 					.type(urlProperties.getType())
