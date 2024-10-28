@@ -27,7 +27,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-class Name {
+public class Name {
     @Enumerated(EnumType.STRING)
     @Column(length=64)
     @Size(min=2,max=64)

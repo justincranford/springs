@@ -16,6 +16,7 @@ public enum PersonaType {
     INT("Intern", "Stagiaire", "Practicante", "Temporary intern or trainee"),
     SUP("Supervisor", "Superviseur", "Supervisor", "Supervisor or overseer"),
     ADM("Administrator", "Administrateur", "Administrador", "Administrative personnel"),
+    OPR("Operator", "?", "?", "Operator personnel"),
     CON("Consultant", "Consultant", "Consultor", "Consultant or advisor"),
     FAM("Family Member", "Membre de la famille", "Familiar", "Relative or family member"),
     FRD("Friend", "Ami", "Amigo", "Friend or acquaintance"),

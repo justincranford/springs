@@ -27,7 +27,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-class PhoneNumber {
+public class PhoneNumber {
 	@Column(nullable=false,columnDefinition="TINYINT")
     private int rank;
 

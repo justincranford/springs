@@ -26,7 +26,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-class Language {
+public class Language {
     @Enumerated(EnumType.STRING)
     @Column(length=2,nullable=false,columnDefinition="CHAR(2)")
     @Size(min=2,max=2)

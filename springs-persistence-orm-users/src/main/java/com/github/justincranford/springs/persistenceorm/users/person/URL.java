@@ -26,7 +26,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-class URL {
+public class URL {
 	@Column(nullable=false,columnDefinition="TINYINT")
     private int rank;
 

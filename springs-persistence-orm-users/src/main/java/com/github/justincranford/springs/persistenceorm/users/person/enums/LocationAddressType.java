@@ -2,6 +2,7 @@ package com.github.justincranford.springs.persistenceorm.users.person.enums;
 
 @SuppressWarnings({"nls", "hiding"})
 public enum LocationAddressType {
+    WRK("Work", "?", "?", "Work office"),
     HME("Home", "Domicile", "Casa", "Primary residence"),
     POB("P.O. Box", "Boîte postale", "Apartado postal", "Postal box address"),
     VAC("Vacation", "Vacances", "Vacaciones", "Vacation home or location"),
