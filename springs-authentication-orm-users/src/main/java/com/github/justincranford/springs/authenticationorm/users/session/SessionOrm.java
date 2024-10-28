@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.users.session;
+package com.github.justincranford.springs.authenticationorm.users.session;
 
 import java.time.OffsetDateTime;
 
@@ -57,7 +57,7 @@ public class SessionOrm extends AbstractEntity {
     @Builder.Default
 	private OffsetDateTime expiresAt = DateTimeUtil.nowUtcTruncatedToMicroseconds().plusMinutes(30L);
 
-    /*package*/ void delete() {
-    	this.persona.deleteSession(this); // cascade delete through persona and person
-	}
+//    /*package*/ void delete() {
+//    	this.persona.deleteSession(this); // cascade delete through persona and person
+//	}
 }

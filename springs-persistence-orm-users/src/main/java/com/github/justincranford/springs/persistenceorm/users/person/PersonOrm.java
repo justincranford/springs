@@ -11,7 +11,6 @@ import org.hibernate.envers.Audited;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.Status;
-import com.github.justincranford.springs.persistenceorm.users.session.SessionOrm;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -112,34 +111,34 @@ public class PersonOrm extends AbstractEntity {
 	@Builder.Default
     private List<PersonaOrm> personas = new ArrayList<>(1);
 
-    @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
-    @OrderBy("createdAt DESC")
-    @NotNull
-    @Size(min=0,max=Integer.MAX_VALUE)
-    private List<SessionOrm> sessions;
-
-    public void addSession(final SessionOrm session) {
-    	this.addSession(session, this.personas.get(0));
-	}
-    public void addSession(final SessionOrm session, final PersonaOrm persona) {
-        this.addSessionWithOptionalCascade(session, persona, true);
-	}
-    public void deleteSession(final SessionOrm session) {
-    	this.deleteSessionWithOptionalCascade(session, true);
-    }
-
-	/*package*/ void addSessionWithOptionalCascade(final SessionOrm session, final PersonaOrm persona, final boolean cascade) {
-		this.sessions.add(session);
-        session.person(this);
-        if (cascade) {
-            persona.addSessionWithOptionalCascade(session, false);
-        }
-	}
-	/*package*/ void deleteSessionWithOptionalCascade(final SessionOrm session, final boolean cascade) {
-		this.sessions.remove(session);
-    	session.person(null);
-    	if (cascade) {
-        	session.persona().deleteSession(session);
-    	}
-	}
+//    @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
+//    @OrderBy("createdAt DESC")
+//    @NotNull
+//    @Size(min=0,max=Integer.MAX_VALUE)
+//    private List<SessionOrm> sessions;
+//
+//    public void addSession(final SessionOrm session) {
+//    	this.addSession(session, this.personas.get(0));
+//	}
+//    public void addSession(final SessionOrm session, final PersonaOrm persona) {
+//        this.addSessionWithOptionalCascade(session, persona, true);
+//	}
+//    public void deleteSession(final SessionOrm session) {
+//    	this.deleteSessionWithOptionalCascade(session, true);
+//    }
+//
+//	/*package*/ void addSessionWithOptionalCascade(final SessionOrm session, final PersonaOrm persona, final boolean cascade) {
+//		this.sessions.add(session);
+//        session.person(this);
+//        if (cascade) {
+//            persona.addSessionWithOptionalCascade(session, false);
+//        }
+//	}
+//	/*package*/ void deleteSessionWithOptionalCascade(final SessionOrm session, final boolean cascade) {
+//		this.sessions.remove(session);
+//    	session.person(null);
+//    	if (cascade) {
+//        	session.persona().deleteSession(session);
+//    	}
+//	}
 }

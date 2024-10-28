@@ -10,7 +10,6 @@ import org.hibernate.envers.Audited;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonaType;
-import com.github.justincranford.springs.persistenceorm.users.session.SessionOrm;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -119,31 +118,31 @@ public class PersonaOrm extends AbstractEntity {
     @JoinColumn(name="person_id",foreignKey=@ForeignKey(name="fk_persona_personid_2_person_id"))
     private PersonOrm person;
 
-    @OneToMany(mappedBy="persona",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
-    @OrderBy("createdAt DESC")
-    @NotNull
-    @Size(min=0,max=Integer.MAX_VALUE)
-    private List<SessionOrm> sessions;
-
-    public void addSession(final SessionOrm session) {
-        addSessionWithOptionalCascade(session, true);
-	}
-    public void deleteSession(final SessionOrm session) {
-    	deleteSessionWithOptionalCascade(session, true);
-    }
-
-    /*package*/ void addSessionWithOptionalCascade(final SessionOrm session, final boolean cascade) {
-		this.sessions.add(session);
-		session.persona(this);
-        if (cascade) {
-            this.person.addSessionWithOptionalCascade(session, this, false);
-        }
-	}
-    /*package*/ void deleteSessionWithOptionalCascade(final SessionOrm session, final boolean cascade) {
-    	this.sessions.remove(session);
-        session.persona(null);
-        if (cascade) {
-        	this.person.deleteSessionWithOptionalCascade(session, false);
-        }
-	}
+//    @OneToMany(mappedBy="persona",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
+//    @OrderBy("createdAt DESC")
+//    @NotNull
+//    @Size(min=0,max=Integer.MAX_VALUE)
+//    private List<SessionOrm> sessions;
+//
+//    public void addSession(final SessionOrm session) {
+//        addSessionWithOptionalCascade(session, true);
+//	}
+//    public void deleteSession(final SessionOrm session) {
+//    	deleteSessionWithOptionalCascade(session, true);
+//    }
+//
+//    /*package*/ void addSessionWithOptionalCascade(final SessionOrm session, final boolean cascade) {
+//		this.sessions.add(session);
+//		session.persona(this);
+//        if (cascade) {
+//            this.person.addSessionWithOptionalCascade(session, this, false);
+//        }
+//	}
+//    /*package*/ void deleteSessionWithOptionalCascade(final SessionOrm session, final boolean cascade) {
+//    	this.sessions.remove(session);
+//        session.persona(null);
+//        if (cascade) {
+//        	this.person.deleteSessionWithOptionalCascade(session, false);
+//        }
+//	}
 }

@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.users.session;
+package com.github.justincranford.springs.authenticationorm.users.session;
 
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.history.RevisionRepository;

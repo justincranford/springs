@@ -13,11 +13,12 @@ import com.github.justincranford.springs.util.security.hashes.properties.Springs
 @Configuration
 @EnableConfigurationProperties
 @ComponentScan(
-	basePackageClasses = {SpringsUtilSecurityHashesProperties.class, EncodersConfiguration.class}
+	basePackageClasses = {SpringsUtilSecurityHashesProperties.class}
 )
 @Import({
 	SpringsUtilObservabilityConfiguration.class,
-	SpringsUtilJsonConfiguration.class
+	SpringsUtilJsonConfiguration.class,
+	EncodersConfiguration.class
 })
 public class SpringsUtilSecurityHashesConfiguration {
 	// do nothing

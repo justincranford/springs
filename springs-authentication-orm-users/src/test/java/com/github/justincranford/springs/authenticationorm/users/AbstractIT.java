@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.users;
+package com.github.justincranford.springs.authenticationorm.users;
 
 import java.util.List;
 
@@ -15,8 +15,9 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import com.github.justincranford.springs.authenticationorm.users.config.SpringsAuthenticationOrmUsersConfiguration;
+import com.github.justincranford.springs.authenticationorm.users.session.SessionOrmRepository;
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
-import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonaOrmRepository;
 import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
@@ -30,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = {
-        SpringsPersistenceOrmUsersConfiguration.class,
+		SpringsAuthenticationOrmUsersConfiguration.class,
         SpringsUtilTestContainers.class
     }
 )
@@ -54,6 +55,8 @@ public class AbstractIT {
     private PersonOrmRepository personOrmRepository;
     @Autowired
     private PersonaOrmRepository personaOrmRepository;
+    @Autowired
+    private SessionOrmRepository sessionOrmRepository;
     @Autowired
     private SpringsPersistenceOrmBaseProperties springsPersistenceOrmBaseProperties;
 

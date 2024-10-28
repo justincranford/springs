@@ -40,7 +40,7 @@ import lombok.experimental.Accessors;
 @SuppressWarnings("nls")
 public class EmailAddressRfc5321 {
 	@EmailRfc5321 // N.B. applied before converter
-	@Convert(converter=LowercaseStringConverter.class) // N.B. applied after validator
+	@Convert(converter=EmailConverter.class) // N.B. applied after validator
     @Column(length=254,nullable=false,unique=true) // RFCs 5321 & 5322
     @Size(min=3,max=254) // EX: 64 local @ 189 domain, 1 local @ 252 domain
     @NotNull
@@ -66,7 +66,7 @@ public class EmailAddressRfc5321 {
     }
 
     @Converter
-    public static class LowercaseStringConverter implements AttributeConverter<String, String> {
+    public static class EmailConverter implements AttributeConverter<String, String> {
         @Override
         public String convertToDatabaseColumn(final String attribute) {
             return attribute == null ? null : attribute.toLowerCase();
