@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan(
-	basePackageClasses={CustomUserDetailsService.class, PersonProperties.class}
+	basePackageClasses={LoadableUserDetailsService.class, PersonProperties.class}
 )
 @EnableConfigurationProperties
 public class SpringsAuthenticationOrmUsersAuthenticationPropertiesConfiguration {

@@ -41,12 +41,12 @@ import lombok.ToString;
 public class PersonProperties {
     @NotNull
     @NotEmpty
-    private Person[] users;
-    public Person[] getUsers() {
+    private List<PersonProperties.Person> users;
+    public List<PersonProperties.Person> getUsers() {
         return this.users;
     }
-    public void setUsers(Person[] users) {
-        this.users = users;
+    public void setUsers(List<PersonProperties.Person> _users) {
+        this.users = _users;
     }
 
     @Getter

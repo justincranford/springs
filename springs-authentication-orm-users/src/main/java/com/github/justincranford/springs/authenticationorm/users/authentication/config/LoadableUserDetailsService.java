@@ -1,5 +1,7 @@
 package com.github.justincranford.springs.authenticationorm.users.authentication.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,13 +12,13 @@ import jakarta.annotation.PostConstruct;
 
 @Service
 @SuppressWarnings({"nls"})
-public class CustomUserDetailsService implements UserDetailsService {
+public class LoadableUserDetailsService implements UserDetailsService {
 	@Autowired
     private PersonProperties personProperties;
 
     @PostConstruct
     public void loadUsers() {
-        PersonProperties.Person[] users = this.personProperties.getUsers();
+        List<PersonProperties.Person> users = this.personProperties.getUsers();
     }
 
 	@Override
