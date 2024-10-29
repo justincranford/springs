@@ -9,6 +9,7 @@ import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.Audited;
 import org.springframework.lang.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonStatusType;
@@ -86,7 +87,7 @@ public class PersonOrm extends AbstractEntity {
     	indexes= {@Index(name="idx_languages_persona_id_rank",columnList="persona_id,rank")}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @OrderBy("personaId,rank")
+    @OrderBy("persona_id,rank")
     @NotNull
     @Size(min=1,max=4)
     @Builder.Default
@@ -105,41 +106,11 @@ public class PersonOrm extends AbstractEntity {
     @Builder.Default
     private List<@NotNull String> timezones = new ArrayList<>();
 
+    @JsonManagedReference
     @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
     @OrderBy("id,rank")
     @NotNull
     @Size(min=0,max=4)
 	@Builder.Default
     private List<PersonaOrm> personas = new ArrayList<>(1);
-
-//    @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
-//    @OrderBy("createdAt DESC")
-//    @NotNull
-//    @Size(min=0,max=Integer.MAX_VALUE)
-//    private List<SessionOrm> sessions;
-//
-//    public void addSession(final SessionOrm session) {
-//    	this.addSession(session, this.personas.get(0));
-//	}
-//    public void addSession(final SessionOrm session, final PersonaOrm persona) {
-//        this.addSessionWithOptionalCascade(session, persona, true);
-//	}
-//    public void deleteSession(final SessionOrm session) {
-//    	this.deleteSessionWithOptionalCascade(session, true);
-//    }
-//
-//	/*package*/ void addSessionWithOptionalCascade(final SessionOrm session, final PersonaOrm persona, final boolean cascade) {
-//		this.sessions.add(session);
-//        session.person(this);
-//        if (cascade) {
-//            persona.addSessionWithOptionalCascade(session, false);
-//        }
-//	}
-//	/*package*/ void deleteSessionWithOptionalCascade(final SessionOrm session, final boolean cascade) {
-//		this.sessions.remove(session);
-//    	session.person(null);
-//    	if (cascade) {
-//        	session.persona().deleteSession(session);
-//    	}
-//	}
 }

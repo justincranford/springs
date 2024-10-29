@@ -6,5 +6,5 @@ import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.history.RevisionRepository;
 
 public interface PersonOrmRepository extends ListCrudRepository<PersonOrm, Long>, RevisionRepository<PersonOrm, Long, Long> {
-	Optional<PersonOrm> findByUsername(String username);
+//	Optional<PersonOrm> findByUsername(String username);
 }

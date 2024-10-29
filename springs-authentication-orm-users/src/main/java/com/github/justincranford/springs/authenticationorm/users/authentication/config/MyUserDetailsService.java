@@ -30,12 +30,12 @@ public class MyUserDetailsService implements UserDetailsService {
 			return new PersonaDetails(true, personOrm.username(), personOrm, personaOrm);
 		}
 
-		final Optional<PersonOrm> optionalPersonOrm = this.personOrmRepository.findByUsername(username);
-		if (optionalPersonOrm.isPresent()) {
-			final PersonOrm  personOrm = optionalPersonOrm.get();
-			final PersonaOrm personaOrm = personOrm.personas().get(0);
-			return new PersonaDetails(false, personOrm.username(), personOrm, personaOrm);
-		}
+//		final Optional<PersonOrm> optionalPersonOrm = this.personOrmRepository.findByUsername(username);
+//		if (optionalPersonOrm.isPresent()) {
+//			final PersonOrm  personOrm = optionalPersonOrm.get();
+//			final PersonaOrm personaOrm = personOrm.personas().get(0);
+//			return new PersonaDetails(false, personOrm.username(), personOrm, personaOrm);
+//		}
 
 		throw new UsernameNotFoundException("User not found");
     }

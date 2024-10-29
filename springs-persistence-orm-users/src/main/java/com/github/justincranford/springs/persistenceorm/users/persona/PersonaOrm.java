@@ -7,6 +7,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.Audited;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
@@ -39,7 +40,7 @@ import lombok.experimental.Accessors;
 @Entity
 @Audited
 @Table(name="persona")
-@ToString(callSuper=true)
+@ToString(callSuper=true,exclude="person")
 @Builder(toBuilder=true)
 @SQLDelete(sql="UPDATE persona SET pre_delete_date_time=NOW() WHERE id=? AND version=?")
 @SQLRestriction(AbstractEntity.WHERE_CLAUSE)
@@ -61,7 +62,7 @@ public class PersonaOrm extends AbstractEntity {
 		uniqueConstraints={@UniqueConstraint(name="idx_email_address_persona_id_rank",columnNames={"persona_id","rank"})}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @OrderBy("personaId,rank")
+    @OrderBy("persona_id,rank")
     @NotNull
     @Size(min=1,max=5)
     @Builder.Default
@@ -75,7 +76,7 @@ public class PersonaOrm extends AbstractEntity {
 		uniqueConstraints={@UniqueConstraint(name="idx_phone_number_persona_id_rank",columnNames={"persona_id","rank"})}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @OrderBy("personaId,rank")
+    @OrderBy("persona_id,rank")
     @NotNull
     @Size(min=1,max=5)
     @Builder.Default
@@ -89,7 +90,7 @@ public class PersonaOrm extends AbstractEntity {
 		uniqueConstraints={@UniqueConstraint(name="idx_location_address_persona_id_rank",columnNames={"persona_id","rank"})}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @OrderBy("personaId,rank")
+    @OrderBy("persona_id,rank")
     @NotNull
     @Size(min=1,max=4)
     @Builder.Default
@@ -103,7 +104,7 @@ public class PersonaOrm extends AbstractEntity {
 		uniqueConstraints={@UniqueConstraint(name="idx_url_persona_id_rank",columnNames={"persona_id","rank"})}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @OrderBy("personaId,rank")
+    @OrderBy("persona_id,rank")
     @NotNull
     @Size(min=0,max=5)
     @Builder.Default
@@ -113,35 +114,8 @@ public class PersonaOrm extends AbstractEntity {
     @NotNull
     private PersonaType personaType;
 
+    @JsonBackReference
 	@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="person_id",foreignKey=@ForeignKey(name="fk_persona_personid_2_person_id"))
     private PersonOrm person;
-
-//    @OneToMany(mappedBy="persona",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
-//    @OrderBy("createdAt DESC")
-//    @NotNull
-//    @Size(min=0,max=Integer.MAX_VALUE)
-//    private List<SessionOrm> sessions;
-//
-//    public void addSession(final SessionOrm session) {
-//        addSessionWithOptionalCascade(session, true);
-//	}
-//    public void deleteSession(final SessionOrm session) {
-//    	deleteSessionWithOptionalCascade(session, true);
-//    }
-//
-//    /*package*/ void addSessionWithOptionalCascade(final SessionOrm session, final boolean cascade) {
-//		this.sessions.add(session);
-//		session.persona(this);
-//        if (cascade) {
-//            this.person.addSessionWithOptionalCascade(session, this, false);
-//        }
-//	}
-//    /*package*/ void deleteSessionWithOptionalCascade(final SessionOrm session, final boolean cascade) {
-//    	this.sessions.remove(session);
-//        session.persona(null);
-//        if (cascade) {
-//        	this.person.deleteSessionWithOptionalCascade(session, false);
-//        }
-//	}
 }
