@@ -45,7 +45,7 @@ import lombok.experimental.Accessors;
 @Entity
 @Audited
 @Table(name="person")
-@ToString(callSuper=true)
+@ToString(callSuper=true,exclude="password")
 @SQLDelete(sql="UPDATE person SET pre_delete_date_time=NOW() WHERE id=? AND version=?")
 @SQLRestriction(AbstractEntity.WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="person_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)

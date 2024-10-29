@@ -1,16 +1,18 @@
 package com.github.justincranford.springs.persistenceorm.users.properties;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import com.github.justincranford.springs.persistenceorm.users.person.enums.I18nLanguageType;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.L10nRegionType;
-import com.github.justincranford.springs.persistenceorm.users.person.enums.SalutationType;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonStatusType;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.SalutationType;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.SuffixType;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.EmailAddressType;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.LocationAddressType;
@@ -28,7 +30,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Component
-@ConfigurationProperties(prefix="springs.persistenceorm",ignoreUnknownFields=false,ignoreInvalidFields=false)
+@ConfigurationProperties(prefix="springs.persistenceorm.users", ignoreUnknownFields=false, ignoreInvalidFields=false)
 @PropertySource("classpath:springs-persistence-orm-users.properties")
 @Validated
 @Getter
@@ -37,33 +39,48 @@ import lombok.ToString;
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class SpringsPersistenceOrmUsersProperties {
+public class SpringsPersistenceOrmUsersPeopleProperties {
     @NotNull
     @NotEmpty
-    private List<SpringsPersistenceOrmUsersProperties.Person> users;
-    public List<SpringsPersistenceOrmUsersProperties.Person> getUsers() {
-        return this.users;
-    }
-    public void setUsers(List<SpringsPersistenceOrmUsersProperties.Person> _users) {
-        this.users = _users;
+    @Builder.Default
+    private List<SpringsPersistenceOrmUsersPeopleProperties.Person> people = new ArrayList<>();
+
+    public List<SpringsPersistenceOrmUsersPeopleProperties.Person> getPeople() {
+        return this.people;
     }
 
+    public void setPeople(List<SpringsPersistenceOrmUsersPeopleProperties.Person> _people) {
+        this.people = _people;
+    }
+
+    @Validated
     @Getter
     @Setter
+    @ToString(callSuper=false)
     public static class Person {
+    	@NotEmpty
         private String username;
+    	@Nullable
         private String password;
+    	@NotNull
         private Name name;
+    	@NotNull
         private LocalDate dateOfBirth;
+    	@NotNull
         private PersonStatusType status;
-        private List<Language> languages;
-        private List<String> timezones;
-        private List<Persona> personas;
+        private List<Language> languages = new ArrayList<>();
+        private List<String> timezones = new ArrayList<>();
+    	@NotEmpty
+        private List<Persona> personas = new ArrayList<>();
 
+        @Validated
         @Getter
         @Setter
+        @ToString(callSuper=false)
         public static class Language {
+        	@NotNull
             private I18nLanguageType i18n;
+        	@NotNull
             private L10nRegionType l10n;
             private boolean canSpeak;
             private boolean canListen;
@@ -71,57 +88,89 @@ public class SpringsPersistenceOrmUsersProperties {
             private boolean canWrite;
         }
 
+        @Validated
         @Getter
         @Setter
+        @ToString(callSuper=false)
         public static class Name {
+        	@Nullable
             private SalutationType salutation;
+        	@NotEmpty
             private String first;
+        	@Nullable
             private String middle;
+        	@Nullable
             private String last;
+        	@Nullable
             private SuffixType suffix;
         }
 
+        @Validated
         @Getter
         @Setter
+        @ToString(callSuper=false)
         public static class Persona {
-            private List<EmailAddress> emailAddresses;
-            private List<PhoneNumber> phoneNumbers;
-            private List<LocationAddress> locationAddresses;
-            private List<URL> urls;
+        	@NotEmpty
+            private List<EmailAddress> emailAddresses = new ArrayList<>();
+        	@NotEmpty
+            private List<PhoneNumber> phoneNumbers = new ArrayList<>();
+            private List<LocationAddress> locationAddresses = new ArrayList<>();
+            private List<URL> urls = new ArrayList<>();
+            @NotNull
             private PersonaType personaType;
 
+            @Validated
             @Getter
             @Setter
+            @ToString(callSuper=false)
             public static class EmailAddress {
+            	@NotEmpty
                 private String emailAddress;
+            	@NotNull
                 private EmailAddressType type;
             }
 
+            @Validated
             @Getter
             @Setter
+            @ToString(callSuper=false)
             public static class PhoneNumber {
+            	@NotEmpty
                 private String phoneNumber;
                 private boolean canTalk;
                 private boolean canText;
                 private boolean hasData;
+            	@NotNull
                 private PhoneNumberType type;
             }
 
+            @Validated
             @Getter
             @Setter
+            @ToString(callSuper=false)
             public static class LocationAddress {
+            	@NotEmpty
                 private String street1;
+            	@Nullable
                 private String street2;
+            	@NotEmpty
                 private String city;
+            	@NotEmpty
                 private String state;
+            	@NotEmpty
                 private String country;
+            	@NotNull
                 private LocationAddressType type;
             }
 
+            @Validated
             @Getter
             @Setter
+            @ToString(callSuper=false)
             public static class URL {
+            	@NotEmpty
                 private String url;
+            	@Nullable
                 private URLType type;
             }
         }

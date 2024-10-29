@@ -1,12 +1,9 @@
-package com.github.justincranford.springs.authenticationorm.users.authentication.config;
+package com.github.justincranford.springs.persistenceorm.users.properties;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.github.justincranford.springs.persistenceorm.users.person.LanguageOrm;
@@ -21,32 +18,25 @@ import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PhoneNumberOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.UrlOrm;
-import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersProperties;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 
 @Service
-@SuppressWarnings({"nls"})
-public class LoadableUserDetailsService implements UserDetailsService {
+public class LoadPeoplePropertiesIntoDatabase {
 	@Autowired
-    private SpringsPersistenceOrmUsersProperties personProperties;
+    private SpringsPersistenceOrmUsersPeopleProperties personProperties;
     @Autowired
     private PersonOrmRepository personOrmRepository;
     @Autowired
     private PersonaOrmRepository personaOrmRepository;
 
-	@Override
-    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        throw new UsernameNotFoundException("User not found");
-    }
-
-    @PostConstruct
     @Transactional
+    @PostConstruct
     public void loadUsers() {
-        final List<SpringsPersistenceOrmUsersProperties.Person> users = this.personProperties.getUsers();
+        final List<SpringsPersistenceOrmUsersPeopleProperties.Person> users = this.personProperties.getPeople();
         
-        for (final SpringsPersistenceOrmUsersProperties.Person user : users) {
+        for (final SpringsPersistenceOrmUsersPeopleProperties.Person user : users) {
             final PersonOrm createPersonOrm = new PersonOrm();
             createPersonOrm.username(user.getUsername());
             createPersonOrm.password(new PasswordOrm(user.getPassword()));
@@ -58,7 +48,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
             final PersonOrm createdPersonOrm = this.personOrmRepository.save(createPersonOrm);
 
             int rank = 0;
-            for (SpringsPersistenceOrmUsersProperties.Person.Persona persona : user.getPersonas()) {
+            for (SpringsPersistenceOrmUsersPeopleProperties.Person.Persona persona : user.getPersonas()) {
             	final PersonaOrm createPersonaOrm = new PersonaOrm();
                 createPersonaOrm.rank(rank++);
                 createPersonaOrm.emailAddresses(emailAddressesPropertiesToOrm(persona.getEmailAddresses()));
@@ -73,7 +63,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
         }
     }
 
-    private static NameOrm namePropertiesToOrm(SpringsPersistenceOrmUsersProperties.Person.Name nameProperties) {
+    private static NameOrm namePropertiesToOrm(SpringsPersistenceOrmUsersPeopleProperties.Person.Name nameProperties) {
 		return NameOrm.builder()
 			.salutation(nameProperties.getSalutation())
 			.first(nameProperties.getFirst())
@@ -82,7 +72,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
 			.suffix(nameProperties.getSuffix())
 			.build();
 	}
-    private static List<LanguageOrm> languagesPropertiesToOrm(List<SpringsPersistenceOrmUsersProperties.Person.Language> languagesProperties) {
+    private static List<LanguageOrm> languagesPropertiesToOrm(List<SpringsPersistenceOrmUsersPeopleProperties.Person.Language> languagesProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return languagesProperties.stream()
     		.map(languageProperties ->
@@ -98,7 +88,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
     		)
     		.toList();
 	}
-    private static List<EmailAddressOrm> emailAddressesPropertiesToOrm(List<SpringsPersistenceOrmUsersProperties.Person.Persona.EmailAddress> emailAddressesProperties) {
+    private static List<EmailAddressOrm> emailAddressesPropertiesToOrm(List<SpringsPersistenceOrmUsersPeopleProperties.Person.Persona.EmailAddress> emailAddressesProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return emailAddressesProperties.stream()
     		.map(emailAddressProperties ->
@@ -110,7 +100,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
     		)
     		.toList();
 	}
-    private static List<PhoneNumberOrm> phoneNumberPropertiesToOrm(List<SpringsPersistenceOrmUsersProperties.Person.Persona.PhoneNumber> phoneNumbersProperties) {
+    private static List<PhoneNumberOrm> phoneNumberPropertiesToOrm(List<SpringsPersistenceOrmUsersPeopleProperties.Person.Persona.PhoneNumber> phoneNumbersProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return phoneNumbersProperties.stream()
     		.map(phoneNumberProperties ->
@@ -122,7 +112,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
     		)
     		.toList();
 	}
-    private static List<LocationAddressOrm> locationAddressPropertiesToOrm(List<SpringsPersistenceOrmUsersProperties.Person.Persona.LocationAddress> locationAddresssProperties) {
+    private static List<LocationAddressOrm> locationAddressPropertiesToOrm(List<SpringsPersistenceOrmUsersPeopleProperties.Person.Persona.LocationAddress> locationAddresssProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return locationAddresssProperties.stream()
     		.map(locationAddressProperties ->
@@ -138,7 +128,7 @@ public class LoadableUserDetailsService implements UserDetailsService {
     		)
     		.toList();
 	}
-    private static List<UrlOrm> urlPropertiesToOrm(List<SpringsPersistenceOrmUsersProperties.Person.Persona.URL> urlsProperties) {
+    private static List<UrlOrm> urlPropertiesToOrm(List<SpringsPersistenceOrmUsersPeopleProperties.Person.Persona.URL> urlsProperties) {
     	final AtomicInteger rank = new AtomicInteger(0);
     	return urlsProperties.stream()
     		.map(urlProperties ->

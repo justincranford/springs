@@ -6,9 +6,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan(
-	basePackageClasses={SpringsPersistenceOrmUsersProperties.class}
+	basePackageClasses={SpringsPersistenceOrmUsersPeopleProperties.class, LoadPeoplePropertiesIntoDatabase.class}
 )
 @EnableConfigurationProperties
-public class SpringsPersistenceOrmUsersPropertiesConfiguration {
+public class SpringsPersistenceOrmUsersPeoplePropertiesConfiguration {
 	// do nothing
 }

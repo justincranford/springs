@@ -36,7 +36,7 @@ import lombok.experimental.Accessors;
 @Embeddable
 @Getter(onMethod=@__(@JsonProperty))
 @Setter
-@ToString(callSuper=true)
+@ToString(callSuper=true,exclude="password")
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor
