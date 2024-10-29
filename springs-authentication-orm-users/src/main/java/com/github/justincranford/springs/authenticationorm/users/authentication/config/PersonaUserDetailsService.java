@@ -15,7 +15,7 @@ import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm
 
 @Service
 @SuppressWarnings({"nls"})
-public class MyUserDetailsService implements UserDetailsService {
+public class PersonaUserDetailsService implements UserDetailsService {
     @Autowired
     private PersonOrmRepository personOrmRepository;
     @Autowired
@@ -27,14 +27,14 @@ public class MyUserDetailsService implements UserDetailsService {
 		if (optionalPersonaOrm.isPresent()) {
 			final PersonaOrm personaOrm = optionalPersonaOrm.get();
 			final PersonOrm  personOrm  = personaOrm.person();
-			return new PersonaDetails(true, personOrm.username(), personOrm, personaOrm);
+			return new PersonaUserDetails(true, personOrm.username(), personOrm, personaOrm);
 		}
 
 		final Optional<PersonOrm> optionalPersonOrm = this.personOrmRepository.findByUsername(username);
 		if (optionalPersonOrm.isPresent()) {
 			final PersonOrm  personOrm = optionalPersonOrm.get();
 			final PersonaOrm personaOrm = personOrm.personas().get(0);
-			return new PersonaDetails(false, personOrm.username(), personOrm, personaOrm);
+			return new PersonaUserDetails(false, personOrm.username(), personOrm, personaOrm);
 		}
 
 		throw new UsernameNotFoundException("User not found");

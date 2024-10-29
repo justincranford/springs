@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 @RequiredArgsConstructor
 @Getter
 @Accessors(fluent=true)
-public class PersonaDetails implements UserDetails {
+public class PersonaUserDetails implements UserDetails {
 	private static final long serialVersionUID = 1L;
 	private final boolean foundByPersona;
 	private final String personaEmailAddressOrPersonUsername;
