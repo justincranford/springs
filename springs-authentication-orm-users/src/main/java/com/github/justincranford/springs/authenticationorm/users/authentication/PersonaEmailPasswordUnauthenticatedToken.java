@@ -1,24 +1,19 @@
 package com.github.justincranford.springs.authenticationorm.users.authentication;
 
-import java.util.Collection;
-
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 
-import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
-
 @SuppressWarnings({"nls","hiding"})
-public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticationToken {
+public class PersonaEmailPasswordUnauthenticatedToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 1L;
 
 	private final String emailAddress;
-	private PasswordOrm password;
-	/*package*/ PersonaEmailPasswordAuthenticatedToken(final String emailAddress, final PasswordOrm password, Collection<? extends GrantedAuthority> authorities) {
-		super(authorities);
+	private String password;
+	public PersonaEmailPasswordUnauthenticatedToken(final String emailAddress, final String password) {
+		super(null);
 		this.emailAddress = emailAddress;
 		this.password = password;
-		super.setAuthenticated(true);
+		super.setAuthenticated(false);
 	}
 
 	@Override
@@ -33,8 +28,8 @@ public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticati
 
 	@Override
 	public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-		Assert.isTrue(isAuthenticated, "Set false is not supported");
-		super.setAuthenticated(true);
+		Assert.isTrue(!isAuthenticated, "Set true is not supported");
+		super.setAuthenticated(false);
 	}
 
 	@Override

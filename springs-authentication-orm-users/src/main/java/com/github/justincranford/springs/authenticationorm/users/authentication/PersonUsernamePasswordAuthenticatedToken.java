@@ -9,21 +9,21 @@ import org.springframework.util.Assert;
 import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
 
 @SuppressWarnings({"nls","hiding"})
-public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticationToken {
+public class PersonUsernamePasswordAuthenticatedToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 1L;
 
-	private final String emailAddress;
+	private final String username;
 	private PasswordOrm password;
-	/*package*/ PersonaEmailPasswordAuthenticatedToken(final String emailAddress, final PasswordOrm password, Collection<? extends GrantedAuthority> authorities) {
+	/*package*/ PersonUsernamePasswordAuthenticatedToken(final String username, final PasswordOrm password, Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
-		this.emailAddress = emailAddress;
+		this.username = username;
 		this.password = password;
 		super.setAuthenticated(true);
 	}
 
 	@Override
 	public Object getPrincipal() {
-		return this.emailAddress;
+		return this.username;
 	}
 
 	@Override

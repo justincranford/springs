@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan(
-	basePackageClasses={PersonaEmailPasswordAuthenticationProvider.class}
+	basePackageClasses={PersonaEmailPasswordAuthenticationProvider.class, PersonUsernamePasswordAuthenticationProvider.class}
 )
 public class SpringsAuthenticationOrmUsersAuthenticationConfiguration {
 	// do nothing
