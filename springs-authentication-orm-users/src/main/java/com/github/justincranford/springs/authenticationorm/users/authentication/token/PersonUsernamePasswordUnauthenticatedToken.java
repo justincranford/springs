@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.authenticationorm.users.authentication;
+package com.github.justincranford.springs.authenticationorm.users.authentication.token;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.util.Assert;

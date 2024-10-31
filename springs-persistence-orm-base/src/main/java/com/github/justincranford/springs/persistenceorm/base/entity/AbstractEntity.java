@@ -71,7 +71,7 @@ public class AbstractEntity {
 	@NotNull
 	@NotEmpty
 	@Size(min=40,max=40)
-    @Column(length=40,unique=true,nullable=false,updatable=false,columnDefinition="BINARY(40)")
+    @Column(length=40,unique=true,nullable=false,columnDefinition="BINARY(40)")
     private byte[] externalId;
 
 	@Column(updatable=false,nullable=false)
@@ -113,8 +113,8 @@ public class AbstractEntity {
 
     @PrePersist
 	public void prePersist() {
-		this.externalId = SecureRandomUtil.timeStampBytesAndRandomBytes(8, 32);
 		this.prePersistDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
+		this.externalId = this.generateSessionId();
 	}
 	@PostPersist
 	public void postPersist() {
@@ -150,4 +150,8 @@ public class AbstractEntity {
     public final int hashCode() {
         return this.getClass().hashCode();
     }
+
+    protected static byte[] generateSessionId() {
+		return SecureRandomUtil.timeStampBytesAndRandomBytes(8, 32);
+	}
 }

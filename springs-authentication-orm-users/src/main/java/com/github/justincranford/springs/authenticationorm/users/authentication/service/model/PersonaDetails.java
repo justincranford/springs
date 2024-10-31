@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.authenticationorm.users.authentication.config;
+package com.github.justincranford.springs.authenticationorm.users.authentication.service.model;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,15 +18,15 @@ import lombok.experimental.Accessors;
 @RequiredArgsConstructor
 @Getter
 @Accessors(fluent=true)
-public class PersonaUserDetails implements UserDetails {
+@SuppressWarnings({"nls"})
+public class PersonaDetails implements UserDetails {
 	private static final long serialVersionUID = 1L;
-	private final boolean foundByPersona;
-	private final String personaEmailAddressOrPersonUsername;
+	private final String personaEmailAddress; // 1-of-N email addresses in personaOrm that matched
 	private final PersonOrm personOrm;
 	private final PersonaOrm personaOrm;
 	@Override
 	public String getUsername() {
-		return this.personaEmailAddressOrPersonUsername;
+		return this.personaEmailAddress;
 	}
 	@Override
 	public String getPassword() {
@@ -35,6 +35,6 @@ public class PersonaUserDetails implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		final PersonaType personaType = this.personaOrm.personaType();
-		return List.of(new SimpleGrantedAuthority(personaType.name()));
+		return List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
 	}
 }

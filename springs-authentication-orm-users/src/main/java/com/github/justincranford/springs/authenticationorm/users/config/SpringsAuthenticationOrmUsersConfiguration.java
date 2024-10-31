@@ -3,9 +3,9 @@ package com.github.justincranford.springs.authenticationorm.users.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.github.justincranford.springs.authenticationorm.users.authentication.SpringsAuthenticationOrmUsersAuthenticationConfiguration;
-import com.github.justincranford.springs.authenticationorm.users.authentication.config.SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration;
-import com.github.justincranford.springs.authenticationorm.users.session.SpringsAuthenticationOrmUsersSessionConfiguration;
+import com.github.justincranford.springs.authenticationorm.users.authentication.provider.config.SpringsAuthenticationOrmUsersAuthenticationProvidersConfiguration;
+import com.github.justincranford.springs.authenticationorm.users.authentication.service.config.SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration;
+import com.github.justincranford.springs.authenticationorm.users.session.config.SpringsAuthenticationOrmUsersSessionConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.util.security.hashes.config.SpringsUtilSecurityHashesConfiguration;
 
@@ -13,8 +13,8 @@ import com.github.justincranford.springs.util.security.hashes.config.SpringsUtil
 @Import({
 	SpringsPersistenceOrmUsersConfiguration.class,
     SpringsUtilSecurityHashesConfiguration.class,
-    SpringsAuthenticationOrmUsersAuthenticationConfiguration.class,
-	SpringsAuthenticationOrmUsersAuthenticationConfiguration.class,
+	SpringsAuthenticationOrmUsersAuthenticationProvidersConfiguration.class,
+	SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration.class,
 	SpringsAuthenticationOrmUsersSessionConfiguration.class
 })
 public class SpringsAuthenticationOrmUsersConfiguration {

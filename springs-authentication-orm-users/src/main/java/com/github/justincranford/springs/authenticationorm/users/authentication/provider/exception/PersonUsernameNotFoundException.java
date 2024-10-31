@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.authenticationorm.users.authentication.exception;
+package com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception;
 
 import org.springframework.security.core.AuthenticationException;
 
