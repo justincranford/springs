@@ -3,6 +3,7 @@ package com.github.justincranford.springs.authenticationorm.users.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import com.github.justincranford.springs.authenticationorm.users.authentication.config.SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.config.SpringsAuthenticationOrmUsersAuthenticationProvidersConfiguration;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.config.SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration;
 import com.github.justincranford.springs.authenticationorm.users.session.config.SpringsAuthenticationOrmUsersSessionConfiguration;
@@ -15,7 +16,8 @@ import com.github.justincranford.springs.util.security.hashes.config.SpringsUtil
     SpringsUtilSecurityHashesConfiguration.class,
 	SpringsAuthenticationOrmUsersAuthenticationProvidersConfiguration.class,
 	SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration.class,
-	SpringsAuthenticationOrmUsersSessionConfiguration.class
+	SpringsAuthenticationOrmUsersSessionConfiguration.class,
+	SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration.class
 })
 public class SpringsAuthenticationOrmUsersConfiguration {
 	// do nothing
