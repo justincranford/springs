@@ -15,6 +15,7 @@ import com.github.justincranford.springs.persistenceorm.users.persona.EmailAddre
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -25,6 +26,7 @@ public class PersonaLookupService implements UserDetailsService {
     private PersonaOrmRepository personaOrmRepository;
     private EmailAddressRfc5321Orm.EmailConverter emailConverter = new EmailAddressRfc5321Orm.EmailConverter(); 
 
+    @Transactional
 	@Override
     public PersonaDetails loadUserByUsername(final String unauthenticatedRawEmail) throws UsernameNotFoundException {
 		if (Strings.isBlank(unauthenticatedRawEmail)) {

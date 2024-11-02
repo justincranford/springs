@@ -15,6 +15,7 @@ import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -24,6 +25,7 @@ public class PersonLookupService implements UserDetailsService {
 	@Autowired
 	private PersonOrmRepository personOrmRepository;
 
+    @Transactional
 	@Override
 	public PersonDetails loadUserByUsername(final String unauthenticatedUsername) throws UsernameNotFoundException {
 		if (Strings.isBlank(unauthenticatedUsername)) {
