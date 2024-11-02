@@ -4,7 +4,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -18,15 +21,21 @@ import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,11 +57,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper=true)
-public class SessionOrm extends AbstractEntity  {
-	// HHH015007: Illegal argument on static metamodel field injection : org.hibernate.envers.enhanced.SequenceIdRevisionEntity_#class_;
-	// expected type :  org.hibernate.metamodel.model.domain.internal.EntityTypeImpl;
-	// encountered type : jakarta.persistence.metamodel.MappedSuperclassType
-
+public class SessionOrm extends AbstractEntity implements Session {
 	@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="person_id",nullable=false,updatable=false)
     @NotNull
@@ -83,64 +88,77 @@ public class SessionOrm extends AbstractEntity  {
     @Builder.Default
 	private Duration maxInactiveInternal = Constants.MAX_INACTIVE_INTERNAL;
 
-//	@Override
-//	public String getId() {
-//		return Base64Util.URL.encodeToString(super.externalId()); // ASSUME: 40-bytes * 4/3 => 54-chars
-//	}
-//	@Override
-//	public String changeSessionId() {
-//		super.externalId(super.generateSessionId()); // generate new bytes
-//		return this.getId(); // read new bytes as base64 url-encoded
-//	}
-//
-//	@Override
-//	public Instant getCreationTime() {
-//		return super.createdDate().toInstant();
-//	}
-//	@Override
-//	public Instant getLastAccessedTime() {
-//		return this.lastAccessedAt.toInstant();
-//	}
-//	@Override
-//	public void setLastAccessedTime(Instant lastAccessedTime) {
-//		this.lastAccessedAt = lastAccessedTime.atOffset(ZoneOffset.UTC);
-//	}
-//
-//	@Override
-//	public Duration getMaxInactiveInterval() {
-//		return this.maxInactiveInternal;
-//	}
-//	@Override
-//	public void setMaxInactiveInterval(Duration interval) {
-//		this.maxInactiveInternal = interval;
-//	}
-//
-//	@Override
-//	public boolean isExpired() {
-//		return DateTimeUtil.nowUtcTruncatedToMicroseconds().compareTo(this.expiresAt) >= 0;
-//	}
-//
-//	@Override
-//	public <T> T getAttribute(String attributeName) {
-//		return null;
-//	}
-//
-//	@Override
-//	public Set<String> getAttributeNames() {
-//		return null;
-//	}
-//
-//	@Override
-//	public void setAttribute(String attributeName, Object attributeValue) {
-//	}
-//
-//	@Override
-//	public void removeAttribute(String attributeName) {
-//	}
+    @ElementCollection
+    @CollectionTable(
+		name="attribute",
+    	joinColumns=@JoinColumn(name="sessionId",referencedColumnName="id"),
+    	foreignKey=@ForeignKey(name="fk_attribute_session_id"),
+		uniqueConstraints={@UniqueConstraint(name="idx_attribute_session_id_rank",columnNames={"session_id","rank"})}
+    )
+    @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @OrderBy("session_id,rank")
+    @NotNull
+    @Size(min=0,max=16)
+    @Builder.Default
+    private List<AttributeOrm> attributes = new ArrayList<>();
 
-//    /*package*/ void delete() {
-//    	this.persona.deleteSession(this); // cascade delete through persona and person
-//	}
+	@Override
+	public String getId() {
+		return Base64Util.URL.encodeToString(super.externalId()); // ASSUME: 40-bytes * 4/3 => 54-chars
+	}
+	@Override
+	public String changeSessionId() {
+		super.externalId(super.generateSessionId()); // generate new bytes
+		return this.getId(); // read new bytes as base64 url-encoded
+	}
+
+	@Override
+	public Instant getCreationTime() {
+		return super.createdDate().toInstant();
+	}
+	@Override
+	public Instant getLastAccessedTime() {
+		return this.lastAccessedAt.toInstant();
+	}
+	@Override
+	public void setLastAccessedTime(Instant lastAccessedTime) {
+		this.lastAccessedAt = lastAccessedTime.atOffset(ZoneOffset.UTC);
+	}
+
+	@Override
+	public Duration getMaxInactiveInterval() {
+		return this.maxInactiveInternal;
+	}
+	@Override
+	public void setMaxInactiveInterval(Duration interval) {
+		this.maxInactiveInternal = interval;
+	}
+
+	@Override
+	public boolean isExpired() {
+		return DateTimeUtil.nowUtcTruncatedToMicroseconds().compareTo(this.expiresAt) >= 0;
+	}
+
+	@Override
+	public Set<String> getAttributeNames() {
+		return this.attributes.stream().map(attributeOrm -> attributeOrm.name()).collect(Collectors.toSet());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String getAttribute(final String attributeName) {
+		return this.attributes.stream().filter(attributeOrm -> attributeOrm.name().equals(attributeName)).findFirst().map(attributeOrm -> attributeOrm.value()).map(value -> value.toString()).orElse(null);
+	}
+
+	@Override
+	public void setAttribute(final String attributeName, final Object attributeValue) {
+		this.attributes.stream().filter(attributeOrm -> attributeOrm.name().equals(attributeName)).findFirst().map(attributeOrm -> attributeOrm.value(attributeValue.toString()));
+	}
+
+	@Override
+	public void removeAttribute(final String attributeName) {
+		this.attributes = this.attributes.stream().filter(attributeOrm -> (!(attributeOrm.name().equals(attributeName)))).toList();
+	}
 
     public static class Constants {
 		public static final Duration MAX_INACTIVE_INTERNAL = Duration.ofMinutes(15);
