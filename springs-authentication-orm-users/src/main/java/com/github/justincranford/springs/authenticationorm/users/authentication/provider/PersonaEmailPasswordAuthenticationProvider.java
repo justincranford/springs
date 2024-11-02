@@ -1,14 +1,22 @@
 package com.github.justincranford.springs.authenticationorm.users.authentication.provider;
 
+import static com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.AuthenticationExceptionUtil.logAndCreate;
+
 import org.apache.logging.log4j.util.Strings;
+import static org.slf4j.event.Level.TRACE;
+import static org.slf4j.event.Level.DEBUG;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaPasswordBlankNotAllowedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaPasswordNoMatchException;
+import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaTokenNullNotAllowedException;
+import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaTokenClassNotSupportedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.PersonaLookupService;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonaDetails;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonaEmailPasswordAuthenticatedToken;
@@ -20,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings({"nls"})
 @Slf4j
 public class PersonaEmailPasswordAuthenticationProvider implements AuthenticationProvider {
-    private static final Class<?> SUPPORTED_TOKEN_CLASS = PersonaEmailPasswordUnauthenticatedToken.class;
 	@Autowired
 	private PersonaLookupService personaLookupService;
     @Autowired
@@ -28,33 +35,38 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 
     @Override
     public boolean supports(final Class<?> clazz) {
-		return SUPPORTED_TOKEN_CLASS.equals(clazz);
+    	return PersonaEmailPasswordUnauthenticatedToken.class.isAssignableFrom(clazz)
+			|| UsernamePasswordAuthenticationToken.class.isAssignableFrom(clazz);
     }
 
     @Override
     public Authentication authenticate(final Authentication unauthenticatedToken) throws AuthenticationException {
+		final String unauthenticatedRawEmail;
+		final String unauthenticatedPassword;
     	if (unauthenticatedToken == null) {
-    		return null;
-    	} else if (!(this.supports(unauthenticatedToken.getClass()))) {
-        	log.trace("Token not supported, class: {}", unauthenticatedToken.getClass());
-    		return null;
+    		throw logAndCreate(PersonaTokenNullNotAllowedException.class, TRACE, String.format("Token is null"));
+    	} else if (unauthenticatedToken instanceof PersonaEmailPasswordUnauthenticatedToken unauthenticatedEmailPasswordToken) {
+        	log.trace("Token class [{}] supported", PersonaEmailPasswordUnauthenticatedToken.class.getSimpleName());
+    		unauthenticatedRawEmail = unauthenticatedEmailPasswordToken.getName();
+    		unauthenticatedPassword = unauthenticatedEmailPasswordToken.getCredentials().toString();
+    	} else if (unauthenticatedToken instanceof UsernamePasswordAuthenticationToken unauthenticatedUsernamePasswordToken) {
+        	log.trace("Token class [{}] supported", UsernamePasswordAuthenticationToken.class.getSimpleName());
+    		unauthenticatedRawEmail = unauthenticatedUsernamePasswordToken.getName();
+    		unauthenticatedPassword = unauthenticatedUsernamePasswordToken.getCredentials().toString();
+    	} else {
+    		throw logAndCreate(PersonaTokenClassNotSupportedException.class, TRACE, String.format("Token class [%s] not supported", unauthenticatedToken.getClass().getSimpleName()));
 		}
 
-    	final PersonaEmailPasswordUnauthenticatedToken unauthenticatedEmailPasswordToken = (PersonaEmailPasswordUnauthenticatedToken) unauthenticatedToken;
-		final String unauthenticatedRawEmail = unauthenticatedEmailPasswordToken.getName();
-		final String unauthenticatedPassword = unauthenticatedEmailPasswordToken.getCredentials().toString();
 		if (Strings.isBlank(unauthenticatedPassword)) {
-        	log.trace("Password [{}] must not be blank", unauthenticatedPassword); // null, empty, or blank are not allowed
-            throw new PersonaPasswordNoMatchException("Invalid password");
+    		throw logAndCreate(PersonaPasswordBlankNotAllowedException.class, TRACE, "Password must not be blank");
 		}
 
-		// ASSUME: loadUserByUsername will convert unauthenticatedRawEmail
+		// ASSUME: loadUserByUsername will apply converter to unauthenticatedRawEmail to make it lowercase
 		final PersonaDetails actualPersonaDetails = this.personaLookupService.loadUserByUsername(unauthenticatedRawEmail);
 		if (this.passwordEncoder.matches(unauthenticatedPassword, actualPersonaDetails.getPassword())) {
 	    	log.trace("Persona password matched for email [{}]", unauthenticatedRawEmail);
 			return new PersonaEmailPasswordAuthenticatedToken(actualPersonaDetails);
         }
-    	log.debug("Persona password not matched for email [{}]", unauthenticatedRawEmail);
-        throw new PersonaPasswordNoMatchException("Invalid password");
+		throw logAndCreate(PersonaPasswordNoMatchException.class, DEBUG, String.format("Persona password not matched for email [%s]", unauthenticatedRawEmail));
     }
 }

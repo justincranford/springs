@@ -7,16 +7,16 @@ import org.springframework.web.bind.annotation.RestController;
 @SuppressWarnings({"nls", "static-method"})
 public class HelloWorldController {
 	@GetMapping(
-		value={HelloWorldController.Constants.PATH},
-		produces={"plain/text; charset=UTF-8"}
+		value={Constants.PATH},
+		produces={Constants.RESPONSE_CONTEXT_TYPE}
 	)
 	public String helloWorld() {
-		return HelloWorldController.Constants.RESPONSE_BODY;
+		return Constants.RESPONSE_BODY;
 	}
 
 	public static class Constants {
 		public static final String PATH = "/helloworld";
 		public static final String RESPONSE_BODY = "Hello world";
-
+		public static final String RESPONSE_CONTEXT_TYPE = "plain/text; charset=UTF-8";
 	}
 }

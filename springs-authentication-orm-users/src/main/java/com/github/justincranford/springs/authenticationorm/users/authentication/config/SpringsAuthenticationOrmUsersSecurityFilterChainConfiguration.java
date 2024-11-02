@@ -22,6 +22,7 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonaEmailPasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.ratelimit.config.RateLimitingFilter;
 import com.github.justincranford.springs.service.http.server.HelloWorldController;
+import com.github.justincranford.springs.service.http.server.RedirectToLoginConfigurer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,8 @@ import lombok.extern.slf4j.Slf4j;
 @EnableWebSecurity
 //@EnableMethodSecurity(prePostEnabled=true, securedEnabled=true, jsr250Enabled=true)
 @Import(value = {
-	HelloWorldController.class
+	HelloWorldController.class,
+	RedirectToLoginConfigurer.class
 })
 @RequiredArgsConstructor
 @Slf4j
@@ -47,7 +49,7 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
 	@Autowired
 	private final PersonaEmailPasswordAuthenticationProvider personaEmailPasswordAuthenticationProvider;
 	@Autowired
-	private final PersonUsernamePasswordAuthenticationProvider	 personUsernamePasswordAuthenticationProvider;
+	private final PersonUsernamePasswordAuthenticationProvider personUsernamePasswordAuthenticationProvider;
 	@Autowired
 	private final RateLimitingFilter rateLimitingFilter;
 
@@ -93,7 +95,7 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
 //                .loginPage("/login")
                 .permitAll()
 				.defaultSuccessUrl("/secure/home", true)
-				.failureUrl("/login?error=true")
+//				.failureUrl("/login?error=true")
             )
 			.logout(logout -> logout
 //				.logoutUrl("/logout")

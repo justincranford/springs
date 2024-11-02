@@ -64,7 +64,7 @@ public class SessionOrm extends AbstractEntity  {
     private PersonaOrm persona;
 
     @Column(updatable=false,nullable=false)
-//    @Lob
+    @Lob
     @NotNull
     private byte[] sessionData;
 

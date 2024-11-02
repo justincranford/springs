@@ -22,7 +22,7 @@ public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticati
 
 	@Override
 	public Object getCredentials() {
-		return this.personaDetails.getPassword();
+		return null;
 	}
 
 	@Override

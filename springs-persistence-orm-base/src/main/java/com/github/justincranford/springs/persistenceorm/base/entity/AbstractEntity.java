@@ -39,7 +39,6 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 @MappedSuperclass
-//@Audited // Hibernate Envers
 @Getter(onMethod = @__(@JsonProperty)) // Jackson JSON
 @Setter
 @ToString(callSuper=false)
@@ -113,7 +112,7 @@ public class AbstractEntity {
     @PrePersist
 	public void prePersist() {
 		this.prePersistDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
-		this.externalId = this.generateSessionId();
+		this.externalId = generateSessionId();
 	}
 	@PostPersist
 	public void postPersist() {

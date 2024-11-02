@@ -1,53 +1,64 @@
 package com.github.justincranford.springs.authenticationorm.users.authentication.provider;
 
+import static com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.AuthenticationExceptionUtil.logAndCreate;
+import static org.slf4j.event.Level.DEBUG;
+import static org.slf4j.event.Level.TRACE;
+
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonPasswordBlankNotAllowedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonPasswordNoMatchException;
-import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaPasswordNoMatchException;
+import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonTokenClassNotSupportedException;
+import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonTokenNullNotAllowedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.PersonLookupService;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonDetails;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonUsernamePasswordAuthenticatedToken;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonUsernamePasswordUnauthenticatedToken;
-import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonaEmailPasswordUnauthenticatedToken;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Component
-@SuppressWarnings({ "nls" })
+@SuppressWarnings({"nls"})
 @Slf4j
 public class PersonUsernamePasswordAuthenticationProvider implements AuthenticationProvider {
-    private static final Class<?> SUPPORTED_TOKEN_CLASS = PersonaEmailPasswordUnauthenticatedToken.class;
 	@Autowired
 	private PersonLookupService personLookupService;
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-	@Override
-	public boolean supports(final Class<?> clazz) {
-		return SUPPORTED_TOKEN_CLASS.equals(clazz);
-	}
+    @Override
+    public boolean supports(final Class<?> clazz) {
+    	return PersonUsernamePasswordUnauthenticatedToken.class.isAssignableFrom(clazz)
+			|| UsernamePasswordAuthenticationToken.class.isAssignableFrom(clazz);
+    }
 
-	@Override
-	public Authentication authenticate(final Authentication unauthenticatedToken) throws AuthenticationException {
-		if (unauthenticatedToken == null) {
-			return null;
-		} else if (!(this.supports(unauthenticatedToken.getClass()))) {
-			log.trace("Token not supported, class: {}", unauthenticatedToken.getClass());
-			return null;
+    @Override
+    public Authentication authenticate(final Authentication unauthenticatedToken) throws AuthenticationException {
+		final String unauthenticatedUsername;
+		final String unauthenticatedPassword;
+    	if (unauthenticatedToken == null) {
+    		throw logAndCreate(PersonTokenNullNotAllowedException.class, TRACE, String.format("Token is null"));
+    	} else if (unauthenticatedToken instanceof PersonUsernamePasswordUnauthenticatedToken unauthenticatedEmailPasswordToken) {
+        	log.trace("Token class [{}] supported", PersonUsernamePasswordUnauthenticatedToken.class.getSimpleName());
+    		unauthenticatedUsername = unauthenticatedEmailPasswordToken.getName();
+    		unauthenticatedPassword = unauthenticatedEmailPasswordToken.getCredentials().toString();
+    	} else if (unauthenticatedToken instanceof UsernamePasswordAuthenticationToken unauthenticatedUsernamePasswordToken) {
+        	log.trace("Token class [{}] supported", UsernamePasswordAuthenticationToken.class.getSimpleName());
+    		unauthenticatedUsername = unauthenticatedUsernamePasswordToken.getName();
+    		unauthenticatedPassword = unauthenticatedUsernamePasswordToken.getCredentials().toString();
+    	} else {
+    		throw logAndCreate(PersonTokenClassNotSupportedException.class, TRACE, String.format("Token class [%s] not supported", unauthenticatedToken.getClass().getSimpleName()));
 		}
 
-		final PersonUsernamePasswordUnauthenticatedToken unauthenticatedUsernamePasswordToken = (PersonUsernamePasswordUnauthenticatedToken) unauthenticatedToken;
-		final String unauthenticatedUsername = unauthenticatedUsernamePasswordToken.getName();
-		final String unauthenticatedPassword = unauthenticatedUsernamePasswordToken.getCredentials().toString();
 		if (Strings.isBlank(unauthenticatedPassword)) {
-			log.trace("Password [{}] must not be blank", unauthenticatedPassword); // null, empty, or blank are not allowed
-			throw new PersonaPasswordNoMatchException("Invalid password");
+    		throw logAndCreate(PersonPasswordBlankNotAllowedException.class, TRACE, "Password must not be blank");
 		}
 
 		final PersonDetails actualPersonDetails = this.personLookupService.loadUserByUsername(unauthenticatedUsername);
@@ -55,7 +66,6 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
 			log.trace("Person password matched for username [{}]", unauthenticatedUsername);
 			return new PersonUsernamePasswordAuthenticatedToken(actualPersonDetails);
 		}
-		log.debug("Person password not matched for username [{}]", unauthenticatedUsername);
-		throw new PersonPasswordNoMatchException("Invalid password");
-	}
+		throw logAndCreate(PersonPasswordNoMatchException.class, DEBUG, String.format("Person password not matched for username [%s]", unauthenticatedUsername));
+    }
 }
