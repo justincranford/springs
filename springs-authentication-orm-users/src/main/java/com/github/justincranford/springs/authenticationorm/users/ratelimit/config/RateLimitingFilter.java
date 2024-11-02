@@ -1,9 +1,10 @@
-package com.github.justincranford.springs.authenticationorm.users.config;
+package com.github.justincranford.springs.authenticationorm.users.ratelimit.config;
 
 import java.io.IOException;
 import java.time.Duration;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.github.bucket4j.Bandwidth;
@@ -16,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+@Component
 @RequiredArgsConstructor
 @SuppressWarnings({"nls"})
 public class RateLimitingFilter extends OncePerRequestFilter {

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Configuration;
@@ -92,6 +93,7 @@ public class HttpsHelloWorldIT extends AbstractIT {
 		}
 	}
 
+	@Disabled("BC JSSE does not support TLS PSK at this time, due to no standard support in Java core")
 	@Nested
 	public class HttpsPskTls {
 		@Test

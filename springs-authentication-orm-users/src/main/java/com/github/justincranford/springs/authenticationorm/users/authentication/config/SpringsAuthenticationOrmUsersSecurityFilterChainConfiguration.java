@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -17,12 +16,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonUsernamePasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonaEmailPasswordAuthenticationProvider;
-import com.github.justincranford.springs.authenticationorm.users.config.RateLimitingFilter;
+import com.github.justincranford.springs.authenticationorm.users.ratelimit.config.RateLimitingFilter;
 import com.github.justincranford.springs.service.http.server.HelloWorldController;
 
 import lombok.RequiredArgsConstructor;
@@ -50,6 +48,8 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
 	private final PersonaEmailPasswordAuthenticationProvider personaEmailPasswordAuthenticationProvider;
 	@Autowired
 	private final PersonUsernamePasswordAuthenticationProvider	 personUsernamePasswordAuthenticationProvider;
+	@Autowired
+	private final RateLimitingFilter rateLimitingFilter;
 
 	@Bean
 	public AuthenticationManager htmlAuthenticationManager(HttpSecurity http) throws Exception {
@@ -64,38 +64,39 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     	// STATELESS API AUTHENTICATION WITHOUT SESSIONS
-        http.securityMatcher("/static/**", "/v1/api/authenticate/**", "/v1/api/register/**", "/helloworld", "/v1/api/**")
+        http.securityMatcher("/static/**", "/public/**", "/templates/**", "/META-INF/resources/**", "/helloworld", "/v1/api/authenticate/**", "/v1/api/register/**", "/v1/api/**")
             .csrf(csrf -> csrf.disable()) // Typically disabled for stateless APIs
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("/static/**", "/v1/api/authenticate/**", "/v1/api/register/**", "/helloworld").permitAll()
+                .requestMatchers("/static/**", "/public/**", "/templates/**", "/META-INF/resources/**", "/helloworld", "/v1/api/authenticate/**", "/v1/api/register/**").permitAll()
                 .requestMatchers("/v1/api/**").authenticated()
             )
             .httpBasic(Customizer.withDefaults())
             .sessionManagement(management -> management
         		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
     		)
-			.addFilterBefore(new RateLimitingFilter(), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
             ;
 
         // STATEFUL HTML AUTHENTICATION AND SESSIONS
-        http.securityMatcher("/secure/**")
+        http.securityMatcher("/login", "/logout", "/secure/**")
         	.csrf(csrf -> csrf
 				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 			)
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                .requestMatchers("/login", "/logout").permitAll()
                 .requestMatchers("/secure/**").authenticated()
             )
 			.httpBasic(basic -> basic
 				.disable()
 			)
             .formLogin(form -> form
-                .loginPage("/login")
+//                .loginPage("/login")
                 .permitAll()
-				.defaultSuccessUrl("/home", true)
+				.defaultSuccessUrl("/secure/home", true)
 				.failureUrl("/login?error=true")
             )
 			.logout(logout -> logout
-				.logoutUrl("/logout")
+//				.logoutUrl("/logout")
                 .permitAll()
 				.logoutSuccessUrl("/login?logout=true")
 				.invalidateHttpSession(true)
@@ -105,7 +106,7 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
 				.maximumSessions(3)
 				.expiredUrl("/login?expired=true")
 			)
-			.addFilterBefore(new RateLimitingFilter(), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
 //			.addFilterBefore(new BasicAuthenticationFilter(htmlAuthenticationManager(http)), UsernamePasswordAuthenticationFilter.class)
 			;
 

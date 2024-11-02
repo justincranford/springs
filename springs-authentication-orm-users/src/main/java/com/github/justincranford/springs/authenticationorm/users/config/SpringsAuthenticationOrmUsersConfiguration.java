@@ -6,18 +6,22 @@ import org.springframework.context.annotation.Import;
 import com.github.justincranford.springs.authenticationorm.users.authentication.config.SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.config.SpringsAuthenticationOrmUsersAuthenticationProvidersConfiguration;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.config.SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration;
+import com.github.justincranford.springs.authenticationorm.users.ratelimit.config.SpringsAuthenticationOrmUsersRateLimitConfiguration;
 import com.github.justincranford.springs.authenticationorm.users.session.config.SpringsAuthenticationOrmUsersSessionConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
+import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
 import com.github.justincranford.springs.util.security.hashes.config.SpringsUtilSecurityHashesConfiguration;
 
 @Configuration
 @Import({
 	SpringsPersistenceOrmUsersConfiguration.class,
+	SpringsUtilHttpsConfiguration.class,
     SpringsUtilSecurityHashesConfiguration.class,
 	SpringsAuthenticationOrmUsersAuthenticationProvidersConfiguration.class,
 	SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration.class,
 	SpringsAuthenticationOrmUsersSessionConfiguration.class,
-	SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration.class
+	SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration.class,
+    SpringsAuthenticationOrmUsersRateLimitConfiguration.class
 })
 public class SpringsAuthenticationOrmUsersConfiguration {
 	// do nothing

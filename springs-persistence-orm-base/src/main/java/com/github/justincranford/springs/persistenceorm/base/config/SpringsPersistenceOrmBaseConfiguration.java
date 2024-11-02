@@ -17,10 +17,10 @@ import com.github.justincranford.springs.util.observability.config.SpringsUtilOb
 	basePackageClasses = {SpringsPersistenceOrmBaseProperties.class}
 )
 @EnableConfigurationProperties
-@EnableJpaRepositories(
-	basePackageClasses = {AbstractEntity.class},
-	repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class
-)
+//@EnableJpaRepositories(
+//	basePackageClasses = {AbstractEntity.class},
+//	repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class
+//)
 @Import({
 	SpringsPersistenceOrmBaseJpaAuditingConfiguration.class,
 	SpringsUtilJsonConfiguration.class,

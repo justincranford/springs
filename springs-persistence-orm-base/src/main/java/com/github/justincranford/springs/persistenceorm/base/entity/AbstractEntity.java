@@ -2,7 +2,6 @@ package com.github.justincranford.springs.persistenceorm.base.entity;
 
 import java.time.OffsetDateTime;
 
-import org.hibernate.envers.Audited;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -40,7 +39,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 @MappedSuperclass
-@Audited // Hibernate Envers
+//@Audited // Hibernate Envers
 @Getter(onMethod = @__(@JsonProperty)) // Jackson JSON
 @Setter
 @ToString(callSuper=false)
@@ -67,7 +66,7 @@ public class AbstractEntity {
     @Column(nullable=false,insertable=false,columnDefinition="bigint default 0")
     private Long version;
 
-	@Nonnull
+    @Nonnull
 	@NotNull
 	@NotEmpty
 	@Size(min=40,max=40)
