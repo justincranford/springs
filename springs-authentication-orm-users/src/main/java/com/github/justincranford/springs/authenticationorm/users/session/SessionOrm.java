@@ -1,24 +1,18 @@
 package com.github.justincranford.springs.authenticationorm.users.session;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.Audited;
-import org.springframework.session.Session;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
-import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
 
 import jakarta.persistence.CollectionTable;
@@ -30,6 +24,7 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -57,7 +52,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper=true)
-public class SessionOrm extends AbstractEntity implements Session {
+public class SessionOrm extends AbstractEntity {
 	@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="person_id",nullable=false,updatable=false)
     @NotNull
@@ -90,75 +85,22 @@ public class SessionOrm extends AbstractEntity implements Session {
 
     @ElementCollection
     @CollectionTable(
-		name="attribute",
+		name="session_attribute",
     	joinColumns=@JoinColumn(name="sessionId",referencedColumnName="id"),
     	foreignKey=@ForeignKey(name="fk_attribute_session_id"),
-		uniqueConstraints={@UniqueConstraint(name="idx_attribute_session_id_rank",columnNames={"session_id","rank"})}
+		uniqueConstraints={
+			@UniqueConstraint(name="idx_attribute_session_id_rank",columnNames={"session_id","rank"}),
+			@UniqueConstraint(name="idx_attribute_session_id_name",columnNames={"session_id","name"})
+		}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @MapKeyColumn(name="name",nullable=false,updatable=false,length=64)
     @OrderBy("session_id,rank")
+    @Column(name="attributeValue")
     @NotNull
     @Size(min=0,max=16)
     @Builder.Default
-    private List<AttributeOrm> attributes = new ArrayList<>();
-
-	@Override
-	public String getId() {
-		return Base64Util.URL.encodeToString(super.externalId()); // ASSUME: 40-bytes * 4/3 => 54-chars
-	}
-	@Override
-	public String changeSessionId() {
-		super.externalId(super.generateSessionId()); // generate new bytes
-		return this.getId(); // read new bytes as base64 url-encoded
-	}
-
-	@Override
-	public Instant getCreationTime() {
-		return super.createdDate().toInstant();
-	}
-	@Override
-	public Instant getLastAccessedTime() {
-		return this.lastAccessedAt.toInstant();
-	}
-	@Override
-	public void setLastAccessedTime(Instant lastAccessedTime) {
-		this.lastAccessedAt = lastAccessedTime.atOffset(ZoneOffset.UTC);
-	}
-
-	@Override
-	public Duration getMaxInactiveInterval() {
-		return this.maxInactiveInternal;
-	}
-	@Override
-	public void setMaxInactiveInterval(Duration interval) {
-		this.maxInactiveInternal = interval;
-	}
-
-	@Override
-	public boolean isExpired() {
-		return DateTimeUtil.nowUtcTruncatedToMicroseconds().compareTo(this.expiresAt) >= 0;
-	}
-
-	@Override
-	public Set<String> getAttributeNames() {
-		return this.attributes.stream().map(attributeOrm -> attributeOrm.name()).collect(Collectors.toSet());
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public String getAttribute(final String attributeName) {
-		return this.attributes.stream().filter(attributeOrm -> attributeOrm.name().equals(attributeName)).findFirst().map(attributeOrm -> attributeOrm.value()).map(value -> value.toString()).orElse(null);
-	}
-
-	@Override
-	public void setAttribute(final String attributeName, final Object attributeValue) {
-		this.attributes.stream().filter(attributeOrm -> attributeOrm.name().equals(attributeName)).findFirst().map(attributeOrm -> attributeOrm.value(attributeValue.toString()));
-	}
-
-	@Override
-	public void removeAttribute(final String attributeName) {
-		this.attributes = this.attributes.stream().filter(attributeOrm -> (!(attributeOrm.name().equals(attributeName)))).toList();
-	}
+    private LinkedHashMap<String, AttributeOrm> attributes = new LinkedHashMap<>();
 
     public static class Constants {
 		public static final Duration MAX_INACTIVE_INTERNAL = Duration.ofMinutes(15);
