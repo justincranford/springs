@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -28,6 +27,7 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonaEmailPasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.config.SpringsAuthenticationOrmUsersConfiguration;
 import com.github.justincranford.springs.authenticationorm.users.session.SessionOrmRepository;
+import com.github.justincranford.springs.authenticationorm.users.session.SessionPojoRepository;
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
@@ -83,6 +83,8 @@ public class AbstractIT {
     private PersonUsernamePasswordAuthenticationProvider personUsernamePasswordAuthenticationProvider;
     @Autowired
     private HttpSecurity http;
+	@Autowired
+	private SessionPojoRepository repository;
 
 	@Value("${server.address}")
 	private String serverAddress;

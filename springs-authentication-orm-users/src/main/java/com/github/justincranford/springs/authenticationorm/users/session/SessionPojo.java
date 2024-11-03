@@ -7,34 +7,36 @@ import java.util.Set;
 
 import org.springframework.session.Session;
 
+import com.github.justincranford.springs.persistenceorm.base.entity.ExternalIdUtil;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
-import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @AllArgsConstructor
 @Builder
+@ToString
 public class SessionPojo implements Session {
-	@Getter
-	@Setter
-	private PersonOrm personOrm;
+//	@Getter
+//	@Setter
+//	private PersonOrm person;
+//
+//	@Getter
+//	@Setter
+//	private PersonaOrm persona;
 
-	@Getter
-	@Setter
-	private PersonaOrm personaOrm;
-
-	@Getter
-	@Setter
-	private byte[] sessionData;
+//	@Getter
+//	@Setter
+//	private byte[] sessionData;
 
 	@Builder.Default
-	private String id = Base64Util.URL.encodeToString(SecureRandomUtil.timeStampBytesAndRandomBytes(8, 32));
+	private String id = Base64Util.URL.encodeToString(ExternalIdUtil.generate());
 
 	@Builder.Default
 	private Instant creationTime = nowInstant();
@@ -61,8 +63,8 @@ public class SessionPojo implements Session {
 	}
 
 	@Override
-	public void setLastAccessedTime(Instant lastAccessedTime) {
-		this.lastAccessedTime = lastAccessedTime;
+	public void setLastAccessedTime(Instant _lastAccessedTime) {
+		this.lastAccessedTime = _lastAccessedTime;
 	}
 
 	@Override
@@ -72,9 +74,9 @@ public class SessionPojo implements Session {
 	}
 
 	@Override
-	public void setMaxInactiveInterval(Duration interval) {
+	public void setMaxInactiveInterval(Duration _maxInactiveInterval) {
 		this.lastAccessedTime = nowInstant();
-		this.maxInactiveInterval = interval;
+		this.maxInactiveInterval = _maxInactiveInterval;
 	}
 
 	@Override
@@ -88,9 +90,9 @@ public class SessionPojo implements Session {
 		return new LinkedHashMap<>(this.attributes);
 	}
 
-	public synchronized void setAttributes(final LinkedHashMap<String, Object> newAttributes) {
+	public synchronized void setAttributes(final LinkedHashMap<String, Object> _attributes) {
 		this.lastAccessedTime = nowInstant();
-		this.attributes = new LinkedHashMap<>(newAttributes);
+		this.attributes = new LinkedHashMap<>(_attributes);
 	}
 
 	@Override
@@ -121,7 +123,7 @@ public class SessionPojo implements Session {
 	@Override
 	public String changeSessionId() {
 		this.lastAccessedTime = nowInstant();
-		this.id = Base64Util.URL.encodeToString(SecureRandomUtil.timeStampBytesAndRandomBytes(8, 32));
+		this.id = Base64Util.URL.encodeToString(ExternalIdUtil.generate());
 		return this.id;
 	}
 

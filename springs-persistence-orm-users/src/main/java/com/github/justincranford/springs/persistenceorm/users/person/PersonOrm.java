@@ -47,7 +47,7 @@ import lombok.experimental.Accessors;
 @Audited
 @Table(name="person")
 @SQLDelete(sql="UPDATE person SET pre_delete_date_time=NOW() WHERE id=? AND version=?")
-@SQLRestriction(AbstractEntity.WHERE_CLAUSE)
+@SQLRestriction(AbstractEntity.SQL_WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="person_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 @Getter(onMethod=@__(@JsonProperty))
 @Setter

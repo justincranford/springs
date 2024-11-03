@@ -11,19 +11,15 @@ import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
-import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
@@ -43,30 +39,30 @@ import lombok.experimental.Accessors;
 @Audited
 @Table(name="session")
 @SQLDelete(sql="UPDATE session SET pre_delete_date_time=NOW() WHERE id=? AND version=?")
-@SQLRestriction(AbstractEntity.WHERE_CLAUSE)
+@SQLRestriction(AbstractEntity.SQL_WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="session_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_LARGE)
 @Getter(onMethod=@__(@JsonProperty))
 @Setter
 @Accessors(fluent=true)
-@Builder(toBuilder=true)
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper=true)
 public class SessionOrm extends AbstractEntity {
-	@ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="person_id",nullable=false,updatable=false)
-    @NotNull
-    private PersonOrm person;
-
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="persona_id",nullable=false,updatable=false)
-    @NotNull
-    private PersonaOrm persona;
-
-    @Column(updatable=false,nullable=false)
-    @Lob
-    @NotNull
-    private byte[] sessionData;
+//	@ManyToOne(fetch=FetchType.LAZY)
+//    @JoinColumn(name="person_id",nullable=false,updatable=false)
+//    @NotNull
+//    private PersonOrm person;
+//
+//    @ManyToOne(fetch=FetchType.LAZY)
+//    @JoinColumn(name="persona_id",nullable=false,updatable=false)
+//    @NotNull
+//    private PersonaOrm persona;
+//
+//    @Column(updatable=false,nullable=false)
+//    @Lob
+//    @NotNull
+//    private byte[] sessionData;
 
     @Column(nullable=false)
     @NotNull
@@ -94,13 +90,13 @@ public class SessionOrm extends AbstractEntity {
 		}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @MapKeyColumn(name="name",nullable=false,updatable=false,length=64)
+    @MapKeyColumn(name="name",nullable=false,updatable=false,length=128)
     @OrderBy("session_id,rank")
-    @Column(name="attributeValue")
+    @Column(name="encoded")
     @NotNull
     @Size(min=0,max=16)
     @Builder.Default
-    private LinkedHashMap<String, AttributeOrm> attributes = new LinkedHashMap<>();
+    private Map<String, AttributeOrm> attributes = new LinkedHashMap<>();
 
     public static class Constants {
 		public static final Duration MAX_INACTIVE_INTERNAL = Duration.ofMinutes(15);

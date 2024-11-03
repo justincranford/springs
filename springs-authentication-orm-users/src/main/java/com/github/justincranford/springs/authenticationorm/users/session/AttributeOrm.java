@@ -28,7 +28,7 @@ public class AttributeOrm {
 	private int rank;
 
 	@Nullable
-	@Column(length=1024)
-	@Size(min=0,max=1024)
+	@Column(length=8192)
+	@Size(min=0,max=8192)
 	private String encoded;
 }

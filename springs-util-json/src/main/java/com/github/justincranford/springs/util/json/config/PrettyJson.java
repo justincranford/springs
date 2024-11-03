@@ -43,7 +43,7 @@ public class PrettyJson {
 		}
 	}
 
-	public <T> T logAndSave(final T pojo) throws IOException {
+	public <T> T logAndSave(final T pojo) {
 		try {
 			final String clazz = pojo.getClass().getSimpleName();
 			log.info(clazz + " (toString):\n{}", pojo);
@@ -59,7 +59,7 @@ public class PrettyJson {
 			final Path path = Paths.get("target", nowString + clazz + ".json");
 			Files.write(path, json.getBytes(StandardCharsets.UTF_8));
 			return pojo;
-		} catch (JsonProcessingException e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}

@@ -43,7 +43,7 @@ import lombok.experimental.Accessors;
 @ToString(callSuper=true,exclude="person")
 @Builder(toBuilder=true)
 @SQLDelete(sql="UPDATE persona SET pre_delete_date_time=NOW() WHERE id=? AND version=?")
-@SQLRestriction(AbstractEntity.WHERE_CLAUSE)
+@SQLRestriction(AbstractEntity.SQL_WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="persona_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 @NoArgsConstructor
 @AllArgsConstructor

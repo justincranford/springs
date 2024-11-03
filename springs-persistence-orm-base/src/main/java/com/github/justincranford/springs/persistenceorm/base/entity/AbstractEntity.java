@@ -49,7 +49,8 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("nls")
 @Slf4j
 public class AbstractEntity {
-	protected static final String WHERE_CLAUSE = "pre_delete_date_time IS NULL OR pre_delete_date_time < NOW()";
+	public static final String JPDL_WHERE_CLAUSE = "(preDeleteDateTime IS NULL OR preDeleteDateTime < NOW())";
+	public static final String SQL_WHERE_CLAUSE = "(pre_delete_date_time IS NULL OR pre_delete_date_time < NOW())";
 	protected static final int SEQUENCE_ID_INITIAL_VALUE = 1000;
 	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_SMALL = 10;
 	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM = 100;
@@ -68,8 +69,8 @@ public class AbstractEntity {
     @Nonnull
 	@NotNull
 	@NotEmpty
-	@Size(min=40,max=40)
-    @Column(length=40,unique=true,nullable=false,columnDefinition="BINARY(40)")
+	@Size(min=ExternalIdUtil.BYTES_LENGTH,max=ExternalIdUtil.BYTES_LENGTH)
+    @Column(length=ExternalIdUtil.BYTES_LENGTH,nullable=false,columnDefinition="BINARY(" + ExternalIdUtil.BYTES_LENGTH + ")")
     private byte[] externalId;
 
 	@Column(updatable=false,nullable=false)
@@ -112,7 +113,9 @@ public class AbstractEntity {
     @PrePersist
 	public void prePersist() {
 		this.prePersistDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
-		this.externalId = generateSessionId();
+		if (this.externalId == null) {
+			this.externalId = ExternalIdUtil.generate();
+		}
 	}
 	@PostPersist
 	public void postPersist() {
@@ -148,8 +151,4 @@ public class AbstractEntity {
     public final int hashCode() {
         return this.getClass().hashCode();
     }
-
-    protected static byte[] generateSessionId() {
-		return SecureRandomUtil.timeStampBytesAndRandomBytes(8, 32);
-	}
 }
