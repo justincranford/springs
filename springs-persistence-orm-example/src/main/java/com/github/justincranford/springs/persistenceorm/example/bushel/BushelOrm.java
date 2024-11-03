@@ -36,12 +36,12 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-@SQLDelete(sql="UPDATE bushel SET pre_delete_date_time=NOW() WHERE id=? AND version=?")
+@SQLDelete(sql="UPDATE bushel SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE id=? AND version=?")
 @SQLRestriction(AbstractEntity.SQL_WHERE_CLAUSE)
 //@FilterDef(name="isNotDeletedBushelFilter", parameters=@ParamDef(name="deleteDateTime",type=OffsetDateTime.class))
 //@FilterDef(name="isDeletedBushelFilter", parameters=@ParamDef(name="deleteDateTime",type=OffsetDateTime.class))
-//@Filter(name="isNotDeletedBushelFilter", condition="deleted=:(deleteDateTime IS NULL) OR (deleteDateTime < NOW())")
-//@Filter(name="isDeletedBushelFilter", condition="deleted=:(deleteDateTime IS NOT NULL) AND (NOW() <= deleteDateTime)")
+//@Filter(name="isNotDeletedBushelFilter", condition="deleted=:(deleteDateTime IS NULL) OR (deleteDateTime < CURRENT_TIMESTAMP)")
+//@Filter(name="isDeletedBushelFilter", condition="deleted=:(deleteDateTime IS NOT NULL) AND (CURRENT_TIMESTAMP <= deleteDateTime)")
 @SequenceGenerator(sequenceName="bushel_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_SMALL)
 public class BushelOrm extends AbstractEntity {
 	@OneToMany(mappedBy="bushel",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)

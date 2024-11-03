@@ -49,8 +49,8 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("nls")
 @Slf4j
 public class AbstractEntity {
-	public static final String JPDL_WHERE_CLAUSE = "(preDeleteDateTime IS NULL OR preDeleteDateTime < NOW())";
-	public static final String SQL_WHERE_CLAUSE = "(pre_delete_date_time IS NULL OR pre_delete_date_time < NOW())";
+	public static final String JPDL_WHERE_CLAUSE = "(preDeleteDateTime IS NULL OR preDeleteDateTime < CURRENT_TIMESTAMP)";
+	public static final String SQL_WHERE_CLAUSE = "(pre_delete_date_time IS NULL OR pre_delete_date_time < CURRENT_TIMESTAMP)";
 	protected static final int SEQUENCE_ID_INITIAL_VALUE = 1000;
 	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_SMALL = 10;
 	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM = 100;

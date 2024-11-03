@@ -13,9 +13,9 @@ import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEnti
 public interface SessionOrmRepository extends ListCrudRepository<SessionOrm, Long>, RevisionRepository<SessionOrm, Long, Long> {
 	Optional<SessionOrm> findByExternalId(byte[] externalId);
 
-	@Query("SELECT s FROM SessionOrm s WHERE (s.externalId = :externalId) AND (s.preDeleteDateTime IS NULL OR s.preDeleteDateTime < NOW())")
+	@Query("SELECT s FROM SessionOrm s WHERE (s.externalId = :externalId) AND (s.preDeleteDateTime IS NULL OR s.preDeleteDateTime < CURRENT_TIMESTAMP)")
 	List<SessionOrm> findAllByExternalId(@Param("externalId") byte[] externalId);
 
-	@Query("SELECT s.id FROM SessionOrm s WHERE (s.externalId = :externalId) AND (s.preDeleteDateTime IS NULL OR s.preDeleteDateTime < NOW())")// + AbstractEntity.JPDL_WHERE_CLAUSE)
+	@Query("SELECT s.id FROM SessionOrm s WHERE (s.externalId = :externalId) AND (s.preDeleteDateTime IS NULL OR s.preDeleteDateTime < CURRENT_TIMESTAMP)")// + AbstractEntity.JPDL_WHERE_CLAUSE)
 	Optional<Long> findIdByExternalId(@Param("externalId") byte[] externalId);
 }

@@ -34,7 +34,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-@SQLDelete(sql="UPDATE registration SET pre_delete_date_time=NOW() WHERE id=? AND version=?")
+@SQLDelete(sql="UPDATE registration SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE id=? AND version=?")
 @SQLRestriction(AbstractEntity.SQL_WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="registration_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 public class RegistrationOrm extends AbstractEntity {
