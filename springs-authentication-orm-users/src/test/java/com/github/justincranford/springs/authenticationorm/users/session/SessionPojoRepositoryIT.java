@@ -699,16 +699,13 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	void saveDeleted() {
 		SessionPojo session = super.repository().createSession();
 		super.repository().save(session);
-
 		session = super.repository().findById(session.getId());
 		super.repository().deleteById(session.getId());
-
 		session.setLastAccessedTime(Instant.now());
 		super.repository().save(session);
 
 		assertThat(super.repository().findById(session.getId())).isNull();
 	}
-
 	@Test // gh-1031
 	void saveDeletedAddAttribute() {
 		SessionPojo session = super.repository().createSession();
