@@ -10,7 +10,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
-import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;
@@ -49,7 +48,6 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("nls")
 @Slf4j
 public class AbstractEntity {
-	public static final String JPDL_WHERE_CLAUSE = "(preDeleteDateTime IS NULL OR preDeleteDateTime < CURRENT_TIMESTAMP)";
 	public static final String SQL_WHERE_CLAUSE = "(pre_delete_date_time IS NULL OR pre_delete_date_time < CURRENT_TIMESTAMP)";
 	protected static final int SEQUENCE_ID_INITIAL_VALUE = 1000;
 	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_SMALL = 10;

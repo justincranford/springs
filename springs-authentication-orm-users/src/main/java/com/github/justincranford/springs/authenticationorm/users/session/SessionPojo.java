@@ -47,18 +47,20 @@ public class SessionPojo implements Session {
 	@Builder.Default
 	private Duration maxInactiveInterval = Constants.MAX_INACTIVE_INTERNAL;
 
+	private Instant expiresTime;
+
 	@Builder.Default
 	private LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
 
 	@Override
 	public String getId() {
-		this.lastAccessedTime = nowInstant();
+//		this.lastAccessedTime = nowInstant();
 		return this.id;
 	}
 
 	@Override
 	public Instant getCreationTime() {
-		this.lastAccessedTime = nowInstant();
+//		this.lastAccessedTime = nowInstant();
 		return this.creationTime;
 	}
 
@@ -69,67 +71,77 @@ public class SessionPojo implements Session {
 
 	@Override
 	public Instant getLastAccessedTime() {
-		this.lastAccessedTime = nowInstant();
+//		this.lastAccessedTime = nowInstant();
 		return this.lastAccessedTime;
 	}
 
 	@Override
 	public void setMaxInactiveInterval(Duration _maxInactiveInterval) {
-		this.lastAccessedTime = nowInstant();
+//		this.lastAccessedTime = nowInstant();
 		this.maxInactiveInterval = _maxInactiveInterval;
 	}
 
 	@Override
 	public Duration getMaxInactiveInterval() {
-		this.lastAccessedTime = nowInstant();
+//		this.lastAccessedTime = nowInstant();
 		return this.maxInactiveInterval;
 	}
 
+	public void setExpiresTime(Instant _expiresTime) {
+//		this.lastAccessedTime = nowInstant();
+		this.expiresTime = _expiresTime;
+	}
+
+	public Instant getExpiresTime() {
+//		this.lastAccessedTime = nowInstant();
+		return this.expiresTime;
+	}
+
 	public synchronized LinkedHashMap<String, Object> getAttributes() {
-		this.lastAccessedTime = nowInstant();
+//		this.lastAccessedTime = nowInstant();
 		return new LinkedHashMap<>(this.attributes);
 	}
 
 	public synchronized void setAttributes(final LinkedHashMap<String, Object> _attributes) {
-		this.lastAccessedTime = nowInstant();
+//		this.lastAccessedTime = nowInstant();
 		this.attributes = new LinkedHashMap<>(_attributes);
 	}
 
 	@Override
 	public synchronized Set<String> getAttributeNames() {
-		this.lastAccessedTime = nowInstant();
+//		this.lastAccessedTime = nowInstant();
 		return this.attributes.keySet();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public synchronized Object getAttribute(String attributeName) {
-		this.lastAccessedTime = nowInstant();
+//		this.lastAccessedTime = nowInstant();
 		return this.attributes.get(attributeName);
 	}
 
 	@Override
 	public synchronized void setAttribute(String attributeName, Object attributeValue) {
-		this.lastAccessedTime = nowInstant();
+//		this.lastAccessedTime = nowInstant();
 		this.attributes.put(attributeName, attributeValue);
 	}
 
 	@Override
 	public synchronized void removeAttribute(String attributeName) {
-		this.lastAccessedTime = nowInstant();
+//		this.lastAccessedTime = nowInstant();
 		this.attributes.remove(attributeName);
 	}
 
 	@Override
 	public String changeSessionId() {
-		this.lastAccessedTime = nowInstant();
+//		this.lastAccessedTime = nowInstant();
 		this.id = Base64Util.URL.encodeToString(ExternalIdUtil.generate());
 		return this.id;
 	}
 
 	@Override
 	public boolean isExpired() {
-		this.lastAccessedTime = nowInstant();
+//		this.lastAccessedTime = nowInstant();
 		return nowInstant().isAfter(this.lastAccessedTime.plus(this.maxInactiveInterval));
 	}
 

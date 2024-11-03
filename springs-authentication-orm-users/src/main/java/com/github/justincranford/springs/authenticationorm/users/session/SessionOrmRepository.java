@@ -8,14 +8,28 @@ import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.history.RevisionRepository;
 import org.springframework.data.repository.query.Param;
 
-import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
-
 public interface SessionOrmRepository extends ListCrudRepository<SessionOrm, Long>, RevisionRepository<SessionOrm, Long, Long> {
-	Optional<SessionOrm> findByExternalId(byte[] externalId);
+	// SessionOrm
 
-	@Query("SELECT s FROM SessionOrm s WHERE (s.externalId = :externalId) AND (s.preDeleteDateTime IS NULL OR s.preDeleteDateTime < CURRENT_TIMESTAMP)")
-	List<SessionOrm> findAllByExternalId(@Param("externalId") byte[] externalId);
+	Optional<SessionOrm> findByExternalId(@Param("externalId") byte[] externalId);
 
-	@Query("SELECT s.id FROM SessionOrm s WHERE (s.externalId = :externalId) AND (s.preDeleteDateTime IS NULL OR s.preDeleteDateTime < CURRENT_TIMESTAMP)")// + AbstractEntity.JPDL_WHERE_CLAUSE)
-	Optional<Long> findIdByExternalId(@Param("externalId") byte[] externalId);
+	@Query(nativeQuery=true,value="SELECT * FROM session s WHERE (s.external_id = :externalId) ORDER BY s.pre_delete_date_time DESC NULLS FIRST LIMIT 1")
+	Optional<SessionOrm> findByExternalIdIncludingDeleted(@Param("externalId") byte[] externalId);
+
+	@Query(nativeQuery=true,value="SELECT * FROM session s WHERE (s.external_id = :externalId) ORDER BY s.pre_delete_date_time DESC NULLS FIRST")
+	List<SessionOrm> findAllByExternalIdIncludingDeleted(@Param("externalId") byte[] externalId);
+
+	@Query(nativeQuery=true,value="SELECT * FROM session s ORDER BY s.pre_delete_date_time DESC NULLS FIRST")
+	List<SessionOrm> findAllIncludingDeleted();
+
+	// Long
+	
+	@Query(nativeQuery=true,value="SELECT s.id FROM session s WHERE (s.external_id = :externalId) ORDER BY s.pre_delete_date_time DESC NULLS FIRST LIMIT 1")
+	Optional<Long> findIdByExternalIdIncludingDeleted(@Param("externalId") byte[] externalId);
+
+	@Query(nativeQuery=true,value="SELECT s.id FROM session s WHERE (s.external_id = :externalId) ORDER BY s.pre_delete_date_time DESC NULLS FIRST")
+	List<Long> findAllIdByExternalIdIncludingDeleted(@Param("externalId") byte[] externalId);
+
+	@Query(nativeQuery=true,value="SELECT s.id FROM session s ORDER BY s.pre_delete_date_time DESC NULLS FIRST")
+	List<Long> findAllIdIncludingDeleted();
 }

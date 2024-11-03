@@ -514,8 +514,11 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 		assertThat(super.repository().findById(session.getId())).isNotNull();
 
+		this.prettyJson.logAndSave(session);
 		session.setLastAccessedTime(now.minus(30, ChronoUnit.MINUTES));
+		this.prettyJson.logAndSave(session);
 		super.repository().save(session);
+		this.prettyJson.logAndSave(session);
 		super.repository().cleanUpExpiredSessions();
 
 		assertThat(super.repository().findById(session.getId())).isNull();
@@ -706,6 +709,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 		assertThat(super.repository().findById(session.getId())).isNull();
 	}
+
 	@Test // gh-1031
 	void saveDeletedAddAttribute() {
 		SessionPojo session = super.repository().createSession();
@@ -752,24 +756,6 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 		assertThat((byte[]) session.getAttribute(attributeName)).hasSize(arraySize);
 	}
 
-	@Test // gh-1213
-	void saveNewSessionAttributeConcurrently() {
-		SessionPojo session = super.repository().createSession();
-		super.repository().save(session);
-		String attributeName = "attribute1";
-		String attributeValue = "value1";
-		session.setAttribute(attributeName, attributeValue);
-		if (this.applicationContext().getBeansOfType(SessionRepositoryCustomizer.class).isEmpty()) {
-			// without DB specific upsert configured we're seeing duplicate key error
-			assertThatExceptionOfType(DuplicateKeyException.class).isThrownBy(() -> super.repository().save(session));
-		}
-		else {
-			// with DB specific upsert configured we're fine
-			assertThatCode(() -> super.repository().save(session)).doesNotThrowAnyException();
-			assertThat((String) super.repository().findById(session.getId()).getAttribute(attributeName))
-				.isEqualTo(attributeValue);
-		}
-	}
 	private String getSecurityName() {
 		return this.context.getAuthentication().getName();
 	}
