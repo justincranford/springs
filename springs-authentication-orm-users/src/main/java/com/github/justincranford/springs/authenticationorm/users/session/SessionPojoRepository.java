@@ -77,20 +77,32 @@ public class SessionPojoRepository implements org.springframework.session.Sessio
     public void save(SessionPojo sessionPojo) {
         final byte[] externalIdBytes = Base64Util.URL.decodeFromString(sessionPojo.getId());
 		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllIncludingDeleted());
-		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllByExternalIdIncludingDeleted(externalIdBytes));
-		final Optional<SessionOrm> sessionOrms = this.sessionOrmRepository.findByExternalIdIncludingDeleted(externalIdBytes);
-		this.prettyJson.logAndSave(sessionOrms);
+//		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllByExternalIdIncludingDeleted(externalIdBytes));
+
+		if (sessionPojo.getReplacedIds().size() > 0) {
+			for (final String oldId : sessionPojo.getReplacedIds()) {
+		        final byte[] oldExternalIdBytes = Base64Util.URL.decodeFromString(oldId);
+				final Optional<SessionOrm> optionalSessionOrm = this.sessionOrmRepository.findByExternalIdIncludingDeleted(oldExternalIdBytes);
+				this.prettyJson.logAndSave(optionalSessionOrm);
+				if (optionalSessionOrm.isPresent()) { // DELETE
+					this.sessionOrmRepository.delete(optionalSessionOrm.get());
+				}
+			}
+		}
+		final Optional<SessionOrm> optionalSessionOrm = this.sessionOrmRepository.findByExternalIdIncludingDeleted(externalIdBytes);
+		this.prettyJson.logAndSave(optionalSessionOrm);
 		final SessionOrm sessionOrm;
-		if (sessionOrms.isEmpty()) { // INSERT
+		if (optionalSessionOrm.isEmpty()) { // INSERT
 			sessionOrm = this.pojoToOrm(sessionPojo);
 		} else { // UPDATE
-			sessionOrm = sessionOrms.get();
+			sessionOrm = optionalSessionOrm.get();
 			sessionOrm.lastAccessedAt(sessionPojo.getLastAccessedTime().atOffset(ZoneOffset.UTC));
 			sessionOrm.maxInactiveInterval(sessionPojo.getMaxInactiveInterval());
 			sessionOrm.expiresAt(sessionPojo.getExpiresTime().atOffset(ZoneOffset.UTC));
 			sessionOrm.attributes(pojoToOrm(sessionPojo.getAttributes()));
 		}
 		this.sessionOrmRepository.save(sessionOrm);
+		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllIncludingDeleted());
     }
 
     @Override

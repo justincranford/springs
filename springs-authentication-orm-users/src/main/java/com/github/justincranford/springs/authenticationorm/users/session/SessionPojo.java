@@ -3,7 +3,9 @@ package com.github.justincranford.springs.authenticationorm.users.session;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.session.Session;
@@ -37,6 +39,9 @@ public class SessionPojo implements Session {
 //	private byte[] sessionData;
 
 	@Builder.Default
+	private List<String> replacedIds = new ArrayList<>(0);
+
+	@Builder.Default
 	private String id = Base64Util.URL.encodeToString(ExternalIdUtil.generate());
 
 	@Builder.Default
@@ -52,6 +57,10 @@ public class SessionPojo implements Session {
 
 	@Builder.Default
 	private LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
+
+	public List<String> getReplacedIds() {
+		return this.replacedIds;
+	}
 
 	@Override
 	public String getId() {
@@ -146,6 +155,7 @@ public class SessionPojo implements Session {
 	@Override
 	public String changeSessionId() {
 //		this.lastAccessedTime = nowInstant();
+		this.replacedIds.add(this.id);
 		this.id = Base64Util.URL.encodeToString(ExternalIdUtil.generate());
 		return this.id;
 	}
