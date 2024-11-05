@@ -2,6 +2,7 @@ package com.github.justincranford.springs.authenticationorm.users.session;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -38,14 +39,16 @@ public class SessionPojoRepository implements org.springframework.session.Sessio
 
 	public List<SessionOrm> cleanUpExpiredSessions() {
 		this.prettyJson.logAndSave(this.sessionOrmRepository.findAll());
+//		final List<SessionOrm> sessionOrms = this.sessionOrmRepository.findAllExpired(DateTimeUtil.nowUtcTruncatedToMicroseconds());
 		final List<SessionOrm> sessionOrms = this.sessionOrmRepository.findAll();
+		this.prettyJson.logAndSave(sessionOrms);
 		final List<SessionOrm> cleanedSessionOrms = new ArrayList<>();
 		for (SessionOrm sessionOrm : sessionOrms) {
-			final Instant lastAccessedAt = sessionOrm.lastAccessedAt().toInstant();
-			final Duration maxInactiveInternal = sessionOrm.maxInactiveInternal();
-			final Instant expiresAt = lastAccessedAt.plus(maxInactiveInternal);
+			final Instant expiresAt = sessionOrm.expiresAt().toInstant();
 			final Instant nowInstant = DateTimeUtil.nowUtcTruncatedToMicroseconds().toInstant();
-			log.info("\nnowInstant:     {}, \nexpiresAt:      {}, \nlastAccessedAt: {}, \nmaxInactiveInternal: {}", nowInstant, expiresAt, lastAccessedAt, maxInactiveInternal);
+			final Instant lastAccessedAt = sessionOrm.lastAccessedAt().toInstant();
+			final Duration maxInactiveInterval = sessionOrm.maxInactiveInterval();
+			log.info("\nnowInstant:     {}, \nexpiresAt:      {}, \nlastAccessedAt: {}, \nmaxInactiveInterval: {}", nowInstant, expiresAt, lastAccessedAt, maxInactiveInterval);
 			if (expiresAt.isBefore(nowInstant)) {
 				this.sessionOrmRepository.delete(sessionOrm);
 				cleanedSessionOrms.add(sessionOrm);
@@ -62,7 +65,11 @@ public class SessionPojoRepository implements org.springframework.session.Sessio
 	@Override
     public SessionPojo createSession() {
         final SessionPojo sessionPojo = SessionPojo.builder().build();
-        sessionPojo.setExpiresTime(sessionPojo.getCreationTime().plus(sessionPojo.getMaxInactiveInterval()));
+        if (sessionPojo.getMaxInactiveInterval().isPositive()) {
+            sessionPojo.setExpiresTime(sessionPojo.getCreationTime().plus(sessionPojo.getMaxInactiveInterval()));
+        } else {
+            sessionPojo.setExpiresTime(DateTimeUtil.nowUtcTruncatedToMicroseconds().plusYears(100).toInstant());
+        }
 		return sessionPojo;
     }
 
@@ -79,7 +86,7 @@ public class SessionPojoRepository implements org.springframework.session.Sessio
 		} else { // UPDATE
 			sessionOrm = sessionOrms.get();
 			sessionOrm.lastAccessedAt(sessionPojo.getLastAccessedTime().atOffset(ZoneOffset.UTC));
-			sessionOrm.maxInactiveInternal(sessionPojo.getMaxInactiveInterval());
+			sessionOrm.maxInactiveInterval(sessionPojo.getMaxInactiveInterval());
 			sessionOrm.expiresAt(sessionPojo.getExpiresTime().atOffset(ZoneOffset.UTC));
 			sessionOrm.attributes(pojoToOrm(sessionPojo.getAttributes()));
 		}
@@ -88,6 +95,7 @@ public class SessionPojoRepository implements org.springframework.session.Sessio
 
     @Override
     public SessionPojo findById(String externalIdBase64Url) {
+    	// TODO Cleanup expired sessions
         final byte[] externalIdBytes = Base64Util.URL.decodeFromString(externalIdBase64Url);
 		return this.sessionOrmRepository.findByExternalId(externalIdBytes)
             .map(this::ormToPojo)
@@ -125,7 +133,7 @@ public class SessionPojoRepository implements org.springframework.session.Sessio
 //            .persona(sessionPojo.getPersona())
 //            .sessionData(sessionPojo.getSessionData())
             .lastAccessedAt(sessionPojo.getLastAccessedTime().atOffset(ZoneOffset.UTC)) 
-            .maxInactiveInternal(sessionPojo.getMaxInactiveInterval())
+            .maxInactiveInterval(sessionPojo.getMaxInactiveInterval())
             .expiresAt(sessionPojo.getExpiresTime().atOffset(ZoneOffset.UTC))
             .attributes(this.pojoToOrm(sessionPojo.getAttributes()))
             .build();
@@ -142,7 +150,7 @@ public class SessionPojoRepository implements org.springframework.session.Sessio
             .creationTime(sessionOrm.prePersistDateTime().toInstant())
             .lastAccessedTime(sessionOrm.lastAccessedAt().toInstant())
             .expiresTime(sessionOrm.expiresAt().toInstant())
-            .maxInactiveInterval(sessionOrm.maxInactiveInternal())
+            .maxInactiveInterval(sessionOrm.maxInactiveInterval())
             .attributes(this.ormToPojo(sessionOrm.attributes()))
         .build();
     }

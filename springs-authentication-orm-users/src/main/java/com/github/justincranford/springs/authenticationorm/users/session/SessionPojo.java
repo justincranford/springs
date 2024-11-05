@@ -2,6 +2,7 @@ package com.github.justincranford.springs.authenticationorm.users.session;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
@@ -67,6 +68,11 @@ public class SessionPojo implements Session {
 	@Override
 	public void setLastAccessedTime(Instant _lastAccessedTime) {
 		this.lastAccessedTime = _lastAccessedTime;
+    	if (this.maxInactiveInterval.isPositive()) {
+        	this.expiresTime = this.lastAccessedTime.plus(this.maxInactiveInterval);
+    	} else {
+        	this.expiresTime = DateTimeUtil.nowUtcTruncatedToMicroseconds().plusYears(100).toInstant();
+    	}
 	}
 
 	@Override
@@ -79,6 +85,11 @@ public class SessionPojo implements Session {
 	public void setMaxInactiveInterval(Duration _maxInactiveInterval) {
 //		this.lastAccessedTime = nowInstant();
 		this.maxInactiveInterval = _maxInactiveInterval;
+    	if (this.maxInactiveInterval.isPositive()) {
+        	this.expiresTime = this.lastAccessedTime.plus(this.maxInactiveInterval);
+    	} else {
+        	this.expiresTime = DateTimeUtil.nowUtcTruncatedToMicroseconds().plusYears(100).toInstant();
+    	}
 	}
 
 	@Override

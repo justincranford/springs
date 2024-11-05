@@ -18,7 +18,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
-import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OrderBy;
@@ -69,15 +68,15 @@ public class SessionOrm extends AbstractEntity {
     @Builder.Default
 	private OffsetDateTime lastAccessedAt = DateTimeUtil.nowUtcTruncatedToMicroseconds();
 
-    @Column(updatable=false,nullable=false)
+    @Column(nullable=false)
     @NotNull
     @Builder.Default
 	private OffsetDateTime expiresAt = DateTimeUtil.nowUtcTruncatedToMicroseconds().plusMinutes(30L);
 
-    @Column(updatable=false,nullable=false)
+    @Column(nullable=false)
     @NotNull
     @Builder.Default
-	private Duration maxInactiveInternal = Constants.MAX_INACTIVE_INTERNAL;
+	private Duration maxInactiveInterval = Constants.MAX_INACTIVE_INTERNAL;
 
     @ElementCollection
     @CollectionTable(
