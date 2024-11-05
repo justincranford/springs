@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.session.MapSession;
 import org.springframework.session.Session;
 
 import com.github.justincranford.springs.persistenceorm.base.entity.ExternalIdUtil;
@@ -143,7 +144,11 @@ public class SessionPojo implements Session {
 	@Override
 	public synchronized void setAttribute(String attributeName, Object attributeValue) {
 //		this.lastAccessedTime = nowInstant();
-		this.attributes.put(attributeName, attributeValue);
+		if (attributeValue == null) {
+			this.attributes.remove(attributeName);
+		} else {
+			this.attributes.put(attributeName, attributeValue);
+		}
 	}
 
 	@Override
@@ -171,6 +176,6 @@ public class SessionPojo implements Session {
 	}
 
     public static class Constants {
-		public static final Duration MAX_INACTIVE_INTERNAL = Duration.ofMinutes(15);
+		public static final Duration MAX_INACTIVE_INTERNAL = MapSession.DEFAULT_MAX_INACTIVE_INTERVAL;
 	}
 }

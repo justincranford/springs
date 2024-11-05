@@ -5,7 +5,10 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,6 +16,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.stereotype.Repository;
 
@@ -29,7 +35,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @SuppressWarnings({"nls"})
-public class SessionPojoRepository implements org.springframework.session.SessionRepository<SessionPojo> {
+public class SessionPojoRepository implements FindByIndexNameSessionRepository<SessionPojo>,org.springframework.session.SessionRepository<SessionPojo> {
+	private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
+
 	@Autowired
     private SessionOrmRepository sessionOrmRepository;
 	@Autowired
@@ -58,8 +66,47 @@ public class SessionPojoRepository implements org.springframework.session.Sessio
 		return cleanedSessionOrms;
 	}
 
-	public Map<String, SessionPojo> findByIndexNameAndIndexValue(final String name, final Object value) {
-		return Map.of();
+	@Override
+	public Map<String, SessionPojo> findByIndexNameAndIndexValue(final String name, final String value) {
+		if (!PRINCIPAL_NAME_INDEX_NAME.equals(name)) {
+			return Collections.emptyMap();
+		}
+		final List<SessionOrm> sessionOrms = this.sessionOrmRepository.findAll();
+		final Map<String, SessionPojo> sessionMap = new HashMap<>();
+		for (SessionOrm sessionOrm : sessionOrms) {
+			final SessionPojo sessionPojo = ormToPojo(sessionOrm);
+			final Object principalNameAttribute = sessionPojo.getAttribute(PRINCIPAL_NAME_INDEX_NAME);
+			if ((principalNameAttribute instanceof String principalName) && (principalName.equals(value))) {
+				sessionMap.put(sessionPojo.getId(), sessionPojo);
+			}
+			final Object springSecurityContextAttribute = sessionPojo.getAttribute(SPRING_SECURITY_CONTEXT);
+			if (springSecurityContextAttribute instanceof SecurityContext springSecurityContext) {
+				final Authentication authentication = springSecurityContext.getAuthentication();
+				final String name2 = authentication.getName();
+				if (name2.equals(value)) {
+					sessionMap.put(sessionPojo.getId(), sessionPojo);
+				}
+			}
+			if (springSecurityContextAttribute instanceof SecurityContext springSecurityContext) {
+				final Authentication authentication = springSecurityContext.getAuthentication();
+				final String name2 = authentication.getName();
+				if (name2.equals(value)) {
+					sessionMap.put(sessionPojo.getId(), sessionPojo);
+				}
+			}
+			if (springSecurityContextAttribute instanceof LinkedHashMap springSecurityContext) {
+				final Object authentication = springSecurityContext.get("authentication");
+				if (authentication instanceof LinkedHashMap authenticationAttributes) {
+					final Object nameAttribute = authenticationAttributes.get("name");
+					if (nameAttribute instanceof String) {
+						if (nameAttribute.equals(value)) {
+							sessionMap.put(sessionPojo.getId(), sessionPojo);
+						}
+					}
+				}
+			}
+		}
+		return sessionMap;
 	}
 
 	@Override
@@ -182,7 +229,12 @@ public class SessionPojoRepository implements org.springframework.session.Sessio
             Map.Entry::getKey,
             entry -> {
         		try {
-        			return this.objectMapper.readValue(entry.getValue().encoded(), Object.class);
+        			final AttributeOrm value = entry.getValue();
+        			if (value == null) {
+        				return null;
+        			}
+					final String encoded = value.encoded();
+					return (encoded == null) ? null : this.objectMapper.readValue(encoded, Object.class);
         		} catch (JsonProcessingException e) {
         			throw new RuntimeException(e);
         		}
