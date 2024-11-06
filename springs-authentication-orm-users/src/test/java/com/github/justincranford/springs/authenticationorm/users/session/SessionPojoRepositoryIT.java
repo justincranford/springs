@@ -50,7 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Transactional
 @Slf4j
-@SuppressWarnings({"nls", "rawtypes"})
+@SuppressWarnings({"nls", "unused", "rawtypes"})
 public class SessionPojoRepositoryIT extends AbstractIT {
 	private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 	private static final String INDEX_NAME = FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME;
@@ -74,17 +74,17 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 				.last("Last "     + Base64Util.URL.encodeToString(SecureRandomUtil.randomBytes(32)))
 				.build())
 			.dateOfBirth(LocalDate.ofYearDay(SecureRandomUtil.SECURE_RANDOM.nextInt(100) + 1923, SecureRandomUtil.SECURE_RANDOM.nextInt(365) + 1))
-			.status(PersonStatusType.values()[SecureRandomUtil.SECURE_RANDOM.nextInt(PersonStatusType.values().length)])
-			.languages(List.of(LanguageOrm.builder().i18n(I18nLanguageType.EN).l10n(L10nRegionType.US).build()))
+			.status(SecureRandomUtil.randomEnumElement(PersonStatusType.class))
+			.languages(List.of(LanguageOrm.builder().i18n(SecureRandomUtil.randomEnumElement(I18nLanguageType.class)).l10n(SecureRandomUtil.randomEnumElement(L10nRegionType.class)).build()))
 			.timezones(List.of(TimeZone.getTimeZone("Americas/Toronto").toString()))
 			.build();
 		super.personOrmRepository().save(personOrm);
 
 		this.personaOrm = PersonaOrm.builder()
-				.emailAddresses(List.of(EmailAddressOrm.builder().emailAddress(EmailAddressRfc5321Orm.builder().emailAddress("user@example.com").build()).type(EmailAddressType.PER).build()))
-				.phoneNumbers(List.of(PhoneNumberOrm.builder().phoneNumber("+18005551212").type(PhoneNumberType.MOBILE).build()))
-				.locationAddresses(List.of(LocationAddressOrm.builder().street1("123 Street Ave").city("Ottawa").state("Ontario").country("Canada").type(LocationAddressType.HME).build()))
-				.personaType(PersonaType.values()[SecureRandomUtil.SECURE_RANDOM.nextInt(PersonaType.values().length)])
+				.emailAddresses(List.of(EmailAddressOrm.builder().emailAddress(EmailAddressRfc5321Orm.builder().emailAddress("user@example.com").build()).type(SecureRandomUtil.randomEnumElement(EmailAddressType.class)).build()))
+				.phoneNumbers(List.of(PhoneNumberOrm.builder().phoneNumber("+18005551212").type(SecureRandomUtil.randomEnumElement(PhoneNumberType.class)).build()))
+				.locationAddresses(List.of(LocationAddressOrm.builder().street1("123 Street Ave").city("Ottawa").state("Ontario").country("Canada").type(SecureRandomUtil.randomEnumElement(LocationAddressType.class)).build()))
+				.personaType(SecureRandomUtil.randomEnumElement(PersonaType.class))
 				.person(personOrm)
 				.build();
 		personOrm.personas(List.of(this.personaOrm));
