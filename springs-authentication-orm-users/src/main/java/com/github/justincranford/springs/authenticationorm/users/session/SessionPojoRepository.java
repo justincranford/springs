@@ -2,13 +2,11 @@ package com.github.justincranford.springs.authenticationorm.users.session;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.session.FindByIndexNameSessionRepository;
-import org.springframework.session.SessionRepository;
 import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @SuppressWarnings({"nls"})
-public class SessionPojoRepository implements FindByIndexNameSessionRepository<SessionPojo>,org.springframework.session.SessionRepository<SessionPojo> {
+public class SessionPojoRepository implements FindByIndexNameSessionRepository<SessionPojo> {
 	private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 
 	@Autowired

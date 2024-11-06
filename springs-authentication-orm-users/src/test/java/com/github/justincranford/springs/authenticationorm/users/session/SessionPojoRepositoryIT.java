@@ -1,41 +1,37 @@
 package com.github.justincranford.springs.authenticationorm.users.session;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.MapSession;
-import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.justincranford.springs.authenticationorm.users.AbstractIT;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
 
-import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Transactional
 @Slf4j
-@SuppressWarnings({"nls", "unused"})
+@SuppressWarnings({"nls", "unused", "rawtypes"})
 public class SessionPojoRepositoryIT extends AbstractIT {
 	private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 	private static final String INDEX_NAME = FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME;
@@ -514,11 +510,8 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 		assertThat(super.repository().findById(session.getId())).isNotNull();
 
-		this.prettyJson.logAndSave(session);
 		session.setLastAccessedTime(now.minus(30, ChronoUnit.MINUTES));
-		this.prettyJson.logAndSave(session);
 		super.repository().save(session);
-		this.prettyJson.logAndSave(session);
 		super.repository().cleanUpExpiredSessions();
 
 		assertThat(super.repository().findById(session.getId())).isNull();
@@ -723,6 +716,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 		assertThat(super.repository().findById(session.getId())).isNull();
 	}
 
+	@Disabled("Makes assumptions about implementation, instead of sticking to SessionRepository APIs")
 	@Test // gh-1133
 	void sessionFromStoreResolvesAttributesLazily() {
 		SessionPojo session = super.repository().createSession();
@@ -742,6 +736,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 		assertThat(ReflectionTestUtils.getField(attribute2, "value")).isEqualTo("value2");
 	}
 
+	@Disabled("Makes assumptions about implementation, instead of sticking to SessionRepository APIs")
 	@Test // gh-1203
 	void saveWithLargeAttribute() {
 		String attributeName = "largeAttribute";
