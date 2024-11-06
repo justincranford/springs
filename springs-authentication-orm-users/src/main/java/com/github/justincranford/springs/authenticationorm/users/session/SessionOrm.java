@@ -11,14 +11,18 @@ import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
+import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
@@ -48,20 +52,13 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @ToString(callSuper=true)
 public class SessionOrm extends AbstractEntity {
-//	@ManyToOne(fetch=FetchType.LAZY)
-//    @JoinColumn(name="person_id",nullable=false,updatable=false)
-//    @NotNull
-//    private PersonOrm person;
-//
-//    @ManyToOne(fetch=FetchType.LAZY)
-//    @JoinColumn(name="persona_id",nullable=false,updatable=false)
-//    @NotNull
-//    private PersonaOrm persona;
-//
-//    @Column(updatable=false,nullable=false)
-//    @Lob
-//    @NotNull
-//    private byte[] sessionData;
+	@ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="person_id",updatable=false)
+    private PersonOrm person;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="persona_id",updatable=false)
+    private PersonaOrm persona;
 
     @Column(nullable=false)
     @NotNull

@@ -185,9 +185,8 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
 
     private SessionOrm pojoToOrm(SessionPojo sessionPojo) {
         final SessionOrm sessionOrm = SessionOrm.builder()
-//            .person(sessionPojo.getPerson())
-//            .persona(sessionPojo.getPersona())
-//            .sessionData(sessionPojo.getSessionData())
+            .person(sessionPojo.getPerson())
+            .persona(sessionPojo.getPersona())
             .lastAccessedAt(sessionPojo.getLastAccessedTime().atOffset(ZoneOffset.UTC)) 
             .maxInactiveInterval(sessionPojo.getMaxInactiveInterval())
             .expiresAt(sessionPojo.getExpiresTime().atOffset(ZoneOffset.UTC))
@@ -199,9 +198,8 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
 
     private SessionPojo ormToPojo(SessionOrm sessionOrm) {
 		return SessionPojo.builder()
-//            .persona(sessionOrm.persona())
-//            .person(sessionOrm.person())
-//            .sessionData(sessionOrm.sessionData())
+            .persona(sessionOrm.persona())
+            .person(sessionOrm.person())
             .id(Base64Util.URL.encodeToString(sessionOrm.externalId()))
             .creationTime(sessionOrm.prePersistDateTime().toInstant())
             .lastAccessedTime(sessionOrm.lastAccessedAt().toInstant())

@@ -4,16 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -25,22 +27,36 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.justincranford.springs.authenticationorm.users.AbstractIT;
-import com.github.justincranford.springs.util.json.config.PrettyJson;
+import com.github.justincranford.springs.persistenceorm.users.person.LanguageOrm;
+import com.github.justincranford.springs.persistenceorm.users.person.NameOrm;
+import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
+import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.I18nLanguageType;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.L10nRegionType;
+import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonStatusType;
+import com.github.justincranford.springs.persistenceorm.users.persona.EmailAddressOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.EmailAddressRfc5321Orm;
+import com.github.justincranford.springs.persistenceorm.users.persona.LocationAddressOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.PhoneNumberOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.EmailAddressType;
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.LocationAddressType;
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.PersonaType;
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.PhoneNumberType;
+import com.github.justincranford.springs.util.basic.Base64Util;
+import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Transactional
 @Slf4j
-@SuppressWarnings({"nls", "unused", "rawtypes"})
+@SuppressWarnings({"nls", "rawtypes"})
 public class SessionPojoRepositoryIT extends AbstractIT {
 	private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 	private static final String INDEX_NAME = FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME;
 	private SecurityContext context;
 	private SecurityContext changedContext;
-	@Autowired
-    private SessionOrmRepository sessionOrmRepository;
-	@Autowired
-    private PrettyJson prettyJson;
+	private PersonaOrm personaOrm;
 
 	@BeforeEach
 	void setUp() {
@@ -48,11 +64,43 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 		this.context.setAuthentication(new UsernamePasswordAuthenticationToken("username-" + UUID.randomUUID(), "na", AuthorityUtils.createAuthorityList("ROLE_USER")));
 		this.changedContext = SecurityContextHolder.createEmptyContext();
 		this.changedContext.setAuthentication(new UsernamePasswordAuthenticationToken("changedContext-" + UUID.randomUUID(), "na", AuthorityUtils.createAuthorityList("ROLE_USER")));
+
+		final PersonOrm personOrm = PersonOrm.builder()
+			.username("username-" + Base64Util.URL.encodeToString(SecureRandomUtil.randomBytes(32)))
+			.password(PasswordOrm.builder().password("password" + Base64Util.URL.encodeToString(SecureRandomUtil.randomBytes(32))).build())
+			.name(NameOrm.builder()
+				.first("First "   + Base64Util.URL.encodeToString(SecureRandomUtil.randomBytes(32)))
+				.middle("Middle " + Base64Util.URL.encodeToString(SecureRandomUtil.randomBytes(32)))
+				.last("Last "     + Base64Util.URL.encodeToString(SecureRandomUtil.randomBytes(32)))
+				.build())
+			.dateOfBirth(LocalDate.ofYearDay(SecureRandomUtil.SECURE_RANDOM.nextInt(100) + 1923, SecureRandomUtil.SECURE_RANDOM.nextInt(365) + 1))
+			.status(PersonStatusType.values()[SecureRandomUtil.SECURE_RANDOM.nextInt(PersonStatusType.values().length)])
+			.languages(List.of(LanguageOrm.builder().i18n(I18nLanguageType.EN).l10n(L10nRegionType.US).build()))
+			.timezones(List.of(TimeZone.getTimeZone("Americas/Toronto").toString()))
+			.build();
+		super.personOrmRepository().save(personOrm);
+
+		this.personaOrm = PersonaOrm.builder()
+				.emailAddresses(List.of(EmailAddressOrm.builder().emailAddress(EmailAddressRfc5321Orm.builder().emailAddress("user@example.com").build()).type(EmailAddressType.PER).build()))
+				.phoneNumbers(List.of(PhoneNumberOrm.builder().phoneNumber("+18005551212").type(PhoneNumberType.MOBILE).build()))
+				.locationAddresses(List.of(LocationAddressOrm.builder().street1("123 Street Ave").city("Ottawa").state("Ontario").country("Canada").type(LocationAddressType.HME).build()))
+				.personaType(PersonaType.values()[SecureRandomUtil.SECURE_RANDOM.nextInt(PersonaType.values().length)])
+				.person(personOrm)
+				.build();
+		personOrm.personas(List.of(this.personaOrm));
+		super.personaOrmRepository().save(this.personaOrm);
+	}
+
+	private SessionPojo createSession() {
+		final SessionPojo sessionPojo = super.repository().createSession();
+		sessionPojo.setPersona(this.personaOrm);
+		sessionPojo.setPerson(this.personaOrm.person());
+		return sessionPojo;
 	}
 
 	@Test
 	void saveWhenNoAttributesThenCanBeFound1() {
-		final SessionPojo toSave = super.repository().createSession();
+		final SessionPojo toSave = createSession();
 		super.repository().save(toSave);
 		final SessionPojo found = super.repository().findById(toSave.getId());
 		assertThat(found).isNotNull();
@@ -69,7 +117,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 		String expectedAttributeName = "a";
 		String expectedAttributeValue = "b";
 
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(expectedAttributeName, expectedAttributeValue);
 		Authentication toSaveToken = new UsernamePasswordAuthenticationToken(username, "password", AuthorityUtils.createAuthorityList("ROLE_USER"));
 		SecurityContext toSaveContext = SecurityContextHolder.createEmptyContext();
@@ -99,7 +147,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test
 	void saveWhenNoAttributesThenCanBeFound() {
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 
 		super.repository().save(toSave);
 		SessionPojo session = super.repository().findById(toSave.getId());
@@ -111,7 +159,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	void saves() {
 		String username = "saves-" + System.currentTimeMillis();
 
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		String expectedAttributeName = "a";
 		String expectedAttributeValue = "b";
 		toSave.setAttribute(expectedAttributeName, expectedAttributeValue);
@@ -139,14 +187,14 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	@Test
 	@Transactional(readOnly = true)
 	void savesInReadOnlyTransaction() {
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 
 		super.repository().save(toSave);
 	}
 
 	@Test
 	void putAllOnSingleAttrDoesNotRemoveOld() {
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute("a", "b");
 
 		super.repository().save(toSave);
@@ -167,7 +215,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test
 	void updateLastAccessedTime() {
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setLastAccessedTime(Instant.now().minusSeconds(MapSession.DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS + 1));
 
 		super.repository().save(toSave);
@@ -187,7 +235,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	@Test
 	void findByPrincipalName() {
 		String principalName = "findByPrincipalName" + UUID.randomUUID();
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(INDEX_NAME, principalName);
 
 		super.repository().save(toSave);
@@ -209,7 +257,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	@Test
 	void findByPrincipalNameExpireRemovesIndex() {
 		String principalName = "findByPrincipalNameExpireRemovesIndex" + UUID.randomUUID();
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(INDEX_NAME, principalName);
 		toSave.setLastAccessedTime(Instant.now().minusSeconds(MapSession.DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS + 1));
 
@@ -226,7 +274,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	@Test
 	void findByPrincipalNameNoPrincipalNameChange() {
 		String principalName = "findByPrincipalNameNoPrincipalNameChange" + UUID.randomUUID();
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(INDEX_NAME, principalName);
 
 		super.repository().save(toSave);
@@ -244,7 +292,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	@Test
 	void findByPrincipalNameNoPrincipalNameChangeReload() {
 		String principalName = "findByPrincipalNameNoPrincipalNameChangeReload" + UUID.randomUUID();
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(INDEX_NAME, principalName);
 
 		super.repository().save(toSave);
@@ -264,7 +312,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	@Test
 	void findByDeletedPrincipalName() {
 		String principalName = "findByDeletedPrincipalName" + UUID.randomUUID();
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(INDEX_NAME, principalName);
 
 		super.repository().save(toSave);
@@ -282,7 +330,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	void findByChangedPrincipalName() {
 		String principalName = "findByChangedPrincipalName" + UUID.randomUUID();
 		String principalNameChanged = "findByChangedPrincipalName" + UUID.randomUUID();
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(INDEX_NAME, principalName);
 
 		super.repository().save(toSave);
@@ -303,7 +351,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	@Test
 	void findByDeletedPrincipalNameReload() {
 		String principalName = "findByDeletedPrincipalName" + UUID.randomUUID();
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(INDEX_NAME, principalName);
 
 		super.repository().save(toSave);
@@ -322,7 +370,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	void findByChangedPrincipalNameReload() {
 		String principalName = "findByChangedPrincipalName" + UUID.randomUUID();
 		String principalNameChanged = "findByChangedPrincipalName" + UUID.randomUUID();
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(INDEX_NAME, principalName);
 
 		super.repository().save(toSave);
@@ -344,7 +392,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test
 	void findBySecurityPrincipalName() {
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
 		super.repository().save(toSave);
@@ -365,7 +413,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test
 	void findBySecurityPrincipalNameExpireRemovesIndex() {
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 		toSave.setLastAccessedTime(Instant.now().minusSeconds(MapSession.DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS + 1));
 
@@ -381,7 +429,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test
 	void findByPrincipalNameNoSecurityPrincipalNameChange() {
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
 		super.repository().save(toSave);
@@ -398,7 +446,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test
 	void findByPrincipalNameNoSecurityPrincipalNameChangeReload() {
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
 		super.repository().save(toSave);
@@ -417,7 +465,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test
 	void findByDeletedSecurityPrincipalName() {
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
 		super.repository().save(toSave);
@@ -433,7 +481,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test
 	void findByChangedSecurityPrincipalName() {
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
 		super.repository().save(toSave);
@@ -453,7 +501,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test
 	void findByDeletedSecurityPrincipalNameReload() {
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
 		super.repository().save(toSave);
@@ -470,7 +518,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test
 	void findByChangedSecurityPrincipalNameReload() {
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
 		super.repository().save(toSave);
@@ -492,7 +540,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test
 	void cleanupInactiveSessionsUsingRepositoryDefinedInterval() {
-		SessionPojo session = super.repository().createSession();
+		SessionPojo session = createSession();
 
 		super.repository().save(session);
 
@@ -520,7 +568,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	// gh-580
 	@Test
 	void cleanupInactiveSessionsUsingSessionDefinedInterval() {
-		SessionPojo session = super.repository().createSession();
+		SessionPojo session = createSession();
 		session.setMaxInactiveInterval(Duration.ofMinutes(45));
 
 		super.repository().save(session);
@@ -548,7 +596,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test
 	void cleanupExpiredSessionsWhenMaxInactiveIntervalNegativeThenSessionNotDeleted() {
-		SessionPojo session = super.repository().createSession();
+		SessionPojo session = createSession();
 		session.setMaxInactiveInterval(Duration.ofSeconds(-1));
 		session.setLastAccessedTime(Instant.now().minusSeconds(MapSession.DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS + 1));
 
@@ -562,7 +610,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	void changeSessionIdWhenOnlyChangeId() {
 		String attrName = "changeSessionId";
 		String attrValue = "changeSessionId-value";
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		toSave.setAttribute(attrName, attrValue);
 
 		super.repository().save(toSave);
@@ -585,7 +633,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test
 	void changeSessionIdWhenChangeTwice() {
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 
 		super.repository().save(toSave);
 
@@ -605,7 +653,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 		String attrName = "changeSessionId";
 		String attrValue = "changeSessionId-value";
 
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 
 		super.repository().save(toSave);
 
@@ -627,7 +675,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test
 	void changeSessionIdWhenHasNotSaved() {
-		SessionPojo toSave = super.repository().createSession();
+		SessionPojo toSave = createSession();
 		String originalId = toSave.getId();
 		toSave.changeSessionId();
 
@@ -639,7 +687,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test // gh-1070
 	void saveUpdatedAddAndModifyAttribute() {
-		SessionPojo session = super.repository().createSession();
+		SessionPojo session = createSession();
 		super.repository().save(session);
 		session = super.repository().findById(session.getId());
 		session.setAttribute("testName", "testValue1");
@@ -652,7 +700,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test // gh-1070
 	void saveUpdatedAddAndRemoveAttribute() {
-		SessionPojo session = super.repository().createSession();
+		SessionPojo session = createSession();
 		super.repository().save(session);
 		session = super.repository().findById(session.getId());
 		session.setAttribute("testName", "testValue");
@@ -665,7 +713,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test // gh-1070
 	void saveUpdatedModifyAndRemoveAttribute() {
-		SessionPojo session = super.repository().createSession();
+		SessionPojo session = createSession();
 		session.setAttribute("testName", "testValue1");
 		super.repository().save(session);
 		session = super.repository().findById(session.getId());
@@ -679,7 +727,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test // gh-1070
 	void saveUpdatedRemoveAndAddAttribute() {
-		SessionPojo session = super.repository().createSession();
+		SessionPojo session = createSession();
 		session.setAttribute("testName", "testValue1");
 		super.repository().save(session);
 		session = super.repository().findById(session.getId());
@@ -693,7 +741,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test // gh-1031
 	void saveDeleted() {
-		SessionPojo session = super.repository().createSession();
+		SessionPojo session = createSession();
 		super.repository().save(session);
 		session = super.repository().findById(session.getId());
 		super.repository().deleteById(session.getId());
@@ -705,7 +753,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 
 	@Test // gh-1031
 	void saveDeletedAddAttribute() {
-		SessionPojo session = super.repository().createSession();
+		SessionPojo session = createSession();
 		super.repository().save(session);
 		session = super.repository().findById(session.getId());
 		super.repository().deleteById(session.getId());
@@ -719,7 +767,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	@Disabled("Makes assumptions about implementation, instead of sticking to SessionRepository APIs")
 	@Test // gh-1133
 	void sessionFromStoreResolvesAttributesLazily() {
-		SessionPojo session = super.repository().createSession();
+		SessionPojo session = createSession();
 		session.setAttribute("attribute1", "value1");
 		session.setAttribute("attribute2", "value2");
 		super.repository().save(session);
@@ -742,7 +790,7 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 		String attributeName = "largeAttribute";
 		int arraySize = 4000;
 
-		SessionPojo session = super.repository().createSession();
+		SessionPojo session = createSession();
 		session.setAttribute(attributeName, new byte[arraySize]);
 		super.repository().save(session);
 		session = super.repository().findById(session.getId());

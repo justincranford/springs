@@ -27,17 +27,13 @@ import lombok.ToString;
 @Builder
 @ToString
 public class SessionPojo implements Session {
-//	@Getter
-//	@Setter
-//	private PersonOrm person;
-//
-//	@Getter
-//	@Setter
-//	private PersonaOrm persona;
+	@Getter
+	@Setter
+	private PersonOrm person;
 
-//	@Getter
-//	@Setter
-//	private byte[] sessionData;
+	@Getter
+	@Setter
+	private PersonaOrm persona;
 
 	@Builder.Default
 	private List<String> replacedIds = new ArrayList<>(0);
