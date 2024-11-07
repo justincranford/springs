@@ -1,7 +1,7 @@
 package com.github.justincranford.springs.authenticationorm.users.session;
 
-import static com.github.justincranford.springs.authenticationorm.users.session.RandomPersonUtil.generatePerson;
-import static com.github.justincranford.springs.authenticationorm.users.session.RandomPersonaUtil.generatePersona;
+import static com.github.justincranford.springs.authenticationorm.users.session.util.person.RandomPersonUtil.generatePerson;
+import static com.github.justincranford.springs.authenticationorm.users.session.util.persona.RandomPersonaUtil.generatePersona;
 import static com.github.justincranford.springs.util.basic.SecureRandomUtil.SECURE_RANDOM;
 import static org.assertj.core.api.Assertions.assertThat;
 

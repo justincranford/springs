@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.authenticationorm.users.session;
+package com.github.justincranford.springs.authenticationorm.users.session.util.persona;
 
 import static com.github.justincranford.springs.util.basic.SecureRandomUtil.SECURE_RANDOM;
 import static com.github.justincranford.springs.util.basic.SecureRandomUtil.randomEmailAddress;
