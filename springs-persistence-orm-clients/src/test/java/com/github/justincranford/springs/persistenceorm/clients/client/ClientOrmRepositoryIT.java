@@ -1,20 +1,20 @@
-package com.github.justincranford.springs.persistenceorm.users.person;
+package com.github.justincranford.springs.persistenceorm.clients.client;
 
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.github.justincranford.springs.persistenceorm.users.AbstractIT;
+import com.github.justincranford.springs.persistenceorm.clients.AbstractIT;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
-// TODO
+//TODO
 @Slf4j
 @SuppressWarnings({"unused"})
-public class PersonOrmRepositoryIT extends AbstractIT {
-	public record Args(int numPersons) {}
+public class ClientOrmRepositoryIT extends AbstractIT {
+	public record Args(int numClients) {}
 	public static Stream<Args> args() {
 		return Stream.of(
 			new Args(0),

@@ -112,6 +112,7 @@ public class PersonaOrm extends AbstractEntity {
     private List<com.github.justincranford.springs.persistenceorm.users.persona.UrlOrm> urls = new ArrayList<>(0);
 
     @Enumerated(EnumType.STRING)
+    @Column(length=3)
     @Nullable
     private PersonaType personaType;
 
