@@ -40,8 +40,6 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 	private static final String INDEX_NAME = FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME;
 	private SecurityContext context;
 	private SecurityContext changedContext;
-	private PersonaOrm personaOrm;
-	private PersonOrm personOrm;
 
 	@BeforeEach
 	void setUp() {
@@ -49,17 +47,16 @@ public class SessionPojoRepositoryIT extends AbstractIT {
 		this.context.setAuthentication(new UsernamePasswordAuthenticationToken("username-" + UUID.randomUUID(), "na", AuthorityUtils.createAuthorityList("ROLE_USER")));
 		this.changedContext = SecurityContextHolder.createEmptyContext();
 		this.changedContext.setAuthentication(new UsernamePasswordAuthenticationToken("changedContext-" + UUID.randomUUID(), "na", AuthorityUtils.createAuthorityList("ROLE_USER")));
-
-		this.personOrm = super.personOrmRepository().save(generatePerson());
-		if (SECURE_RANDOM.nextBoolean()) {
-			this.personaOrm = super.personaOrmRepository().save(generatePersona(this.personOrm));
-		}
 	}
 
 	private SessionPojo createSession() {
 		final SessionPojo sessionPojo = super.repository().createSession();
-		sessionPojo.setPerson(this.personOrm);
-		sessionPojo.setPersona(this.personaOrm);
+
+		sessionPojo.setPerson(super.personOrmRepository().save(generatePerson()));
+		if (SECURE_RANDOM.nextBoolean()) {
+			sessionPojo.setPersona(super.personaOrmRepository().save(generatePersona(sessionPojo.getPerson())));
+		}
+
 		return sessionPojo;
 	}
 
