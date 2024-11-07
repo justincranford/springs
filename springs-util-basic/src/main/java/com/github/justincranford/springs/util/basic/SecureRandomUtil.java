@@ -1,10 +1,14 @@
 package com.github.justincranford.springs.util.basic;
 
+import static com.github.justincranford.springs.util.basic.SecureRandomUtil.randomString;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.List;
+
+import com.github.justincranford.springs.util.basic.Base64Util.EncoderDecoder;
 
 @SuppressWarnings({"nls"})
 public class SecureRandomUtil  {
@@ -15,6 +19,15 @@ public class SecureRandomUtil  {
 		SECURE_RANDOM.nextBytes(bytes);
 		return bytes;
 	}
+
+	public static String randomString(final EncoderDecoder encoderDecoder, final int randomBytesLength) {
+		return encoderDecoder.encodeToString(SecureRandomUtil.randomBytes(randomBytesLength));
+	}
+
+	public static String randomEmailAddress() {
+		return "user-" + randomString(Base64Util.URL, 32) + "@example.com";
+	}
+
 	/**
 	 * Useful for generating random values that behave similar to UUID Type 7, which are performant for BTREE indexes.
 	 * UUID Type 4 values don't cluster together in a BTREE index, due to randomness, which leads to fragmentation.

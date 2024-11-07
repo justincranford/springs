@@ -40,13 +40,13 @@ public class PhoneNumberOrm {
 
     @Column(nullable=false)
     @NotNull
-    private boolean canTalk;
+    private boolean talk;
 
     @Column(nullable=false)
-    private boolean canText;
+    private boolean text;
 
     @Column(nullable=false)
-    private boolean hasData;
+    private boolean data;
 
     @Enumerated(EnumType.STRING)
     @Column(name="phone_number_type",length=16,nullable=false)

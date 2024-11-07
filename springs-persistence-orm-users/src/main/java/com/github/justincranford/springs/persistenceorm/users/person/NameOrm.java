@@ -36,14 +36,17 @@ public class NameOrm {
     private SalutationType salutation;
 
     @Column(length=64,nullable=false)
+    @Size(min=1,max=64)
     @NotNull
     private String first;
 
     @Column(length=64)
+    @Size(min=1,max=64)
     @Nullable
     private String middle;
 
     @Column(length=64)
+    @Size(min=1,max=64)
     @Nullable
     private String last;
 

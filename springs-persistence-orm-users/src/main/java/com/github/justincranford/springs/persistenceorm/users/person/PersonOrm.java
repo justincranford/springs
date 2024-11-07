@@ -58,7 +58,7 @@ import lombok.experimental.Accessors;
 @ToString(callSuper=true,exclude="password")
 public class PersonOrm extends AbstractEntity {
     @Column(length=64,nullable=false,unique=true)
-	@Size(min=1,max=64)
+	@Size(min=5,max=64)
 	@NotNull
 	@NotBlank
     private String username;

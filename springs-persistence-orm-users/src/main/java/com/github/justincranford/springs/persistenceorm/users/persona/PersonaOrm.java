@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.Audited;
+import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -64,7 +65,7 @@ public class PersonaOrm extends AbstractEntity {
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
     @OrderBy("persona_id,rank")
     @NotNull
-    @Size(min=1,max=5)
+    @Size(min=0,max=5)
     @Builder.Default
     private List<com.github.justincranford.springs.persistenceorm.users.persona.EmailAddressOrm> emailAddresses = new ArrayList<>(2);
 
@@ -78,7 +79,7 @@ public class PersonaOrm extends AbstractEntity {
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
     @OrderBy("persona_id,rank")
     @NotNull
-    @Size(min=1,max=5)
+    @Size(min=0,max=5)
     @Builder.Default
     private List<com.github.justincranford.springs.persistenceorm.users.persona.PhoneNumberOrm> phoneNumbers = new ArrayList<>(1);
 
@@ -92,7 +93,7 @@ public class PersonaOrm extends AbstractEntity {
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
     @OrderBy("persona_id,rank")
     @NotNull
-    @Size(min=1,max=4)
+    @Size(min=0,max=5)
     @Builder.Default
     private List<com.github.justincranford.springs.persistenceorm.users.persona.LocationAddressOrm> locationAddresses = new ArrayList<>(1);
 
@@ -111,7 +112,7 @@ public class PersonaOrm extends AbstractEntity {
     private List<com.github.justincranford.springs.persistenceorm.users.persona.UrlOrm> urls = new ArrayList<>(0);
 
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @Nullable
     private PersonaType personaType;
 
     @JsonBackReference

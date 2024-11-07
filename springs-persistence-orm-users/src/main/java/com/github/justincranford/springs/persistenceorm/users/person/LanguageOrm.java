@@ -31,14 +31,14 @@ public class LanguageOrm {
 	private int rank;
 
     @Enumerated(EnumType.STRING)
-    @Column(length=2,nullable=false,columnDefinition="CHAR(2)")
-    @Size(min=2,max=2)
+    @Column(length=3,nullable=false,columnDefinition="CHAR(3)")
+    @Size(min=2,max=3)
     @NotNull
     private I18nLanguageType i18n;
 
     @Enumerated(EnumType.STRING)
-    @Column(length=2,nullable=false,columnDefinition="CHAR(2)")
-    @Size(min=2,max=2)
+    @Column(length=3,nullable=false,columnDefinition="CHAR(3)")
+    @Size(min=2,max=3)
     @NotNull
     private L10nRegionType l10n;
 
