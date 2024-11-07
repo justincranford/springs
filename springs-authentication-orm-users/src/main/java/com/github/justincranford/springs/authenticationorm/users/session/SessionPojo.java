@@ -2,7 +2,6 @@ package com.github.justincranford.springs.authenticationorm.users.session;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.Set;
 import org.springframework.session.MapSession;
 import org.springframework.session.Session;
 
-import com.github.justincranford.springs.persistenceorm.base.entity.ExternalIdUtil;
+import com.github.justincranford.springs.persistenceorm.base.entity.ExternalIdGenerator;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
 import com.github.justincranford.springs.util.basic.Base64Util;
@@ -39,7 +38,7 @@ public class SessionPojo implements Session {
 	private List<String> replacedIds = new ArrayList<>(0);
 
 	@Builder.Default
-	private String id = Base64Util.URL.encodeToString(ExternalIdUtil.generate());
+	private String id = Base64Util.URL.encodeToString(ExternalIdGenerator.generate());
 
 	@Builder.Default
 	private Instant creationTime = nowInstant();
@@ -157,7 +156,7 @@ public class SessionPojo implements Session {
 	public String changeSessionId() {
 //		this.lastAccessedTime = nowInstant();
 		this.replacedIds.add(this.id);
-		this.id = Base64Util.URL.encodeToString(ExternalIdUtil.generate());
+		this.id = Base64Util.URL.encodeToString(ExternalIdGenerator.generate());
 		return this.id;
 	}
 

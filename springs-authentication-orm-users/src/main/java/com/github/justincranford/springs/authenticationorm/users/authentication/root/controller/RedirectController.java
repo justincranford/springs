@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.authenticationorm.users.authentication.controller;
+package com.github.justincranford.springs.authenticationorm.users.authentication.root.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,7 +1,5 @@
 package com.github.justincranford.springs.util.basic;
 
-import static com.github.justincranford.springs.util.basic.SecureRandomUtil.randomString;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.SecureRandom;

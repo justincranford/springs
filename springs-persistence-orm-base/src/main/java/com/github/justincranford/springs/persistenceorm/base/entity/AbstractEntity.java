@@ -67,8 +67,8 @@ public class AbstractEntity {
     @Nonnull
 	@NotNull
 	@NotEmpty
-	@Size(min=ExternalIdUtil.BYTES_LENGTH,max=ExternalIdUtil.BYTES_LENGTH)
-    @Column(length=ExternalIdUtil.BYTES_LENGTH,nullable=false,columnDefinition="BINARY(" + ExternalIdUtil.BYTES_LENGTH + ")")
+	@Size(min=ExternalIdGenerator.TOTAL_BYTES_LENGTH,max=ExternalIdGenerator.TOTAL_BYTES_LENGTH)
+    @Column(length=ExternalIdGenerator.TOTAL_BYTES_LENGTH,nullable=false,columnDefinition="BINARY(" + ExternalIdGenerator.TOTAL_BYTES_LENGTH + ")")
     private byte[] externalId;
 
 	@Column(updatable=false,nullable=false)
@@ -112,7 +112,7 @@ public class AbstractEntity {
 	public void prePersist() {
 		this.prePersistDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
 		if (this.externalId == null) {
-			this.externalId = ExternalIdUtil.generate();
+			this.externalId = ExternalIdGenerator.generate();
 		}
 	}
 	@PostPersist

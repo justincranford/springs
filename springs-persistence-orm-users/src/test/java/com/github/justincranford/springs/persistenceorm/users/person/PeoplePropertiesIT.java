@@ -1,6 +1,5 @@
 package com.github.justincranford.springs.persistenceorm.users.person;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
@@ -36,7 +35,7 @@ public class PeoplePropertiesIT extends AbstractIT {
 	}
 
 	@Test
-	public void verifyPeopleOrmsLoaded() throws IOException {
+	public void verifyPeopleOrmsLoaded() {
 		final List<PersonOrm> personOrms = personOrmRepository().findAll();
 		prettyJson().logAndSave(personOrms);
 		Assertions.assertThat(personOrms).isNotNull();
