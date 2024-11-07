@@ -43,7 +43,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent=true)
 @SuppressWarnings({"nls"})
 public class ClientPasswordOrm {
-    @PasswordStrength
+    @PasswordStrength(minLength=16)
     @Column(length=64)
     @Size(min=16,max=64)
     @Nullable
@@ -57,7 +57,7 @@ public class ClientPasswordOrm {
         String message() default "Password must meet strength requirements";
         Class<?>[] groups() default {};
         Class<? extends Payload>[] payload() default {};
-        int minLength() default 16;
+        int minLength() default 8;
         int maxLength() default 64;
         int minUppers() default 1;
         int maxUppers() default Integer.MAX_VALUE;
