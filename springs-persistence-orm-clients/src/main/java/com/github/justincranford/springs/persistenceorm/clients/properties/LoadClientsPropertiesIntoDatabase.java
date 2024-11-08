@@ -31,7 +31,7 @@ public class LoadClientsPropertiesIntoDatabase {
             createClientOrm.status(client.getStatus());
             createClientOrm.type(client.getType());
             createClientOrm.timezones(client.getTimezones());
-            final ClientOrm createdClientOrm = this.clientOrmRepository.save(createClientOrm);
+            this.clientOrmRepository.save(createClientOrm);
         }
     }
 }

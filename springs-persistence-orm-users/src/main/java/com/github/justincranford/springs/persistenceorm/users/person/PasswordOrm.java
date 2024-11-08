@@ -3,7 +3,7 @@ package com.github.justincranford.springs.persistenceorm.users.person;
 import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.justincranford.springs.util.security.passwords.PasswordStrength;
+import com.github.justincranford.springs.util.security.passwords.constraints.PasswordConstraints;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -25,7 +25,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(fluent=true)
 public class PasswordOrm {
-    @PasswordStrength
+	@PasswordConstraints
     @Column(length=64)
     @Size(min=12,max=64)
     @Nullable
