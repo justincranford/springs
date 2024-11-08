@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.clients.client;
+package com.github.justincranford.springs.util.security.passwords;
 
 import java.util.ArrayList;
 import java.util.Collections;

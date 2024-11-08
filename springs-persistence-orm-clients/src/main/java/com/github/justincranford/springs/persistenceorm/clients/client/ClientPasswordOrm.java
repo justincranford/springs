@@ -3,6 +3,7 @@ package com.github.justincranford.springs.persistenceorm.clients.client;
 import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.justincranford.springs.util.security.passwords.PasswordStrength;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -23,11 +24,10 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-@SuppressWarnings({"nls"})
 public class ClientPasswordOrm {
-    @PasswordStrength(minLength=16)
+    @PasswordStrength(minLength=12)
     @Column(length=64)
-    @Size(min=16,max=64)
+    @Size(min=12,max=64)
     @Nullable
     private String password;
 }
