@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.github.justincranford.springs.util.security.passwords.properties.SpringsUtilSecurityPasswordsProperties.Constraints;
+
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -17,19 +19,19 @@ public @interface PasswordStrength {
     String message() default "Password must meet strength requirements";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
-    int minLength() default 8;
-    int maxLength() default 64;
-    int minUppers() default 1;
-    int maxUppers() default Integer.MAX_VALUE;
-    int minLowers() default 1;
-    int maxLowers() default Integer.MAX_VALUE;
-    int minDigits() default 1;
-    int maxDigits() default Integer.MAX_VALUE;
-    int minSpecials() default 1;
-    int maxSpecials() default Integer.MAX_VALUE;
-    int minWhitespace() default 0;
-    int maxWhitespace() default Integer.MAX_VALUE;
-    int maxAnywhereRepeats() default 3;
-    int maxConsecutiveRepeats() default 2;
-    String specials() default "~`!@#$%^&*()_-+={}[]|\\\"':;?/<>,.";
+    int minLength() default Constraints.MIN_LENGTH_DEFAULT;
+    int maxLength() default Constraints.MAX_LENGTH_DEFAULT;
+    int minUppers() default Constraints.MIN_UPPERS_DEFAULT;
+    int maxUppers() default Constraints.MAX_UPPERS_DEFAULT;
+    int minLowers() default Constraints.MIN_LOWERS_DEFAULT;
+    int maxLowers() default Constraints.MAX_LOWERS_DEFAULT;
+    int minDigits() default Constraints.MIN_DIGITS_DEFAULT;
+    int maxDigits() default Constraints.MAX_DIGITS_DEFAULT;
+    int minSpecials() default Constraints.MIN_SPECIALS_DEFAULT;
+    int maxSpecials() default Constraints.MAX_SPECIALS_DEFAULT;
+    int minWhitespace() default Constraints.MIN_WHITESPACE_DEFAULT;
+    int maxWhitespace() default Constraints.MAX_WHITESPACE_DEFAULT;
+    int maxAnywhereRepeats() default Constraints.MAX_ANYWHERE_REPEATS_DEFAULT;
+    int maxConsecutiveRepeats() default Constraints.MAX_CONSECUTIVE_REPEATS_DEFAULT;
+    String specials() default Constraints.SPECIALS_DEFAULT;
 }

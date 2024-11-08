@@ -50,9 +50,10 @@ public class PasswordGenerator {
 		selectCharacters(selectedCodePointsAndCounts, availableWhitespaceAndCounts, constraintsAnnotation.minWhitespace());
 
 		final int selectedCodePointsTotal = selectedCodePointsAndCounts.values().stream().reduce(Integer.valueOf(0), Integer::sum).intValue();
-        if (selectedCodePointsTotal < constraintsAnnotation.minLength()) {
-            throw new IllegalArgumentException("Minimum constraints exceed minimum length; minimum length is too small");
-        } else if (selectedCodePointsTotal > constraintsAnnotation.maxLength()) {
+//        if (selectedCodePointsTotal < constraintsAnnotation.minLength()) {
+//            throw new IllegalArgumentException("Minimum constraints exceed minimum length; minimum length is too small");
+//        } else 
+    	if (selectedCodePointsTotal > constraintsAnnotation.maxLength()) {
             throw new IllegalArgumentException("Minimum constraints exceed maximum length; maximum length is too small");
         }
 
@@ -66,13 +67,18 @@ public class PasswordGenerator {
         	throw new IllegalArgumentException("No available code points remaining");
         }
 
-        final int totalCodePoints     = SecureRandomUtil.SECURE_RANDOM.nextInt(constraintsAnnotation.minDigits(), constraintsAnnotation.maxDigits() + 1);
+        final int totalCodePoints     = SecureRandomUtil.SECURE_RANDOM.nextInt(constraintsAnnotation.minLength(), constraintsAnnotation.maxLength());
 		final int remainingCodePoints = totalCodePoints - selectedCodePointsAndCounts.size();
 		if (remainingCodePoints > 0) {
-			selectCharacters(availableCodePointsAndCounts, availableCodePointsAndCounts, remainingCodePoints);
+			selectCharacters(selectedCodePointsAndCounts, availableCodePointsAndCounts, remainingCodePoints);
 		}
 
-        final List<Integer> selectedCodePoints = new ArrayList<>(selectedCodePointsAndCounts.values());
+        final List<Integer> selectedCodePoints = new ArrayList<>(totalCodePoints);
+        for (final Map.Entry<Integer, Integer> selectedCodePointAndCount : selectedCodePointsAndCounts.entrySet()) {
+        	for (int i = 0; i < selectedCodePointAndCount.getValue().intValue(); i++) {
+        		selectedCodePoints.add(selectedCodePointAndCount.getKey());
+        	}
+        }
 		Collections.shuffle(selectedCodePoints);
         final StringBuilder passwordBuilder = new StringBuilder(totalCodePoints);
         for (final Integer selectedCodePoint : selectedCodePoints) {

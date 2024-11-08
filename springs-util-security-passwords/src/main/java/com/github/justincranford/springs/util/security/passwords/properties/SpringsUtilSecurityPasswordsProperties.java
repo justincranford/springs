@@ -117,7 +117,7 @@ public class SpringsUtilSecurityPasswordsProperties {
         @NotNull
         @Size(min=0)
         @Builder.Default
-        private String specials = "~`!@#$%^&*()_-+={}[]|\\\"':;?/<>,.";
+        private String specials = Constraints.SPECIALS_DEFAULT;
     }
 
     public static class Constraints {
@@ -135,5 +135,6 @@ public class SpringsUtilSecurityPasswordsProperties {
         public static final int MAX_WHITESPACE_MIN          =  0, MAX_WHITESPACE_DEFAULT          =   8, MAX_WHITESPACE_MAX          = 128; // Too many may not be ideal
         public static final int MAX_ANYWHERE_REPEATS_MIN    =  0, MAX_ANYWHERE_REPEATS_DEFAULT    =   3, MAX_ANYWHERE_REPEATS_MAX    = 128;
         public static final int MAX_CONSECUTIVE_REPEATS_MIN =  0, MAX_CONSECUTIVE_REPEATS_DEFAULT =   2, MAX_CONSECUTIVE_REPEATS_MAX = 128;
+        public static final String SPECIALS_DEFAULT         = "~`!@#$%^&*()_-+={}[]|\\\"':;?/<>,.";
     }
 }
