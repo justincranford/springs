@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.security.passwords;
+package com.github.justincranford.springs.util.security.passwords.generator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
+import com.github.justincranford.springs.util.security.passwords.constraints.PasswordConstraints;
 
 @SuppressWarnings({"nls"})
 public class PasswordGenerator {
@@ -16,58 +17,58 @@ public class PasswordGenerator {
     private static final List<Integer> DIGITS = "0123456789".codePoints().boxed().toList();
     private static final List<Integer> WHITESPACE = " \t\n\r\f".codePoints().boxed().toList();
 
-	public static String generatePassword(final PasswordStrength constraintsAnnotation) {
-		if (constraintsAnnotation.maxLength() < constraintsAnnotation.minLength()) {
+	public static String generate(final PasswordConstraints passwordConstraints) {
+		if (passwordConstraints.maxLength() < passwordConstraints.minLength()) {
 			throw new IllegalArgumentException("Max length must be greater than or equal to min");
-		} else if (constraintsAnnotation.maxUppers() < constraintsAnnotation.minUppers()) {
+		} else if (passwordConstraints.maxUppers() < passwordConstraints.minUppers()) {
 			throw new IllegalArgumentException("Max uppers must be greater than or equal to min");
-		} else if (constraintsAnnotation.maxLowers() < constraintsAnnotation.minLowers()) {
+		} else if (passwordConstraints.maxLowers() < passwordConstraints.minLowers()) {
 			throw new IllegalArgumentException("Max lowers must be greater than or equal to min");
-		} else if (constraintsAnnotation.maxDigits() < constraintsAnnotation.minDigits()) {
+		} else if (passwordConstraints.maxDigits() < passwordConstraints.minDigits()) {
 			throw new IllegalArgumentException("Max digits must be greater than or equal to min");
-		} else if (constraintsAnnotation.maxSpecials() < constraintsAnnotation.minSpecials()) {
+		} else if (passwordConstraints.maxSpecials() < passwordConstraints.minSpecials()) {
 			throw new IllegalArgumentException("Max specials must be greater than or equal to min");
-		} else if (constraintsAnnotation.maxWhitespace() < constraintsAnnotation.minWhitespace()) {
+		} else if (passwordConstraints.maxWhitespace() < passwordConstraints.minWhitespace()) {
 			throw new IllegalArgumentException("Max whitespace must be greater than or equal to min");
-		} else if (constraintsAnnotation.maxAnywhereRepeats() < 0) {
+		} else if (passwordConstraints.maxAnywhereRepeats() < 0) {
 			throw new IllegalArgumentException("Max anywhere repeats must be greater than zero");
-		} else if (constraintsAnnotation.maxConsecutiveRepeats() < 1) {
+		} else if (passwordConstraints.maxConsecutiveRepeats() < 1) {
 			throw new IllegalArgumentException("Max consecutive repeats must be greater than one");
 		}
 
-		final Integer maxAnywhereRepeats = Integer.valueOf(constraintsAnnotation.maxAnywhereRepeats());
+		final Integer maxAnywhereRepeats = Integer.valueOf(passwordConstraints.maxAnywhereRepeats());
 		final Map<Integer, Integer> availableUppersAndCounts     =  UPPERCASE.stream().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> maxAnywhereRepeats));
 		final Map<Integer, Integer> availableLowersAndCounts     =  LOWERCASE.stream().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> maxAnywhereRepeats));
         final Map<Integer, Integer> availableDigitsAndCounts     =     DIGITS.stream().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> maxAnywhereRepeats));
         final Map<Integer, Integer> availableWhitespaceAndCounts = WHITESPACE.stream().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> maxAnywhereRepeats));
-        final Map<Integer, Integer> availableSpecialsAndCounts   = constraintsAnnotation.specials().codePoints().boxed().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> maxAnywhereRepeats));
+        final Map<Integer, Integer> availableSpecialsAndCounts   = passwordConstraints.specials().codePoints().boxed().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> maxAnywhereRepeats));
 
 		final Map<Integer, Integer> selectedCodePointsAndCounts = new HashMap<>();
-		selectCharacters(selectedCodePointsAndCounts, availableUppersAndCounts,     constraintsAnnotation.minUppers());
-		selectCharacters(selectedCodePointsAndCounts, availableLowersAndCounts,     constraintsAnnotation.minLowers());
-		selectCharacters(selectedCodePointsAndCounts, availableDigitsAndCounts,     constraintsAnnotation.minDigits());
-		selectCharacters(selectedCodePointsAndCounts, availableSpecialsAndCounts,   constraintsAnnotation.minSpecials());
-		selectCharacters(selectedCodePointsAndCounts, availableWhitespaceAndCounts, constraintsAnnotation.minWhitespace());
+		selectCharacters(selectedCodePointsAndCounts, availableUppersAndCounts,     passwordConstraints.minUppers());
+		selectCharacters(selectedCodePointsAndCounts, availableLowersAndCounts,     passwordConstraints.minLowers());
+		selectCharacters(selectedCodePointsAndCounts, availableDigitsAndCounts,     passwordConstraints.minDigits());
+		selectCharacters(selectedCodePointsAndCounts, availableSpecialsAndCounts,   passwordConstraints.minSpecials());
+		selectCharacters(selectedCodePointsAndCounts, availableWhitespaceAndCounts, passwordConstraints.minWhitespace());
 
 		final int selectedCodePointsTotal = selectedCodePointsAndCounts.values().stream().reduce(Integer.valueOf(0), Integer::sum).intValue();
 //        if (selectedCodePointsTotal < constraintsAnnotation.minLength()) {
 //            throw new IllegalArgumentException("Minimum constraints exceed minimum length; minimum length is too small");
 //        } else 
-    	if (selectedCodePointsTotal > constraintsAnnotation.maxLength()) {
+    	if (selectedCodePointsTotal > passwordConstraints.maxLength()) {
             throw new IllegalArgumentException("Minimum constraints exceed maximum length; maximum length is too small");
         }
 
 		final Map<Integer, Integer> availableCodePointsAndCounts = new HashMap<>();
-        if (constraintsAnnotation.maxUppers()     > constraintsAnnotation.minUppers()) availableCodePointsAndCounts.putAll(availableUppersAndCounts);
-        if (constraintsAnnotation.maxLowers()     > constraintsAnnotation.minLowers()) availableCodePointsAndCounts.putAll(availableLowersAndCounts);
-        if (constraintsAnnotation.maxDigits()     > constraintsAnnotation.minDigits()) availableCodePointsAndCounts.putAll(availableDigitsAndCounts);
-        if (constraintsAnnotation.maxSpecials()   > constraintsAnnotation.minSpecials()) availableCodePointsAndCounts.putAll(availableSpecialsAndCounts);
-        if (constraintsAnnotation.maxWhitespace() > constraintsAnnotation.minWhitespace()) availableCodePointsAndCounts.putAll(availableWhitespaceAndCounts);
+        if (passwordConstraints.maxUppers()     > passwordConstraints.minUppers()) availableCodePointsAndCounts.putAll(availableUppersAndCounts);
+        if (passwordConstraints.maxLowers()     > passwordConstraints.minLowers()) availableCodePointsAndCounts.putAll(availableLowersAndCounts);
+        if (passwordConstraints.maxDigits()     > passwordConstraints.minDigits()) availableCodePointsAndCounts.putAll(availableDigitsAndCounts);
+        if (passwordConstraints.maxSpecials()   > passwordConstraints.minSpecials()) availableCodePointsAndCounts.putAll(availableSpecialsAndCounts);
+        if (passwordConstraints.maxWhitespace() > passwordConstraints.minWhitespace()) availableCodePointsAndCounts.putAll(availableWhitespaceAndCounts);
         if (availableCodePointsAndCounts.isEmpty()) {
         	throw new IllegalArgumentException("No available code points remaining");
         }
 
-        final int totalCodePoints     = SecureRandomUtil.SECURE_RANDOM.nextInt(constraintsAnnotation.minLength(), constraintsAnnotation.maxLength());
+        final int totalCodePoints     = SecureRandomUtil.SECURE_RANDOM.nextInt(passwordConstraints.minLength(), passwordConstraints.maxLength());
 		final int remainingCodePoints = totalCodePoints - selectedCodePointsAndCounts.size();
 		if (remainingCodePoints > 0) {
 			selectCharacters(selectedCodePointsAndCounts, availableCodePointsAndCounts, remainingCodePoints);

@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.security.passwords;
+package com.github.justincranford.springs.util.security.passwords.constraints;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,16 +7,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.github.justincranford.springs.util.security.passwords.properties.SpringsUtilSecurityPasswordsProperties.Constraints;
+import com.github.justincranford.springs.util.security.passwords.validator.PasswordConstraintsValidator;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = PasswordStrengthValidator.class)
+@Constraint(validatedBy = PasswordConstraintsValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PasswordStrength {
-    String message() default "Password must meet strength requirements";
+public @interface PasswordConstraints {
+    String message() default "Password does not meet required password constraints";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
     int minLength() default Constraints.MIN_LENGTH_DEFAULT;
