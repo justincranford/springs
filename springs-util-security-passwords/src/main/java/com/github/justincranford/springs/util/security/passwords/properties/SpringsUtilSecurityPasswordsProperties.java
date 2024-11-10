@@ -48,6 +48,11 @@ public class SpringsUtilSecurityPasswordsProperties {
         @NotNull
         @Size(min=0)
         @Builder.Default
+        private String firsts = PasswordConstraintsValues.FIRSTS_DEFAULT;
+
+        @NotNull
+        @Size(min=0)
+        @Builder.Default
         private String uppers = PasswordConstraintsValues.UPPERS_DEFAULT;
 
         @NotNull

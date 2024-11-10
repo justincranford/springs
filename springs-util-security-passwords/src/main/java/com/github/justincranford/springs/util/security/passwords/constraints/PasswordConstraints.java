@@ -20,6 +20,7 @@ public @interface PasswordConstraints {
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 
+    String firsts() default PasswordConstraintsValues.FIRSTS_DEFAULT;
     String uppers() default PasswordConstraintsValues.UPPERS_DEFAULT;
     String lowers() default PasswordConstraintsValues.LOWERS_DEFAULT;
     String digits() default PasswordConstraintsValues.DIGITS_DEFAULT;
