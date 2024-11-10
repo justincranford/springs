@@ -2,14 +2,18 @@ package com.github.justincranford.springs.util.security.passwords.generator;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.security.passwords.constraints.PasswordConstraints;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @SuppressWarnings({"nls"})
 public class PasswordGenerator {
 	private static final List<Integer> UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".codePoints().boxed().toList();
@@ -17,7 +21,9 @@ public class PasswordGenerator {
     private static final List<Integer> DIGITS = "0123456789".codePoints().boxed().toList();
     private static final List<Integer> WHITESPACE = " \t\n\r\f".codePoints().boxed().toList();
 
+	private static final AtomicInteger X = new AtomicInteger(0);
 	public static String generate(final PasswordConstraints passwordConstraints) {
+		log.info("\n===================================\ngenerate test: {}", X.getAndIncrement());
 		if (passwordConstraints.maxLength() < passwordConstraints.minLength()) {
 			throw new IllegalArgumentException("Max length must be greater than or equal to min");
 		} else if (passwordConstraints.maxUppers() < passwordConstraints.minUppers()) {
@@ -36,87 +42,97 @@ public class PasswordGenerator {
 			throw new IllegalArgumentException("Max consecutive repeats must be greater than one");
 		}
 
-		final Integer maxAnywhereRepeats = Integer.valueOf(passwordConstraints.maxAnywhereRepeats());
-		final Map<Integer, Integer> availableUppersAndCounts     =  UPPERCASE.stream().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> maxAnywhereRepeats));
-		final Map<Integer, Integer> availableLowersAndCounts     =  LOWERCASE.stream().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> maxAnywhereRepeats));
-        final Map<Integer, Integer> availableDigitsAndCounts     =     DIGITS.stream().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> maxAnywhereRepeats));
-        final Map<Integer, Integer> availableWhitespaceAndCounts = WHITESPACE.stream().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> maxAnywhereRepeats));
-        final Map<Integer, Integer> availableSpecialsAndCounts   = passwordConstraints.specials().codePoints().boxed().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> maxAnywhereRepeats));
+		final AtomicInteger maxUppers          = new AtomicInteger(passwordConstraints.maxUppers());
+		final AtomicInteger maxLowers          = new AtomicInteger(passwordConstraints.maxLowers());
+		final AtomicInteger maxDigits          = new AtomicInteger(passwordConstraints.maxDigits());
+		final AtomicInteger maxSpecials        = new AtomicInteger(passwordConstraints.maxSpecials());
+		final AtomicInteger maxWhitespace      = new AtomicInteger(passwordConstraints.maxWhitespace());
+		final int           maxAnywhereRepeats = passwordConstraints.maxAnywhereRepeats();
+		final Map<Integer, List<AtomicInteger>> availableUppersAndCountsAndMax     =                                  UPPERCASE.stream().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> List.of(new AtomicInteger(maxAnywhereRepeats), maxUppers),     (e1, e2) -> e1, LinkedHashMap::new));
+		final Map<Integer, List<AtomicInteger>> availableLowersAndCountsAndMax     =                                  LOWERCASE.stream().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> List.of(new AtomicInteger(maxAnywhereRepeats), maxLowers),     (e1, e2) -> e1, LinkedHashMap::new));
+        final Map<Integer, List<AtomicInteger>> availableDigitsAndCountsAndMax     =                                     DIGITS.stream().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> List.of(new AtomicInteger(maxAnywhereRepeats), maxDigits),     (e1, e2) -> e1, LinkedHashMap::new));
+        final Map<Integer, List<AtomicInteger>> availableSpecialsAndCountsAndMax   = passwordConstraints.specials().codePoints().boxed().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> List.of(new AtomicInteger(maxAnywhereRepeats), maxWhitespace), (e1, e2) -> e1, LinkedHashMap::new));
+        final Map<Integer, List<AtomicInteger>> availableWhitespaceAndCountsAndMax =                                 WHITESPACE.stream().collect(Collectors.toMap(codePoint -> codePoint, codePoint -> List.of(new AtomicInteger(maxAnywhereRepeats), maxSpecials),   (e1, e2) -> e1, LinkedHashMap::new));
 
-		final Map<Integer, Integer> selectedCodePointsAndCounts = new HashMap<>();
-		selectCharacters(selectedCodePointsAndCounts, availableUppersAndCounts,     passwordConstraints.minUppers());
-		selectCharacters(selectedCodePointsAndCounts, availableLowersAndCounts,     passwordConstraints.minLowers());
-		selectCharacters(selectedCodePointsAndCounts, availableDigitsAndCounts,     passwordConstraints.minDigits());
-		selectCharacters(selectedCodePointsAndCounts, availableSpecialsAndCounts,   passwordConstraints.minSpecials());
-		selectCharacters(selectedCodePointsAndCounts, availableWhitespaceAndCounts, passwordConstraints.minWhitespace());
+		final List<Integer> selectedCodePoints = new ArrayList<>();
+		selectCharacters(selectedCodePoints, availableUppersAndCountsAndMax,     passwordConstraints.minUppers());
+		selectCharacters(selectedCodePoints, availableLowersAndCountsAndMax,     passwordConstraints.minLowers());
+		selectCharacters(selectedCodePoints, availableDigitsAndCountsAndMax,     passwordConstraints.minDigits());
+		selectCharacters(selectedCodePoints, availableSpecialsAndCountsAndMax,   passwordConstraints.minSpecials());
+		selectCharacters(selectedCodePoints, availableWhitespaceAndCountsAndMax, passwordConstraints.minWhitespace());
 
-		final int selectedCodePointsTotal = selectedCodePointsAndCounts.values().stream().reduce(Integer.valueOf(0), Integer::sum).intValue();
-//        if (selectedCodePointsTotal < constraintsAnnotation.minLength()) {
-//            throw new IllegalArgumentException("Minimum constraints exceed minimum length; minimum length is too small");
-//        } else 
-    	if (selectedCodePointsTotal > passwordConstraints.maxLength()) {
+    	if (selectedCodePoints.size() > passwordConstraints.maxLength()) {
             throw new IllegalArgumentException("Minimum constraints exceed maximum length; maximum length is too small");
         }
 
-		final Map<Integer, Integer> availableCodePointsAndCounts = new HashMap<>();
-        if (passwordConstraints.maxUppers()     > passwordConstraints.minUppers()) availableCodePointsAndCounts.putAll(availableUppersAndCounts);
-        if (passwordConstraints.maxLowers()     > passwordConstraints.minLowers()) availableCodePointsAndCounts.putAll(availableLowersAndCounts);
-        if (passwordConstraints.maxDigits()     > passwordConstraints.minDigits()) availableCodePointsAndCounts.putAll(availableDigitsAndCounts);
-        if (passwordConstraints.maxSpecials()   > passwordConstraints.minSpecials()) availableCodePointsAndCounts.putAll(availableSpecialsAndCounts);
-        if (passwordConstraints.maxWhitespace() > passwordConstraints.minWhitespace()) availableCodePointsAndCounts.putAll(availableWhitespaceAndCounts);
-        if (availableCodePointsAndCounts.isEmpty()) {
-        	throw new IllegalArgumentException("No available code points remaining");
-        }
-
-        final int totalCodePoints     = SecureRandomUtil.SECURE_RANDOM.nextInt(passwordConstraints.minLength(), passwordConstraints.maxLength());
-		final int remainingCodePoints = totalCodePoints - selectedCodePointsAndCounts.size();
+        final int totalCodePoints     = 128;//SecureRandomUtil.SECURE_RANDOM.nextInt(passwordConstraints.minLength(), passwordConstraints.maxLength());
+		final int remainingCodePoints = totalCodePoints - selectedCodePoints.size();
 		if (remainingCodePoints > 0) {
-			selectCharacters(selectedCodePointsAndCounts, availableCodePointsAndCounts, remainingCodePoints);
+			final Map<Integer, List<AtomicInteger>> availableCodePointsAndCounts = new LinkedHashMap<>();
+	    	availableCodePointsAndCounts.putAll(availableUppersAndCountsAndMax);
+	    	availableCodePointsAndCounts.putAll(availableLowersAndCountsAndMax);
+	    	availableCodePointsAndCounts.putAll(availableDigitsAndCountsAndMax);
+	    	availableCodePointsAndCounts.putAll(availableSpecialsAndCountsAndMax);
+	    	availableCodePointsAndCounts.putAll(availableWhitespaceAndCountsAndMax);
+
+			selectCharacters(selectedCodePoints, availableCodePointsAndCounts, remainingCodePoints);
 		}
 
-        final List<Integer> selectedCodePoints = new ArrayList<>(totalCodePoints);
-        for (final Map.Entry<Integer, Integer> selectedCodePointAndCount : selectedCodePointsAndCounts.entrySet()) {
-        	for (int i = 0; i < selectedCodePointAndCount.getValue().intValue(); i++) {
-        		selectedCodePoints.add(selectedCodePointAndCount.getKey());
-        	}
-        }
+		log.info("selectedCodePoints: {}", selectedCodePoints);
 		Collections.shuffle(selectedCodePoints);
-        final StringBuilder passwordBuilder = new StringBuilder(totalCodePoints);
+		log.info("shuffled selectedCodePoints: {}\n", selectedCodePoints);
+        return toString(selectedCodePoints);
+    }
+
+	private static String toString(final Integer selectedCodePoint) {
+		return new String(Character.toChars(selectedCodePoint.intValue()));
+    }
+
+	private static String toString(final List<Integer> selectedCodePoints) {
+		final StringBuilder passwordBuilder = new StringBuilder(selectedCodePoints.size());
         for (final Integer selectedCodePoint : selectedCodePoints) {
             passwordBuilder.append(Character.toChars(selectedCodePoint.intValue()));
         }
         return passwordBuilder.toString();
-    }
+	}
 
     private static void selectCharacters(
-		final Map<Integer, Integer> selectedCodePointsAndCounts,
-		final Map<Integer, Integer> availableCodePointsAndCounts,
-		final int requiredCodePointCount
+		final List<Integer> selectedCodePoints,
+		final Map<Integer, List<AtomicInteger>> availableCodePointsAndCounts,
+		final int numCodePointsRequested
 	) {
-    	final int availableCodePointTotal = availableCodePointsAndCounts.values().stream().reduce(Integer.valueOf(0), Integer::sum).intValue();
-    	if (requiredCodePointCount > availableCodePointTotal) {
-    		throw new IllegalArgumentException("Insufficient remaining code points total remaining");
+    	log.info("numCodePointsRequested: {}", Integer.toString(numCodePointsRequested));
+    	log.info("selectedCodePoints:           size: {}, ints: {}, chars: \"{}\"", Integer.toString(selectedCodePoints.size()), selectedCodePoints, toString(selectedCodePoints));
+    	log.info("availableCodePointsAndCounts: size: {}, ints: {}", Integer.toString(availableCodePointsAndCounts.size()), availableCodePointsAndCounts);
+    	if (numCodePointsRequested <= 0) {
+        	log.info("skip because no count requested, numCodePointsRequested: {}", Integer.toString(numCodePointsRequested));
+        	System.out.print('\n');
+    		return;
     	}
-    	final List<Integer> availableCodePoints = new ArrayList<>(availableCodePointsAndCounts.keySet());
-    	for (int i = 0; i < requiredCodePointCount; i++) {
-    		final Integer nextCodePoint = availableCodePoints.get(SecureRandomUtil.SECURE_RANDOM.nextInt(availableCodePoints.size()));
+    	final int totalIndividualCodePointsAvailable = availableCodePointsAndCounts.values().stream().map(listOfNumbers -> Integer.valueOf(listOfNumbers.get(0).intValue())).reduce(Integer.valueOf(0), Integer::sum).intValue();
+    	if (numCodePointsRequested > totalIndividualCodePointsAvailable) {
+    		throw new IllegalArgumentException("Insufficient code points available " + totalIndividualCodePointsAvailable + " for request " + numCodePointsRequested + ".");
+    	}
+    	for (int i = 0; i < numCodePointsRequested; i++) {
+        	// select code point
+        	final Integer             selectedCodePoint                 = new ArrayList<>(availableCodePointsAndCounts.keySet()).get(SecureRandomUtil.SECURE_RANDOM.nextInt(availableCodePointsAndCounts.size()));
+    		final List<AtomicInteger> availableCodePointCountAndMax     = availableCodePointsAndCounts.get(selectedCodePoint);
+    		final AtomicInteger       availableCodePointIndividualCount = availableCodePointCountAndMax.get(0);
+    		final AtomicInteger       availableCodePointGroupCount      = availableCodePointCountAndMax.get(1);
+    		log.info("selected  selectedCodePoint: {}, char: \"{}\", availableCodePointIndividualCount: {}, availableCodePointGroupCount: {}", selectedCodePoint, toString(selectedCodePoint), availableCodePointIndividualCount, availableCodePointGroupCount);
 
-    		// decrement available code point count; remove code point and count, if decrementing will result in a count of 0
-    		final Integer availableCodePointCount = availableCodePointsAndCounts.get(nextCodePoint);
-			if (availableCodePointCount.intValue() == 1) {
-				availableCodePointsAndCounts.remove(nextCodePoint);
-				availableCodePoints.remove(nextCodePoint);
-			} else {
-				availableCodePointsAndCounts.put(nextCodePoint, Integer.valueOf(availableCodePointCount.intValue() - 1));
-			}
-
-			// increment the selected code point count; add code count if not present and set to 1
-    		final Integer selectedCodePointCount = selectedCodePointsAndCounts.get(nextCodePoint);
-    		if (selectedCodePointCount == null) {
-        		selectedCodePointsAndCounts.put(nextCodePoint, Integer.valueOf(1));
-    		} else {
-        		selectedCodePointsAndCounts.put(nextCodePoint, Integer.valueOf(selectedCodePointCount.intValue() + 1));
+    		// skip if individual or group count is exhausted; remove from available code points to avoid picking it again
+    		if ((availableCodePointIndividualCount.getAndDecrement() <= 0) || (availableCodePointGroupCount.getAndDecrement() <= 0)) {
+	        	log.info("skipping  selectedCodePoint: {}, char: \"{}\", availableCodePointIndividualCount: {}, availableCodePointGroupCount: {}", selectedCodePoint, toString(selectedCodePoint), availableCodePointIndividualCount, availableCodePointGroupCount);
+	        	System.out.print('\n');
+				availableCodePointsAndCounts.remove(selectedCodePoint);
+				continue;
     		}
+    		selectedCodePoints.add(selectedCodePoint);
+    		log.info("remaining selectedCodePoint: {}, char: \"{}\", availableCodePointIndividualCount: {}, availableCodePointGroupCount: {}", selectedCodePoint, toString(selectedCodePoint), availableCodePointIndividualCount, availableCodePointGroupCount);
+        	log.info("selectedCodePoints:           size: {}, ints: {}, chars: \"{}\"", Integer.toString(selectedCodePoints.size()), selectedCodePoints, toString(selectedCodePoints));
+        	log.info("availableCodePointsAndCounts: size: {}, ints: {}", Integer.toString(availableCodePointsAndCounts.size()), availableCodePointsAndCounts);
+        	System.out.print('\n');
         }
     }
 }

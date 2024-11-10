@@ -6,7 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.github.justincranford.springs.util.security.passwords.properties.SpringsUtilSecurityPasswordsProperties.Constraints;
 import com.github.justincranford.springs.util.security.passwords.validator.PasswordConstraintsValidator;
 
 import jakarta.validation.Constraint;
@@ -20,19 +19,19 @@ public @interface PasswordConstraints {
     String message() default "Password does not meet required password constraints";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
-    int minLength() default Constraints.MIN_LENGTH_DEFAULT;
-    int maxLength() default Constraints.MAX_LENGTH_DEFAULT;
-    int minUppers() default Constraints.MIN_UPPERS_DEFAULT;
-    int maxUppers() default Constraints.MAX_UPPERS_DEFAULT;
-    int minLowers() default Constraints.MIN_LOWERS_DEFAULT;
-    int maxLowers() default Constraints.MAX_LOWERS_DEFAULT;
-    int minDigits() default Constraints.MIN_DIGITS_DEFAULT;
-    int maxDigits() default Constraints.MAX_DIGITS_DEFAULT;
-    int minSpecials() default Constraints.MIN_SPECIALS_DEFAULT;
-    int maxSpecials() default Constraints.MAX_SPECIALS_DEFAULT;
-    int minWhitespace() default Constraints.MIN_WHITESPACE_DEFAULT;
-    int maxWhitespace() default Constraints.MAX_WHITESPACE_DEFAULT;
-    int maxAnywhereRepeats() default Constraints.MAX_ANYWHERE_REPEATS_DEFAULT;
-    int maxConsecutiveRepeats() default Constraints.MAX_CONSECUTIVE_REPEATS_DEFAULT;
-    String specials() default Constraints.SPECIALS_DEFAULT;
+    int minLength() default PasswordConstraintsValues.MIN_LENGTH_DEFAULT;
+    int maxLength() default PasswordConstraintsValues.MAX_LENGTH_DEFAULT;
+    int minUppers() default PasswordConstraintsValues.MIN_UPPERS_DEFAULT;
+    int maxUppers() default PasswordConstraintsValues.MAX_UPPERS_DEFAULT;
+    int minLowers() default PasswordConstraintsValues.MIN_LOWERS_DEFAULT;
+    int maxLowers() default PasswordConstraintsValues.MAX_LOWERS_DEFAULT;
+    int minDigits() default PasswordConstraintsValues.MIN_DIGITS_DEFAULT;
+    int maxDigits() default PasswordConstraintsValues.MAX_DIGITS_DEFAULT;
+    int minSpecials() default PasswordConstraintsValues.MIN_SPECIALS_DEFAULT;
+    int maxSpecials() default PasswordConstraintsValues.MAX_SPECIALS_DEFAULT;
+    int minWhitespace() default PasswordConstraintsValues.MIN_WHITESPACE_DEFAULT;
+    int maxWhitespace() default PasswordConstraintsValues.MAX_WHITESPACE_DEFAULT;
+    int maxAnywhereRepeats() default PasswordConstraintsValues.MAX_ANYWHERE_REPEATS_DEFAULT;
+    int maxConsecutiveRepeats() default PasswordConstraintsValues.MAX_CONSECUTIVE_REPEATS_DEFAULT;
+    String specials() default PasswordConstraintsValues.SPECIALS_DEFAULT;
 }

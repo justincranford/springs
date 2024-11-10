@@ -52,16 +52,16 @@ public class PasswordConstraintsValidator implements ConstraintValidator<Passwor
 
 	@Override
     public boolean isValid(final String password, final ConstraintValidatorContext context) {
-        return isValidInternal(password, false); // throwException=false
+        return isValidInternal(password, true); // throwException=false
     }
 
 	private boolean isValidInternal(final String password, final boolean throwException) {
 		if (password == null) {
 			return throwOrFalse(throwException, "Password must not be null");
         } else if (password.length() < this.minLength) {
-			return throwOrFalse(throwException, "Password does not meet minLength constraint: " + this.minLength);
+			return throwOrFalse(throwException, "Password " + password + " violates minLength constraint: " + this.minLength);
         } else if (password.length() > this.maxLength) {
-			return throwOrFalse(throwException, "Password does not meet maxLength constraint: " + this.maxLength);
+			return throwOrFalse(throwException, "Password " + password + " violates maxLength constraint: " + this.maxLength);
         }
         final List<Integer> passwordCodePoints = password.codePoints().boxed().toList();
 
@@ -71,23 +71,23 @@ public class PasswordConstraintsValidator implements ConstraintValidator<Passwor
             final Integer currentCodePoint = passwordCodePoints.get(i);
 			if (Character.isUpperCase(currentCodePoint.intValue())) {
                 if (++upperCount > this.maxUppers) {
-        			return throwOrFalse(throwException, "Password does not meet maxUppers constraint: " + this.maxUppers);
+        			return throwOrFalse(throwException, "Password " + password + " violates maxUppers constraint: " + this.maxUppers);
                 }
             } else if (Character.isLowerCase(currentCodePoint.intValue())) {
                 if (++lowerCount > this.maxLowers) {
-        			return throwOrFalse(throwException, "Password does not meet maxLowers constraint: " + this.maxLowers);
+        			return throwOrFalse(throwException, "Password " + password + " violates maxLowers constraint: " + this.maxLowers);
                 }
             } else if (Character.isDigit(currentCodePoint.intValue())) {
                 if (++numberCount > this.maxDigits) {
-        			return throwOrFalse(throwException, "Password does not meet maxDigits constraint: " + this.maxDigits);
+        			return throwOrFalse(throwException, "Password " + password + " violates maxDigits constraint: " + this.maxDigits);
                 }
             } else if (this.specials.contains(currentCodePoint)) {
                 if (++specialCount > this.maxSpecials) {
-        			return throwOrFalse(throwException, "Password does not meet maxSpecials constraint: " + this.maxSpecials);
+        			return throwOrFalse(throwException, "Password " + password + " violates maxSpecials constraint: " + this.maxSpecials);
                 }
             } else if (Character.isWhitespace(currentCodePoint.intValue())) {
                 if (++whitespaceCount > this.maxWhitespace) {
-        			return throwOrFalse(throwException, "Password does not meet maxWhitespace constraint: " + this.maxWhitespace);
+        			return throwOrFalse(throwException, "Password " + password + " violates maxWhitespace constraint: " + this.maxWhitespace);
                 }
             } // else some other UNICODE code point, and no other category constraint is applied
 
@@ -95,12 +95,12 @@ public class PasswordConstraintsValidator implements ConstraintValidator<Passwor
 			final Integer newAnywhereCount = Integer.valueOf(oldAnywhereCount.intValue() + 1);
 			if (i > 0) {
                 if (newAnywhereCount.intValue() > this.maxAnywhereRepeats) {
-        			return throwOrFalse(throwException, "Password does not meet maxAnywhereRepeats constraint: " + this.maxAnywhereRepeats);
+        			return throwOrFalse(throwException, "Password " + password + " violates maxAnywhereRepeats constraint: " + this.maxAnywhereRepeats);
                 }
 				final Integer previousCodePoint = passwordCodePoints.get(i - 1);
 				if (currentCodePoint.intValue() == previousCodePoint.intValue()) {
                     if (++consecutiveRepeats > this.maxConsecutiveRepeats) {
-            			return throwOrFalse(throwException, "Password does not meet maxConsecutiveRepeats constraint: " + this.maxConsecutiveRepeats);
+            			return throwOrFalse(throwException, "Password " + password + " violates maxConsecutiveRepeats constraint: " + this.maxConsecutiveRepeats);
                     }
                 } else {
                     consecutiveRepeats = 0;
@@ -109,15 +109,15 @@ public class PasswordConstraintsValidator implements ConstraintValidator<Passwor
 			anywhereRepeats.put(currentCodePoint, newAnywhereCount);
         }
         if (upperCount < this.minUppers) {
-			return throwOrFalse(throwException, "Password does not meet minUppers constraint: " + this.minUppers);
+			return throwOrFalse(throwException, "Password " + password + " violates minUppers constraint: " + this.minUppers);
         } else if (upperCount < this.minLowers) {
-			return throwOrFalse(throwException, "Password does not meet minUppers constraint: " + this.minLowers);
+			return throwOrFalse(throwException, "Password " + password + " violates minUppers constraint: " + this.minLowers);
         } else if (upperCount < this.minDigits) {
-			return throwOrFalse(throwException, "Password does not meet minUppers constraint: " + this.minDigits);
+			return throwOrFalse(throwException, "Password " + password + " violates minUppers constraint: " + this.minDigits);
         } else if (upperCount < this.minSpecials) {
-			return throwOrFalse(throwException, "Password does not meet minUppers constraint: " + this.minSpecials);
+			return throwOrFalse(throwException, "Password " + password + " violates minUppers constraint: " + this.minSpecials);
         } else if (upperCount < this.minWhitespace) {
-			return throwOrFalse(throwException, "Password does not meet minUppers constraint: " + this.minWhitespace);
+			return throwOrFalse(throwException, "Password " + password + " violates minUppers constraint: " + this.minWhitespace);
         }
         return true;
 	}
