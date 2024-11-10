@@ -16,6 +16,11 @@ public class PasswordConstraintsUtil {
 	            @Override
 	            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 	                switch (method.getName()) {
+	                    case "uppers": return properties.getUppers();
+	                    case "lowers": return properties.getLowers();
+	                    case "digits": return properties.getDigits();
+	                    case "specials": return properties.getSpecials();
+	                    case "whitespace": return properties.getWhitespace();
 	                    case "minLength": return properties.getMinLength();
 	                    case "maxLength": return properties.getMaxLength();
 	                    case "minUppers": return properties.getMinUppers();
@@ -30,7 +35,6 @@ public class PasswordConstraintsUtil {
 	                    case "maxWhitespace": return properties.getMaxWhitespace();
 	                    case "maxAnywhereRepeats": return properties.getMaxAnywhereRepeats();
 	                    case "maxConsecutiveRepeats": return properties.getMaxConsecutiveRepeats();
-	                    case "specials": return properties.getSpecials();
 	                    default: return method.getDefaultValue();
 	                }
 	            }

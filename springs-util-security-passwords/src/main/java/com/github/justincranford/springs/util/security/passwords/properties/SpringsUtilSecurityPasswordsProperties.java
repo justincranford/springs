@@ -28,7 +28,6 @@ import lombok.ToString;
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor
-@SuppressWarnings({"nls"})
 public class SpringsUtilSecurityPasswordsProperties {
     private Users users;
     private Clients clients;
@@ -46,6 +45,31 @@ public class SpringsUtilSecurityPasswordsProperties {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Properties {
+        @NotNull
+        @Size(min=0)
+        @Builder.Default
+        private String uppers = PasswordConstraintsValues.UPPERS_DEFAULT;
+
+        @NotNull
+        @Size(min=0)
+        @Builder.Default
+        private String lowers = PasswordConstraintsValues.LOWERS_DEFAULT;
+
+        @NotNull
+        @Size(min=0)
+        @Builder.Default
+        private String digits = PasswordConstraintsValues.DIGITS_DEFAULT;
+
+        @NotNull
+        @Size(min=0)
+        @Builder.Default
+        private String specials = PasswordConstraintsValues.SPECIALS_DEFAULT;
+
+        @NotNull
+        @Size(min=0)
+        @Builder.Default
+        private String whitespace = PasswordConstraintsValues.WHITESPACE_DEFAULT;
+
         @Min(PasswordConstraintsValues.MIN_LENGTH_MIN)
         @Max(PasswordConstraintsValues.MIN_LENGTH_MAX)
         @Builder.Default
@@ -115,10 +139,5 @@ public class SpringsUtilSecurityPasswordsProperties {
         @Max(PasswordConstraintsValues.MAX_CONSECUTIVE_REPEATS_MAX)
         @Builder.Default
         private int maxConsecutiveRepeats = PasswordConstraintsValues.MAX_CONSECUTIVE_REPEATS_DEFAULT;
-
-        @NotNull
-        @Size(min=0)
-        @Builder.Default
-        private String specials = PasswordConstraintsValues.SPECIALS_DEFAULT;
     }
 }
