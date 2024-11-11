@@ -29,13 +29,19 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpringsUtilSecurityPasswordsProperties {
-    private Users users;
-    private Clients clients;
-    private Servers servers;
+	@Builder.Default
+    private Users    users    = new Users();
+	@Builder.Default
+    private Clients  clients  = new Clients();
+	@Builder.Default
+    private Servers  servers  = new Servers();
+	@Builder.Default
+    private Defaults defaults = new Defaults();
 
-    public static class Users extends Properties { /*empty*/ }
-    public static class Clients extends Properties { /*empty*/ }
-    public static class Servers extends Properties { /*empty*/ }
+    public static class Users    extends Properties { /*empty*/ }
+    public static class Clients  extends Properties { /*empty*/ }
+    public static class Servers  extends Properties { /*empty*/ }
+    public static class Defaults extends Properties { /*empty*/ }
 
     @Validated
     @Getter

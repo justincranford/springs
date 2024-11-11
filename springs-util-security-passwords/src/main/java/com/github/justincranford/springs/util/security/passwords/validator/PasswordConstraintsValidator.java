@@ -39,16 +39,19 @@ public class PasswordConstraintsValidator implements ConstraintValidator<Passwor
 
     @Override
     public void initialize(final PasswordConstraints constraintAnnotation) {
-        this.firsts     = constraintAnnotation.firsts().codePoints().boxed().collect(Collectors.toSet());
-        this.lasts      = constraintAnnotation.lasts().codePoints().boxed().collect(Collectors.toSet());
-        this.uppers     = constraintAnnotation.uppers().codePoints().boxed().collect(Collectors.toSet());
-        this.lowers     = constraintAnnotation.lowers().codePoints().boxed().collect(Collectors.toSet());
-        this.digits     = constraintAnnotation.digits().codePoints().boxed().collect(Collectors.toSet());
-        this.specials   = constraintAnnotation.specials().codePoints().boxed().collect(Collectors.toSet());
-        this.whitespace = constraintAnnotation.whitespace().codePoints().boxed().collect(Collectors.toSet());
+        this.minLength             = constraintAnnotation.minLength();
+        this.maxLength             = constraintAnnotation.maxLength();
+        this.maxAnywhereRepeats    = constraintAnnotation.maxAnywhereRepeats();
+        this.maxConsecutiveRepeats = constraintAnnotation.maxConsecutiveRepeats();
 
-        this.minLength = constraintAnnotation.minLength();
-        this.maxLength = constraintAnnotation.maxLength();
+        this.firsts        =     constraintAnnotation.firsts().codePoints().boxed().collect(Collectors.toSet());
+        this.lasts         =      constraintAnnotation.lasts().codePoints().boxed().collect(Collectors.toSet());
+
+        this.uppers        =     constraintAnnotation.uppers().codePoints().boxed().collect(Collectors.toSet());
+        this.lowers        =     constraintAnnotation.lowers().codePoints().boxed().collect(Collectors.toSet());
+        this.digits        =     constraintAnnotation.digits().codePoints().boxed().collect(Collectors.toSet());
+        this.specials      =   constraintAnnotation.specials().codePoints().boxed().collect(Collectors.toSet());
+        this.whitespace    = constraintAnnotation.whitespace().codePoints().boxed().collect(Collectors.toSet());
 
         this.minUppers     = constraintAnnotation.minUppers();
         this.maxUppers     = constraintAnnotation.maxUppers();
@@ -60,9 +63,6 @@ public class PasswordConstraintsValidator implements ConstraintValidator<Passwor
         this.maxSpecials   = constraintAnnotation.maxSpecials();
         this.minWhitespace = constraintAnnotation.minWhitespace();
         this.maxWhitespace = constraintAnnotation.maxWhitespace();
-
-        this.maxAnywhereRepeats    = constraintAnnotation.maxAnywhereRepeats();
-        this.maxConsecutiveRepeats = constraintAnnotation.maxConsecutiveRepeats();
     }
 
 	@Override
