@@ -80,8 +80,8 @@ public class AbstractIT {
 //			SpringsUtilTestContainers.POSTGRESQL,
 //			SpringsUtilTestContainers.SELENIUMCHROME,
 //			SpringsUtilTestContainers.MONGODB,
-			SpringsUtilTestContainers.VAULT,
-			SpringsUtilTestContainers.CONSUL,
+//			SpringsUtilTestContainers.VAULT,
+//			SpringsUtilTestContainers.CONSUL,
 			SpringsUtilTestContainers.REDIS,
 			SpringsUtilTestContainers.OLLAMA
 		);
