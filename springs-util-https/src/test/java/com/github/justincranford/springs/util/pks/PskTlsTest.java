@@ -178,8 +178,8 @@ public class PskTlsTest {
         	this.identity = pskIdentity;
         	this.psk = psk;
         }
-	    @Override public byte[] getPSKIdentity() { return this.identity; }
-	    @Override public byte[] getPSK() { return this.psk; }
+	    @Override public byte[] getPSKIdentity() { return this.identity.clone(); }
+	    @Override public byte[] getPSK() { return this.psk.clone(); }
 		@Override public void skipIdentityHint() { /*do nothing*/ }
 		@Override public void notifyIdentityHint(byte[] psk_identity_hint) { /*do nothing*/ }
 	}
