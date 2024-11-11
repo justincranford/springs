@@ -11,49 +11,53 @@ import java.util.stream.Collectors;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.security.passwords.constraints.PasswordConstraints;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@RequiredArgsConstructor
 @Slf4j
 @SuppressWarnings({"nls", "boxing", "unchecked"})
 public class PasswordGenerator {
-	private static final AtomicInteger GENERATE_COUNT = new AtomicInteger(1);
-	public static String generate(final PasswordConstraints constraints) {
-		log.trace("\n===================================\ngenerate test: {}", GENERATE_COUNT.getAndIncrement());
-		if (constraints.maxLength() < constraints.minLength()) {
+	private final AtomicInteger generateCount = new AtomicInteger(1);
+	private final PasswordConstraints constraints;
+
+	public String generate() {
+		log.trace("\n===================================\ngenerate test: {}", this.generateCount.getAndIncrement());
+		if (this.constraints.maxLength() < this.constraints.minLength()) {
 			throw new IllegalArgumentException("Max length must be greater than or equal to min");
-		} else if (constraints.maxUppers() < constraints.minUppers()) {
+		} else if (this.constraints.maxUppers() < this.constraints.minUppers()) {
 			throw new IllegalArgumentException("Max uppers must be greater than or equal to min");
-		} else if (constraints.maxLowers() < constraints.minLowers()) {
+		} else if (this.constraints.maxLowers() < this.constraints.minLowers()) {
 			throw new IllegalArgumentException("Max lowers must be greater than or equal to min");
-		} else if (constraints.maxDigits() < constraints.minDigits()) {
+		} else if (this.constraints.maxDigits() < this.constraints.minDigits()) {
 			throw new IllegalArgumentException("Max digits must be greater than or equal to min");
-		} else if (constraints.maxSpecials() < constraints.minSpecials()) {
+		} else if (this.constraints.maxSpecials() < this.constraints.minSpecials()) {
 			throw new IllegalArgumentException("Max specials must be greater than or equal to min");
-		} else if (constraints.maxWhitespace() < constraints.minWhitespace()) {
+		} else if (this.constraints.maxWhitespace() < this.constraints.minWhitespace()) {
 			throw new IllegalArgumentException("Max whitespace must be greater than or equal to min");
-		} else if (constraints.maxAnywhereRepeats() < 0) {
+		} else if (this.constraints.maxAnywhereRepeats() < 0) {
 			throw new IllegalArgumentException("Max anywhere repeats must be greater than zero");
-		} else if (constraints.maxConsecutiveRepeats() < 1) {
+		} else if (this.constraints.maxConsecutiveRepeats() < 1) {
 			throw new IllegalArgumentException("Max consecutive repeats must be greater than one");
 		}
 
-		final boolean       chooseFirst        = constraints.firsts().length() > 0;
-		final boolean       chooseLast         = constraints.lasts().length()  > 0;
-		final int           maxAnywhereRepeats = constraints.maxAnywhereRepeats();
+		final boolean       chooseFirst        = this.constraints.firsts().length() > 0;
+		final boolean       chooseLast         = this.constraints.lasts().length()  > 0;
+		final int           maxAnywhereRepeats = this.constraints.maxAnywhereRepeats();
 		final AtomicInteger maxFirsts          = new AtomicInteger(chooseFirst ? 1 : 0);         // group count instance needs to be shared by all entries in availableFirstsCounts
 		final AtomicInteger maxLasts           = new AtomicInteger(chooseLast  ? 1 : 0);         // group count instance needs to be shared by all entries in availableLastCounts
-		final AtomicInteger maxUppers          = new AtomicInteger(constraints.maxUppers());     // group count instance needs to be shared by all entries in availableUppersCounts
-		final AtomicInteger maxLowers          = new AtomicInteger(constraints.maxLowers());     // group count instance needs to be shared by all entries in availableLowersCounts
-		final AtomicInteger maxDigits          = new AtomicInteger(constraints.maxDigits());     // group count instance needs to be shared by all entries in availableDigitsCounts
-		final AtomicInteger maxSpecials        = new AtomicInteger(constraints.maxSpecials());   // group count instance needs to be shared by all entries in availableSpecialsCounts
-		final AtomicInteger maxWhitespace      = new AtomicInteger(constraints.maxWhitespace()); // group count instance needs to be shared by all entries in availableWhitespaceCounts
-		final List<Integer> firsts             =     constraints.firsts().codePoints().boxed().toList();
-		final List<Integer> lasts              =      constraints.lasts().codePoints().boxed().toList();
-		final List<Integer> uppers             =     constraints.uppers().codePoints().boxed().toList();
-		final List<Integer> lowers             =     constraints.lowers().codePoints().boxed().toList();
-		final List<Integer> digits             =     constraints.digits().codePoints().boxed().toList();
-		final List<Integer> specials           =   constraints.specials().codePoints().boxed().toList();
-		final List<Integer> whitespace         = constraints.whitespace().codePoints().boxed().toList();
+		final AtomicInteger maxUppers          = new AtomicInteger(this.constraints.maxUppers());     // group count instance needs to be shared by all entries in availableUppersCounts
+		final AtomicInteger maxLowers          = new AtomicInteger(this.constraints.maxLowers());     // group count instance needs to be shared by all entries in availableLowersCounts
+		final AtomicInteger maxDigits          = new AtomicInteger(this.constraints.maxDigits());     // group count instance needs to be shared by all entries in availableDigitsCounts
+		final AtomicInteger maxSpecials        = new AtomicInteger(this.constraints.maxSpecials());   // group count instance needs to be shared by all entries in availableSpecialsCounts
+		final AtomicInteger maxWhitespace      = new AtomicInteger(this.constraints.maxWhitespace()); // group count instance needs to be shared by all entries in availableWhitespaceCounts
+		final List<Integer> firsts             =     this.constraints.firsts().codePoints().boxed().toList();
+		final List<Integer> lasts              =      this.constraints.lasts().codePoints().boxed().toList();
+		final List<Integer> uppers             =     this.constraints.uppers().codePoints().boxed().toList();
+		final List<Integer> lowers             =     this.constraints.lowers().codePoints().boxed().toList();
+		final List<Integer> digits             =     this.constraints.digits().codePoints().boxed().toList();
+		final List<Integer> specials           =   this.constraints.specials().codePoints().boxed().toList();
+		final List<Integer> whitespace         = this.constraints.whitespace().codePoints().boxed().toList();
 		final Map<Integer, List<AtomicInteger>> availableFirstsCounts     =     firsts.stream().collect(Collectors.toMap(p -> p, p -> List.of(new AtomicInteger(maxAnywhereRepeats), maxFirsts),     (e1, e2) -> e1, LinkedHashMap::new));
 		final Map<Integer, List<AtomicInteger>> availableLastsCounts      =      lasts.stream().collect(Collectors.toMap(p -> p, p -> List.of(new AtomicInteger(maxAnywhereRepeats), maxLasts),      (e1, e2) -> e1, LinkedHashMap::new));
 		final Map<Integer, List<AtomicInteger>> availableUppersCounts     =     uppers.stream().collect(Collectors.toMap(p -> p, p -> List.of(new AtomicInteger(maxAnywhereRepeats), maxUppers),     (e1, e2) -> e1, LinkedHashMap::new));
@@ -62,7 +66,7 @@ public class PasswordGenerator {
         final Map<Integer, List<AtomicInteger>> availableSpecialsCounts   =   specials.stream().collect(Collectors.toMap(p -> p, p -> List.of(new AtomicInteger(maxAnywhereRepeats), maxSpecials),   (e1, e2) -> e1, LinkedHashMap::new));
         final Map<Integer, List<AtomicInteger>> availableWhitespaceCounts = whitespace.stream().collect(Collectors.toMap(p -> p, p -> List.of(new AtomicInteger(maxAnywhereRepeats), maxWhitespace), (e1, e2) -> e1, LinkedHashMap::new));
 
-    	final int totalCodePoints = SecureRandomUtil.SECURE_RANDOM.nextInt(constraints.minLength(), constraints.maxLength() + 1);
+    	final int totalCodePoints = SecureRandomUtil.SECURE_RANDOM.nextInt(this.constraints.minLength(), this.constraints.maxLength() + 1);
 		final List<Integer> selectedCodePoints = new ArrayList<>(totalCodePoints);
 		selectCharacters(selectedCodePoints, availableFirstsCounts, chooseFirst ? 1 : 0, uppers, lowers, digits, specials, whitespace);
 		selectCharacters(selectedCodePoints, availableLastsCounts,   chooseLast ? 1 : 0,  uppers, lowers, digits, specials, whitespace);
@@ -76,13 +80,13 @@ public class PasswordGenerator {
 		decrementAvailable(selectedLastCodePoint, availableUppersCounts, availableLowersCounts, availableDigitsCounts, availableSpecialsCounts, availableWhitespaceCounts);
 		System.out.println();
 
-		selectCharacters(selectedCodePoints, availableUppersCounts,     constraints.minUppers(),     uppers, lowers, digits, specials, whitespace);
-		selectCharacters(selectedCodePoints, availableLowersCounts,     constraints.minLowers(),     uppers, lowers, digits, specials, whitespace);
-		selectCharacters(selectedCodePoints, availableDigitsCounts,     constraints.minDigits(),     uppers, lowers, digits, specials, whitespace);
-		selectCharacters(selectedCodePoints, availableSpecialsCounts,   constraints.minSpecials(),   uppers, lowers, digits, specials, whitespace);
-		selectCharacters(selectedCodePoints, availableWhitespaceCounts, constraints.minWhitespace(), uppers, lowers, digits, specials, whitespace);
+		selectCharacters(selectedCodePoints, availableUppersCounts,     this.constraints.minUppers(),     uppers, lowers, digits, specials, whitespace);
+		selectCharacters(selectedCodePoints, availableLowersCounts,     this.constraints.minLowers(),     uppers, lowers, digits, specials, whitespace);
+		selectCharacters(selectedCodePoints, availableDigitsCounts,     this.constraints.minDigits(),     uppers, lowers, digits, specials, whitespace);
+		selectCharacters(selectedCodePoints, availableSpecialsCounts,   this.constraints.minSpecials(),   uppers, lowers, digits, specials, whitespace);
+		selectCharacters(selectedCodePoints, availableWhitespaceCounts, this.constraints.minWhitespace(), uppers, lowers, digits, specials, whitespace);
 
-    	if (selectedCodePoints.size() > constraints.maxLength()) {
+    	if (selectedCodePoints.size() > this.constraints.maxLength()) {
             throw new IllegalArgumentException("Minimum constraints exceed maximum length; maximum length is too small");
         }
 

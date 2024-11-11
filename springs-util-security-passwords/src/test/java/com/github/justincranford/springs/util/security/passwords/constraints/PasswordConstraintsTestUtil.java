@@ -8,7 +8,7 @@ import com.github.justincranford.springs.util.security.passwords.properties.Spri
 
 @SuppressWarnings({"boxing"})
 public class PasswordConstraintsTestUtil {
-	public static PasswordConstraints mockPasswordConstraints(final SpringsUtilSecurityPasswordsProperties.Properties properties) {
+	public static PasswordConstraints passwordConstraints(final SpringsUtilSecurityPasswordsProperties.Properties properties) {
 		final PasswordConstraints mockPasswordConstraints = Mockito.mock(PasswordConstraints.class);
         when(mockPasswordConstraints.minLength()).thenReturn(properties.getMinLength());
         when(mockPasswordConstraints.maxLength()).thenReturn(properties.getMaxLength());

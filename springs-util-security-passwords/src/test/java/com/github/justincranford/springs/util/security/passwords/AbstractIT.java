@@ -9,7 +9,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.github.justincranford.springs.util.security.passwords.config.SpringsUtilSecurityPasswordsConfiguration;
+import com.github.justincranford.springs.util.security.passwords.generator.PasswordGenerator;
 import com.github.justincranford.springs.util.security.passwords.properties.SpringsUtilSecurityPasswordsProperties;
+import com.github.justincranford.springs.util.security.passwords.validator.PasswordConstraintsValidator;
 
 import io.micrometer.observation.annotation.Observed;
 import lombok.Getter;
@@ -28,8 +30,24 @@ public class AbstractIT {
     private ApplicationContext applicationContext;
 	@Autowired
 	private SpringsUtilSecurityPasswordsProperties springsUtilSecurityHashesProperties;
+	@Autowired
+	private PasswordGenerator usersPasswordGenerator;
+	@Autowired
+	private PasswordGenerator clientsPasswordGenerator;
+	@Autowired
+	private PasswordGenerator serversPasswordGenerator;
+	@Autowired
+	private PasswordGenerator defaultsPasswordGenerator;
+	@Autowired
+	private PasswordConstraintsValidator usersPasswordConstraintsValidator;
+	@Autowired
+	private PasswordConstraintsValidator clientsPasswordConstraintsValidator;
+	@Autowired
+	private PasswordConstraintsValidator serversPasswordConstraintsValidator;
+	@Autowired
+	private PasswordConstraintsValidator defaultsPasswordConstraintsValidator;
 
-    @Configuration
+	@Configuration
 	@EnableAutoConfiguration
 	public static class AbstractITConfiguration {
     	// do nothing

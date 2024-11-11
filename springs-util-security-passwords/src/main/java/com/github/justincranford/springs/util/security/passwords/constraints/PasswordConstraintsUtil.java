@@ -8,7 +8,7 @@ import com.github.justincranford.springs.util.security.passwords.properties.Spri
 
 @SuppressWarnings({"nls", "boxing"})
 public class PasswordConstraintsUtil {
-	public static PasswordConstraints constraints(final SpringsUtilSecurityPasswordsProperties.Properties properties) {
+	public static PasswordConstraints proxy(final SpringsUtilSecurityPasswordsProperties.Properties properties) {
 	    return (PasswordConstraints) Proxy.newProxyInstance(
 	        PasswordConstraints.class.getClassLoader(),
 	        new Class[]{PasswordConstraints.class},

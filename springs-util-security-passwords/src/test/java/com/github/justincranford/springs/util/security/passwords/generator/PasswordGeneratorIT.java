@@ -7,21 +7,21 @@ import com.github.justincranford.springs.util.security.passwords.AbstractIT;
 public class PasswordGeneratorIT extends AbstractIT {
 	@RepeatedTest(PasswordGeneratorTestUtil.REPEATS)
     public void testGeneratePassword_usersProperties() {
-		PasswordGeneratorTestUtil.commonTest(springsUtilSecurityHashesProperties().getUsers());
+		PasswordGeneratorTestUtil.generateAndValidate(super.usersPasswordGenerator(), super.usersPasswordConstraintsValidator());
     }
 
 	@RepeatedTest(PasswordGeneratorTestUtil.REPEATS)
     public void testGeneratePassword_clientsProperties() {
-		PasswordGeneratorTestUtil.commonTest(springsUtilSecurityHashesProperties().getClients());
+		PasswordGeneratorTestUtil.generateAndValidate(super.clientsPasswordGenerator(), super.clientsPasswordConstraintsValidator());
     }
 
 	@RepeatedTest(PasswordGeneratorTestUtil.REPEATS)
     public void testGeneratePassword_serversProperties() {
-		PasswordGeneratorTestUtil.commonTest(springsUtilSecurityHashesProperties().getServers());
+		PasswordGeneratorTestUtil.generateAndValidate(super.serversPasswordGenerator(), super.serversPasswordConstraintsValidator());
     }
 
 	@RepeatedTest(PasswordGeneratorTestUtil.REPEATS)
     public void testGeneratePassword_defaultsProperties() {
-		PasswordGeneratorTestUtil.commonTest(springsUtilSecurityHashesProperties().getDefaults());
+		PasswordGeneratorTestUtil.generateAndValidate(super.defaultsPasswordGenerator(), super.defaultsPasswordConstraintsValidator());
     }
 }
