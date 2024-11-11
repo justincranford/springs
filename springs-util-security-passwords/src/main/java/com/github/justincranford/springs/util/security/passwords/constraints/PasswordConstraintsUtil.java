@@ -40,12 +40,11 @@ public class PasswordConstraintsUtil {
 	                    case "maxSpecials":           return properties.getMaxSpecials();
 	                    case "minWhitespace":         return properties.getMinWhitespace();
 	                    case "maxWhitespace":         return properties.getMaxWhitespace();
-	                    default:                      return method.getDefaultValue();
+	                    default:                      throw new RuntimeException("Method " + method.getName() + " + proxy is missing");
 	                }
 	            }
 	        }
 	    );
 	}
-	
 }
 
