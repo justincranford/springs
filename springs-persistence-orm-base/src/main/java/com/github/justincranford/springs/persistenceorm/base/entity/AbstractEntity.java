@@ -68,7 +68,7 @@ public class AbstractEntity {
 	@NotNull
 	@NotEmpty
 	@Size(min=ExternalIdGenerator.TOTAL_BYTES_LENGTH,max=ExternalIdGenerator.TOTAL_BYTES_LENGTH)
-    @Column(length=ExternalIdGenerator.TOTAL_BYTES_LENGTH,nullable=false,columnDefinition="BINARY(" + ExternalIdGenerator.TOTAL_BYTES_LENGTH + ")")
+    @Column(length=ExternalIdGenerator.TOTAL_BYTES_LENGTH,nullable=false)
     private byte[] externalId;
 
 	@Column(updatable=false,nullable=false)
