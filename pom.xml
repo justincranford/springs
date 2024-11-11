@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.4</version>
+		<version>3.3.5</version>
 		<relativePath />
 	</parent>
 
@@ -19,6 +19,37 @@
 	<name>Spring Applications</name>
 	<description>Spring Boot Applications</description>
 	<packaging>pom</packaging>
+
+	<url>https://github.com/justincranford/springs</url>
+
+	<inceptionYear>2012</inceptionYear>
+	<organization>
+		<name>Justin Cranford</name>
+		<url>https://github.com/justincranford/springs</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>GNU AFFERO GENERAL PUBLIC LICENSE 3.0</name>
+			<url>https://www.gnu.org/licenses/agpl-3.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Justin Cranford</name>
+			<email>justincranford@hotmail.com</email>
+			<organization>Justin Cranford</organization>
+			<organizationUrl>https://github.com/justincranford</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:https://github.com/justincranford/springs.git</connection>
+		<developerConnection>scm:https://github.com/justincranford/springs.git</developerConnection>
+		<url>scm:https://github.com/justincranford/springs</url>
+	</scm>
 
 	<modules>
 		<module>springs-util-basic</module>
@@ -66,18 +97,37 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- BOMS -->
+
+			<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom -->
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-bom</artifactId>
+				<version>2.24.1</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
 			<dependency>
 			    <groupId>com.fasterxml.jackson</groupId>
 			    <artifactId>jackson-bom</artifactId>
-			    <version>2.17.2</version>
+			    <version>2.18.1</version>
 			    <type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.testcontainers/testcontainers -->
 			<dependency>
-				<groupId>org.springframework.ai</groupId>
-				<artifactId>spring-ai-bom</artifactId>
-				<version>1.0.0-M2</version>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>1.20.3</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-dependencies-bom -->
+			<dependency>
+				<groupId>org.seleniumhq.selenium</groupId>
+				<artifactId>selenium-dependencies-bom</artifactId>
+				<version>4.26.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -88,18 +138,24 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-       		<!-- https://mvnrepository.com/artifact/org.testcontainers/testcontainers -->
+			<!-- https://mvnrepository.com/artifact/com.yubico/webauthn-server-core -->
 			<dependency>
-				<groupId>org.testcontainers</groupId>
-				<artifactId>testcontainers-bom</artifactId>
-				<version>1.20.1</version>
+			    <groupId>com.yubico</groupId>
+			    <artifactId>webauthn-server-core</artifactId>
+			    <version>2.5.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.ai</groupId>
+				<artifactId>spring-ai-bom</artifactId>
+				<version>1.0.0-M2</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+
 			<dependency>
 				<groupId>com.github.dasniko</groupId>
 				<artifactId>testcontainers-keycloak</artifactId>
-				<version>3.4.0</version>
+				<version>3.5.1</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-debug-jdk18on -->
 			<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-debug-jdk18on -->
@@ -107,56 +163,24 @@
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcprov-debug-jdk18on</artifactId>
-				<version>1.78.1</version>
+				<version>1.79</version>
 			</dependency>
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcpkix-debug-jdk18on</artifactId>
-				<version>1.78.1</version>
+				<version>1.79</version>
 			</dependency>
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bctls-debug-jdk18on</artifactId>
-				<version>1.78.1</version>
+				<version>1.79</version>
 			</dependency>
-			<!--
-			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcpkix-jdk18on</artifactId>
-				<version>1.78.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcprov-jdk18on</artifactId>
-				<version>1.78.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bctls-jdk18on</artifactId>
-				<version>1.78.1</version>
-			</dependency>
-			-->
 			<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>33.3.0-jre</version>
+				<version>33.3.1-jre</version>
 			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/com.yubico/webauthn-server-core -->
-			<dependency>
-			    <groupId>com.yubico</groupId>
-			    <artifactId>webauthn-server-core</artifactId>
-			    <version>2.5.3</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/com.upokecenter/cbor -->
-			<!-- 
-			<dependency>
-				<groupId>com.upokecenter</groupId>
-				<artifactId>cbor</artifactId>
-				<version>4.5.6</version>
-			</dependency>
-			-->
 
 			<!-- https://mvnrepository.com/artifact/com.bucket4j/bucket4j-core -->
 			<dependency>
@@ -214,25 +238,39 @@
 				<artifactId>versions-maven-plugin</artifactId>
 				<configuration>
 					<allowSnapshots>false</allowSnapshots>
+					<ruleSet>
+						<ignoreVersions>
+  							<ignoreVersion>
+  								<type>regex</type>
+  								<version>.+(-|\.)(dev|Dev|alpha|Alpha|beta|Beta|rc|RC|cr|CR|preview|Preview|mr|MR|m\d+|M\d+|nf-execution).*</version>
+							</ignoreVersion>
+						</ignoreVersions>
+					</ruleSet>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 			</plugin>
-		</plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-maven</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>3.9.9</version>
+								</requireMavenVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+  		</plugins>
 	</build>
-	<url />
-	<licenses>
-		<license />
-	</licenses>
-	<developers>
-		<developer />
-	</developers>
-	<scm>
-		<connection />
-		<developerConnection />
-		<tag />
-		<url />
-	</scm>
 </project>
