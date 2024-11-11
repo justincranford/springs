@@ -39,13 +39,13 @@ public class AbstractIT {
 	@Autowired
 	private PasswordGenerator defaultsPasswordGenerator;
 	@Autowired
-	private PasswordValidator usersPasswordConstraintsValidator;
+	private PasswordValidator usersPasswordValidator;
 	@Autowired
-	private PasswordValidator clientsPasswordConstraintsValidator;
+	private PasswordValidator clientsPasswordValidator;
 	@Autowired
-	private PasswordValidator serversPasswordConstraintsValidator;
+	private PasswordValidator serversPasswordValidator;
 	@Autowired
-	private PasswordValidator defaultsPasswordConstraintsValidator;
+	private PasswordValidator defaultsPasswordValidator;
 
 	@Configuration
 	@EnableAutoConfiguration

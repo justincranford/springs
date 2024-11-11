@@ -26,7 +26,7 @@ public class PasswordGeneratorConfiguration {
 		return PasswordGenerator.create(usersPasswordContraints());
 	}
 	@Bean
-	public PasswordValidator usersPasswordConstraintsValidator() {
+	public PasswordValidator usersPasswordValidator() {
 		return PasswordValidator.create(usersPasswordContraints());
 	}
 
@@ -35,7 +35,7 @@ public class PasswordGeneratorConfiguration {
 		return PasswordGenerator.create(clientsPasswordConstraints());
 	}
 	@Bean
-	public PasswordValidator clientsPasswordConstraintsValidator() {
+	public PasswordValidator clientsPasswordValidator() {
 		return PasswordValidator.create(clientsPasswordConstraints());
 	}
 
@@ -44,7 +44,7 @@ public class PasswordGeneratorConfiguration {
 		return PasswordGenerator.create(serverPasswordContraints());
 	}
 	@Bean
-	public PasswordValidator serversPasswordConstraintsValidator() {
+	public PasswordValidator serversPasswordValidator() {
 		return PasswordValidator.create(serverPasswordContraints());
 	}
 
@@ -53,7 +53,7 @@ public class PasswordGeneratorConfiguration {
 		return PasswordGenerator.create(defaultsPasswordContraints());
 	}
 	@Bean
-	public PasswordValidator defaultsPasswordConstraintsValidator() {
+	public PasswordValidator defaultsPasswordValidator() {
 		return PasswordValidator.create(defaultsPasswordContraints());
 	}
 

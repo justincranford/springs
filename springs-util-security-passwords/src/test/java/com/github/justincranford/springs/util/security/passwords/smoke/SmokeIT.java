@@ -15,9 +15,9 @@ public class SmokeIT extends AbstractIT {
 		assertThat(super.clientsPasswordGenerator()).isNotNull();
 		assertThat(super.serversPasswordGenerator()).isNotNull();
 		assertThat(super.defaultsPasswordGenerator()).isNotNull();
-		assertThat(super.usersPasswordConstraintsValidator()).isNotNull();
-		assertThat(super.clientsPasswordConstraintsValidator()).isNotNull();
-		assertThat(super.serversPasswordConstraintsValidator()).isNotNull();
-		assertThat(super.defaultsPasswordConstraintsValidator()).isNotNull();
+		assertThat(super.usersPasswordValidator()).isNotNull();
+		assertThat(super.clientsPasswordValidator()).isNotNull();
+		assertThat(super.serversPasswordValidator()).isNotNull();
+		assertThat(super.defaultsPasswordValidator()).isNotNull();
 	}
 }
