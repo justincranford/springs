@@ -37,9 +37,11 @@ public class PasswordGenerator {
 			throw new IllegalArgumentException("Max consecutive repeats must be greater than one");
 		}
 
+		final boolean       chooseFirst        = constraints.firsts().length() > 0;
+		final boolean       chooseLast         = constraints.lasts().length()  > 0;
 		final int           maxAnywhereRepeats = constraints.maxAnywhereRepeats();
-		final AtomicInteger maxFirsts          = new AtomicInteger(1);                           // group count instance needs to be shared by all entries in availableFirstsCounts
-		final AtomicInteger maxLasts           = new AtomicInteger(1);                           // group count instance needs to be shared by all entries in availableLastCounts
+		final AtomicInteger maxFirsts          = new AtomicInteger(chooseFirst ? 1 : 0);         // group count instance needs to be shared by all entries in availableFirstsCounts
+		final AtomicInteger maxLasts           = new AtomicInteger(chooseLast  ? 1 : 0);         // group count instance needs to be shared by all entries in availableLastCounts
 		final AtomicInteger maxUppers          = new AtomicInteger(constraints.maxUppers());     // group count instance needs to be shared by all entries in availableUppersCounts
 		final AtomicInteger maxLowers          = new AtomicInteger(constraints.maxLowers());     // group count instance needs to be shared by all entries in availableLowersCounts
 		final AtomicInteger maxDigits          = new AtomicInteger(constraints.maxDigits());     // group count instance needs to be shared by all entries in availableDigitsCounts
@@ -62,14 +64,14 @@ public class PasswordGenerator {
 
     	final int totalCodePoints = SecureRandomUtil.SECURE_RANDOM.nextInt(constraints.minLength(), constraints.maxLength() + 1);
 		final List<Integer> selectedCodePoints = new ArrayList<>(totalCodePoints);
-		selectCharacters(selectedCodePoints, availableFirstsCounts, 1, uppers, lowers, digits, specials, whitespace);
-		selectCharacters(selectedCodePoints, availableLastsCounts,  1, uppers, lowers, digits, specials, whitespace);
+		selectCharacters(selectedCodePoints, availableFirstsCounts, chooseFirst ? 1 : 0, uppers, lowers, digits, specials, whitespace);
+		selectCharacters(selectedCodePoints, availableLastsCounts,   chooseLast ? 1 : 0,  uppers, lowers, digits, specials, whitespace);
 
-		final Integer selectedFirstCodePoint = selectedCodePoints.getFirst();
+		final Integer selectedFirstCodePoint = (chooseFirst) ? selectedCodePoints.getFirst() : null;
 		log.info("selectedFirstCodePoint: {}", selectedFirstCodePoint);
 		decrementAvailable(selectedFirstCodePoint, availableUppersCounts, availableLowersCounts, availableDigitsCounts, availableSpecialsCounts, availableWhitespaceCounts);
 
-		final Integer selectedLastCodePoint = selectedCodePoints.getLast();
+		final Integer selectedLastCodePoint = (chooseLast) ? selectedCodePoints.getLast() : null;
 		log.info("selectedLastCodePoint: {}", selectedLastCodePoint);
 		decrementAvailable(selectedLastCodePoint, availableUppersCounts, availableLowersCounts, availableDigitsCounts, availableSpecialsCounts, availableWhitespaceCounts);
 		System.out.println();
@@ -96,12 +98,22 @@ public class PasswordGenerator {
 		}
 
 		log.info("selectedCodePoints: {}", selectedCodePoints);
-		selectedCodePoints.remove(selectedFirstCodePoint); // remove the first occurance of selected first code point
-		selectedCodePoints.remove(selectedLastCodePoint);  // remove the first occurance of selected  last code point
+		if (chooseFirst) {
+			final boolean foundFirst = selectedCodePoints.remove(selectedFirstCodePoint);   // remove the first occurance of selected first code point
+			assert foundFirst : "Selected first code point not found";
+		}
+		if (chooseLast) {
+			final boolean foundLast = selectedCodePoints.remove(selectedLastCodePoint);    // remove the first occurance of selected last code point
+			assert foundLast : "Selected last code point not found";
+		}
 		Collections.shuffle(selectedCodePoints);
-		selectedCodePoints.addFirst(selectedFirstCodePoint); // insert the selected first code point into the first position
-		selectedCodePoints.addLast(selectedLastCodePoint);   // insert the selected first code point into the  last position
-    	log.info("shuffled selectedCodePoints: size: {}, uppers: {}, lowers: {}, digits: {}, specials: {}, whitespace: {}, ints: {}, chars: \"{}\"", selectedCodePoints.size(), count(selectedCodePoints, uppers), count(selectedCodePoints, lowers), count(selectedCodePoints, digits), count(selectedCodePoints, specials), count(selectedCodePoints, whitespace), selectedCodePoints, toString(selectedCodePoints));
+		if (chooseFirst) {
+			selectedCodePoints.addFirst(selectedFirstCodePoint); // insert the selected first code point into the first position
+		}
+		if (chooseLast) {
+			selectedCodePoints.addLast(selectedLastCodePoint);   // insert the selected last code point into the last position
+		}
+    	log.info("final selectedCodePoints: size: {}, uppers: {}, lowers: {}, digits: {}, specials: {}, whitespace: {}, ints: {}, chars: \"{}\"", selectedCodePoints.size(), count(selectedCodePoints, uppers), count(selectedCodePoints, lowers), count(selectedCodePoints, digits), count(selectedCodePoints, specials), count(selectedCodePoints, whitespace), selectedCodePoints, toString(selectedCodePoints));
         return toString(selectedCodePoints);
     }
 
@@ -141,6 +153,9 @@ public class PasswordGenerator {
     }
 
 	private static boolean decrementAvailable(final Integer selectedCodePoint, final Map<Integer, List<AtomicInteger>>... availableCountsCategories) {
+		if (selectedCodePoint == null) {
+			return false;
+		}
 		for (final Map<Integer, List<AtomicInteger>> availableCountsCategory : availableCountsCategories) {
 			if (availableCountsCategory.containsKey(selectedCodePoint)) {
 				final List<AtomicInteger> availableCountsIndividualAndGroup = availableCountsCategory.get(selectedCodePoint);

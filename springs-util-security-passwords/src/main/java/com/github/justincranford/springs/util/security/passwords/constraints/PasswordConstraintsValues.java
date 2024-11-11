@@ -10,7 +10,7 @@ public class PasswordConstraintsValues {
 	public static final String SPECIALS_DEFAULT   = "~`!@#$%^&*()_-+={}[]|\\\"':;?/<>,.";
 	public static final String WHITESPACE_DEFAULT = " "; // " \t\n\r\f"
 
-	public static final int MIN_LENGTH_MIN              = 12, MIN_LENGTH_DEFAULT              =  12, MIN_LENGTH_MAX              = 128; // OWASP min 12 regular, 16 more sensitive
+	public static final int MIN_LENGTH_MIN              = 12, MIN_LENGTH_DEFAULT              =  16, MIN_LENGTH_MAX              = 128; // OWASP min 12 regular, 16 more sensitive
     public static final int MAX_LENGTH_MIN              = 43, MAX_LENGTH_DEFAULT              = 128, MAX_LENGTH_MAX              = 128; // 32-byte random => 43-char base64
     public static final int MAX_ANYWHERE_REPEATS_MIN    =  0, MAX_ANYWHERE_REPEATS_DEFAULT    =   3, MAX_ANYWHERE_REPEATS_MAX    = 128;
     public static final int MAX_CONSECUTIVE_REPEATS_MIN =  0, MAX_CONSECUTIVE_REPEATS_DEFAULT =   2, MAX_CONSECUTIVE_REPEATS_MAX = 128;
