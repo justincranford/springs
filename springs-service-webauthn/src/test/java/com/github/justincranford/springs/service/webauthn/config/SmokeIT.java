@@ -18,6 +18,9 @@ public class SmokeIT extends AbstractIT {
 		assertThat(super.mtlsRestTemplate()).isNotNull();
 		assertThat(super.stlsRestTemplate()).isNotNull();
 		assertThat(super.ptlsRestTemplate()).isNotNull();
+		assertThat(super.stlsSslContext()).isNotNull();
+		assertThat(super.mtlsSslContext()).isNotNull();
+		assertThat(super.ptlsSslContext()).isNotNull();
 		assertThat(super.objectMapper()).isNotNull();
 		assertThat(super.httpBaseUrl()).isNotNull();
 		assertThat(super.httpsBaseUrl()).isNotNull();

@@ -2,6 +2,8 @@ package com.github.justincranford.springs.authenticationorm.users;
 
 import java.util.List;
 
+import javax.net.ssl.SSLContext;
+
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRe
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.service.http.client.config.SpringsUtilHttpClientConfiguration;
 import com.github.justincranford.springs.util.certs.client.config.SpringsUtilHttpsClientsConfiguration;
+import com.github.justincranford.springs.util.certs.client.config.SpringsUtilTlsClientsConfiguration;
 import com.github.justincranford.springs.util.certs.server.TlsInitializer;
 import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
 
@@ -88,33 +91,33 @@ public class AbstractIT {
 	@Autowired
 	private SslBundles sslBundles;
 
-	/**
-	 * @see SpringsUtilHttpClientConfiguration#httpRestTemplate
-	 */
 	@Autowired
 	@Qualifier("httpRestTemplate")
-	private RestTemplate httpRestTemplate;
+	private RestTemplate httpRestTemplate; /** @see SpringsUtilHttpClientConfiguration#httpRestTemplate */
 
-	/**
-	 * @see SpringsUtilHttpsClientsConfiguration#mtlsRestTemplate
-	 */
 	@Autowired(required=false)
 	@Qualifier("mtlsRestTemplate")
-	private RestTemplate mtlsRestTemplate;
+	private RestTemplate mtlsRestTemplate; /** @see SpringsUtilHttpsClientsConfiguration#mtlsRestTemplate */
 
-	/**
-	 * @see SpringsUtilHttpsClientsConfiguration#stlsRestTemplate
-	 */
 	@Autowired(required=false)
 	@Qualifier("stlsRestTemplate")
-	private RestTemplate stlsRestTemplate;
+	private RestTemplate stlsRestTemplate; /** @see SpringsUtilHttpsClientsConfiguration#stlsRestTemplate */
 
-	/**
-	 * @see SpringsUtilHttpsClientsConfiguration#ptlsRestTemplate
-	 */
 	@Autowired(required=false)
 	@Qualifier("ptlsRestTemplate")
-	private RestTemplate ptlsRestTemplate;
+	private RestTemplate ptlsRestTemplate; /** @see SpringsUtilHttpsClientsConfiguration#ptlsRestTemplate */
+
+	@Autowired(required=false)
+	@Qualifier("stlsSslContext")
+	private SSLContext stlsSslContext; /** @see SpringsUtilTlsClientsConfiguration#stlsSslContext */
+
+	@Autowired(required=false)
+	@Qualifier("mtlsSslContext")
+	private SSLContext mtlsSslContext; /** @see SpringsUtilTlsClientsConfiguration#mtlsSslContext */
+
+	@Autowired(required=false)
+	@Qualifier("ptlsSslContext")
+	private SSLContext ptlsSslContext; /** @see SpringsUtilTlsClientsConfiguration#ptlsSslContext */
 
 	@Autowired
 	private ObjectMapper objectMapper;
