@@ -24,57 +24,61 @@ public class PasswordGeneratorConfiguration {
 
 	@Bean
 	public PasswordGenerator usersPasswordGenerator() {
-		final Users usersProperties = this.springsUtilSecurityPasswordsProperties.getUsers();
-		final PasswordConstraints usersPasswordContraints = PasswordConstraintsUtil.proxy(usersProperties);
-		return new PasswordGenerator(usersPasswordContraints);
+		return new PasswordGenerator(usersPasswordContraints());
+	}
+	@Bean
+	public PasswordConstraintsValidator usersPasswordConstraintsValidator() {
+		return PasswordConstraintsValidatorUtil.validator(usersPasswordContraints());
 	}
 
 	@Bean
 	public PasswordGenerator clientsPasswordGenerator() {
-		final Clients clientsProperties = this.springsUtilSecurityPasswordsProperties.getClients();
-		final PasswordConstraints clientsPasswordContraints = PasswordConstraintsUtil.proxy(clientsProperties);
-		return new PasswordGenerator(clientsPasswordContraints);
+		return new PasswordGenerator(clientsPasswordConstraints());
+	}
+	@Bean
+	public PasswordConstraintsValidator clientsPasswordConstraintsValidator() {
+		return PasswordConstraintsValidatorUtil.validator(clientsPasswordConstraints());
 	}
 
 	@Bean
 	public PasswordGenerator serversPasswordGenerator() {
-		final Servers serversProperties = this.springsUtilSecurityPasswordsProperties.getServers();
-		final PasswordConstraints serverPasswordContraints = PasswordConstraintsUtil.proxy(serversProperties);
-		return new PasswordGenerator(serverPasswordContraints);
+		return new PasswordGenerator(serverPasswordContraints());
+	}
+	@Bean
+	public PasswordConstraintsValidator serversPasswordConstraintsValidator() {
+		return PasswordConstraintsValidatorUtil.validator(serverPasswordContraints());
 	}
 
 	@Bean
 	public PasswordGenerator defaultsPasswordGenerator() {
-		final Defaults defaultsProperties = this.springsUtilSecurityPasswordsProperties.getDefaults();
-		final PasswordConstraints defaultsPasswordContraints = PasswordConstraintsUtil.proxy(defaultsProperties);
-		return new PasswordGenerator(defaultsPasswordContraints);
+		return new PasswordGenerator(defaultsPasswordContraints());
 	}
-
-	@Bean
-	public PasswordConstraintsValidator usersPasswordConstraintsValidator() {
-		final Users usersProperties = this.springsUtilSecurityPasswordsProperties.getUsers();
-		final PasswordConstraints usersPasswordContraints = PasswordConstraintsUtil.proxy(usersProperties);
-		return PasswordConstraintsValidatorUtil.validator(usersPasswordContraints);
-	}
-
-	@Bean
-	public PasswordConstraintsValidator clientsPasswordConstraintsValidator() {
-		final Clients clientsProperties = this.springsUtilSecurityPasswordsProperties.getClients();
-		final PasswordConstraints clientsPasswordContraints = PasswordConstraintsUtil.proxy(clientsProperties);
-		return PasswordConstraintsValidatorUtil.validator(clientsPasswordContraints);
-	}
-
-	@Bean
-	public PasswordConstraintsValidator serversPasswordConstraintsValidator() {
-		final Servers serversProperties = this.springsUtilSecurityPasswordsProperties.getServers();
-		final PasswordConstraints serverPasswordContraints = PasswordConstraintsUtil.proxy(serversProperties);
-		return PasswordConstraintsValidatorUtil.validator(serverPasswordContraints);
-	}
-
 	@Bean
 	public PasswordConstraintsValidator defaultsPasswordConstraintsValidator() {
+		return PasswordConstraintsValidatorUtil.validator(defaultsPasswordContraints());
+	}
+
+	private PasswordConstraints usersPasswordContraints() {
+		final Users usersProperties = this.springsUtilSecurityPasswordsProperties.getUsers();
+		final PasswordConstraints usersPasswordContraints = PasswordConstraintsUtil.proxy(usersProperties);
+		return usersPasswordContraints;
+	}
+
+	private PasswordConstraints clientsPasswordConstraints() {
+		final Clients clientsProperties = this.springsUtilSecurityPasswordsProperties.getClients();
+		final PasswordConstraints clientsPasswordContraints = PasswordConstraintsUtil.proxy(clientsProperties);
+		return clientsPasswordContraints;
+	}
+
+	private PasswordConstraints serverPasswordContraints() {
+		final Servers serversProperties = this.springsUtilSecurityPasswordsProperties.getServers();
+		final PasswordConstraints serverPasswordContraints = PasswordConstraintsUtil.proxy(serversProperties);
+		return serverPasswordContraints;
+	}
+
+	private PasswordConstraints defaultsPasswordContraints() {
 		final Defaults defaultsProperties = this.springsUtilSecurityPasswordsProperties.getDefaults();
 		final PasswordConstraints defaultsPasswordContraints = PasswordConstraintsUtil.proxy(defaultsProperties);
-		return PasswordConstraintsValidatorUtil.validator(defaultsPasswordContraints);
+		return defaultsPasswordContraints;
 	}
 }
