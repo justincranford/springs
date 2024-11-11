@@ -142,7 +142,7 @@ public class AbstractEntity {
 
 	@Override
     public final boolean equals(Object o) {
-		return (this == o) || ( (this.getClass().equals(o.getClass())) && (this.id == ((AbstractEntity)o).id) );
+		return (this == o) || ( (o != null) && (this.getClass().equals(o.getClass())) && (this.id == ((AbstractEntity)o).id) );
     }
 
     @Override
