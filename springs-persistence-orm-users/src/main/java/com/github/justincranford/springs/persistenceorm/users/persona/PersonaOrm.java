@@ -52,7 +52,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent=true)
 public class PersonaOrm extends AbstractEntity {
-	@Column(nullable=false,columnDefinition="TINYINT")
+	@Column(nullable=false,columnDefinition="SMALLINT")
 	private int rank;
 
     @ElementCollection

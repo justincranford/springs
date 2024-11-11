@@ -29,7 +29,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(fluent=true)
 public class LocationAddressOrm {
-	@Column(nullable=false,columnDefinition="TINYINT")
+	@Column(nullable=false,columnDefinition="SMALLINT")
     private int rank;
 
     @Column(length=64,nullable=false)

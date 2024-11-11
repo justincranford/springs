@@ -27,7 +27,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(fluent=true)
 public class UrlOrm {
-	@Column(nullable=false,columnDefinition="TINYINT")
+	@Column(nullable=false,columnDefinition="SMALLINT")
     private int rank;
 
     @Column(length=2048,nullable=false)

@@ -28,7 +28,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(fluent=true)
 public class EmailAddressOrm {
-	@Column(nullable=false,columnDefinition="TINYINT")
+	@Column(nullable=false,columnDefinition="SMALLINT")
 	private int rank;
 
 	@Embedded
