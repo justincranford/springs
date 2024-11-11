@@ -6,12 +6,14 @@ import org.springframework.context.annotation.Import;
 
 import com.github.justincranford.springs.service.http.config.SpringsUtilHttpConfiguration;
 import com.github.justincranford.springs.util.certs.client.config.SpringsUtilHttpsClientsConfiguration;
+import com.github.justincranford.springs.util.certs.client.config.SpringsUtilTlsClientsConfiguration;
 import com.github.justincranford.springs.util.certs.server.config.SpringsUtilHttpsServerConfiguration;
 
 @Configuration
 @EnableConfigurationProperties
 @Import(value = {
 	SpringsUtilHttpConfiguration.class,
+	SpringsUtilTlsClientsConfiguration.class,
 	SpringsUtilHttpsClientsConfiguration.class,
 	SpringsUtilHttpsServerConfiguration.class
 })

@@ -77,6 +77,12 @@ public class AbstractIT {
 	@Qualifier("ptlsRestTemplate")
 	private RestTemplate ptlsRestTemplate;
 
+	@Autowired
+	private String httpBaseUrl;
+
+	@Autowired
+	private String httpsBaseUrl;
+
     @Configuration
 	@EnableAutoConfiguration(exclude = { UserDetailsServiceAutoConfiguration.class })
     static class AbstractITConfiguration {

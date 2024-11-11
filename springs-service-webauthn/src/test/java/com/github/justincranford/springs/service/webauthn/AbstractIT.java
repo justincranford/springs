@@ -69,6 +69,13 @@ public class AbstractIT {
 	@Qualifier("stlsRestTemplate")
 	private RestTemplate stlsRestTemplate;
 
+	/**
+	 * @see SpringsUtilHttpsClientsConfiguration#ptlsRestTemplate
+	 */
+	@Autowired(required=false)
+	@Qualifier("ptlsRestTemplate")
+	private RestTemplate ptlsRestTemplate;
+
 	@Autowired
 	private ObjectMapper objectMapper;
 

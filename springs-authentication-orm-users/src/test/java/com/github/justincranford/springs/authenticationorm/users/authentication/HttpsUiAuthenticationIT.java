@@ -2,31 +2,20 @@ package com.github.justincranford.springs.authenticationorm.users.authentication
 
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.io.IOException;
-
-import javax.net.ssl.SSLContext;
-
-import org.apache.hc.core5.http.NoHttpResponseException;
-import org.assertj.core.api.AbstractThrowableAssert;
 import org.htmlunit.WebClient;
 import org.htmlunit.html.HtmlButton;
 import org.htmlunit.html.HtmlForm;
 import org.htmlunit.html.HtmlHiddenInput;
 import org.htmlunit.html.HtmlPage;
 import org.htmlunit.html.HtmlPasswordInput;
-import org.htmlunit.html.HtmlSubmitInput;
 import org.htmlunit.html.HtmlTextInput;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.HttpStatus;
 
 import com.github.justincranford.springs.authenticationorm.users.AbstractIT;
 import com.github.justincranford.springs.service.http.client.RestTemplateUtil;
-import com.github.justincranford.springs.util.certs.server.TlsInitializer;
-import com.github.justincranford.springs.util.certs.util.TlsUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,10 +51,13 @@ public class HttpsUiAuthenticationIT extends AbstractIT {
 //			.hasMessage("localhost:8443 failed to respond");
 //	}
 
+	//<form class="form-signin" method="post" action="/login">
+	// <input type="text" id="username" name="username" class="form-control" placeholder="Username" required="" autofocus=""/>
+	// <input type="password" id="password" name="password" class="form-control" placeholder="Password" required=""/>
+	// <input name="_csrf" type="hidden" value="JmqZF4H33AOhG1U5tBnEWzQWH0Zt7OI8UOIyqK7505Koa8ZRFlr7LuKV62eMKGQJ0TTwa1YjMiQPjtERMYELkcjPtqGeCv9h"/>
+	// <button class="btn btn-lg btn-primary btn-block" type="submit">
 	private void attemptLogin(final String username, final String password) throws Exception {
 		try (final WebClient webClient = new WebClient()) {
-//			final SslBundle  serverTlsBundle	 = sslBundles().getBundle(TlsInitializer.SslBundleNames.SERVER_TLS_CERT);
-//			final SSLContext serverTlsSslContext = serverTlsBundle.createSslContext();
 //			webClient.getOptions().setSSLContext(serverTlsSslContext);
 			webClient.getOptions().setUseInsecureSSL(true);
 			webClient.getOptions().setCssEnabled(false);
@@ -79,13 +71,8 @@ public class HttpsUiAuthenticationIT extends AbstractIT {
 			final String loginPageTitleText = loginPage.getTitleText();
 			Assertions.assertTrue(loginPageTitleText.contains("Please sign in"));
 
-//			<form class="form-signin" method="post" action="/login">
 			final HtmlForm loginForm = requireNonNull(loginPage.getForms().getFirst());
 
-			// <input type="text" id="username" name="username" class="form-control" placeholder="Username" required="" autofocus=""/>
-			// <input type="password" id="password" name="password" class="form-control" placeholder="Password" required=""/>
-			// <input name="_csrf" type="hidden" value="JmqZF4H33AOhG1U5tBnEWzQWH0Zt7OI8UOIyqK7505Koa8ZRFlr7LuKV62eMKGQJ0TTwa1YjMiQPjtERMYELkcjPtqGeCv9h"/>
-			// <button class="btn btn-lg btn-primary btn-block" type="submit">
 			final HtmlTextInput     usernameField = requireNonNull(loginForm.getInputByName("username"));
 			final HtmlPasswordInput passwordField = requireNonNull(loginForm.getInputByName("password"));
 			final HtmlHiddenInput   csrfField     = requireNonNull(loginForm.getInputByName("_csrf"));
