@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -83,6 +84,9 @@ public class AbstractIT {
 
 	@Autowired
 	private WebServerApplicationContext webServerApplicationContext;
+
+	@Autowired
+	private SslBundles sslBundles;
 
 	/**
 	 * @see SpringsUtilHttpClientConfiguration#httpRestTemplate

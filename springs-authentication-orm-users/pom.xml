@@ -123,6 +123,10 @@
 			<version>0.0.1-SNAPSHOT</version>
 		    <scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.htmlunit</groupId>
+			<artifactId>htmlunit</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
