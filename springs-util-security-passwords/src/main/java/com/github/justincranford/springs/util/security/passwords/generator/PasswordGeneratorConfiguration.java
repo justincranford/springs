@@ -11,8 +11,7 @@ import com.github.justincranford.springs.util.security.passwords.properties.Spri
 import com.github.justincranford.springs.util.security.passwords.properties.SpringsUtilSecurityPasswordsProperties.Defaults;
 import com.github.justincranford.springs.util.security.passwords.properties.SpringsUtilSecurityPasswordsProperties.Servers;
 import com.github.justincranford.springs.util.security.passwords.properties.SpringsUtilSecurityPasswordsProperties.Users;
-import com.github.justincranford.springs.util.security.passwords.validator.PasswordConstraintsValidator;
-import com.github.justincranford.springs.util.security.passwords.validator.PasswordConstraintsValidatorUtil;
+import com.github.justincranford.springs.util.security.passwords.validator.PasswordValidator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,38 +23,38 @@ public class PasswordGeneratorConfiguration {
 
 	@Bean
 	public PasswordGenerator usersPasswordGenerator() {
-		return new PasswordGenerator(usersPasswordContraints());
+		return PasswordGenerator.create(usersPasswordContraints());
 	}
 	@Bean
-	public PasswordConstraintsValidator usersPasswordConstraintsValidator() {
-		return PasswordConstraintsValidatorUtil.validator(usersPasswordContraints());
+	public PasswordValidator usersPasswordConstraintsValidator() {
+		return PasswordValidator.create(usersPasswordContraints());
 	}
 
 	@Bean
 	public PasswordGenerator clientsPasswordGenerator() {
-		return new PasswordGenerator(clientsPasswordConstraints());
+		return PasswordGenerator.create(clientsPasswordConstraints());
 	}
 	@Bean
-	public PasswordConstraintsValidator clientsPasswordConstraintsValidator() {
-		return PasswordConstraintsValidatorUtil.validator(clientsPasswordConstraints());
+	public PasswordValidator clientsPasswordConstraintsValidator() {
+		return PasswordValidator.create(clientsPasswordConstraints());
 	}
 
 	@Bean
 	public PasswordGenerator serversPasswordGenerator() {
-		return new PasswordGenerator(serverPasswordContraints());
+		return PasswordGenerator.create(serverPasswordContraints());
 	}
 	@Bean
-	public PasswordConstraintsValidator serversPasswordConstraintsValidator() {
-		return PasswordConstraintsValidatorUtil.validator(serverPasswordContraints());
+	public PasswordValidator serversPasswordConstraintsValidator() {
+		return PasswordValidator.create(serverPasswordContraints());
 	}
 
 	@Bean
 	public PasswordGenerator defaultsPasswordGenerator() {
-		return new PasswordGenerator(defaultsPasswordContraints());
+		return PasswordGenerator.create(defaultsPasswordContraints());
 	}
 	@Bean
-	public PasswordConstraintsValidator defaultsPasswordConstraintsValidator() {
-		return PasswordConstraintsValidatorUtil.validator(defaultsPasswordContraints());
+	public PasswordValidator defaultsPasswordConstraintsValidator() {
+		return PasswordValidator.create(defaultsPasswordContraints());
 	}
 
 	private PasswordConstraints usersPasswordContraints() {

@@ -14,8 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings({"nls", "boxing"})
-public class PasswordConstraintsValidator implements ConstraintValidator<PasswordConstraints, String> {
-    private Set<Integer> firsts;
+public class PasswordValidator implements ConstraintValidator<PasswordConstraints, String> {
+	private Set<Integer> firsts;
     private Set<Integer> lasts;
     private Set<Integer> uppers;
     private Set<Integer> lowers;
@@ -36,6 +36,12 @@ public class PasswordConstraintsValidator implements ConstraintValidator<Passwor
     private int maxWhitespace;
     private int maxAnywhereRepeats;
     private int maxConsecutiveRepeats;
+
+	public static PasswordValidator create(PasswordConstraints passwordConstraints) {
+		final PasswordValidator passwordValidator = new PasswordValidator();
+		passwordValidator.initialize(passwordConstraints);
+		return passwordValidator;
+	}
 
     @Override
     public void initialize(final PasswordConstraints constraintAnnotation) {

@@ -2,24 +2,29 @@ package com.github.justincranford.springs.util.security.passwords.generator;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.security.passwords.constraints.PasswordConstraints;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 @Slf4j
 @SuppressWarnings({"nls", "boxing", "unchecked"})
 public class PasswordGenerator {
 	private final AtomicInteger generateCount = new AtomicInteger(1);
 	private final PasswordConstraints constraints;
+
+	public static PasswordGenerator create(final PasswordConstraints constraints) {
+		return new PasswordGenerator(constraints);
+	}
 
 	public String generate() {
 		log.trace("\n===================================\ngenerate test: {}", this.generateCount.getAndIncrement());

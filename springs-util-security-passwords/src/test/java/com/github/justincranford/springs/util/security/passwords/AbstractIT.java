@@ -11,7 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import com.github.justincranford.springs.util.security.passwords.config.SpringsUtilSecurityPasswordsConfiguration;
 import com.github.justincranford.springs.util.security.passwords.generator.PasswordGenerator;
 import com.github.justincranford.springs.util.security.passwords.properties.SpringsUtilSecurityPasswordsProperties;
-import com.github.justincranford.springs.util.security.passwords.validator.PasswordConstraintsValidator;
+import com.github.justincranford.springs.util.security.passwords.validator.PasswordValidator;
 
 import io.micrometer.observation.annotation.Observed;
 import lombok.Getter;
@@ -39,13 +39,13 @@ public class AbstractIT {
 	@Autowired
 	private PasswordGenerator defaultsPasswordGenerator;
 	@Autowired
-	private PasswordConstraintsValidator usersPasswordConstraintsValidator;
+	private PasswordValidator usersPasswordConstraintsValidator;
 	@Autowired
-	private PasswordConstraintsValidator clientsPasswordConstraintsValidator;
+	private PasswordValidator clientsPasswordConstraintsValidator;
 	@Autowired
-	private PasswordConstraintsValidator serversPasswordConstraintsValidator;
+	private PasswordValidator serversPasswordConstraintsValidator;
 	@Autowired
-	private PasswordConstraintsValidator defaultsPasswordConstraintsValidator;
+	private PasswordValidator defaultsPasswordConstraintsValidator;
 
 	@Configuration
 	@EnableAutoConfiguration

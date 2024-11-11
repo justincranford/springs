@@ -6,13 +6,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.github.justincranford.springs.util.security.passwords.validator.PasswordConstraintsValidator;
+import com.github.justincranford.springs.util.security.passwords.validator.PasswordValidator;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = PasswordConstraintsValidator.class)
+@Constraint(validatedBy = PasswordValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordConstraints {
