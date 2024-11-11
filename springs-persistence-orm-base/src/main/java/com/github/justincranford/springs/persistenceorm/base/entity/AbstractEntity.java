@@ -49,12 +49,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AbstractEntity {
 	public static final String SQL_WHERE_CLAUSE = "(pre_delete_date_time IS NULL OR pre_delete_date_time < CURRENT_TIMESTAMP)";
-	protected static final int SEQUENCE_ID_INITIAL_VALUE = 1000;
-	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_SMALL = 10;
-	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM = 100;
-	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_LARGE = 1000;
-	protected static final int SEQUENCE_ID_ALLOCATION_SIZE_EXTRA_LARGE = 10000;
-	protected static final String SEQUENCE_ID = "ABSTRACT_ENTITY_SEQUENCE_ID";
+	public static final int SEQUENCE_ID_INITIAL_VALUE = 1000;
+	public static final int SEQUENCE_ID_ALLOCATION_SIZE_SMALL = 10;
+	public static final int SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM = 100;
+	public static final int SEQUENCE_ID_ALLOCATION_SIZE_LARGE = 1000;
+	public static final int SEQUENCE_ID_ALLOCATION_SIZE_EXTRA_LARGE = 10000;
+	public static final String SEQUENCE_ID = "ABSTRACT_ENTITY_SEQUENCE_ID";
 
 	@Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE,generator=AbstractEntity.SEQUENCE_ID)
