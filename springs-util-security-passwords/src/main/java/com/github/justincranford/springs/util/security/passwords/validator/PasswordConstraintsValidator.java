@@ -80,9 +80,9 @@ public class PasswordConstraintsValidator implements ConstraintValidator<Passwor
         }
         final List<Integer> passwordCodePoints = password.codePoints().boxed().toList();
 
-		if (!this.firsts.contains(passwordCodePoints.get(0))) {
+		if ((this.firsts.size() > 0) && (!(this.firsts.contains(passwordCodePoints.get(0))))) {
    			return throwOrFalse(throwException, "Password violates first constraint");
-        } else if (!this.lasts.contains(passwordCodePoints.getLast())) {
+        } else if ((this.lasts.size() > 0) && (!(this.lasts.contains(passwordCodePoints.get(0))))) {
    			return throwOrFalse(throwException, "Password violates last constraint");
         }
 
