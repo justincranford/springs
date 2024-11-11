@@ -16,20 +16,23 @@ import com.github.justincranford.springs.util.certs.util.TlsPskUtil;
 @SuppressWarnings({"static-method", "resource"})
 @Configuration
 public class SpringsUtilHttpsServerPskConfiguration {
+	private static final boolean ADD_TLS_PSK_CONNECTOR = false;
     @Bean
     public JettyServletWebServerFactory jettyServletWebServerFactory(final SslBundles sslBundles) {
 		final JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
-        factory.addServerCustomizers(new JettyServerCustomizer() {
-			@Override
-            public void customize(Server server) {
-				final SslBundle                serverTlsPskBundle = sslBundles.getBundle(TlsInitializer.SslBundleNames.SERVER_TLS_PSK);
-				final SslContextFactory.Server sslContextFactory  = TlsPskUtil.createServerSslContextFactory(serverTlsPskBundle);
+		if (ADD_TLS_PSK_CONNECTOR) {
+	        factory.addServerCustomizers(new JettyServerCustomizer() {
+				@Override
+	            public void customize(Server server) {
+					final SslBundle                serverTlsPskBundle = sslBundles.getBundle(TlsInitializer.SslBundleNames.SERVER_TLS_PSK);
+					final SslContextFactory.Server sslContextFactory  = TlsPskUtil.createServerSslContextFactory(serverTlsPskBundle);
 
-				final ServerConnector serverConnector = new ServerConnector(server, sslContextFactory);
-                serverConnector.setPort(9443);
-                server.addConnector(serverConnector);
-            }
-        });
+					final ServerConnector serverConnector = new ServerConnector(server, sslContextFactory);
+	                serverConnector.setPort(9443);
+	                server.addConnector(serverConnector);
+	            }
+	        });
+		}
         return factory;
     }
 
