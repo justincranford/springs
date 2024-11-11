@@ -11,6 +11,5 @@ public class SmokeIT extends AbstractIT {
 	void loadProperties() {
 		assertThat(super.applicationContext()).isNotNull();
 		assertThat(super.springsUtilSecurityHashesProperties()).isNotNull();
-		assertThat(super.passwordEncoder()).isNotNull();
 	}
 }

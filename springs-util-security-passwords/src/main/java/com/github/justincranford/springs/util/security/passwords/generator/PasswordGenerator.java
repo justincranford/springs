@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PasswordGenerator {
 	private static final AtomicInteger GENERATE_COUNT = new AtomicInteger(1);
 	public static String generate(final PasswordConstraints constraints) {
-		log.info("\n===================================\ngenerate test: {}", GENERATE_COUNT.getAndIncrement());
+		log.trace("\n===================================\ngenerate test: {}", GENERATE_COUNT.getAndIncrement());
 		if (constraints.maxLength() < constraints.minLength()) {
 			throw new IllegalArgumentException("Max length must be greater than or equal to min");
 		} else if (constraints.maxUppers() < constraints.minUppers()) {
@@ -68,11 +68,11 @@ public class PasswordGenerator {
 		selectCharacters(selectedCodePoints, availableLastsCounts,   chooseLast ? 1 : 0,  uppers, lowers, digits, specials, whitespace);
 
 		final Integer selectedFirstCodePoint = (chooseFirst) ? selectedCodePoints.getFirst() : null;
-		log.info("selectedFirstCodePoint: {}", selectedFirstCodePoint);
+		log.trace("selectedFirstCodePoint: {}", selectedFirstCodePoint);
 		decrementAvailable(selectedFirstCodePoint, availableUppersCounts, availableLowersCounts, availableDigitsCounts, availableSpecialsCounts, availableWhitespaceCounts);
 
 		final Integer selectedLastCodePoint = (chooseLast) ? selectedCodePoints.getLast() : null;
-		log.info("selectedLastCodePoint: {}", selectedLastCodePoint);
+		log.trace("selectedLastCodePoint: {}", selectedLastCodePoint);
 		decrementAvailable(selectedLastCodePoint, availableUppersCounts, availableLowersCounts, availableDigitsCounts, availableSpecialsCounts, availableWhitespaceCounts);
 		System.out.println();
 
@@ -97,7 +97,7 @@ public class PasswordGenerator {
 			selectCharacters(selectedCodePoints, availableCodePointsAndCounts, remainingCodePoints, uppers, lowers, digits, specials, whitespace);
 		}
 
-		log.info("selectedCodePoints: {}", selectedCodePoints);
+		log.trace("selectedCodePoints: {}", selectedCodePoints);
 		if (chooseFirst) {
 			final boolean foundFirst = selectedCodePoints.remove(selectedFirstCodePoint);   // remove the first occurance of selected first code point
 			assert foundFirst : "Selected first code point not found";
@@ -113,7 +113,7 @@ public class PasswordGenerator {
 		if (chooseLast) {
 			selectedCodePoints.addLast(selectedLastCodePoint);   // insert the selected last code point into the last position
 		}
-    	log.info("final selectedCodePoints: size: {}, uppers: {}, lowers: {}, digits: {}, specials: {}, whitespace: {}, ints: {}, chars: \"{}\"", selectedCodePoints.size(), count(selectedCodePoints, uppers), count(selectedCodePoints, lowers), count(selectedCodePoints, digits), count(selectedCodePoints, specials), count(selectedCodePoints, whitespace), selectedCodePoints, toString(selectedCodePoints));
+    	log.trace("final selectedCodePoints: size: {}, uppers: {}, lowers: {}, digits: {}, specials: {}, whitespace: {}, ints: {}, chars: \"{}\"", selectedCodePoints.size(), count(selectedCodePoints, uppers), count(selectedCodePoints, lowers), count(selectedCodePoints, digits), count(selectedCodePoints, specials), count(selectedCodePoints, whitespace), selectedCodePoints, toString(selectedCodePoints));
         return toString(selectedCodePoints);
     }
 
@@ -127,11 +127,11 @@ public class PasswordGenerator {
 		final List<Integer> specials,
 		final List<Integer> whitespace
 	) {
-    	log.info("numCodePointsRequested: {}", numCodePointsRequested);
-    	log.info("selectedCodePoints:           size: {}, uppers: {}, lowers: {}, digits: {}, specials: {}, whitespace: {}, ints: {}, chars: \"{}\"", selectedCodePoints.size(), count(selectedCodePoints, uppers), count(selectedCodePoints, lowers), count(selectedCodePoints, digits), count(selectedCodePoints, specials), count(selectedCodePoints, whitespace), selectedCodePoints, toString(selectedCodePoints));
-    	log.info("availableCodePointsAndCounts: size: {}, ints: {}", availableCodePointsAndCounts.size(), availableCodePointsAndCounts);
+    	log.trace("numCodePointsRequested: {}", numCodePointsRequested);
+    	log.trace("selectedCodePoints:           size: {}, uppers: {}, lowers: {}, digits: {}, specials: {}, whitespace: {}, ints: {}, chars: \"{}\"", selectedCodePoints.size(), count(selectedCodePoints, uppers), count(selectedCodePoints, lowers), count(selectedCodePoints, digits), count(selectedCodePoints, specials), count(selectedCodePoints, whitespace), selectedCodePoints, toString(selectedCodePoints));
+    	log.trace("availableCodePointsAndCounts: size: {}, ints: {}", availableCodePointsAndCounts.size(), availableCodePointsAndCounts);
     	if (numCodePointsRequested <= 0) {
-        	log.info("skip because no count requested, numCodePointsRequested: {}", numCodePointsRequested);
+        	log.trace("skip because no count requested, numCodePointsRequested: {}", numCodePointsRequested);
         	System.out.print('\n');
     		return;
     	}
@@ -145,8 +145,8 @@ public class PasswordGenerator {
     		if (decrementAvailable(selectedCodePoint, availableCodePointsAndCounts)) {
         		selectedCodePoints.add(selectedCodePoint);
         		numSuccessfullySelectedCodePoints++;
-            	log.info("selectedCodePoints:           size: {}, uppers: {}, lowers: {}, digits: {}, specials: {}, whitespace: {}, ints: {}, chars: \"{}\"", selectedCodePoints.size(), count(selectedCodePoints, uppers), count(selectedCodePoints, lowers), count(selectedCodePoints, digits), count(selectedCodePoints, specials), count(selectedCodePoints, whitespace), selectedCodePoints, toString(selectedCodePoints));
-            	log.info("availableCodePointsAndCounts: size: {}, ints: {}", availableCodePointsAndCounts.size(), availableCodePointsAndCounts);
+            	log.trace("selectedCodePoints:           size: {}, uppers: {}, lowers: {}, digits: {}, specials: {}, whitespace: {}, ints: {}, chars: \"{}\"", selectedCodePoints.size(), count(selectedCodePoints, uppers), count(selectedCodePoints, lowers), count(selectedCodePoints, digits), count(selectedCodePoints, specials), count(selectedCodePoints, whitespace), selectedCodePoints, toString(selectedCodePoints));
+            	log.trace("availableCodePointsAndCounts: size: {}, ints: {}", availableCodePointsAndCounts.size(), availableCodePointsAndCounts);
             	System.out.print('\n');
     		}
         }
@@ -161,14 +161,14 @@ public class PasswordGenerator {
 				final List<AtomicInteger> availableCountsIndividualAndGroup = availableCountsCategory.get(selectedCodePoint);
 				final AtomicInteger       availableCountIndividual          = availableCountsIndividualAndGroup.get(0);
 				final AtomicInteger       availableCountGroup               = availableCountsIndividualAndGroup.get(1);
-	    		log.info("selected  selectedCodePoint: {}, char: \"{}\", availableCodePointIndividualCount: {}, availableCodePointGroupCount: {}", selectedCodePoint, toString(selectedCodePoint), availableCountIndividual, availableCountGroup);
+	    		log.trace("selected  selectedCodePoint: {}, char: \"{}\", availableCodePointIndividualCount: {}, availableCodePointGroupCount: {}", selectedCodePoint, toString(selectedCodePoint), availableCountIndividual, availableCountGroup);
 				if ((availableCountIndividual.getAndDecrement() <= 0) || (availableCountGroup.getAndDecrement() <= 0)) {
-		        	log.info("skipping  selectedCodePoint: {}, char: \"{}\", availableCodePointIndividualCount: {}, availableCodePointGroupCount: {}", selectedCodePoint, toString(selectedCodePoint), availableCountIndividual, availableCountGroup);
+		        	log.trace("skipping  selectedCodePoint: {}, char: \"{}\", availableCodePointIndividualCount: {}, availableCodePointGroupCount: {}", selectedCodePoint, toString(selectedCodePoint), availableCountIndividual, availableCountGroup);
 		        	System.out.print('\n');
 					availableCountsCategory.remove(selectedCodePoint);
 					return false; // not enough available count to select it
 				}
-	    		log.info("remaining selectedCodePoint: {}, char: \"{}\", availableCodePointIndividualCount: {}, availableCodePointGroupCount: {}", selectedCodePoint, toString(selectedCodePoint), availableCountIndividual, availableCountGroup);
+	    		log.trace("remaining selectedCodePoint: {}, char: \"{}\", availableCodePointIndividualCount: {}, availableCodePointGroupCount: {}", selectedCodePoint, toString(selectedCodePoint), availableCountIndividual, availableCountGroup);
 				return true; // select it
 			}
 		}
