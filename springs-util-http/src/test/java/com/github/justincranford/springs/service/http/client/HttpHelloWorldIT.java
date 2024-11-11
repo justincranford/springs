@@ -25,9 +25,9 @@ public class HttpHelloWorldIT extends AbstractIT {
 			() -> RestTemplateUtil.plainGet(httpRestTemplate(), httpsBaseUrl() + HelloWorldController.Constants.PATH, String.class)
 		)
 		.isInstanceOf(ResourceAccessException.class)
-		.hasMessage("I/O error on GET request for \"" + httpsBaseUrl() + HelloWorldController.Constants.PATH + "\": Unsupported or unrecognized SSL message")
+		.hasMessage("I/O error on GET request for \"" + httpsBaseUrl() + HelloWorldController.Constants.PATH + "\": Unrecognized SSL message, plaintext connection?")
 		.cause()
 		.isInstanceOf(SSLException.class)
-		.hasMessage("Unsupported or unrecognized SSL message");
+		.hasMessage("Unrecognized SSL message, plaintext connection?"); // Unsupported or unrecognized SSL message
 	}
 }
