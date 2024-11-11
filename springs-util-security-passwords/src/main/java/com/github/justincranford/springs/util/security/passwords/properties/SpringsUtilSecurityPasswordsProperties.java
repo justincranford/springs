@@ -46,9 +46,14 @@ public class SpringsUtilSecurityPasswordsProperties {
     @AllArgsConstructor
     public static class Properties {
         @NotNull
-        @Size(min=0)
+        @Size(min=1)
         @Builder.Default
         private String firsts = PasswordConstraintsValues.FIRSTS_DEFAULT;
+
+        @NotNull
+        @Size(min=1)
+        @Builder.Default
+        private String lasts = PasswordConstraintsValues.LASTS_DEFAULT;
 
         @NotNull
         @Size(min=0)

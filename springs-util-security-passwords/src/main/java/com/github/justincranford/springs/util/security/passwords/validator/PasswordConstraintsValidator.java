@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings({"nls", "boxing"})
 public class PasswordConstraintsValidator implements ConstraintValidator<PasswordConstraints, String> {
     private Set<Integer> firsts;
+    private Set<Integer> lasts;
     private Set<Integer> uppers;
     private Set<Integer> lowers;
     private Set<Integer> digits;
@@ -39,6 +40,7 @@ public class PasswordConstraintsValidator implements ConstraintValidator<Passwor
     @Override
     public void initialize(final PasswordConstraints constraintAnnotation) {
         this.firsts     = constraintAnnotation.firsts().codePoints().boxed().collect(Collectors.toSet());
+        this.lasts      = constraintAnnotation.lasts().codePoints().boxed().collect(Collectors.toSet());
         this.uppers     = constraintAnnotation.uppers().codePoints().boxed().collect(Collectors.toSet());
         this.lowers     = constraintAnnotation.lowers().codePoints().boxed().collect(Collectors.toSet());
         this.digits     = constraintAnnotation.digits().codePoints().boxed().collect(Collectors.toSet());
@@ -80,6 +82,8 @@ public class PasswordConstraintsValidator implements ConstraintValidator<Passwor
 
 		if (!this.firsts.contains(passwordCodePoints.get(0))) {
    			return throwOrFalse(throwException, "Password violates first constraint");
+        } else if (!this.lasts.contains(passwordCodePoints.getLast())) {
+   			return throwOrFalse(throwException, "Password violates last constraint");
         }
 
 		int upperCount = 0, lowerCount = 0, digitCount = 0, specialCount = 0, whitespaceCount = 0, consecutiveRepeats = 0;

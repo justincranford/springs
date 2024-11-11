@@ -22,7 +22,7 @@ import jakarta.validation.ConstraintValidatorContext;
 public class PasswordGeneratorTest {
     private static final ConstraintValidatorContext CONSTRAINT_VALIDATOR_CONTEXT = Mockito.mock(ConstraintValidatorContext.class);
 
-    @RepeatedTest(10)
+    @RepeatedTest(1000)
     public void testGeneratePassword_withMockedPasswordConstraints() {
 		final SpringsUtilSecurityPasswordsProperties.Properties properties = new SpringsUtilSecurityPasswordsProperties.Properties();
         final PasswordConstraints passwordConstraints = constraints(properties);

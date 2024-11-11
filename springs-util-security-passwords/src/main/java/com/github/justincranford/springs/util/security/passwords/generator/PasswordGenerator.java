@@ -39,30 +39,40 @@ public class PasswordGenerator {
 
 		final int           maxAnywhereRepeats = constraints.maxAnywhereRepeats();
 		final AtomicInteger maxFirsts          = new AtomicInteger(1);                           // group count instance needs to be shared by all entries in availableFirstsCounts
+		final AtomicInteger maxLasts           = new AtomicInteger(1);                           // group count instance needs to be shared by all entries in availableLastCounts
 		final AtomicInteger maxUppers          = new AtomicInteger(constraints.maxUppers());     // group count instance needs to be shared by all entries in availableUppersCounts
 		final AtomicInteger maxLowers          = new AtomicInteger(constraints.maxLowers());     // group count instance needs to be shared by all entries in availableLowersCounts
 		final AtomicInteger maxDigits          = new AtomicInteger(constraints.maxDigits());     // group count instance needs to be shared by all entries in availableDigitsCounts
 		final AtomicInteger maxSpecials        = new AtomicInteger(constraints.maxSpecials());   // group count instance needs to be shared by all entries in availableSpecialsCounts
 		final AtomicInteger maxWhitespace      = new AtomicInteger(constraints.maxWhitespace()); // group count instance needs to be shared by all entries in availableWhitespaceCounts
 		final List<Integer> firsts             =     constraints.firsts().codePoints().boxed().toList();
+		final List<Integer> lasts              =      constraints.lasts().codePoints().boxed().toList();
 		final List<Integer> uppers             =     constraints.uppers().codePoints().boxed().toList();
 		final List<Integer> lowers             =     constraints.lowers().codePoints().boxed().toList();
 		final List<Integer> digits             =     constraints.digits().codePoints().boxed().toList();
 		final List<Integer> specials           =   constraints.specials().codePoints().boxed().toList();
 		final List<Integer> whitespace         = constraints.whitespace().codePoints().boxed().toList();
 		final Map<Integer, List<AtomicInteger>> availableFirstsCounts     =     firsts.stream().collect(Collectors.toMap(p -> p, p -> List.of(new AtomicInteger(maxAnywhereRepeats), maxFirsts),     (e1, e2) -> e1, LinkedHashMap::new));
+		final Map<Integer, List<AtomicInteger>> availableLastsCounts      =      lasts.stream().collect(Collectors.toMap(p -> p, p -> List.of(new AtomicInteger(maxAnywhereRepeats), maxLasts),      (e1, e2) -> e1, LinkedHashMap::new));
 		final Map<Integer, List<AtomicInteger>> availableUppersCounts     =     uppers.stream().collect(Collectors.toMap(p -> p, p -> List.of(new AtomicInteger(maxAnywhereRepeats), maxUppers),     (e1, e2) -> e1, LinkedHashMap::new));
 		final Map<Integer, List<AtomicInteger>> availableLowersCounts     =     lowers.stream().collect(Collectors.toMap(p -> p, p -> List.of(new AtomicInteger(maxAnywhereRepeats), maxLowers),     (e1, e2) -> e1, LinkedHashMap::new));
         final Map<Integer, List<AtomicInteger>> availableDigitsCounts     =     digits.stream().collect(Collectors.toMap(p -> p, p -> List.of(new AtomicInteger(maxAnywhereRepeats), maxDigits),     (e1, e2) -> e1, LinkedHashMap::new));
         final Map<Integer, List<AtomicInteger>> availableSpecialsCounts   =   specials.stream().collect(Collectors.toMap(p -> p, p -> List.of(new AtomicInteger(maxAnywhereRepeats), maxSpecials),   (e1, e2) -> e1, LinkedHashMap::new));
         final Map<Integer, List<AtomicInteger>> availableWhitespaceCounts = whitespace.stream().collect(Collectors.toMap(p -> p, p -> List.of(new AtomicInteger(maxAnywhereRepeats), maxWhitespace), (e1, e2) -> e1, LinkedHashMap::new));
 
-    	final int totalCodePoints = SecureRandomUtil.SECURE_RANDOM.nextInt(constraints.minLength(), constraints.maxLength());
+    	final int totalCodePoints = SecureRandomUtil.SECURE_RANDOM.nextInt(constraints.minLength(), constraints.maxLength() + 1);
 		final List<Integer> selectedCodePoints = new ArrayList<>(totalCodePoints);
 		selectCharacters(selectedCodePoints, availableFirstsCounts, 1, uppers, lowers, digits, specials, whitespace);
+		selectCharacters(selectedCodePoints, availableLastsCounts,  1, uppers, lowers, digits, specials, whitespace);
 
 		final Integer selectedFirstCodePoint = selectedCodePoints.getFirst();
+		log.info("selectedFirstCodePoint: {}", selectedFirstCodePoint);
 		decrementAvailable(selectedFirstCodePoint, availableUppersCounts, availableLowersCounts, availableDigitsCounts, availableSpecialsCounts, availableWhitespaceCounts);
+
+		final Integer selectedLastCodePoint = selectedCodePoints.getLast();
+		log.info("selectedLastCodePoint: {}", selectedLastCodePoint);
+		decrementAvailable(selectedLastCodePoint, availableUppersCounts, availableLowersCounts, availableDigitsCounts, availableSpecialsCounts, availableWhitespaceCounts);
+		System.out.println();
 
 		selectCharacters(selectedCodePoints, availableUppersCounts,     constraints.minUppers(),     uppers, lowers, digits, specials, whitespace);
 		selectCharacters(selectedCodePoints, availableLowersCounts,     constraints.minLowers(),     uppers, lowers, digits, specials, whitespace);
@@ -87,8 +97,10 @@ public class PasswordGenerator {
 
 		log.info("selectedCodePoints: {}", selectedCodePoints);
 		selectedCodePoints.remove(selectedFirstCodePoint); // remove the first occurance of selected first code point
+		selectedCodePoints.remove(selectedLastCodePoint);  // remove the first occurance of selected  last code point
 		Collections.shuffle(selectedCodePoints);
 		selectedCodePoints.addFirst(selectedFirstCodePoint); // insert the selected first code point into the first position
+		selectedCodePoints.addLast(selectedLastCodePoint);   // insert the selected first code point into the  last position
     	log.info("shuffled selectedCodePoints: size: {}, uppers: {}, lowers: {}, digits: {}, specials: {}, whitespace: {}, ints: {}, chars: \"{}\"", selectedCodePoints.size(), count(selectedCodePoints, uppers), count(selectedCodePoints, lowers), count(selectedCodePoints, digits), count(selectedCodePoints, specials), count(selectedCodePoints, whitespace), selectedCodePoints, toString(selectedCodePoints));
         return toString(selectedCodePoints);
     }
