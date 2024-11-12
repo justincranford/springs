@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@SuppressWarnings({"static-method", "hiding", "resource"})
+@SuppressWarnings({"static-method", "resource"})
 public class PskTlsTest {
 	private static final Logger log = LoggerFactory.getLogger(PskTlsTest.class);
 	public static final SecureRandom SECURE_RANDOM = new SecureRandom();
@@ -111,11 +111,11 @@ public class PskTlsTest {
 		private final int port;
 		private final int backlog;
 
-		public PskTlsServer(final boolean useTlsPsk, final String address, final int port, final int backlog) {
-			this.useTlsPsk = useTlsPsk;
-			this.address = address;
-			this.port = port;
-			this.backlog = backlog;
+		public PskTlsServer(final boolean _useTlsPsk, final String _address, final int _port, final int _backlog) {
+			this.useTlsPsk = _useTlsPsk;
+			this.address = _address;
+			this.port = _port;
+			this.backlog = _backlog;
 		}
 		public void listen(final CountDownLatch countDownLatch) throws Exception {
 	        try (ServerSocket serverSocket = new ServerSocket(this.port, this.backlog, InetAddress.getByName(this.address))) {
@@ -174,9 +174,9 @@ public class PskTlsTest {
 	public static class TlsPskIdentity implements TlsPSKIdentity {
         private final byte[] identity;
         private final byte[] psk;
-        public TlsPskIdentity(final byte[] pskIdentity, final byte[] psk) {
-        	this.identity = pskIdentity;
-        	this.psk = psk;
+        public TlsPskIdentity(final byte[] _identity, final byte[] _psk) {
+        	this.identity = _identity;
+        	this.psk = _psk;
         }
 	    @Override public byte[] getPSKIdentity() { return this.identity.clone(); }
 	    @Override public byte[] getPSK() { return this.psk.clone(); }
@@ -186,7 +186,7 @@ public class PskTlsTest {
 
 	public static class TlsPskIdentityManager implements TlsPSKIdentityManager {
 		private final TlsPskIdentity tlsPskIdentity;
-		public TlsPskIdentityManager(final TlsPskIdentity tlsPskIdentity) { this.tlsPskIdentity = tlsPskIdentity; }
+		public TlsPskIdentityManager(final TlsPskIdentity _tlsPskIdentity) { this.tlsPskIdentity = _tlsPskIdentity; }
 	    @Override
 	    public byte[] getHint() { return this.tlsPskIdentity.getPSKIdentity(); }
 	    @Override

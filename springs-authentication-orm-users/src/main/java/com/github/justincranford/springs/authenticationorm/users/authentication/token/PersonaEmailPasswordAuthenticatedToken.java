@@ -4,15 +4,14 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonaDetails;
 
-@SuppressWarnings({"hiding"})
 public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 1L;
 
 	private final PersonaDetails personaDetails;
-	public PersonaEmailPasswordAuthenticatedToken(final PersonaDetails personaDetails) {
-		super(personaDetails.getAuthorities());
+	public PersonaEmailPasswordAuthenticatedToken(final PersonaDetails _personaDetails) {
+		super(_personaDetails.getAuthorities());
 		super.setAuthenticated(true);
-		this.personaDetails = personaDetails;
+		this.personaDetails = _personaDetails;
 	}
 
 	@Override

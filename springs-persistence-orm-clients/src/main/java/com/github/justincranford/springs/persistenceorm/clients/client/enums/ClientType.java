@@ -1,6 +1,5 @@
 package com.github.justincranford.springs.persistenceorm.clients.client.enums;
 
-@SuppressWarnings({"hiding"})
 public enum ClientType {
     OWN("Owner", "Propriétaire", "Propietario", "Individual or entity who owns the property or business"),
     EMP("Employee", "Employé", "Empleado", "Staff member or worker"),
@@ -43,11 +42,11 @@ public enum ClientType {
     private final String spanish;
     private final String description;
 
-    ClientType(final String english, final String french, final String spanish, final String description) {
-        this.english = english;
-        this.french = french;
-        this.spanish = spanish;
-        this.description = description;
+    ClientType(final String _english, final String _french, final String _spanish, final String _description) {
+        this.english = _english;
+        this.french = _french;
+        this.spanish = _spanish;
+        this.description = _description;
     }
 
 	public String getEnglishName() {

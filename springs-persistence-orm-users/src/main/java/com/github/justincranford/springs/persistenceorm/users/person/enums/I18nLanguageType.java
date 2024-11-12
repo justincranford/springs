@@ -1,6 +1,5 @@
 package com.github.justincranford.springs.persistenceorm.users.person.enums;
 
-@SuppressWarnings({"hiding"})
 public enum I18nLanguageType {
     EN(1_500_000_000L, "English", "English", "Français", "Inglés", "Global lingua franca"),
     ZH(1_200_000_000L, "中文", "Chinese", "Chinois", "Chino", "Most spoken language"),
@@ -85,13 +84,13 @@ public enum I18nLanguageType {
     private final String description;
     private final String spanishTranslation;
 
-    I18nLanguageType(final long count, final String localeValue, final String english, final String french, final String spanish, final String description) {
-        this.count = count;
-        this.localeValue = localeValue;
-        this.english = english;
-        this.french = french;
-        this.description = description;
-        this.spanishTranslation = spanish;
+    I18nLanguageType(final long _count, final String _localeValue, final String _english, final String _french, final String _spanish, final String _description) {
+        this.count = _count;
+        this.localeValue = _localeValue;
+        this.english = _english;
+        this.french = _french;
+        this.description = _description;
+        this.spanishTranslation = _spanish;
     }
 
     public long getCount() {

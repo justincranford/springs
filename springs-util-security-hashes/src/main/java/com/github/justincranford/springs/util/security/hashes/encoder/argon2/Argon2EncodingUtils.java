@@ -29,7 +29,6 @@ import org.bouncycastle.util.Arrays;
  * @author Simeon Macke
  * @since 5.3
  */
-@SuppressWarnings({"hiding"})
 final class Argon2EncodingUtils {
 
 	private static final Base64.Encoder b64encoder = Base64.getEncoder().withoutPadding();
@@ -144,25 +143,25 @@ final class Argon2EncodingUtils {
 
 		private Argon2Parameters parameters;
 
-		Argon2Hash(byte[] hash, Argon2Parameters parameters) {
-			this.hash = Arrays.clone(hash);
-			this.parameters = parameters;
+		Argon2Hash(byte[] _hash, Argon2Parameters _parameters) {
+			this.hash = Arrays.clone(_hash);
+			this.parameters = _parameters;
 		}
 
 		public byte[] getHash() {
 			return Arrays.clone(this.hash);
 		}
 
-		public void setHash(byte[] hash) {
-			this.hash = Arrays.clone(hash);
+		public void setHash(byte[] _hash) {
+			this.hash = Arrays.clone(_hash);
 		}
 
 		public Argon2Parameters getParameters() {
 			return this.parameters;
 		}
 
-		public void setParameters(Argon2Parameters parameters) {
-			this.parameters = parameters;
+		public void setParameters(Argon2Parameters _parameters) {
+			this.parameters = _parameters;
 		}
 
 	}

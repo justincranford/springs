@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @ComponentScan(basePackageClasses = { SpringsServiceChatbotClient.class })
-@SuppressWarnings({"static-method", "hiding"})
+@SuppressWarnings({"static-method"})
 @Slf4j
 public class SpringsServiceChatbotClientConfiguration {
 	@Bean
@@ -82,8 +82,8 @@ public class SpringsServiceChatbotClientConfiguration {
 	        private final ClientHttpResponse response;
 	        private byte[] body;
 
-			public BufferedClientHttpResponse(ClientHttpResponse response) {
-	            this.response = response;
+			public BufferedClientHttpResponse(ClientHttpResponse _response) {
+	            this.response = _response;
 	        }
 
 	        @Override

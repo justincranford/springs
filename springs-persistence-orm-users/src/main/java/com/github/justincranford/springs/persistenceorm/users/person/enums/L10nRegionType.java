@@ -1,6 +1,5 @@
 package com.github.justincranford.springs.persistenceorm.users.person.enums;
 
-@SuppressWarnings({"hiding"})
 public enum L10nRegionType {
     CN(1_410_000_000L, "中国", "China", "Chine", "China", "A country in East Asia."),
     IN(1_400_000_000L, "भारत", "India", "Inde", "India", "A country in South Asia."),
@@ -54,13 +53,13 @@ public enum L10nRegionType {
     private final String spanish;
     private final String description;
 
-    L10nRegionType(final long count, final String localeValue, final String english, final String french, final String spanish, final String description) {
-        this.count = count;
-        this.localeValue = localeValue;
-        this.english = english;
-        this.french = french;
-        this.spanish = spanish;
-        this.description = description;
+    L10nRegionType(final long _count, final String _localeValue, final String _english, final String _french, final String _spanish, final String _description) {
+        this.count = _count;
+        this.localeValue = _localeValue;
+        this.english = _english;
+        this.french = _french;
+        this.spanish = _spanish;
+        this.description = _description;
     }
 
     public long getCount() {

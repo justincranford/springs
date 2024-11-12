@@ -1,6 +1,5 @@
 package com.github.justincranford.springs.persistenceorm.users.person.enums;
 
-@SuppressWarnings({"hiding"})
 public enum SuffixType {
     JR("Junior"),
     SR("Senior"),
@@ -27,8 +26,8 @@ public enum SuffixType {
 
     private final String value;
 
-    SuffixType(final String value) {
-        this.value = value;
+    SuffixType(final String _value) {
+        this.value = _value;
     }
 
     public String getvalue() {

@@ -1,6 +1,5 @@
 package com.github.justincranford.springs.persistenceorm.users.person.enums;
 
-@SuppressWarnings({"hiding"})
 public enum PersonStatusType { 
     ACT("Activated", "Activé", "Activado", "The account is active and fully functional."),
     SUS("Suspended", "Suspendu", "Suspendido", "The account is temporarily suspended."),
@@ -37,11 +36,11 @@ public enum PersonStatusType {
     private final String spanish;
     private final String description;
 
-    PersonStatusType(final String english, final String french, final String spanish, final String description) {
-        this.english = english;
-        this.french = french;
-        this.spanish = spanish;
-        this.description = description;
+    PersonStatusType(final String _english, final String _french, final String _spanish, final String _description) {
+        this.english = _english;
+        this.french = _french;
+        this.spanish = _spanish;
+        this.description = _description;
     }
 
     public String getEnglish() {

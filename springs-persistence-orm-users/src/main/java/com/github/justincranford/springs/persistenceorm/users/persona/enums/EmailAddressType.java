@@ -1,6 +1,5 @@
 package com.github.justincranford.springs.persistenceorm.users.persona.enums;
 
-@SuppressWarnings({"hiding"})
 public enum EmailAddressType {
     PER("Personal", "Personnel", "Personal", "Personal email address"),
     WRK("Work", "Professionnel", "Trabajo", "Work email address"),
@@ -40,11 +39,11 @@ public enum EmailAddressType {
     private final String spanish;
     private final String description;
 
-    EmailAddressType(final String english, final String french, final String spanish, final String description) { 
-        this.english = english;
-        this.french = french;
-        this.spanish = spanish;
-        this.description = description;
+    EmailAddressType(final String _english, final String _french, final String _spanish, final String _description) { 
+        this.english = _english;
+        this.french = _french;
+        this.spanish = _spanish;
+        this.description = _description;
     }
 
 	public String getEnglishName() {

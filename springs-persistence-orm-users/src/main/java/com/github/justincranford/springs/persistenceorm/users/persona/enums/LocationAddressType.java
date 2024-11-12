@@ -1,6 +1,5 @@
 package com.github.justincranford.springs.persistenceorm.users.persona.enums;
 
-@SuppressWarnings({"hiding"})
 public enum LocationAddressType {
     WRK("Work", "?", "?", "Work office"),
     HME("Home", "Domicile", "Casa", "Primary residence"),
@@ -49,11 +48,11 @@ public enum LocationAddressType {
     private final String spanish;
     private final String description;
 
-    LocationAddressType(final String english, final String french, final String spanish, final String description) {
-        this.english = english;
-        this.french = french;
-        this.spanish = spanish;
-        this.description = description;
+    LocationAddressType(final String _english, final String _french, final String _spanish, final String _description) {
+        this.english = _english;
+        this.french = _french;
+        this.spanish = _spanish;
+        this.description = _description;
     }
 
 	public String getEnglishName() {

@@ -3,16 +3,15 @@ package com.github.justincranford.springs.authenticationorm.users.authentication
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.util.Assert;
 
-@SuppressWarnings({"hiding"})
 public class PersonUsernamePasswordUnauthenticatedToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 1L;
 
 	private final String username;
 	private String password;
-	public PersonUsernamePasswordUnauthenticatedToken(final String username, final String password) {
+	public PersonUsernamePasswordUnauthenticatedToken(final String _username, final String _password) {
 		super(null);
-		this.username = username;
-		this.password = password;
+		this.username = _username;
+		this.password = _password;
 		super.setAuthenticated(false);
 	}
 
