@@ -13,7 +13,7 @@ public class EncodeUtil {
 	public static List<String> encode(final PasswordEncoder encoder, final List<String> values) {
 		final List<Future<String>> futureEncodedPasswords = new ArrayList<>(values.size());
 		for (final String password : values) {
-			futureEncodedPasswords.add(ThreadUtil.async(() -> encoder.encode(password)));
+			futureEncodedPasswords.add(ThreadUtil.supplyAsync(() -> encoder.encode(password)));
 		}
 		final List<String> encodedPasswords = new ArrayList<>(values.size());
 		try {

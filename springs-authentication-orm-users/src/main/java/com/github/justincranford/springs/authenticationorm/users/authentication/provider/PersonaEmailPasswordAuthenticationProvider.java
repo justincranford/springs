@@ -1,10 +1,10 @@
 package com.github.justincranford.springs.authenticationorm.users.authentication.provider;
 
 import static com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.AuthenticationExceptionUtil.logAndCreate;
+import static org.slf4j.event.Level.DEBUG;
+import static org.slf4j.event.Level.TRACE;
 
 import org.apache.logging.log4j.util.Strings;
-import static org.slf4j.event.Level.TRACE;
-import static org.slf4j.event.Level.DEBUG;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,8 +15,9 @@ import org.springframework.stereotype.Component;
 
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaPasswordBlankNotAllowedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaPasswordNoMatchException;
-import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaTokenNullNotAllowedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaTokenClassNotSupportedException;
+import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaTokenNullNotAllowedException;
+import com.github.justincranford.springs.authenticationorm.users.authentication.service.PasswordUpgradeEncodingService;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.PersonaLookupService;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonaDetails;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonaEmailPasswordAuthenticatedToken;
@@ -31,6 +32,8 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 	private PersonaLookupService personaLookupService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordUpgradeEncodingService upgradeEncodingService;
 
     @Override
     public boolean supports(final Class<?> clazz) {
@@ -64,7 +67,8 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 		final PersonaDetails actualPersonaDetails = this.personaLookupService.loadUserByUsername(unauthenticatedRawEmail);
 		final String actualEncodedPassword = actualPersonaDetails.getPassword();
 		if (this.passwordEncoder.matches(unauthenticatedPassword, actualEncodedPassword)) {
-	    	log.trace("Persona password matched for email [{}]", unauthenticatedRawEmail);
+	    	log.trace("Person password matched for persona email [{}]", unauthenticatedRawEmail);
+			this.upgradeEncodingService.async(actualPersonaDetails.personOrm().username(), unauthenticatedPassword, actualEncodedPassword);
 			return new PersonaEmailPasswordAuthenticatedToken(actualPersonaDetails);
         }
 		throw logAndCreate(PersonaPasswordNoMatchException.class, DEBUG, String.format("Persona password not matched for email [%s]", unauthenticatedRawEmail));

@@ -4,12 +4,15 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaEmailNotFoundException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonaDetails;
+import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.EmailAddressRfc5321Orm;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
@@ -20,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class PersonaLookupService implements UserDetailsService {
+public class PersonaLookupService implements UserDetailsService, UserDetailsPasswordService {
     @Autowired
     private PersonaOrmRepository personaOrmRepository;
     private EmailAddressRfc5321Orm.EmailConverter emailConverter = new EmailAddressRfc5321Orm.EmailConverter(); 
@@ -51,4 +54,14 @@ public class PersonaLookupService implements UserDetailsService {
     	log.debug("Persona not found by email [{}]", unauthenticatedConvertedEmail);
     	throw new PersonaEmailNotFoundException("Invalid email");
     }
+
+    @Transactional
+	@Override
+	public PersonaDetails updatePassword(final UserDetails userDetails, final String newPassword) {
+    	if (!(userDetails instanceof PersonaDetails personaDetails)) {
+    		throw new UnsupportedOperationException("UserDetails must be of type PersonaDetails");
+    	}
+    	personaDetails.personOrm().password(PasswordOrm.builder().password(newPassword).build());
+    	return loadUserByUsername(personaDetails.getUsername());
+	}
 }

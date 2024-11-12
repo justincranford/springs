@@ -17,6 +17,7 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonPasswordNoMatchException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonTokenClassNotSupportedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonTokenNullNotAllowedException;
+import com.github.justincranford.springs.authenticationorm.users.authentication.service.PasswordUpgradeEncodingService;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.PersonLookupService;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonDetails;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonUsernamePasswordAuthenticatedToken;
@@ -31,6 +32,8 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
 	private PersonLookupService personLookupService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordUpgradeEncodingService upgradeEncodingService;
 
     @Override
     public boolean supports(final Class<?> clazz) {
@@ -63,7 +66,8 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
 		final PersonDetails actualPersonDetails = this.personLookupService.loadUserByUsername(unauthenticatedUsername);
 		final String actualEncodedPassword = actualPersonDetails.getPassword();
 		if (this.passwordEncoder.matches(unauthenticatedPassword, actualEncodedPassword)) {
-			log.trace("Person password matched for username [{}]", unauthenticatedUsername);
+	    	log.trace("Person password matched for person username [{}]", unauthenticatedUsername);
+			this.upgradeEncodingService.async(actualPersonDetails.personOrm().username(), unauthenticatedPassword, actualEncodedPassword);
 			return new PersonUsernamePasswordAuthenticatedToken(actualPersonDetails);
 		}
 		throw logAndCreate(PersonPasswordNoMatchException.class, DEBUG, String.format("Person password not matched for username [%s]", unauthenticatedUsername));

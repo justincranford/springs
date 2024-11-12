@@ -19,7 +19,7 @@ public class ThreadUtil {
 		return new ForkJoinPool(threads, factory, null, false);
 	}
 
-	public static <T> Future<T> async(final ThrowingSupplier<T> throwingSupplier) {
+	public static <T> Future<T> supplyAsync(final ThrowingSupplier<T> throwingSupplier) {
 		return CompletableFuture.supplyAsync(() -> throwingSupplier.get());
 	}
 

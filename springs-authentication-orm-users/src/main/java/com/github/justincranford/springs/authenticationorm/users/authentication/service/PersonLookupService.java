@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonUsernameNotFoundException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaEmailNotFoundException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonDetails;
+import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
@@ -21,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class PersonLookupService implements UserDetailsService {
+public class PersonLookupService implements UserDetailsService, UserDetailsPasswordService {
 	@Autowired
 	private PersonOrmRepository personOrmRepository;
 
@@ -50,5 +53,20 @@ public class PersonLookupService implements UserDetailsService {
 		final PersonaOrm unauthenticatedPersona = personas.get(0);
 		log.trace("Persona found by person, persona: {}", unauthenticatedPersona);
 		return new PersonDetails(unauthenticatedPerson, unauthenticatedPersona);
+	}
+
+    @Transactional
+	public PersonDetails updatePassword(final String username, final String newEncodedPassword) {
+    	return updatePassword(loadUserByUsername(username), newEncodedPassword);
+	}
+
+    @Transactional
+	@Override
+	public PersonDetails updatePassword(final UserDetails userDetails, final String newEncodedPassword) {
+    	if (!(userDetails instanceof PersonDetails personDetails)) {
+    		throw new UnsupportedOperationException("UserDetails must be of type PersonDetails");
+    	}
+    	personDetails.personOrm().password(PasswordOrm.builder().password(newEncodedPassword).build());
+    	return personDetails;
 	}
 }

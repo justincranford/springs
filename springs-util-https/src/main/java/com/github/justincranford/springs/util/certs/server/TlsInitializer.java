@@ -74,10 +74,10 @@ public class TlsInitializer implements ApplicationContextInitializer<Configurabl
 	        final KeyPair httpsClientRootCaKeyPair = keyPairs.removeFirst();
 	        final KeyPair httpsClientKeyPair       = keyPairs.removeFirst();
 
-			final Future<X509Certificate> futureHttpsServerRootCaCert = ThreadUtil.async(() -> httpsServerRootCaCert(httpsServerRootCaKeyPair));
-			final Future<X509Certificate> futureHttpsServerCert       = ThreadUtil.async(() -> httpsServerCert(httpsServerRootCaKeyPair.getPrivate(), httpsServerKeyPair.getPublic(), sslAutoConfigServerAddress));
-			final Future<X509Certificate> futureHttpsClientRootCaCert = ThreadUtil.async(() -> httpsClientRootCaCert(httpsClientRootCaKeyPair));
-			final Future<X509Certificate> futureHttpsClientCert       = ThreadUtil.async(() -> httpsClientCert(httpsClientRootCaKeyPair.getPrivate(), httpsClientKeyPair.getPublic(), sslAutoConfigClientEmail));
+			final Future<X509Certificate> futureHttpsServerRootCaCert = ThreadUtil.supplyAsync(() -> httpsServerRootCaCert(httpsServerRootCaKeyPair));
+			final Future<X509Certificate> futureHttpsServerCert       = ThreadUtil.supplyAsync(() -> httpsServerCert(httpsServerRootCaKeyPair.getPrivate(), httpsServerKeyPair.getPublic(), sslAutoConfigServerAddress));
+			final Future<X509Certificate> futureHttpsClientRootCaCert = ThreadUtil.supplyAsync(() -> httpsClientRootCaCert(httpsClientRootCaKeyPair));
+			final Future<X509Certificate> futureHttpsClientCert       = ThreadUtil.supplyAsync(() -> httpsClientCert(httpsClientRootCaKeyPair.getPrivate(), httpsClientKeyPair.getPublic(), sslAutoConfigClientEmail));
 
 			final X509Certificate httpsServerRootCaCert = futureHttpsServerRootCaCert.get();
 			final X509Certificate httpsServerCert       = futureHttpsServerCert.get();
