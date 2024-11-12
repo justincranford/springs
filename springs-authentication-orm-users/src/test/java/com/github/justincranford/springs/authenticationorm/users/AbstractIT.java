@@ -32,6 +32,7 @@ import com.github.justincranford.springs.authenticationorm.users.session.Session
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
+import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
 import com.github.justincranford.springs.service.http.client.config.SpringsUtilHttpClientConfiguration;
 import com.github.justincranford.springs.util.certs.client.config.SpringsUtilHttpsClientsConfiguration;
 import com.github.justincranford.springs.util.certs.client.config.SpringsUtilTlsClientsConfiguration;
@@ -73,6 +74,8 @@ public class AbstractIT {
     private SessionOrmRepository sessionOrmRepository;
     @Autowired
     private SpringsPersistenceOrmBaseProperties springsPersistenceOrmBaseProperties;
+    @Autowired
+    private SpringsPersistenceOrmUsersPeopleProperties springsPersistenceOrmUsersPeopleProperties;
     @SpyBean
     private PersonaEmailPasswordAuthenticationProvider personaEmailPasswordAuthenticationProvider;
     @SpyBean
