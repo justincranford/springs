@@ -26,7 +26,7 @@ import com.github.justincranford.springs.util.certs.server.TlsInitializer;
 import com.github.justincranford.springs.util.certs.util.TlsPskUtil;
 
 @Configuration
-@SuppressWarnings({"nls","resource"})
+@SuppressWarnings({"resource"})
 public class SpringsUtilHttpsClientsConfiguration {
 	@Autowired
 	private SslBundles sslBundles;

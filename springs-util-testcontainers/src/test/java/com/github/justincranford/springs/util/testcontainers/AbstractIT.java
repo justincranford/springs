@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @ActiveProfiles({"test"})
 @Slf4j
 @Observed
-@SuppressWarnings({"nls", "static-method", "resource"})
+@SuppressWarnings({"static-method", "resource"})
 public class AbstractIT {
 	@BeforeEach
 	private void beforeEach() {

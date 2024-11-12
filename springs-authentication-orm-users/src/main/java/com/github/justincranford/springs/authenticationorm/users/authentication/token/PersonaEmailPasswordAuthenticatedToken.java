@@ -4,7 +4,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonaDetails;
 
-@SuppressWarnings({"nls","hiding"})
+@SuppressWarnings({"hiding"})
 public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 1L;
 

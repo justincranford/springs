@@ -21,7 +21,6 @@ import lombok.experimental.Accessors;
 @JsonIgnoreProperties
 @NoArgsConstructor
 @ToString(exclude={})
-@SuppressWarnings({"nls"})
 public abstract class Abstract {
 	@Getter(onMethod = @__(@JsonProperty))
 	@Setter

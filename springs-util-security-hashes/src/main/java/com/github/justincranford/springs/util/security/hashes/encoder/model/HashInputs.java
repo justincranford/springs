@@ -9,7 +9,6 @@ import com.github.justincranford.springs.util.basic.StringUtil;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-@SuppressWarnings({"nls"})
 public record HashInputs(
 	@NotNull HashInputConstants hashInputConstants,
 	@NotNull HashInputVariables hashInputVariables

@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings({ "nls" })
 @Slf4j
 public class RestTemplateUtil {
 	private static final JsonFactory JSON_FACTORY = new JsonFactory();

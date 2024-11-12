@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes={SpringsUtilJsonConfiguration.class})
-@SuppressWarnings("nls")
 @Slf4j
 public class SpringsUtilJsonConfigurationTest {
 	private static record Pojo(Integer integer, String string, OffsetDateTime offsetDateTime) { }

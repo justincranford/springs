@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.persistenceorm.users.person.enums;
 
-@SuppressWarnings({"nls", "hiding"})
+@SuppressWarnings({"hiding"})
 public enum I18nLanguageType {
     EN(1_500_000_000L, "English", "English", "Français", "Inglés", "Global lingua franca"),
     ZH(1_200_000_000L, "中文", "Chinese", "Chinois", "Chino", "Most spoken language"),

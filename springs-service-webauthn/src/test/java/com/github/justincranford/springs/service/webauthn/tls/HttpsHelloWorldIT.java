@@ -13,7 +13,6 @@ import com.github.justincranford.springs.service.http.client.RestTemplateUtil;
 import com.github.justincranford.springs.service.http.server.HelloWorldController;
 import com.github.justincranford.springs.service.webauthn.AbstractIT;
 
-@SuppressWarnings({"nls"})
 public class HttpsHelloWorldIT extends AbstractIT {
 	@Test
 	void testHttpFailure() {

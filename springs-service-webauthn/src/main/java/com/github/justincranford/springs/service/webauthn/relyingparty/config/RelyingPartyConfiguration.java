@@ -18,7 +18,6 @@ import com.yubico.webauthn.extension.appid.InvalidAppIdException;
 
 @Configuration
 @Import({CredentialRepositoryFacade.class})
-@SuppressWarnings({"nls"})
 public class RelyingPartyConfiguration {
 	@Value("${server.address}")
 	private String serverAddress;

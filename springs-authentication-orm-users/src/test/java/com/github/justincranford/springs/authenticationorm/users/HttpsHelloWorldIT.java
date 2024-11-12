@@ -12,7 +12,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import com.github.justincranford.springs.service.http.client.RestTemplateUtil;
 import com.github.justincranford.springs.service.http.server.HelloWorldController;
 
-@SuppressWarnings({"nls"})
 public class HttpsHelloWorldIT extends AbstractIT {
 	@Test
 	void testHttpFailure() {

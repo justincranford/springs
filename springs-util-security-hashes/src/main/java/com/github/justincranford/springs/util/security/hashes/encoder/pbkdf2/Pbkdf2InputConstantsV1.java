@@ -19,7 +19,6 @@ import lombok.experimental.Accessors;
 
 @Getter
 @Accessors(fluent=true)
-@SuppressWarnings({"nls"})
 public class Pbkdf2InputConstantsV1 extends HashInputConstants {
 	@Min(Constraints.MIN_ITER) private int iterations;
 

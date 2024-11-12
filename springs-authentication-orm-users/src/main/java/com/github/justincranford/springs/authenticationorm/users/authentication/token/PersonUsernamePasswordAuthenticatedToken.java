@@ -4,7 +4,6 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonDetails;
 
-@SuppressWarnings({"nls"})
 public class PersonUsernamePasswordAuthenticatedToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 1L;
 

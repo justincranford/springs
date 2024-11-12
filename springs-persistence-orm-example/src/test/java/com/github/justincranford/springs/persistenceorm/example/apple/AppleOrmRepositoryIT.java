@@ -20,7 +20,6 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings("nls")
 public class AppleOrmRepositoryIT extends AbstractIT {
 	private static final int appleOffsetStart = 1000000;
 	private static final String description = "description";

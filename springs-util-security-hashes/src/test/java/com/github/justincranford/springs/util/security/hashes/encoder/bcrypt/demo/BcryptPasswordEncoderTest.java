@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls", "static-method", "boxing"})
+@SuppressWarnings({"static-method"})
 public class BcryptPasswordEncoderTest {
 	private static final int REPEATS = 3;
 

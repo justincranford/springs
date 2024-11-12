@@ -9,7 +9,6 @@ import com.github.justincranford.springs.util.security.hashes.asn1.Asn1Util;
 import com.github.justincranford.springs.util.security.hashes.encoder.model.HashAlgorithm;
 import com.github.justincranford.springs.util.security.hashes.mac.HmacAlgorithm;
 
-@SuppressWarnings({"nls"})
 public enum Pbkdf2AlgorithmV1 implements HashAlgorithm {
 	PBKDF2WithHmacMD5       ("PBKDF2withHmacMD5",        HmacAlgorithm.HmacMD5),
 	PBKDF2WithHmacSHA1      ("PBKDF2withHmacSHA1",       HmacAlgorithm.HmacSHA1),

@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @AllArgsConstructor
 @Slf4j
-@SuppressWarnings("nls")
 public class EntityListener {
 	private final ObjectMapper objectMapper;
 

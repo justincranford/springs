@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Accessors(fluent = true)
 @ActiveProfiles({"test"})
-@SuppressWarnings({"nls"})
 @Slf4j
 public class AbstractIT {
 	private static final AtomicBoolean BEFORE_EACH_LOG_ONCE = new AtomicBoolean(true);

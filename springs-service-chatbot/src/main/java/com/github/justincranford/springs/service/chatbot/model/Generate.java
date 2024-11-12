@@ -14,7 +14,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 public class Generate {
-	@SuppressWarnings({ "nls" })
 	public static final String URL = "/api/generate";
 
 	@Getter(onMethod = @__(@JsonProperty))

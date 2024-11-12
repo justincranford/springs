@@ -18,7 +18,6 @@ import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping(value="/")
-@SuppressWarnings({"nls"})
 public class AuthenticationController {
 	@Autowired
 	private AuthenticationService authenticationService;

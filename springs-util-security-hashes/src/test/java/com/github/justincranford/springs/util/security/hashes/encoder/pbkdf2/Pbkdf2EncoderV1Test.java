@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
  * Quadratic sizing is good. Linear sizing is bad.
  */
 @Slf4j
-@SuppressWarnings({"nls", "static-method"})
+@SuppressWarnings({"static-method"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class Pbkdf2EncoderV1Test {
 	private static final int HASH_REPEATS = 3; // repeat hashing in each test; 1 unique output means deterministic, N different outputs means non-deterministic

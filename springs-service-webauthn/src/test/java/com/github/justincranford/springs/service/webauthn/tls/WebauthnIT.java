@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @Slf4j
-@SuppressWarnings({"nls"})
 public class WebauthnIT extends AbstractIT {
     @Value("classpath:non-resident-registration-start-client.json")
     private Resource nonResidentRegistrationStartClientJson;

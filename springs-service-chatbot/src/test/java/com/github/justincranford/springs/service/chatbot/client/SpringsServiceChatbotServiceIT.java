@@ -46,7 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
-@SuppressWarnings({"nls", "resource" })
+@SuppressWarnings({"resource" })
 public class SpringsServiceChatbotServiceIT extends AbstractIT {
 	/**
 	 * True => Automatically start and use an ephemeral ollama container

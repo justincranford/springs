@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Transactional
 @Slf4j
-@SuppressWarnings({"nls", "unused", "rawtypes"})
+@SuppressWarnings({"unused", "rawtypes"})
 public class SessionPojoRepositoryIT extends AbstractIT {
 	private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 	private static final String INDEX_NAME = FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME;

@@ -12,7 +12,6 @@ import com.github.justincranford.springs.persistenceorm.clients.properties.Sprin
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls"})
 public class ClientsPropertiesIT extends AbstractIT {
 	@Test
 	public void verifyClientsPropertiesLoaded() {

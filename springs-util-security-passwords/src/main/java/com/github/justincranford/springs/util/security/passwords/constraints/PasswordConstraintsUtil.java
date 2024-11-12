@@ -6,7 +6,6 @@ import java.lang.reflect.Proxy;
 
 import com.github.justincranford.springs.util.security.passwords.properties.SpringsUtilSecurityPasswordsProperties;
 
-@SuppressWarnings({"nls", "boxing"})
 public class PasswordConstraintsUtil {
 	public static PasswordConstraints proxy(final SpringsUtilSecurityPasswordsProperties.Properties properties) {
 	    return (PasswordConstraints) Proxy.newProxyInstance(

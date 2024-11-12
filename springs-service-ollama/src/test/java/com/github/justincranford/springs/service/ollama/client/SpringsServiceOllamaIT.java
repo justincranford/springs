@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
-@SuppressWarnings({"nls"})
 public class SpringsServiceOllamaIT extends AbstractIT {
 	private static final boolean USE_TEST_CONTAINER = false;
 	private final List<Message> messages = List.of(

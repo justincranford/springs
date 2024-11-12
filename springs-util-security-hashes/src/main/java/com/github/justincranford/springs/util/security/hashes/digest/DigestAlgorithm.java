@@ -10,7 +10,7 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.security.hashes.asn1.Asn1Util;
 
-@SuppressWarnings({"nls", "hiding"})
+@SuppressWarnings({"hiding"})
 public enum DigestAlgorithm {
 	MD2       ("MD2",         I.P61,  16, Oid.MD2),
 	MD4       ("MD4",         I.P61,  16, Oid.MD4),

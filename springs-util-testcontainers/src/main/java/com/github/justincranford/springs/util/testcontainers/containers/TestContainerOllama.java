@@ -11,7 +11,7 @@ import org.testcontainers.utility.DockerImageName;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls", "resource"})
+@SuppressWarnings({"resource"})
 public class TestContainerOllama extends AbstractTestContainer<OllamaContainer> {
 	public static final String DOCKER_IMAGE_NAME = "ollama/ollama:0.3.12"; // Last checked on 2024-09-25
 //	public static final String LOCAL_DOCKER_IMAGE_NAME = "ollama-custom";

@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @ComponentScan(basePackageClasses = { SpringsServiceChatbotClient.class })
-@SuppressWarnings({"nls", "static-method", "hiding"})
+@SuppressWarnings({"static-method", "hiding"})
 @Slf4j
 public class SpringsServiceChatbotClientConfiguration {
 	@Bean

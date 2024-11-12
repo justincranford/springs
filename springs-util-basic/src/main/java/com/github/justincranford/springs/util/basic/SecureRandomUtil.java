@@ -8,7 +8,6 @@ import java.util.List;
 
 import com.github.justincranford.springs.util.basic.Base64Util.EncoderDecoder;
 
-@SuppressWarnings({"nls"})
 public class SecureRandomUtil  {
 	public static final SecureRandom SECURE_RANDOM = new SecureRandom();
 

@@ -19,7 +19,6 @@ import org.springframework.boot.ssl.SslBundle;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.google.common.collect.Sets;
 
-@SuppressWarnings("nls")
 public class TlsUtil {
 	public static final String TLS_PROTOCOL = "TLSv1.3";
 

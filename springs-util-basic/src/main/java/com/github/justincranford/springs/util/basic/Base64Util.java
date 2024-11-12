@@ -3,7 +3,6 @@ package com.github.justincranford.springs.util.basic;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-@SuppressWarnings({"nls"})
 public class Base64Util {
 	public static final EncoderDecoder STD    = new EncoderDecoder(Constants.STD_ENCODER,    Constants.STD_DECODER,  "Base64");
 	public static final EncoderDecoder MIME32 = new EncoderDecoder(Constants.MIME32_ENCODER, Constants.MIME_DECODER, "Base64Mime32");

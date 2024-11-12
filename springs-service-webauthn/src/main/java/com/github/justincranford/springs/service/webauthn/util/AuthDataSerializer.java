@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.yubico.webauthn.data.AuthenticatorData;
 
-@SuppressWarnings({"nls"})
 public class AuthDataSerializer extends JsonSerializer<AuthenticatorData> {
 	@Override
 	public void serialize(AuthenticatorData value, JsonGenerator gen, SerializerProvider serializers)				throws IOException {

@@ -15,7 +15,7 @@ import com.github.justincranford.springs.util.security.hashes.properties.Springs
 import com.github.justincranford.springs.util.security.hashes.properties.SpringsUtilSecurityHashesProperties.Encoders;
 
 @Configuration
-@SuppressWarnings({"nls", "static-method", "boxing"})
+@SuppressWarnings({"static-method"})
 public class EncodersConfiguration {
 	@Bean
 	public PasswordEncoder passwordEncoder(final ValueEncoders valueEncoders) {

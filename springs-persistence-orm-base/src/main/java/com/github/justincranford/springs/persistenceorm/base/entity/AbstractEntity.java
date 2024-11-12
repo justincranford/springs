@@ -45,7 +45,6 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Accessors(fluent=true)
 @EntityListeners({AuditingEntityListener.class,EntityListener.class})
-@SuppressWarnings("nls")
 @Slf4j
 public class AbstractEntity {
 	public static final String SQL_WHERE_CLAUSE = "(pre_delete_date_time IS NULL OR pre_delete_date_time < CURRENT_TIMESTAMP)";

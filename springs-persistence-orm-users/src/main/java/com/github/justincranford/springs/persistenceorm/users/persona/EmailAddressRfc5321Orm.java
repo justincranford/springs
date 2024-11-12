@@ -37,7 +37,6 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-@SuppressWarnings("nls")
 public class EmailAddressRfc5321Orm {
 	@EmailRfc5321 // N.B. applied before converter
 	@Convert(converter=EmailConverter.class) // N.B. applied after validator

@@ -47,7 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 })
 @RequiredArgsConstructor
 @Slf4j
-@SuppressWarnings({"nls", "static-method"})
+@SuppressWarnings({"static-method"})
 public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
 	@Autowired
 	private final PersonaEmailPasswordAuthenticationProvider personaEmailPasswordAuthenticationProvider;

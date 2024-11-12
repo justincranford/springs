@@ -24,7 +24,6 @@ import com.github.justincranford.springs.util.security.hashes.mac.HmacAlgorithm;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@SuppressWarnings({"nls"})
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class PepperedPbkdf2EncoderV1TestInstances {
 	public static final class Random {

@@ -18,7 +18,6 @@ import lombok.experimental.Accessors;
 @RequiredArgsConstructor
 @Getter
 @Accessors(fluent=true)
-@SuppressWarnings({"nls"})
 public class PersonDetails implements UserDetails {
 	private static final long serialVersionUID = 1L;
 	private final PersonOrm personOrm;

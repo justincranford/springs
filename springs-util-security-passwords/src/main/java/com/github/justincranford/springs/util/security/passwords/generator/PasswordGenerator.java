@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 @Slf4j
-@SuppressWarnings({"nls", "boxing", "unchecked"})
+@SuppressWarnings({"unchecked"})
 public class PasswordGenerator {
 	private final AtomicInteger generateCount = new AtomicInteger(1);
 	private final PasswordConstraints constraints;

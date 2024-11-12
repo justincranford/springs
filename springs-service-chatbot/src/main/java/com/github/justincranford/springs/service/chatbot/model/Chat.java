@@ -13,7 +13,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
-@SuppressWarnings({"nls"})
 public class Chat {
 	public static final String URL = "/api/chat";
 

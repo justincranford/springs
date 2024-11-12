@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-@SuppressWarnings({"nls"})
 public class PersonLookupService implements UserDetailsService {
 	@Autowired
 	private PersonOrmRepository personOrmRepository;

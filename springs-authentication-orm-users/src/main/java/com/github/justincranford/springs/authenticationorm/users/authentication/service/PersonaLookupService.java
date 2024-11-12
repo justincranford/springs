@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-@SuppressWarnings({"nls"})
 public class PersonaLookupService implements UserDetailsService {
     @Autowired
     private PersonaOrmRepository personaOrmRepository;

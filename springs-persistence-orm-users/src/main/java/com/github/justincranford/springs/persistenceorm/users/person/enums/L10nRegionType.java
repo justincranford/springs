@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.persistenceorm.users.person.enums;
 
-@SuppressWarnings({"nls", "hiding"})
+@SuppressWarnings({"hiding"})
 public enum L10nRegionType {
     CN(1_410_000_000L, "中国", "China", "Chine", "China", "A country in East Asia."),
     IN(1_400_000_000L, "भारत", "India", "Inde", "India", "A country in South Asia."),

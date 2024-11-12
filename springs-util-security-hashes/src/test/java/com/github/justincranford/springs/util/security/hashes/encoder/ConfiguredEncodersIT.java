@@ -18,7 +18,6 @@ import com.github.justincranford.springs.util.security.hashes.encoder.config.mod
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls", "boxing"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ConfiguredEncodersIT extends AbstractIT {
 	private static final int REPEATS = 3;

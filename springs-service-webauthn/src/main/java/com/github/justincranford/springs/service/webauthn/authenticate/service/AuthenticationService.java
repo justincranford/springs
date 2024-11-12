@@ -50,7 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-@SuppressWarnings({"nls", "unused"})
+@SuppressWarnings({"unused"})
 public class AuthenticationService {
 	private static final int NUM_RANDOM_BYTES_SESSION_TOKEN = 32;
 

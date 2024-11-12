@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-@SuppressWarnings({"nls"})
 public class RateLimitingFilter extends OncePerRequestFilter {
     private Bucket bucket;
 

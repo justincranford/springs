@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@SuppressWarnings({"nls", "static-method"})
+@SuppressWarnings({"static-method"})
 public class HelloWorldController {
 	@GetMapping(
 		value={Constants.PATH},

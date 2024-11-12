@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.persistenceorm.users.person.enums;
 
-@SuppressWarnings({"nls", "hiding"})
+@SuppressWarnings({"hiding"})
 public enum SalutationType {
     DR("Doctor"),
     MR("Mister"),

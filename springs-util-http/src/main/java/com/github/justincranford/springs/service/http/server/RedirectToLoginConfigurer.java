@@ -5,7 +5,6 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@SuppressWarnings("nls")
 public class RedirectToLoginConfigurer implements WebMvcConfigurer {
 	@Override
     public void addViewControllers(ViewControllerRegistry registry) {

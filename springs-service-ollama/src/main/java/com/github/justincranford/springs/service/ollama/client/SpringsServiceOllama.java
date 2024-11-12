@@ -22,7 +22,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@SuppressWarnings({"nls", "javadoc"})
+@SuppressWarnings({"javadoc"})
 public class SpringsServiceOllama {
 	private static final int STREAM_TIMEOUT_SEC = 30;
 

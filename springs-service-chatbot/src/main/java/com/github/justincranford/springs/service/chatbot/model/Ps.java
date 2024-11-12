@@ -15,7 +15,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 public class Ps {
-	@SuppressWarnings({"nls"})
 	public static final String URL = "/api/ps";
 
 	@Getter(onMethod=@__(@JsonProperty))

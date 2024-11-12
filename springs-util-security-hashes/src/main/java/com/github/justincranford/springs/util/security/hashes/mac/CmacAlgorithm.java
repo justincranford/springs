@@ -19,7 +19,6 @@ import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgor
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-@SuppressWarnings({"nls"})
 public enum CmacAlgorithm implements MacAlgorithm {
 	AesCmac128("AesCmac128", DigestAlgorithm.SHA256, Oid.AES_CMAC_128, CipherAlgorithm.AESCMAC128),
 	AesCmac192("AesCmac192", DigestAlgorithm.SHA256, Oid.AES_CMAC_192, CipherAlgorithm.AESCMAC192),

@@ -6,7 +6,6 @@ import java.security.Security;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
 
-@SuppressWarnings("nls")
 public class SignUtil {
 	public static record ProviderAndAlgorithm(Provider provider, String algorithm) { }
 	public static ProviderAndAlgorithm toProviderAndAlgorithm(final Key key) {

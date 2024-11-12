@@ -11,7 +11,7 @@ import org.testcontainers.utility.DockerImageName;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls", "resource"})
+@SuppressWarnings({"resource"})
 public class TestContainerPostgresql extends AbstractTestContainer<PostgreSQLContainer<?>> {
 	public static final String DOCKER_IMAGE_NAME = "postgres:16.3"; // Last checked on 2024-08-01
 	private static final String NETWORK_ALIAS = "postgresql";

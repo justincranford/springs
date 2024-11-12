@@ -11,7 +11,7 @@ import org.testcontainers.utility.DockerImageName;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls", "resource"})
+@SuppressWarnings({"resource"})
 public class TestContainerMongoDb extends AbstractTestContainer<MongoDBContainer> {
 	public static final String DOCKER_IMAGE_NAME = "mongo:7.0.12"; // Last checked on 2024-08-01
 	private static final String NETWORK_ALIAS = "mongo";

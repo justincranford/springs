@@ -36,7 +36,7 @@ import lombok.ToString;
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor
-@SuppressWarnings({"nls", "unchecked", "rawtypes"})
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class SpringsUtilSecurityHashesProperties {
 	@PostConstruct
 	public void init() {

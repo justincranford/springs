@@ -16,7 +16,6 @@ import jakarta.annotation.Nonnull;
 
 @RestController
 @RequestMapping(value="/")
-@SuppressWarnings({"nls"})
 public class RegisterController {
 	@Autowired
 	private RegistrationService registrationService;

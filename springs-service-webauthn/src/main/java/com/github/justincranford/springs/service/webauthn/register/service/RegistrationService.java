@@ -44,7 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-@SuppressWarnings({"nls", "deprecation"})
+@SuppressWarnings({"deprecation"})
 public class RegistrationService {
 	private static final int NUM_RANDOM_BYTES_CREDENTIAL_ID = 32;
 	private static final int NUM_RANDOM_BYTES_SESSION_TOKEN = 32;

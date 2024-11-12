@@ -58,7 +58,6 @@ import lombok.extern.slf4j.Slf4j;
 @Accessors(fluent = true)
 @ActiveProfiles({"test"})
 @Slf4j
-@SuppressWarnings("nls")
 public class AbstractIT {
 	@LocalServerPort
 	private long localServerPort;

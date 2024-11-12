@@ -6,7 +6,6 @@ import org.mockito.Mockito;
 
 import com.github.justincranford.springs.util.security.passwords.properties.SpringsUtilSecurityPasswordsProperties;
 
-@SuppressWarnings({"boxing"})
 public class PasswordConstraintsTestUtil {
 	public static PasswordConstraints passwordConstraints(final SpringsUtilSecurityPasswordsProperties.Properties properties) {
 		final PasswordConstraints mockPasswordConstraints = Mockito.mock(PasswordConstraints.class);

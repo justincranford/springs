@@ -26,7 +26,6 @@ import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls"})
 public class HttpsUiAuthenticationIT extends AbstractIT {
 	@Test
 	void testHttpsLoginRedirect_whenUnauthenticated() throws Exception {

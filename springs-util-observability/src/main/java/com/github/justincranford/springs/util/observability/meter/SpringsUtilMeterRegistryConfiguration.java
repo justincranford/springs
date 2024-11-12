@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @EnableAspectJAutoProxy
 //@ComponentScan(basePackages={"com.github.justincranford.springs.util.observability"})
-@SuppressWarnings({"nls", "static-method"})
+@SuppressWarnings({"static-method"})
 @Slf4j
 public class SpringsUtilMeterRegistryConfiguration {
 	@Autowired

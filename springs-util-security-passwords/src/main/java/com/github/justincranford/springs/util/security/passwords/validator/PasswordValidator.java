@@ -13,7 +13,6 @@ import jakarta.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls", "boxing"})
 public class PasswordValidator implements ConstraintValidator<PasswordConstraints, String> {
 	private Set<Integer> firsts;
     private Set<Integer> lasts;

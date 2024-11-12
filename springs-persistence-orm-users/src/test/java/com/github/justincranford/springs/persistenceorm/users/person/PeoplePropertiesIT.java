@@ -13,7 +13,6 @@ import com.github.justincranford.springs.persistenceorm.users.properties.Springs
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls"})
 public class PeoplePropertiesIT extends AbstractIT {
 	@Test
 	public void verifyPeoplePropertiesLoaded() {

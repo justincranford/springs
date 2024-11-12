@@ -17,7 +17,7 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import com.github.justincranford.springs.util.basic.ArrayUtil;
 import com.github.justincranford.springs.util.security.hashes.asn1.Asn1Util;
 
-@SuppressWarnings({"nls", "hiding"})
+@SuppressWarnings({"hiding"})
 public enum CipherAlgorithm {
 	AESGCM256 ("AES/GCM/NoPadding",     true,  K.K32, I.P39, O.U,  0,  Oid.AESGCM256),
 	AESGCM192 ("AES/GCM/NoPadding",     true,  K.K24, I.P39, O.U,  0,  Oid.AESGCM192),

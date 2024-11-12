@@ -9,7 +9,6 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import com.github.justincranford.springs.service.http.client.RestTemplateUtil;
 
-@SuppressWarnings({"nls"})
 public class SpringsAuthenticationOrmUsersSecurityFilterChainConfigurationIT extends AbstractIT {
     @Test
     void testRoot_notAuthenticated() throws Exception {

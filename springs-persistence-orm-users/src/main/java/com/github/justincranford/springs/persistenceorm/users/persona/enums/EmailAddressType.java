@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.persistenceorm.users.persona.enums;
 
-@SuppressWarnings({"nls", "hiding"})
+@SuppressWarnings({"hiding"})
 public enum EmailAddressType {
     PER("Personal", "Personnel", "Personal", "Personal email address"),
     WRK("Work", "Professionnel", "Trabajo", "Work email address"),

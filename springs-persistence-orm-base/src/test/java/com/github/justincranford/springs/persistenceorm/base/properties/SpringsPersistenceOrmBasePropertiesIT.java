@@ -8,7 +8,6 @@ import com.github.justincranford.springs.persistenceorm.base.AbstractIT;
 
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings("nls")
 @Slf4j
 public class SpringsPersistenceOrmBasePropertiesIT extends AbstractIT {
 	@Test

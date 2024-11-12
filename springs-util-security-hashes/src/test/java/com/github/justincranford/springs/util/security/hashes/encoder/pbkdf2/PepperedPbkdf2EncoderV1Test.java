@@ -25,7 +25,7 @@ import com.github.justincranford.springs.util.basic.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls", "boxing", "static-method", "serial"})
+@SuppressWarnings({"static-method", "serial"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PepperedPbkdf2EncoderV1Test {
 	private static final int REPEATS = 3;

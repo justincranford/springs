@@ -17,7 +17,6 @@ import com.github.justincranford.springs.persistenceorm.users.person.enums.Perso
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 
-@SuppressWarnings({"nls"})
 public class RandomPersonUtil {
 	public static PersonOrm generatePerson() {
 		return PersonOrm.builder()

@@ -31,7 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 @Repository
 @RequiredArgsConstructor
 @Slf4j
-@SuppressWarnings({"nls"})
 public class SessionPojoRepository implements FindByIndexNameSessionRepository<SessionPojo> {
 	private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 

@@ -6,7 +6,6 @@ import org.springframework.security.core.AuthenticationException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls"})
 public class AuthenticationExceptionUtil {
 	public static <EXCEPTION extends AuthenticationException> AuthenticationException logAndCreate(final Class<EXCEPTION> exceptionClass, final Level level, final String message) throws AuthenticationException {
 		log.atLevel(level).setMessage(message).log();

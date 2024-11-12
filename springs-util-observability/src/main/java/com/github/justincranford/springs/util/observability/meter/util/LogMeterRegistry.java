@@ -14,7 +14,7 @@ import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
-@SuppressWarnings({"nls", "static-method"})
+@SuppressWarnings({"static-method"})
 @Slf4j
 public class LogMeterRegistry {
     @Autowired

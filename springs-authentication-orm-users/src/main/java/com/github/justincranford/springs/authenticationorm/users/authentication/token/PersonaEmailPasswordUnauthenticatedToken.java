@@ -3,7 +3,7 @@ package com.github.justincranford.springs.authenticationorm.users.authentication
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.util.Assert;
 
-@SuppressWarnings({"nls","hiding"})
+@SuppressWarnings({"hiding"})
 public class PersonaEmailPasswordUnauthenticatedToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 1L;
 

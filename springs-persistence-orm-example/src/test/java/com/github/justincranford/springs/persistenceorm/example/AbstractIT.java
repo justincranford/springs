@@ -43,7 +43,6 @@ import lombok.extern.slf4j.Slf4j;
 @ActiveProfiles({"test"})
 @Slf4j
 @Observed
-@SuppressWarnings("nls")
 public class AbstractIT {
 	@LocalServerPort
 	private long localServerPort;

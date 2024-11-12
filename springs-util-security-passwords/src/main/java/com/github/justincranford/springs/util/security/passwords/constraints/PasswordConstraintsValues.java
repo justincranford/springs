@@ -1,6 +1,5 @@
 package com.github.justincranford.springs.util.security.passwords.constraints;
 
-@SuppressWarnings({"nls"})
 public class PasswordConstraintsValues {
 	public static final String FIRSTS_DEFAULT     = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	public static final String LASTS_DEFAULT      = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";

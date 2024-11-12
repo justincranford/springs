@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.persistenceorm.users.persona.enums;
 
-@SuppressWarnings({"nls", "hiding"})
+@SuppressWarnings({"hiding"})
 public enum PersonaType {
     OWN("Owner", "Propriétaire", "Propietario", "Individual or entity who owns the property or business"),
     EMP("Employee", "Employé", "Empleado", "Staff member or worker"),

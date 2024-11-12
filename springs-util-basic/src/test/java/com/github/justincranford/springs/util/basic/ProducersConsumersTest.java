@@ -24,7 +24,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@SuppressWarnings({"nls", "static-method"})
+@SuppressWarnings({"static-method"})
 public class ProducersConsumersTest {
 	private static record UtcAndI18nLog(OffsetDateTime utc, I18nLog log) {}
 	private static record I18nLog(String tag, List<Object> args) {}

@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.persistenceorm.clients.client.enums;
 
-@SuppressWarnings({"nls", "hiding"})
+@SuppressWarnings({"hiding"})
 public enum ClientStatusType { 
     ACT("Activated", "Activé", "Activado", "The account is active and fully functional."),
     SUS("Suspended", "Suspendu", "Suspendido", "The account is temporarily suspended."),

@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
-@SuppressWarnings({"nls", "boxing"})
 @Slf4j
 public class RequestLoggingFilter extends OncePerRequestFilter {
 	private static final AtomicInteger REQUEST_NUMBER = new AtomicInteger(0);

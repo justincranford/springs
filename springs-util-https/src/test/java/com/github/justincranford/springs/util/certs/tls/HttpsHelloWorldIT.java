@@ -26,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @Slf4j
-@SuppressWarnings("nls")
 public class HttpsHelloWorldIT extends AbstractIT {
 	private String httpUrl;
 	private String httpsUrl;

@@ -6,7 +6,6 @@ import com.github.justincranford.springs.util.basic.StringUtil;
 
 import jakarta.validation.constraints.NotNull;
 
-@SuppressWarnings({"nls"})
 public record HashInputsAndHash(
 	@NotNull HashInputs hashInputs,
 	@NotNull Hash       hash

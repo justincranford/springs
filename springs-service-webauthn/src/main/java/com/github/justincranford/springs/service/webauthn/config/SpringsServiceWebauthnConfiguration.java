@@ -68,7 +68,7 @@ import lombok.extern.slf4j.Slf4j;
 	RelyingPartyConfiguration.class
 })
 @Slf4j
-@SuppressWarnings({"nls", "static-method", "deprecation"})
+@SuppressWarnings({"static-method", "deprecation"})
 public class SpringsServiceWebauthnConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(PasswordEncoder.class)
@@ -95,7 +95,7 @@ public class SpringsServiceWebauthnConfiguration {
 	@Observed
 	@Bean
 	@ConditionalOnMissingBean(UserDetailsService.class)
-	@SuppressWarnings({"resource", "boxing"})
+	@SuppressWarnings({"resource"})
 	public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) throws Exception {
 		final InMemoryUserDetailsManager userDetailsService = new InMemoryUserDetailsManager();
 		final LinkedBlockingQueue<UserDetails> users = new LinkedBlockingQueue<>();

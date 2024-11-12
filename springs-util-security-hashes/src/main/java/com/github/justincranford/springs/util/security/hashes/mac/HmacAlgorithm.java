@@ -19,7 +19,6 @@ import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgor
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-@SuppressWarnings({"nls"})
 public enum HmacAlgorithm implements MacAlgorithm {
 	HmacMD5       ("HmacMD5",        DigestAlgorithm.MD5,      Oid.HMAC_MD5),
 	HmacSHA1      ("HmacSHA1",       DigestAlgorithm.SHA1,     Oid.HMAC_SHA1),

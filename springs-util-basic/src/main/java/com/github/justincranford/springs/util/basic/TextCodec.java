@@ -5,7 +5,6 @@ import java.util.Base64;
 
 import static java.util.Objects.requireNonNull;
 
-@SuppressWarnings({"nls"})
 public interface TextCodec {
 	public static final HexCodec HEX_UC_STRICT  = new HexCodec(true,  true,  "HexUpperCaseStrict");
 	public static final HexCodec HEX_UC_LENIENT = new HexCodec(true,  false, "HexUpperCaseLenient");

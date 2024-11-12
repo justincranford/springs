@@ -11,7 +11,7 @@ import org.testcontainers.vault.VaultContainer;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls", "resource"})
+@SuppressWarnings({"resource"})
 public class TestContainerVault extends AbstractTestContainer<VaultContainer<?>> {
 	public static final String DOCKER_IMAGE_NAME = "hashicorp/vault:1.17.2"; // Last checked on 2024-08-01
 	private static final String NETWORK_ALIAS = "hashicorp";

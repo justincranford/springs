@@ -10,7 +10,6 @@ import com.yubico.webauthn.data.exception.Base64UrlException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls"})
 public class ByteArrayUtil {
 	public static ByteArray decodeBase64Url(final String idBase64Url) {
 		try {

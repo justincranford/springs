@@ -19,7 +19,6 @@ import com.github.justincranford.springs.util.basic.DateTimeUtil;
 
 @Component
 @Slf4j
-@SuppressWarnings({"nls"})
 public class PrettyJson {
 	@Autowired
 	private ObjectMapper objectMapper;

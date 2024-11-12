@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-@SuppressWarnings({"nls"})
 public class TraceObservationHandler implements ObservationHandler<Observation.Context> {
 	@Override
     public void onStart(final Observation.Context context) {

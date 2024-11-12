@@ -18,7 +18,6 @@ import lombok.experimental.Accessors;
 @RequiredArgsConstructor
 @Getter
 @Accessors(fluent=true)
-@SuppressWarnings({"nls"})
 public class PersonaDetails implements UserDetails {
 	private static final long serialVersionUID = 1L;
 	private final String personaEmailAddress; // 1-of-N email addresses in personaOrm that matched

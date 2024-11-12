@@ -11,7 +11,6 @@ import org.springframework.web.client.ResourceAccessException;
 import com.github.justincranford.springs.service.http.AbstractIT;
 import com.github.justincranford.springs.service.http.server.HelloWorldController;
 
-@SuppressWarnings({"nls"})
 public class HttpHelloWorldIT extends AbstractIT {
 	@Test
 	void testHttpSuccess() {

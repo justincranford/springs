@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 
 import com.github.justincranford.springs.util.basic.TextCodec.HexCodec;
 
-@SuppressWarnings({"nls"})
 public class TextCodecTest {
     private static final byte[] EMPTY_BYTES = { };
     private static final String EMPTY_STRING = "";

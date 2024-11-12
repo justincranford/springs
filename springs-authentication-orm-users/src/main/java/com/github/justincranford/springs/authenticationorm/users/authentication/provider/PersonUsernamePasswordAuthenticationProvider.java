@@ -25,7 +25,6 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import lombok.extern.slf4j.Slf4j;
 
 @Component
-@SuppressWarnings({"nls"})
 @Slf4j
 public class PersonUsernamePasswordAuthenticationProvider implements AuthenticationProvider {
 	@Autowired

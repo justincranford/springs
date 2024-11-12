@@ -20,7 +20,6 @@ import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgor
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@SuppressWarnings({"nls"})
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public class Argon2Encoder {
 	private static final DigestAlgorithm MESSAGE_DIGEST = DigestAlgorithm.SHA256; // 512b/64B

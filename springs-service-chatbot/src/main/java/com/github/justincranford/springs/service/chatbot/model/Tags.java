@@ -15,7 +15,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 public class Tags {
-	@SuppressWarnings({ "nls" })
 	public static final String URL = "/api/tags";
 
 	@Getter(onMethod = @__(@JsonProperty))

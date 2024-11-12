@@ -8,7 +8,6 @@ import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls"})
 public class ExternalIdGenerator {
 	public static final int TOTAL_BYTES_LENGTH = Constants.USE_TIMESTAMP_AND_RANDOM_BYTES ? Constants.TIMESTAMP_BYTES + Constants.RANDOM_BYTES : Constants.COUNTER_BYTES;
 

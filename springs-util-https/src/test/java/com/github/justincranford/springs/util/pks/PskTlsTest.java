@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@SuppressWarnings({"nls", "static-method", "hiding", "resource"})
+@SuppressWarnings({"static-method", "hiding", "resource"})
 public class PskTlsTest {
 	private static final Logger log = LoggerFactory.getLogger(PskTlsTest.class);
 	public static final SecureRandom SECURE_RANDOM = new SecureRandom();

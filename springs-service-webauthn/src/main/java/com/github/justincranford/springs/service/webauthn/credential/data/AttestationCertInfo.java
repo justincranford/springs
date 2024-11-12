@@ -11,7 +11,6 @@ import com.yubico.webauthn.data.ByteArray;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"nls"})
 public class AttestationCertInfo {
 	final ByteArray der;
 	final String text;

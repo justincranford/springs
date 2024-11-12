@@ -23,7 +23,6 @@ import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@SuppressWarnings("nls")
 public class TlsPskUtil {
 	public static final String PSK_TLS_PROTOCOL = "TLSv1.3";
 	public static final String[] PSK_TLS_PROTOCOLS = new String[] {PSK_TLS_PROTOCOL};

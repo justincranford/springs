@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.persistenceorm.users.person.enums;
 
-@SuppressWarnings({"nls", "hiding"})
+@SuppressWarnings({"hiding"})
 public enum PersonStatusType { 
     ACT("Activated", "Activé", "Activado", "The account is active and fully functional."),
     SUS("Suspended", "Suspendu", "Suspendido", "The account is temporarily suspended."),
