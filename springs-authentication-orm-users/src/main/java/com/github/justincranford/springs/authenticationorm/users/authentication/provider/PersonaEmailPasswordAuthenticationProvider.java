@@ -63,7 +63,8 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 
 		// ASSUME: loadUserByUsername will apply converter to unauthenticatedRawEmail to make it lowercase
 		final PersonaDetails actualPersonaDetails = this.personaLookupService.loadUserByUsername(unauthenticatedRawEmail);
-		if (this.passwordEncoder.matches(unauthenticatedPassword, actualPersonaDetails.getPassword())) {
+		final String actualEncodedPassword = actualPersonaDetails.getPassword();
+		if (this.passwordEncoder.matches(unauthenticatedPassword, actualEncodedPassword)) {
 	    	log.trace("Persona password matched for email [{}]", unauthenticatedRawEmail);
 			return new PersonaEmailPasswordAuthenticatedToken(actualPersonaDetails);
         }

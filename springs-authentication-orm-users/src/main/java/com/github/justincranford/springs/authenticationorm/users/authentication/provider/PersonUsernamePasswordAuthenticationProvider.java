@@ -62,7 +62,8 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
 		}
 
 		final PersonDetails actualPersonDetails = this.personLookupService.loadUserByUsername(unauthenticatedUsername);
-		if (this.passwordEncoder.matches(unauthenticatedPassword, actualPersonDetails.getPassword())) {
+		final String actualEncodedPassword = actualPersonDetails.getPassword();
+		if (this.passwordEncoder.matches(unauthenticatedPassword, actualEncodedPassword)) {
 			log.trace("Person password matched for username [{}]", unauthenticatedUsername);
 			return new PersonUsernamePasswordAuthenticatedToken(actualPersonDetails);
 		}
