@@ -1,5 +1,6 @@
 package com.github.justincranford.springs.authenticationorm.users.authentication.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.logging.log4j.util.Strings;
@@ -42,9 +43,13 @@ public class PersonLookupService implements UserDetailsService {
 		final PersonOrm unauthenticatedPerson = optionalUnauthenticatedPerson.get();
 		log.trace("Person found by username, person: {}", unauthenticatedPerson);
 
-		final PersonaOrm unauthenticatedPersona = unauthenticatedPerson.personas().get(0);
+		final List<PersonaOrm> personas = unauthenticatedPerson.personas();
+		if (personas.isEmpty()) {
+			log.trace("Persona not found by person: {}", unauthenticatedPerson);
+			return new PersonDetails(unauthenticatedPerson, null);
+		}
+		final PersonaOrm unauthenticatedPersona = personas.get(0);
 		log.trace("Persona found by person, persona: {}", unauthenticatedPersona);
-
 		return new PersonDetails(unauthenticatedPerson, unauthenticatedPersona);
 	}
 }
