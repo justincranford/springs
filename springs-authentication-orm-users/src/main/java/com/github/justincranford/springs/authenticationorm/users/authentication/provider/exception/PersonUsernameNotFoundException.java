@@ -1,8 +1,8 @@
 package com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception;
 
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-public class PersonUsernameNotFoundException extends AuthenticationException {
+public class PersonUsernameNotFoundException extends UsernameNotFoundException {
 	private static final long serialVersionUID = 1L;
 	public PersonUsernameNotFoundException(String msg) {
 		super(msg);
