@@ -64,7 +64,7 @@ public class SecureRandomUtil  {
 	public static <T> T randomArrayElement(final T[] array) {
 		return array[SECURE_RANDOM.nextInt(array.length)];
 	}
-	public static <E extends List<?>> E randomListElement(final List<E> list) {
+	public static <E> E randomListElement(final List<E> list) {
 		return list.get(SECURE_RANDOM.nextInt(list.size()));
 	}
 }
