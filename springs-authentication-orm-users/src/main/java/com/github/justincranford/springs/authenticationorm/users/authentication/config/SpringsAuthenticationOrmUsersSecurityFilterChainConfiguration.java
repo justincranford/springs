@@ -21,6 +21,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonUsernamePasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonaEmailPasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.authentication.root.controller.RedirectController;
+import com.github.justincranford.springs.authenticationorm.users.logging.config.RequestLoggingFilter;
 import com.github.justincranford.springs.authenticationorm.users.ratelimit.config.RateLimitingFilter;
 import com.github.justincranford.springs.service.http.server.HelloWorldController;
 import com.github.justincranford.springs.service.http.server.RedirectToLoginConfigurer;
@@ -54,6 +55,8 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
 	private final PersonUsernamePasswordAuthenticationProvider personUsernamePasswordAuthenticationProvider;
 	@Autowired
 	private final RateLimitingFilter rateLimitingFilter;
+	@Autowired
+	private final RequestLoggingFilter requestLoggingFilter;
 
 	@Bean
 	public AuthenticationManager htmlAuthenticationManager(HttpSecurity http) throws Exception {
@@ -61,6 +64,7 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
 		return authenticationManagerBuilder
 			.authenticationProvider(this.personaEmailPasswordAuthenticationProvider)
 			.authenticationProvider(this.personUsernamePasswordAuthenticationProvider)
+			.parentAuthenticationManager(null) // Prevent ProviderManager recursively calling `this.parent.authenticate(authentication)`
 			.build();
 	}
 
@@ -110,6 +114,7 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
 				.maximumSessions(3)
 				.expiredUrl("/login?expired=true")
 			)
+			.addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
 //			.addFilterBefore(new BasicAuthenticationFilter(htmlAuthenticationManager(http)), UsernamePasswordAuthenticationFilter.class)
 			;
