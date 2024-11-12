@@ -47,7 +47,7 @@ public class LoadPeoplePropertiesIntoDatabase {
         for (final SpringsPersistenceOrmUsersPeopleProperties.Person user : users) {
             final PersonOrm createPersonOrm = new PersonOrm();
             createPersonOrm.username(user.getUsername());
-			createPersonOrm.password(new PasswordOrm(encodedPasswords.get(userOffset)));
+			createPersonOrm.password(new PasswordOrm(encodedPasswords.get(userOffset++)));
             createPersonOrm.name(namePropertiesToOrm(user.getName()));
             createPersonOrm.dateOfBirth(user.getDateOfBirth());
             createPersonOrm.status(user.getStatus());
