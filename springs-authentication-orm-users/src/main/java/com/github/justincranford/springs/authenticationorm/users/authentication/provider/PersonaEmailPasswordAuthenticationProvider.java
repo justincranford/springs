@@ -22,6 +22,7 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonaDetails;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonaEmailPasswordAuthenticatedToken;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonaEmailPasswordUnauthenticatedToken;
+import com.github.justincranford.springs.util.basic.Timer;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -64,9 +65,16 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 		}
 
 		// ASSUME: loadUserByUsername will apply converter to unauthenticatedRawEmail to make it lowercase
-		final PersonaDetails actualPersonaDetails = this.personaLookupService.loadUserByUsername(unauthenticatedRawEmail);
+		final PersonaDetails actualPersonaDetails;
+		try (Timer x = Timer.go("personaLookupService.loadUserByUsername")) {
+			actualPersonaDetails = this.personaLookupService.loadUserByUsername(unauthenticatedRawEmail);
+		}
 		final String actualEncodedPassword = actualPersonaDetails.getPassword();
-		if (this.passwordEncoder.matches(unauthenticatedPassword, actualEncodedPassword)) {
+		final boolean matches;
+		try (Timer x = Timer.go("personaLookupService.loadUserByUsername")) {
+			matches = this.passwordEncoder.matches(unauthenticatedPassword, actualEncodedPassword);
+		}
+		if (matches) {
 	    	log.trace("Person password matched for persona email [{}]", unauthenticatedRawEmail);
 			this.upgradeEncodingService.async(actualPersonaDetails.personOrm().username(), unauthenticatedPassword, actualEncodedPassword);
 			return new PersonaEmailPasswordAuthenticatedToken(actualPersonaDetails);

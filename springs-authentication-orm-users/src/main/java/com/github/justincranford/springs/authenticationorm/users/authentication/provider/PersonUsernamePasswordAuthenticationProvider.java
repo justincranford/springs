@@ -22,6 +22,7 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonDetails;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonUsernamePasswordAuthenticatedToken;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonUsernamePasswordUnauthenticatedToken;
+import com.github.justincranford.springs.util.basic.Timer;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,9 +64,16 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
     		throw logAndCreate(PersonPasswordBlankNotAllowedException.class, TRACE, "Password must not be blank");
 		}
 
-		final PersonDetails actualPersonDetails = this.personLookupService.loadUserByUsername(unauthenticatedUsername);
+		final PersonDetails actualPersonDetails;
+		try (Timer x = Timer.go("personLookupService.loadUserByUsername")) {
+			actualPersonDetails = this.personLookupService.loadUserByUsername(unauthenticatedUsername);
+		}
 		final String actualEncodedPassword = actualPersonDetails.getPassword();
-		if (this.passwordEncoder.matches(unauthenticatedPassword, actualEncodedPassword)) {
+		final boolean matches;
+		try (Timer x = Timer.go("personLookupService.matches")) {
+			matches = this.passwordEncoder.matches(unauthenticatedPassword, actualEncodedPassword);
+		}
+		if (matches) {
 	    	log.trace("Person password matched for person username [{}]", unauthenticatedUsername);
 			this.upgradeEncodingService.async(actualPersonDetails.personOrm().username(), unauthenticatedPassword, actualEncodedPassword);
 			return new PersonUsernamePasswordAuthenticatedToken(actualPersonDetails);
