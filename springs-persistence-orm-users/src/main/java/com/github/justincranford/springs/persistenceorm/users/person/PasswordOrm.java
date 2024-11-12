@@ -26,8 +26,8 @@ import lombok.experimental.Accessors;
 @Accessors(fluent=true)
 public class PasswordOrm {
 	@PasswordConstraints
-    @Column(length=64)
-    @Size(min=12,max=64)
+    @Column(length=256)
+    @Size(min=12,max=256)
     @Nullable
     private String password;
 }

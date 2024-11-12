@@ -9,12 +9,14 @@ import com.github.justincranford.springs.persistenceorm.users.persona.config.Spr
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeoplePropertiesConfiguration;
 import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
 import com.github.justincranford.springs.util.observability.config.SpringsUtilObservabilityConfiguration;
+import com.github.justincranford.springs.util.security.passwords.config.SpringsUtilSecurityPasswordsConfiguration;
 
 @Configuration
 @Import({
 	SpringsPersistenceOrmBaseConfiguration.class,
 	SpringsUtilJsonConfiguration.class,
 	SpringsUtilObservabilityConfiguration.class,
+	SpringsUtilSecurityPasswordsConfiguration.class,
 	SpringsPersistenceOrmUsersPersonConfiguration.class,
 	SpringsPersistenceOrmUsersPersonaConfiguration.class,
 	SpringsPersistenceOrmUsersPeoplePropertiesConfiguration.class

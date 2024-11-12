@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.github.justincranford.springs.persistenceorm.users.person.LanguageOrm;
@@ -30,6 +31,8 @@ public class LoadPeoplePropertiesIntoDatabase {
     private PersonOrmRepository personOrmRepository;
     @Autowired
     private PersonaOrmRepository personaOrmRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Transactional
     @PostConstruct
@@ -39,7 +42,7 @@ public class LoadPeoplePropertiesIntoDatabase {
         for (final SpringsPersistenceOrmUsersPeopleProperties.Person user : users) {
             final PersonOrm createPersonOrm = new PersonOrm();
             createPersonOrm.username(user.getUsername());
-            createPersonOrm.password(new PasswordOrm(user.getPassword()));
+            createPersonOrm.password(new PasswordOrm(this.passwordEncoder.encode(user.getPassword())));
             createPersonOrm.name(namePropertiesToOrm(user.getName()));
             createPersonOrm.dateOfBirth(user.getDateOfBirth());
             createPersonOrm.status(user.getStatus());
