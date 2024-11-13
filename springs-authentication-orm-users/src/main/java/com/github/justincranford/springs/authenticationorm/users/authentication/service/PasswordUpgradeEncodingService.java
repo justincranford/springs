@@ -26,14 +26,14 @@ public class PasswordUpgradeEncodingService {
 	@Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Future<Boolean> async(final Long id, final String clearPassword, final String encodedPassword) {
-    	final ThrowingSupplier<Boolean> syncSupplier     = () -> sync(id, clearPassword, encodedPassword);
+    public Future<Boolean> async(final Long id, final String clearPassword) {
+    	final ThrowingSupplier<Boolean> syncSupplier     = () -> sync(id, clearPassword);
 		final Future<Boolean>           async            = ThreadUtil.supplyAsync(syncSupplier);
 		final Supplier<Future<Boolean>> asyncSupplier    = () -> async;
 		return this.lockUtil.run(id, asyncSupplier);
 	}
 
-	private boolean sync(final Long id, final String clearPassword, final String encodedPassword) {
+	private boolean sync(final Long id, final String clearPassword) {
 		final String newEncodedPassword;
 		try (Timer x = Timer.go("PasswordUpgradeEncodingService.encode")) {
 			newEncodedPassword = this.passwordEncoder.encode(clearPassword); // design intent is slow

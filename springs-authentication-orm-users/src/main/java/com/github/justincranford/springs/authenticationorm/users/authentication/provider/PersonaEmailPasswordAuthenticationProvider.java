@@ -76,11 +76,10 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 		}
 		if (matches) {
 	    	log.trace("Person password matched for persona email [{}]", unauthenticatedRawEmail);
-			this.upgradeEncodingService.async(actualPersonaDetails.personOrm().id(), unauthenticatedPassword, actualEncodedPassword);
 	    	final boolean upgradeEncoding = this.passwordEncoder.upgradeEncoding(unauthenticatedPassword); // design intent is fast
 			if (upgradeEncoding) {
 				log.debug("Person password for persona email [{}] requires upgrade encoding", unauthenticatedRawEmail);
-				this.upgradeEncodingService.async(actualPersonaDetails.personOrm().id(), unauthenticatedPassword, actualEncodedPassword);
+				this.upgradeEncodingService.async(actualPersonaDetails.personOrm().id(), unauthenticatedPassword);
 			} else {
 				log.trace("Person password for persona email [{}] doesn't require upgrade encoding", unauthenticatedRawEmail);
 			}

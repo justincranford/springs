@@ -78,7 +78,7 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
 	    	final boolean upgradeEncoding = this.passwordEncoder.upgradeEncoding(unauthenticatedPassword); // design intent is fast
 			if (upgradeEncoding) {
 				log.debug("Person password for username [{}] requires upgrade encoding", unauthenticatedUsername);
-				this.upgradeEncodingService.async(actualPersonDetails.personOrm().id(), unauthenticatedPassword, actualEncodedPassword);
+				this.upgradeEncodingService.async(actualPersonDetails.personOrm().id(), unauthenticatedPassword);
 			} else {
 				log.trace("Person password for username [{}] doesn't require upgrade encoding", unauthenticatedUsername);
 			}
