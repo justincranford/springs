@@ -70,12 +70,18 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
 		}
 		final String actualEncodedPassword = actualPersonDetails.getPassword();
 		final boolean matches;
-		try (Timer x = Timer.go("personLookupService.matches")) {
+		try (Timer x = Timer.go("passwordEncoder.matches")) {
 			matches = this.passwordEncoder.matches(unauthenticatedPassword, actualEncodedPassword);
 		}
 		if (matches) {
 	    	log.trace("Person password matched for person username [{}]", unauthenticatedUsername);
-			this.upgradeEncodingService.async(actualPersonDetails.personOrm().id(), unauthenticatedPassword, actualEncodedPassword);
+	    	final boolean upgradeEncoding = this.passwordEncoder.upgradeEncoding(unauthenticatedPassword); // design intent is fast
+			if (upgradeEncoding) {
+				log.debug("Person password for username [{}] requires upgrade encoding", unauthenticatedUsername);
+				this.upgradeEncodingService.async(actualPersonDetails.personOrm().id(), unauthenticatedPassword, actualEncodedPassword);
+			} else {
+				log.trace("Person password for username [{}] doesn't require upgrade encoding", unauthenticatedUsername);
+			}
 			return new PersonUsernamePasswordAuthenticatedToken(actualPersonDetails);
 		}
 		throw logAndCreate(PersonPasswordNoMatchException.class, DEBUG, String.format("Person password not matched for username [%s]", unauthenticatedUsername));

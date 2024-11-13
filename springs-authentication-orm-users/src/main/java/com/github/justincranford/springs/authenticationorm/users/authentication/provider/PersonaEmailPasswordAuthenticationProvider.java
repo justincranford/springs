@@ -71,12 +71,19 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 		}
 		final String actualEncodedPassword = actualPersonaDetails.getPassword();
 		final boolean matches;
-		try (Timer x = Timer.go("personaLookupService.loadUserByUsername")) {
+		try (Timer x = Timer.go("passwordEncoder.matches")) {
 			matches = this.passwordEncoder.matches(unauthenticatedPassword, actualEncodedPassword);
 		}
 		if (matches) {
 	    	log.trace("Person password matched for persona email [{}]", unauthenticatedRawEmail);
 			this.upgradeEncodingService.async(actualPersonaDetails.personOrm().id(), unauthenticatedPassword, actualEncodedPassword);
+	    	final boolean upgradeEncoding = this.passwordEncoder.upgradeEncoding(unauthenticatedPassword); // design intent is fast
+			if (upgradeEncoding) {
+				log.debug("Person password for persona email [{}] requires upgrade encoding", unauthenticatedRawEmail);
+				this.upgradeEncodingService.async(actualPersonaDetails.personOrm().id(), unauthenticatedPassword, actualEncodedPassword);
+			} else {
+				log.trace("Person password for persona email [{}] doesn't require upgrade encoding", unauthenticatedRawEmail);
+			}
 			return new PersonaEmailPasswordAuthenticatedToken(actualPersonaDetails);
         }
 		throw logAndCreate(PersonaPasswordNoMatchException.class, DEBUG, String.format("Persona password not matched for email [%s]", unauthenticatedRawEmail));

@@ -34,22 +34,13 @@ public class PasswordUpgradeEncodingService {
 	}
 
 	private boolean sync(final Long id, final String clearPassword, final String encodedPassword) {
-		final boolean upgradeEncoding = true;
-//		try (Timer x = Timer.go("upgradeEncoding")) {
-//			upgradeEncoding = true;//this.passwordEncoder.upgradeEncoding(currentEncodedPassword); // design intent is fast
-//		}
-		if (upgradeEncoding) {
-			log.debug("Person password for username [{}] requires upgrade encoding", id);
-			final String newEncodedPassword;
-			try (Timer x = Timer.go("encode")) {
-				newEncodedPassword = this.passwordEncoder.encode(clearPassword); // design intent is slow
-			}
-			try (Timer x = Timer.go("updatePassword")) {
-				this.personLookupService.updatePassword(id, newEncodedPassword);
-			}
-		} else {
-			log.trace("Person password for username [{}] doesn't require upgrade encoding", id);
+		final String newEncodedPassword;
+		try (Timer x = Timer.go("PasswordUpgradeEncodingService.encode")) {
+			newEncodedPassword = this.passwordEncoder.encode(clearPassword); // design intent is slow
 		}
-		return upgradeEncoding;
+		try (Timer x = Timer.go("PasswordUpgradeEncodingService.updatePassword")) {
+			this.personLookupService.updatePassword(id, newEncodedPassword);
+		}
+		return true;
 	}
 }
