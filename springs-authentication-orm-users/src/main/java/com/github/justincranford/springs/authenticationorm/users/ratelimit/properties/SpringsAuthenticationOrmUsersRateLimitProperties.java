@@ -42,15 +42,15 @@ public class SpringsAuthenticationOrmUsersRateLimitProperties {
     private Duration refillDuration = LOW_PRECISION.getRefillDuration();
 
 	private static final int PER_MINUTE = 150 * 60; // target rate is 150/sec, converted to minutes
-	private static final int CAPACITY_MULTIPLIER = 10; // target max is 1500 (i.e. 10x burst before throttle)
+	private static final int CAPACITY_MULTIPLIER = 5; // target max is 750 (i.e. 5x before throttle)
 
 	/** More precision (i.e. 200msec). Real-time control, but higher CPU/memory overhead. Smooth for high freq. */
 	public static final SpringsAuthenticationOrmUsersRateLimitProperties HIGH_PRECISION = SpringsAuthenticationOrmUsersRateLimitProperties.builder()
-		.enabled(true).refillDuration(Duration.ofMillis(200)).refillAmount(PER_MINUTE * 60 * 5).capacity(PER_MINUTE * 60 * 5 * CAPACITY_MULTIPLIER).build();
+		.enabled(true).refillDuration(Duration.ofMillis(200)).refillAmount(PER_MINUTE / 60 / 5).capacity(PER_MINUTE / 60 / 5 * CAPACITY_MULTIPLIER).build();
 
 	/** Balanced precision (i.e. 1 sec). Near real-time control, with medium CPU/memory overheard. Smooth for medium freq. */
 	public static final SpringsAuthenticationOrmUsersRateLimitProperties MEDIUM_PRECISION = SpringsAuthenticationOrmUsersRateLimitProperties.builder()
-		.enabled(true).refillDuration(Duration.ofSeconds(1)).refillAmount(PER_MINUTE * 60).capacity(PER_MINUTE * 60 * CAPACITY_MULTIPLIER).build();
+		.enabled(true).refillDuration(Duration.ofSeconds(1)).refillAmount(PER_MINUTE / 60).capacity(PER_MINUTE / 60 * CAPACITY_MULTIPLIER).build();
 
 	/** Less precision (i.e. 1 min). Delayed control, with low CPU/memory overheard. Smooth for low freq. */
 	public static final SpringsAuthenticationOrmUsersRateLimitProperties LOW_PRECISION = SpringsAuthenticationOrmUsersRateLimitProperties.builder()
