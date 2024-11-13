@@ -26,16 +26,12 @@ public class LockUtil<KEY, RETURN_TYPE> {
 
 	private ReentrantLock lock(final KEY key) {
 		final ReentrantLock lock;
-		try (Timer x = Timer.go("locks.computeIfAbsent")) {
-			try (Timer y = Timer.go("locks.computeIfAbsent/" + key)) {
-				lock = this.locks.computeIfAbsent(key, newKey -> new ReentrantLock());
-			}
+		try (Timer x = Timer.go("locks.computeIfAbsent", "locks.computeIfAbsent_" + key)) {
+			lock = this.locks.computeIfAbsent(key, newKey -> new ReentrantLock());
 		}
 		log.trace("Locking [{}]", key);
-		try (Timer x = Timer.go("locks.lock")) {
-			try (Timer y = Timer.go("locks.lock/" + key)) {
-		        lock.lock();
-			}
+		try (Timer x = Timer.go("locks.lock", "locks.lock_" + key)) {
+	        lock.lock();
 		}
 		log.trace("Locked [{}]", key);
 		return lock;
@@ -43,16 +39,12 @@ public class LockUtil<KEY, RETURN_TYPE> {
 
 	private void unlock(final KEY key, final ReentrantLock lock) {
 		log.trace("Unlocking [{}]", key);
-		try (Timer x = Timer.go("locks.unlock")) {
-			try (Timer y = Timer.go("locks.unlock/" + key)) {
-				lock.unlock();
-			}
+		try (Timer x = Timer.go("locks.unlock", "locks.unlock_" + key)) {
+			lock.unlock();
 		}
 		log.trace("Unlocked [{}]", key);
-		try (Timer x = Timer.go("locks.remove")) {
-			try (Timer y = Timer.go("locks.remove/" + key)) {
-				this.locks.remove(key, lock);
-			}
+		try (Timer x = Timer.go("locks.remove", "locks.remove_" + key)) {
+			this.locks.remove(key, lock);
 		}
 		log.trace("Removed [{}]", key);
 	}

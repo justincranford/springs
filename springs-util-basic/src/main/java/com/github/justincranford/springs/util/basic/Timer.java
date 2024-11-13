@@ -1,6 +1,7 @@
 package com.github.justincranford.springs.util.basic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -47,7 +48,6 @@ import java.util.logging.Logger;
  *   } // Triggers print "timer3" details (if currentAutoPrintInternal matches)
  * } // Triggers print "timer2" details (if currentAutoPrintInternal matches)
  */
-@SuppressWarnings("hiding")
 public class Timer implements AutoCloseable {
 	private static final Logger LOG = Logger.getLogger(Timer.class.getCanonicalName());
 
@@ -69,20 +69,22 @@ public class Timer implements AutoCloseable {
 	private static int		currentAutoLogInternal		= Timer.DEFAULT_AUTO_LOG_INTERNAL;
 	private static int		currentAutoResetInterval	= Timer.DEFAULT_AUTO_RESET_INTERVAL;
 
-	private String timer;
+	private String[] reverseTimers;
 
-	public static Timer go(final String timer) {
-		return new Timer(timer);
+	public static Timer go(final String... timers) {
+		return new Timer(timers);
 	}
 
-	public Timer(final String timer) {
-		Timer.start(timer);
-		this.timer = timer;
+	public Timer(final String... timers) {
+		Timer.start(timers);
+		final List<String> asList = Arrays.asList(timers);
+		Collections.reverse(asList);
+		this.reverseTimers = asList.toArray(new String[timers.length]);
 	}
 
 	@Override
 	public void close() {
-		Timer.stop(this.timer);
+		Timer.stop(this.reverseTimers);
 	}
 
 	public static synchronized void setLogLevel(final Level newLogLevel) {
@@ -147,36 +149,40 @@ public class Timer implements AutoCloseable {
 	}
 
 	// Substract current nanoTime at start. Adding future nanoTime at stop yields an overall positive increment for the internal.
-	public static synchronized void start(final String timer) {
-		final Long oldTotalTime = Timer.TOTAL_NANO_TIMES.get(timer);
-		if (null == oldTotalTime) {
-			Timer.TOTAL_NANO_TIMES.put(timer, Long.valueOf(LONG_ZERO.longValue() - System.nanoTime()));	// NOSONAR Remove this "Long" constructor
-			Timer.TOTAL_ITERATIONS.put(timer, LONG_ZERO);
-		} else {
-			Timer.TOTAL_NANO_TIMES.put(timer, Long.valueOf(oldTotalTime.longValue() - System.nanoTime()));	// NOSONAR Remove this "Long" constructor
-			// Iterations will be incremented at stop.
+	public static synchronized void start(final String... timers) {
+		for (final String timer : timers) {
+			final Long oldTotalTime = Timer.TOTAL_NANO_TIMES.get(timer);
+			if (null == oldTotalTime) {
+				Timer.TOTAL_NANO_TIMES.put(timer, Long.valueOf(LONG_ZERO.longValue() - System.nanoTime()));
+				Timer.TOTAL_ITERATIONS.put(timer, LONG_ZERO);
+			} else {
+				Timer.TOTAL_NANO_TIMES.put(timer, Long.valueOf(oldTotalTime.longValue() - System.nanoTime()));
+				// Iterations will be incremented at stop.
+			}
 		}
 	}
 
-	public static synchronized void stop(final String timer) {
-		final Long oldTotalTime = Timer.TOTAL_NANO_TIMES.get(timer);
-		final Long oldIterations = Timer.TOTAL_ITERATIONS.get(timer);
-		if ((null == oldTotalTime) || (null == oldIterations)) {
-			return;
-		}
-		final long newTotalTime = oldTotalTime.longValue() + System.nanoTime();
-		final long newIterations = oldIterations.longValue() + 1;
+	public static synchronized void stop(final String... timers) {
+		for (final String timer : timers) {
+			final Long oldTotalTime = Timer.TOTAL_NANO_TIMES.get(timer);
+			final Long oldIterations = Timer.TOTAL_ITERATIONS.get(timer);
+			if ((null == oldTotalTime) || (null == oldIterations)) {
+				return;
+			}
+			final long newTotalTime = oldTotalTime.longValue() + System.nanoTime();
+			final long newIterations = oldIterations.longValue() + 1;
 
-		if ((0 != currentAutoResetInterval) && (newIterations == currentAutoResetInterval)) {
-			Timer.resetTimer(timer);
-		} else {
-			Timer.TOTAL_NANO_TIMES.put(timer, Long.valueOf(newTotalTime));	// NOSONAR Remove this "Long" constructor
-			Timer.TOTAL_ITERATIONS.put(timer, Long.valueOf(newIterations));
-			Timer.STOPPED_TIMERS.add(timer);
-		}
+			if ((0 != currentAutoResetInterval) && (newIterations == currentAutoResetInterval)) {
+				Timer.resetTimer(timer);
+			} else {
+				Timer.TOTAL_NANO_TIMES.put(timer, Long.valueOf(newTotalTime));
+				Timer.TOTAL_ITERATIONS.put(timer, Long.valueOf(newIterations));
+				Timer.STOPPED_TIMERS.add(timer);
+			}
 
-		if ((0 != currentAutoLogInternal) && (0 == (newIterations % currentAutoLogInternal))) {
-			LOG.log(Timer.currentLogLevel, Timer.appendTimer(new StringBuilder(), timer, Long.valueOf(newTotalTime), Long.valueOf(newIterations)).toString());	// NOSONAR Remove this "Long" constructor
+			if ((0 != currentAutoLogInternal) && (0 == (newIterations % currentAutoLogInternal))) {
+				LOG.log(Timer.currentLogLevel, Timer.appendTimer(new StringBuilder(), timer, Long.valueOf(newTotalTime), Long.valueOf(newIterations)).toString());
+			}
 		}
 	}
 
@@ -185,7 +191,7 @@ public class Timer implements AutoCloseable {
 		Timer.stop(timer);
 	}
 
-	public static synchronized float getTotalTime(final String timer) {	// NOSONAR The Cyclomatic Complexity of this method "getTime" is 11 which is greater than 10 authorized.
+	public static synchronized float getTotalTime(final String timer) {
 		return Timer.getTotalTime(timer, Timer.currentLogTotalTimeUnit);
 	}
 
@@ -193,15 +199,15 @@ public class Timer implements AutoCloseable {
 		return Timer.TOTAL_ITERATIONS.get(timer);
 	}
 
-	public static synchronized float getAverageTime(final String timer) {	// NOSONAR The Cyclomatic Complexity of this method "getTime" is 11 which is greater than 10 authorized.
+	public static synchronized float getAverageTime(final String timer) {
 		return Timer.getAverageTime(timer, Timer.currentLogAverageTimeUnit);
 	}
 
-	public static synchronized float getTotalTime(final String timer, final TimeUnit timeUnit) {	// NOSONAR The Cyclomatic Complexity of this method "getTime" is 11 which is greater than 10 authorized.
+	public static synchronized float getTotalTime(final String timer, final TimeUnit timeUnit) {
 		return Timer.normalizeNanoTimeToTimeUnits(Timer.TOTAL_NANO_TIMES.get(timer), timeUnit);
 	}
 
-	public static synchronized float getAverageTime(final String timer, final TimeUnit timeUnit) {	// NOSONAR The Cyclomatic Complexity of this method "getTime" is 11 which is greater than 10 authorized.
+	public static synchronized float getAverageTime(final String timer, final TimeUnit timeUnit) {
 		final Long currentIterationsObj = Timer.getIterations(timer);
 		final float currentTotalTime = Timer.normalizeNanoTimeToTimeUnits(Timer.TOTAL_NANO_TIMES.get(timer), timeUnit);
 		if ((null == currentIterationsObj) || (0 == currentIterationsObj.longValue())) {
