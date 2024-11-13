@@ -21,8 +21,8 @@ import com.github.justincranford.springs.util.security.hashes.config.SpringsUtil
 	SpringsAuthenticationOrmUsersAuthenticationProvidersConfiguration.class,
 	SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration.class,
 	SpringsAuthenticationOrmUsersSessionConfiguration.class,
+	SpringsAuthenticationOrmUsersRateLimitConfiguration.class,
 	SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration.class,
-    SpringsAuthenticationOrmUsersRateLimitConfiguration.class,
     SpringsAuthenticationOrmUsersRequestLoggingConfiguration.class
 })
 public class SpringsAuthenticationOrmUsersConfiguration {

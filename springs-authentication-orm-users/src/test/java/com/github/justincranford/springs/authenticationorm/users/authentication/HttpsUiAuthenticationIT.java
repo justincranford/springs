@@ -35,7 +35,7 @@ public class HttpsUiAuthenticationIT extends AbstractIT {
 		assertThat(response).contains("action=\"/login\"");
 	}
 
-	@RepeatedTest(6)
+	@RepeatedTest(50)
 	void testHttpsLoginSuccess_personPassword_serverTls() throws Exception {
 		final SpringsPersistenceOrmUsersPeopleProperties.Person person = springsPersistenceOrmUsersPeopleProperties().getPeople().get(0);
 		final boolean success = attemptUiLogin(stlsSslContext(), person.getUsername(), person.getPassword()); // clear password from properties

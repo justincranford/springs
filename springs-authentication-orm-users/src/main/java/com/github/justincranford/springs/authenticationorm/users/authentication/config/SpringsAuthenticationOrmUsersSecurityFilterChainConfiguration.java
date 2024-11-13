@@ -82,6 +82,7 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
             .sessionManagement(management -> management
         		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
     		)
+			.addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
             ;
 
