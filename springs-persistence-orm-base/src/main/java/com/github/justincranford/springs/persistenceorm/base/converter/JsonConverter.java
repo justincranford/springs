@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Converter
 @RequiredArgsConstructor
-public class JsonConverterDelegate<T> implements AttributeConverter<T, String> {
+public class JsonConverter<T> implements AttributeConverter<T, String> {
     private final ObjectMapper objectMapper;
     private final TypeReference<T> typeReference;
 

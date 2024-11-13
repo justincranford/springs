@@ -14,7 +14,6 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonaDetails;
 import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
-import com.github.justincranford.springs.persistenceorm.users.persona.EmailAddressRfc5321Orm;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 
@@ -26,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 public class PersonaLookupService implements UserDetailsService, UserDetailsPasswordService {
     @Autowired
     private PersonaOrmRepository personaOrmRepository;
-    private EmailAddressRfc5321Orm.EmailConverter emailConverter = new EmailAddressRfc5321Orm.EmailConverter(); 
 
     @Transactional
 	@Override
@@ -35,7 +33,7 @@ public class PersonaLookupService implements UserDetailsService, UserDetailsPass
         	log.trace("Email [{}] must not be blank", unauthenticatedRawEmail); // null, empty, or blank are not allowed
         	throw new PersonaEmailNotFoundException("Invalid email");
 		}
-		final String unauthenticatedConvertedEmail = this.emailConverter.convertToDatabaseColumn(unauthenticatedRawEmail);
+		final String unauthenticatedConvertedEmail = unauthenticatedRawEmail.toLowerCase();
 		if (unauthenticatedConvertedEmail.equals(unauthenticatedRawEmail)) {
         	log.trace("Email is [{}]", unauthenticatedConvertedEmail);
 		} else {
