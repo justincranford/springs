@@ -150,10 +150,10 @@ public class Timer implements AutoCloseable {
 	public static synchronized void start(final String timer) {
 		final Long oldTotalTime = Timer.TOTAL_NANO_TIMES.get(timer);
 		if (null == oldTotalTime) {
-			Timer.TOTAL_NANO_TIMES.put(timer, new Long(LONG_ZERO.longValue() - System.nanoTime()));	// NOSONAR Remove this "Long" constructor
+			Timer.TOTAL_NANO_TIMES.put(timer, Long.valueOf(LONG_ZERO.longValue() - System.nanoTime()));	// NOSONAR Remove this "Long" constructor
 			Timer.TOTAL_ITERATIONS.put(timer, LONG_ZERO);
 		} else {
-			Timer.TOTAL_NANO_TIMES.put(timer, new Long(oldTotalTime.longValue() - System.nanoTime()));	// NOSONAR Remove this "Long" constructor
+			Timer.TOTAL_NANO_TIMES.put(timer, Long.valueOf(oldTotalTime.longValue() - System.nanoTime()));	// NOSONAR Remove this "Long" constructor
 			// Iterations will be incremented at stop.
 		}
 	}
@@ -170,13 +170,13 @@ public class Timer implements AutoCloseable {
 		if ((0 != currentAutoResetInterval) && (newIterations == currentAutoResetInterval)) {
 			Timer.resetTimer(timer);
 		} else {
-			Timer.TOTAL_NANO_TIMES.put(timer, new Long(newTotalTime));	// NOSONAR Remove this "Long" constructor
+			Timer.TOTAL_NANO_TIMES.put(timer, Long.valueOf(newTotalTime));	// NOSONAR Remove this "Long" constructor
 			Timer.TOTAL_ITERATIONS.put(timer, Long.valueOf(newIterations));
 			Timer.STOPPED_TIMERS.add(timer);
 		}
 
 		if ((0 != currentAutoLogInternal) && (0 == (newIterations % currentAutoLogInternal))) {
-			LOG.log(Timer.currentLogLevel, Timer.appendTimer(new StringBuilder(), timer, new Long(newTotalTime), Long.valueOf(newIterations)).toString());	// NOSONAR Remove this "Long" constructor
+			LOG.log(Timer.currentLogLevel, Timer.appendTimer(new StringBuilder(), timer, Long.valueOf(newTotalTime), Long.valueOf(newIterations)).toString());	// NOSONAR Remove this "Long" constructor
 		}
 	}
 
@@ -211,15 +211,15 @@ public class Timer implements AutoCloseable {
 	}
 
 	public static synchronized void logAllOrderedByStartTime(final boolean isAscending) {
-		Timer.logAllHelper(new ArrayList<String>(Timer.TOTAL_NANO_TIMES.keySet()), "All timers, ordered by start time", isAscending);	// Insertion order = Start time asc order
+		Timer.logAllHelper(new ArrayList<>(Timer.TOTAL_NANO_TIMES.keySet()), "All timers, ordered by start time", isAscending);	// Insertion order = Start time asc order
 	}
 
 	public static synchronized void logAllOrderedByStopTime(final boolean isAscending) {
-		Timer.logAllHelper(new ArrayList<String>(Timer.STOPPED_TIMERS), "All timers, ordered by stop time", isAscending);	// Stopped order
+		Timer.logAllHelper(new ArrayList<>(Timer.STOPPED_TIMERS), "All timers, ordered by stop time", isAscending);	// Stopped order
 	}
 
 	public static synchronized void logAllOrderedByName(final boolean isAscending) {
-		Timer.logAllHelper(new ArrayList<String>(new TreeSet<String>(Timer.TOTAL_NANO_TIMES.keySet())), "All timers, ordered by name", isAscending);	// Name asc order
+		Timer.logAllHelper(new ArrayList<>(new TreeSet<>(Timer.TOTAL_NANO_TIMES.keySet())), "All timers, ordered by name", isAscending);	// Name asc order
 	}
 
 	public static synchronized void logAllOrderedByTotalTime(final boolean isAscending) {
