@@ -75,7 +75,7 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
 		}
 		if (matches) {
 	    	log.trace("Person password matched for person username [{}]", unauthenticatedUsername);
-			this.upgradeEncodingService.async(actualPersonDetails.personOrm().username(), unauthenticatedPassword, actualEncodedPassword);
+			this.upgradeEncodingService.async(actualPersonDetails.personOrm().id(), unauthenticatedPassword, actualEncodedPassword);
 			return new PersonUsernamePasswordAuthenticatedToken(actualPersonDetails);
 		}
 		throw logAndCreate(PersonPasswordNoMatchException.class, DEBUG, String.format("Person password not matched for username [%s]", unauthenticatedUsername));

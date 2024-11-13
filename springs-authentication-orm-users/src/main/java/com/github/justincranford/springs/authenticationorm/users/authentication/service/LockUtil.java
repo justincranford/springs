@@ -12,10 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class LockUtil<RETURN_TYPE> {
-    private final ConcurrentHashMap<String, ReentrantLock> locks = new ConcurrentHashMap<>();
+public class LockUtil<KEY, RETURN_TYPE> {
+    private final ConcurrentHashMap<KEY, ReentrantLock> locks = new ConcurrentHashMap<>();
 
-    public RETURN_TYPE run(final String key, final Supplier<RETURN_TYPE> supplier) {
+    public RETURN_TYPE run(final KEY key, final Supplier<RETURN_TYPE> supplier) {
         final ReentrantLock lock = lock(key);
         try {
         	return supplier.get();
@@ -24,7 +24,7 @@ public class LockUtil<RETURN_TYPE> {
         }
 	}
 
-	private ReentrantLock lock(final String key) {
+	private ReentrantLock lock(final KEY key) {
 		final ReentrantLock lock;
 		try (Timer x = Timer.go("locks.computeIfAbsent")) {
 			try (Timer y = Timer.go("locks.computeIfAbsent/" + key)) {
@@ -41,7 +41,7 @@ public class LockUtil<RETURN_TYPE> {
 		return lock;
 	}
 
-	private void unlock(final String key, final ReentrantLock lock) {
+	private void unlock(final KEY key, final ReentrantLock lock) {
 		log.trace("Unlocking [{}]", key);
 		try (Timer x = Timer.go("locks.unlock")) {
 			try (Timer y = Timer.go("locks.unlock/" + key)) {

@@ -76,7 +76,7 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 		}
 		if (matches) {
 	    	log.trace("Person password matched for persona email [{}]", unauthenticatedRawEmail);
-			this.upgradeEncodingService.async(actualPersonaDetails.personOrm().username(), unauthenticatedPassword, actualEncodedPassword);
+			this.upgradeEncodingService.async(actualPersonaDetails.personOrm().id(), unauthenticatedPassword, actualEncodedPassword);
 			return new PersonaEmailPasswordAuthenticatedToken(actualPersonaDetails);
         }
 		throw logAndCreate(PersonaPasswordNoMatchException.class, DEBUG, String.format("Persona password not matched for email [%s]", unauthenticatedRawEmail));
