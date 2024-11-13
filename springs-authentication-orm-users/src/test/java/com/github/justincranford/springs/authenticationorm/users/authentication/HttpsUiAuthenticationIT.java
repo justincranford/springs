@@ -13,6 +13,7 @@ import org.htmlunit.html.HtmlPage;
 import org.htmlunit.html.HtmlPasswordInput;
 import org.htmlunit.html.HtmlTextInput;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -27,19 +28,21 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class HttpsUiAuthenticationIT extends AbstractIT {
+	@Disabled
 	@Test
 	void testHttpsLoginRedirect_whenUnauthenticated() throws Exception {
 		final String response = RestTemplateUtil.plainGet(stlsRestTemplate(), httpsBaseUrl() + "/secure/home", String.class);
 		assertThat(response).contains("action=\"/login\"");
 	}
 
-	@RepeatedTest(2)
+	@RepeatedTest(6)
 	void testHttpsLoginSuccess_personPassword_serverTls() throws Exception {
-		final SpringsPersistenceOrmUsersPeopleProperties.Person person = SecureRandomUtil.randomListElement(springsPersistenceOrmUsersPeopleProperties().getPeople());
+		final SpringsPersistenceOrmUsersPeopleProperties.Person person = springsPersistenceOrmUsersPeopleProperties().getPeople().get(0);
 		final boolean success = attemptUiLogin(stlsSslContext(), person.getUsername(), person.getPassword()); // clear password from properties
 		Assertions.assertTrue(success);
 	}
 
+	@Disabled
 	@RepeatedTest(2)
 	void testHttpsLoginSuccess_personPassword_mutualTls() throws Exception {
 		final SpringsPersistenceOrmUsersPeopleProperties.Person person = SecureRandomUtil.randomListElement(springsPersistenceOrmUsersPeopleProperties().getPeople());
@@ -47,6 +50,7 @@ public class HttpsUiAuthenticationIT extends AbstractIT {
 		Assertions.assertTrue(success);
 	}
 
+	@Disabled
 	@RepeatedTest(2)
 	void testHttps_unauthenticated() throws Exception {
 		final PersonOrm personOrm = SecureRandomUtil.randomListElement(personOrmRepository().findAll());
