@@ -1,11 +1,13 @@
-package com.github.justincranford.springs.authenticationorm.users.ratelimit.config;
+package com.github.justincranford.springs.authenticationorm.users.ratelimit.filter;
 
 import java.io.IOException;
-import java.time.Duration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.github.justincranford.springs.authenticationorm.users.ratelimit.properties.SpringsAuthenticationOrmUsersRateLimitProperties;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -20,27 +22,28 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class RateLimitingFilter extends OncePerRequestFilter {
-	private static final boolean ENABLED = false;
-    private static final int CAPACITY = 10000;
-    private static final int REFILL_AMOUNT = 1000;
-    private static final Duration REFILL_DURATION = Duration.ofSeconds(1);
+	@Autowired
+	private SpringsAuthenticationOrmUsersRateLimitProperties springsAuthenticationOrmUsersRateLimitProperties;
 
     private Bucket bucket;
 
     @PostConstruct
     public void postConstruct() {
-    	if (ENABLED) {
-    		final Bandwidth limit = Bandwidth.builder().capacity(CAPACITY).refillGreedy(REFILL_AMOUNT, REFILL_DURATION).build();
+    	if (this.springsAuthenticationOrmUsersRateLimitProperties.isEnabled()) {
+    		final Bandwidth limit = Bandwidth.builder()
+				.capacity(this.springsAuthenticationOrmUsersRateLimitProperties.getCapacity())
+				.refillGreedy(this.springsAuthenticationOrmUsersRateLimitProperties.getRefillAmount(), this.springsAuthenticationOrmUsersRateLimitProperties.getRefillDuration())
+				.build();
             this.bucket = Bucket.builder().addLimit(limit).build();
     	}
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-    	if (ENABLED) {
+    	if (this.springsAuthenticationOrmUsersRateLimitProperties.isEnabled()) {
     		final ConsumptionProbe probe = this.bucket.tryConsumeAndReturnRemaining(1);
     		if (!probe.isConsumed()) {
-    			final float waitForRefillNanos = probe.getNanosToWaitForRefill() / 1_000_000_000F;
+    			final double waitForRefillNanos = Math.ceil(probe.getNanosToWaitForRefill() / 1_000_000_000D);
     			response.addHeader("X-Rate-Limit-Retry-After-Seconds", String.valueOf(waitForRefillNanos));
     			response.sendError(HttpStatus.TOO_MANY_REQUESTS.value());
     			return;
