@@ -130,6 +130,9 @@ public class AbstractIT {
 	@Autowired
 	private String httpsBaseUrl;
 
+	@Autowired
+	private String httpsPskBaseUrl;
+
 	@BeforeAll
     private static void beforeAll() {
         SpringsUtilTestContainers.startContainers(List.of(SpringsUtilTestContainers.POSTGRESQL));
