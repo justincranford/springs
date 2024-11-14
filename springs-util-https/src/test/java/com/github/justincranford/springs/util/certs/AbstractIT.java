@@ -34,7 +34,6 @@ import lombok.experimental.Accessors;
 		AbstractIT.AbstractITConfiguration.class
 	}	
 )
-// TODO Fix configuration so this isn't needed
 @ContextConfiguration(
 	initializers={TlsInitializer.class}
 )
