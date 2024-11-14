@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
+// TODO RestTemplateUtil input headers (e.g. Authorization, for making authenticated calls)
 @Slf4j
 public class RestTemplateUtil {
 	private static final JsonFactory JSON_FACTORY = new JsonFactory();

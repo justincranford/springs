@@ -50,7 +50,6 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfigurationIT ext
 		RestTemplateUtil.anyGet(stlsRestTemplate(), httpsBaseUrl() + "/secure/notfound", String.class);
     }
 
-    // TODO
     @Disabled
     @Test
     void testSecureNotFound_authenticated() throws Exception {
