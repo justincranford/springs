@@ -48,11 +48,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
-@EnableAutoConfiguration(
-	exclude = {
-		UserDetailsServiceAutoConfiguration.class // TODO Needed?
-	}
-)
+@EnableAutoConfiguration
 @EnableConfigurationProperties
 @EnableJpaRepositories(
 	basePackageClasses = {},
