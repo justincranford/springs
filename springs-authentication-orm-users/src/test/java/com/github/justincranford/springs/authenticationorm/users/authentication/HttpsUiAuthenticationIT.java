@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.RestTemplate;
 
 import com.github.justincranford.springs.authenticationorm.users.AbstractIT;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
@@ -29,57 +30,71 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class HttpsUiAuthenticationIT extends AbstractIT {
-	private static class Constants {
-		private static final int REPEATS = 5;
-	}
-
-	@RepeatedTest(Constants.REPEATS)
-	void testHttpsLoginRedirect_whenUnauthenticated() throws Exception {
-		final String response = RestTemplateUtil.plainGet(stlsRestTemplate(), httpsBaseUrl() + "/secure/home", String.class);
-		assertThat(response).contains("action=\"/login\"");
-	}
+	private static final int REPEATS = 2;
 
 	@Nested
-	public class HttpsLoginSuccessPersonaEmail {
-		@RepeatedTest(Constants.REPEATS)
-		void sTls() throws Exception {
-			common(stlsSslContext());
+	public class HttpsLoginRedirectWhenUnauthenticated {
+		@RepeatedTest(REPEATS)
+		void stls() throws Exception {
+			attemptUnauthenticatedHttpGet(stlsRestTemplate());
 		}
-		@RepeatedTest(Constants.REPEATS)
-		void mTls() throws Exception {
-			common(mtlsSslContext());
-		}
-		private void common(final SSLContext sslContext) throws Exception {
-			final List<SpringsPersistenceOrmUsersPeopleProperties.Person> people = springsPersistenceOrmUsersPeopleProperties().getPeople();
-			Assertions.assertTrue(people.size() > 0);
-			final SpringsPersistenceOrmUsersPeopleProperties.Person person = people.getFirst();
-			final List<Persona> personas = person.getPersonas();
-			Assertions.assertTrue(personas.size() > 0);
-			final Persona persona = personas.getFirst();
-			final List<EmailAddress> emailAddresses = persona.getEmailAddresses();
-			Assertions.assertTrue(emailAddresses.size() > 0);
-			final EmailAddress emailAddress = emailAddresses.getFirst();
-			final boolean success = attemptUiLogin(sslContext, emailAddress.getEmailAddress(), person.getPassword()); // clear password from properties
-			Assertions.assertTrue(success);
+		@RepeatedTest(REPEATS)
+		void mtls() throws Exception {
+			attemptUnauthenticatedHttpGet(mtlsRestTemplate());
 		}
 	}
 
 	@Nested
-	public class HttpsLoginSuccessPersonUsername {
-		@RepeatedTest(Constants.REPEATS)
-		void sTls() throws Exception {
-			common(stlsSslContext());
+	public class HttpsLoginPersonaEmail {
+		@Nested
+		public class Success {
+			@RepeatedTest(REPEATS)
+			void sTls() throws Exception {
+				attemptLoginPersonaEmail(stlsSslContext(), true);
+			}
+			@RepeatedTest(REPEATS)
+			void mTls() throws Exception {
+				attemptLoginPersonaEmail(mtlsSslContext(), true);
+			}
 		}
-		@RepeatedTest(Constants.REPEATS)
-		void mTls() throws Exception {
-			common(mtlsSslContext());
+
+		@Nested
+		public class Failure {
+			@RepeatedTest(REPEATS)
+			void sTls() throws Exception {
+				attemptLoginPersonaEmail(stlsSslContext(), false);
+			}
+			@RepeatedTest(REPEATS)
+			void mTls() throws Exception {
+				attemptLoginPersonaEmail(mtlsSslContext(), false);
+			}
 		}
-		private void common(final SSLContext sslContext) throws Exception {
-			final List<SpringsPersistenceOrmUsersPeopleProperties.Person> people = springsPersistenceOrmUsersPeopleProperties().getPeople();
-			Assertions.assertTrue(people.size() > 0);
-			final SpringsPersistenceOrmUsersPeopleProperties.Person person = people.getFirst();
-			final boolean success = attemptUiLogin(sslContext, person.getUsername(), person.getPassword()); // clear password from properties
-			Assertions.assertTrue(success);
+	}
+
+	@Nested
+	public class HttpsLoginPersonUsername {
+		@Nested
+		public class Success {
+			@RepeatedTest(REPEATS)
+			void sTls() throws Exception {
+				attemptLoginPersonUsername(stlsSslContext(), true);
+			}
+			@RepeatedTest(REPEATS)
+			void mTls() throws Exception {
+				attemptLoginPersonUsername(mtlsSslContext(), true);
+			}
+		}
+
+		@Nested
+		public class Failure {
+			@RepeatedTest(REPEATS)
+			void sTls() throws Exception {
+				attemptLoginPersonUsername(stlsSslContext(), false);
+			}
+			@RepeatedTest(REPEATS)
+			void mTls() throws Exception {
+				attemptLoginPersonUsername(mtlsSslContext(), false);
+			}
 		}
 	}
 
@@ -121,6 +136,41 @@ public class HttpsUiAuthenticationIT extends AbstractIT {
 			log.info("Logged in page as XML:\n{}", loggedInPageAsXml);
 			final String loggedInPageTitleText = loggedInPage.getTitleText();
 			return loggedInPageTitleText.contains("Secure Home");
+		}
+	}
+
+	private void attemptUnauthenticatedHttpGet(final RestTemplate httpsRestTemplate) {
+		final String response = RestTemplateUtil.plainGet(httpsRestTemplate, httpsBaseUrl() + "/secure/home", String.class);
+		assertThat(response).contains("action=\"/login\"");
+	}
+
+	private void attemptLoginPersonaEmail(final SSLContext sslContext, final boolean assertLoginSuccess) throws Exception {
+		final List<SpringsPersistenceOrmUsersPeopleProperties.Person> people = springsPersistenceOrmUsersPeopleProperties().getPeople();
+		Assertions.assertTrue(people.size() > 0);
+		final SpringsPersistenceOrmUsersPeopleProperties.Person person = people.getFirst();
+		final List<Persona> personas = person.getPersonas();
+		Assertions.assertTrue(personas.size() > 0);
+		final Persona persona = personas.getFirst();
+		final List<EmailAddress> emailAddresses = persona.getEmailAddresses();
+		Assertions.assertTrue(emailAddresses.size() > 0);
+		final EmailAddress emailAddress = emailAddresses.getFirst();
+		final boolean success = attemptUiLogin(sslContext, emailAddress.getEmailAddress(), assertLoginSuccess ? person.getPassword() : "Wrong");
+		if (assertLoginSuccess) {
+			Assertions.assertTrue(success);
+		} else {
+			Assertions.assertFalse(success);
+		}
+	}
+
+	private void attemptLoginPersonUsername(final SSLContext sslContext, final boolean assertLoginSuccess) throws Exception {
+		final List<SpringsPersistenceOrmUsersPeopleProperties.Person> people = springsPersistenceOrmUsersPeopleProperties().getPeople();
+		Assertions.assertTrue(people.size() > 0);
+		final SpringsPersistenceOrmUsersPeopleProperties.Person person = people.getFirst();
+		final boolean success = attemptUiLogin(sslContext, person.getUsername(), assertLoginSuccess ? person.getPassword() : "Wrong");
+		if (assertLoginSuccess) {
+			Assertions.assertTrue(success);
+		} else {
+			Assertions.assertFalse(success);
 		}
 	}
 }
