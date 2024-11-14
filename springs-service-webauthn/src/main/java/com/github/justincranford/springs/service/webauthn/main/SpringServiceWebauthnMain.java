@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.webauthn;
+package com.github.justincranford.springs.service.webauthn.main;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
