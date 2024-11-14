@@ -12,10 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class LockUtil<KEY, RETURN_TYPE> {
+public class LockUtil<KEY, VALUE> {
     private final ConcurrentHashMap<KEY, ReentrantLock> locks = new ConcurrentHashMap<>();
 
-    public RETURN_TYPE run(final KEY key, final Supplier<RETURN_TYPE> supplier) {
+    public VALUE run(final KEY key, final Supplier<VALUE> supplier) {
         final ReentrantLock lock = lock(key);
         try {
         	return supplier.get();

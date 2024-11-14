@@ -3,7 +3,6 @@ package com.github.justincranford.springs.authenticationorm.users.authentication
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -33,11 +32,7 @@ import lombok.extern.slf4j.Slf4j;
  * @see org.springframework.security.config.annotation.web.builders.FilterOrderRegistration
  */
 @Configuration
-@EnableAutoConfiguration(
-	exclude = {
-		UserDetailsServiceAutoConfiguration.class
-	}
-)
+@EnableAutoConfiguration
 @EnableWebSecurity
 //@EnableMethodSecurity(prePostEnabled=true, securedEnabled=true, jsr250Enabled=true)
 @Import(value = {
@@ -58,16 +53,21 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
 	@Autowired
 	private final RequestLoggingFilter requestLoggingFilter;
 
+	@Primary
 	@Bean
 	public AuthenticationManager htmlAuthenticationManager(HttpSecurity http) throws Exception {
 		final AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-		return authenticationManagerBuilder
+		final AuthenticationManager authenticationManager = authenticationManagerBuilder
 			.authenticationProvider(this.personaEmailPasswordAuthenticationProvider)
 			.authenticationProvider(this.personUsernamePasswordAuthenticationProvider)
 			.parentAuthenticationManager(null) // Prevent ProviderManager recursively calling `this.parent.authenticate(authentication)`
 			.build();
+		return authenticationManager;
 	}
 
+	/**
+	 * @see org.springframework.security.config.annotation.web.configuration.HttpSecurityConfiguration#httpSecurity
+	 */
 	@Primary
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

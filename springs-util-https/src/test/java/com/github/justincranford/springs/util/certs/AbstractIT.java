@@ -86,7 +86,7 @@ public class AbstractIT {
 	private String httpsBaseUrl;
 
     @Configuration
-	@EnableAutoConfiguration(exclude = { UserDetailsServiceAutoConfiguration.class })
+	@EnableAutoConfiguration(exclude = { UserDetailsServiceAutoConfiguration.class }) // TODO Needed?
     static class AbstractITConfiguration {
 	    @Bean
 	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

@@ -18,10 +18,12 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonTokenClassNotSupportedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonTokenNullNotAllowedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.PasswordUpgradeEncodingService;
-import com.github.justincranford.springs.authenticationorm.users.authentication.service.PersonLookupService;
+import com.github.justincranford.springs.authenticationorm.users.authentication.service.PersonService;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonDetails;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonUsernamePasswordAuthenticatedToken;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonUsernamePasswordUnauthenticatedToken;
+import com.github.justincranford.springs.persistenceorm.users.config.projection.PersonIdPasswordProjection;
+import com.github.justincranford.springs.persistenceorm.users.persona.email.EmailRfc5321Validator;
 import com.github.justincranford.springs.util.basic.Timer;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,8 +31,10 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class PersonUsernamePasswordAuthenticationProvider implements AuthenticationProvider {
-	@Autowired
-	private PersonLookupService personLookupService;
+    private static final EmailRfc5321Validator EMAIL_VALIDATOR = EmailRfc5321Validator.create(null);
+
+    @Autowired
+	private PersonService personService;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -44,46 +48,49 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
 
     @Override
     public Authentication authenticate(final Authentication unauthenticatedToken) throws AuthenticationException {
-		final String unauthenticatedUsername;
-		final String unauthenticatedPassword;
-    	if (unauthenticatedToken == null) {
-    		throw logAndCreate(PersonTokenNullNotAllowedException.class, TRACE, String.format("Token is null"));
-    	} else if (unauthenticatedToken instanceof PersonUsernamePasswordUnauthenticatedToken unauthenticatedEmailPasswordToken) {
-        	log.trace("Token class [{}] supported", PersonUsernamePasswordUnauthenticatedToken.class.getSimpleName());
-    		unauthenticatedUsername = unauthenticatedEmailPasswordToken.getName();
-    		unauthenticatedPassword = unauthenticatedEmailPasswordToken.getCredentials().toString();
-    	} else if (unauthenticatedToken instanceof UsernamePasswordAuthenticationToken unauthenticatedUsernamePasswordToken) {
-        	log.trace("Token class [{}] supported", UsernamePasswordAuthenticationToken.class.getSimpleName());
-    		unauthenticatedUsername = unauthenticatedUsernamePasswordToken.getName();
-    		unauthenticatedPassword = unauthenticatedUsernamePasswordToken.getCredentials().toString();
+    	if (unauthenticatedToken instanceof PersonUsernamePasswordUnauthenticatedToken) {
+        	log.trace("Token class PersonaEmailPasswordUnauthenticatedToken supported by PersonUsernamePasswordAuthenticationProvider");
+    	} else if (unauthenticatedToken instanceof UsernamePasswordAuthenticationToken) {
+        	log.trace("Token class UsernamePasswordAuthenticationToken supported by PersonUsernamePasswordAuthenticationProvider");
+    	} else if (unauthenticatedToken == null) {
+    		throw logAndCreate(PersonTokenNullNotAllowedException.class, DEBUG, "Token null not supported by PersonaEmailPasswordAuthenticationProvider");
     	} else {
-    		throw logAndCreate(PersonTokenClassNotSupportedException.class, TRACE, String.format("Token class [%s] not supported", unauthenticatedToken.getClass().getSimpleName()));
+    		throw logAndCreate(PersonTokenClassNotSupportedException.class, TRACE, "Token class " + unauthenticatedToken.getClass().getSimpleName() + " not supported by PersonaEmailPasswordAuthenticationProvider");
 		}
+		final String usernameMixedCase = unauthenticatedToken.getName();
+		final String password          = unauthenticatedToken.getCredentials().toString();
 
-		if (Strings.isBlank(unauthenticatedPassword)) {
+		if (EMAIL_VALIDATOR.isValid(usernameMixedCase, false)) {
+        	log.trace("Ignoring name [{}] because it is a valid email address.", usernameMixedCase);
+    		return null; // ASSUME: Handled by PersonaEmailPasswordAuthenticationProvider 
+		} else 
+		if (Strings.isBlank(password)) {
     		throw logAndCreate(PersonPasswordBlankNotAllowedException.class, TRACE, "Password must not be blank");
 		}
+		final String usernameLowerCase = usernameMixedCase.toLowerCase();
 
-		final PersonDetails actualPersonDetails;
-		try (Timer x = Timer.go("personLookupService.loadUserByUsername")) {
-			actualPersonDetails = this.personLookupService.loadUserByUsername(unauthenticatedUsername);
+		final PersonIdPasswordProjection personIdPasswordProjection;
+		try (Timer x = Timer.go("personService.findPersonIdPasswordByUsername")) {
+			personIdPasswordProjection = this.personService.findPersonIdPasswordByUsername(usernameLowerCase);
 		}
-		final String actualEncodedPassword = actualPersonDetails.getPassword();
-		final boolean matches;
+
+		final boolean doesPasswordMatch;
 		try (Timer x = Timer.go("passwordEncoder.matches")) {
-			matches = this.passwordEncoder.matches(unauthenticatedPassword, actualEncodedPassword);
+			doesPasswordMatch = this.passwordEncoder.matches(password, personIdPasswordProjection.getPersonPassword());
 		}
-		if (matches) {
-	    	log.trace("Person password matched for person username [{}]", unauthenticatedUsername);
-	    	final boolean upgradeEncoding = this.passwordEncoder.upgradeEncoding(unauthenticatedPassword); // design intent is fast
-			if (upgradeEncoding) {
-				log.debug("Person password for username [{}] requires upgrade encoding", unauthenticatedUsername);
-				this.upgradeEncodingService.async(actualPersonDetails.personOrm().id(), unauthenticatedPassword);
+		if (doesPasswordMatch) {
+			if (this.passwordEncoder.upgradeEncoding(password)) {
+				log.debug("Person password matched for username [{}]; pgrade encoding is required.", usernameMixedCase);
+				this.upgradeEncodingService.asyncUpdatePasswordByPersonId(personIdPasswordProjection.getPersonId(), password);
 			} else {
-				log.trace("Person password for username [{}] doesn't require upgrade encoding", unauthenticatedUsername);
+				log.trace("Person password matched for username [{}]; pgrade encoding isn't required.", usernameMixedCase);
 			}
-			return new PersonUsernamePasswordAuthenticatedToken(actualPersonDetails);
+			final PersonDetails personDetails;
+			try (Timer x = Timer.go("personService.loadUserByUsername")) {
+				personDetails = this.personService.loadUserByUsername(usernameMixedCase);
+			}
+			return new PersonUsernamePasswordAuthenticatedToken(personDetails);
 		}
-		throw logAndCreate(PersonPasswordNoMatchException.class, DEBUG, String.format("Person password not matched for username [%s]", unauthenticatedUsername));
+		throw logAndCreate(PersonPasswordNoMatchException.class, DEBUG, String.format("Person password not matched for username [%s]", usernameMixedCase));
     }
 }

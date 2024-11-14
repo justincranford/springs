@@ -50,7 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @EnableAutoConfiguration(
 	exclude = {
-		UserDetailsServiceAutoConfiguration.class
+		UserDetailsServiceAutoConfiguration.class // TODO Needed?
 	}
 )
 @EnableConfigurationProperties

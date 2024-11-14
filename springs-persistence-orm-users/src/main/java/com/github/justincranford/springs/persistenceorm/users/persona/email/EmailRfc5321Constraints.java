@@ -13,7 +13,7 @@ import jakarta.validation.Payload;
 @Constraint(validatedBy = EmailRfc5321Validator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface EmailRfc5321 {
+public @interface EmailRfc5321Constraints {
     String message() default "Email address must conform to RFC 5321 format (e.g. max 3-254 chars)";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

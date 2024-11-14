@@ -18,29 +18,45 @@ import lombok.extern.slf4j.Slf4j;
 @Observed
 @Slf4j
 public class PasswordUpgradeEncodingService {
-	private final LockUtil<Long, Future<Boolean>> lockUtil = new LockUtil<>();
+	private final LockUtil<Long, Future<Void>> lockUtil = new LockUtil<>();
 
     @Autowired
-	private PersonLookupService personLookupService;
+	private PersonService personLookupService;
 
 	@Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Future<Boolean> async(final Long id, final String clearPassword) {
-    	final ThrowingSupplier<Boolean> syncSupplier     = () -> sync(id, clearPassword);
-		final Future<Boolean>           async            = ThreadUtil.supplyAsync(syncSupplier);
-		final Supplier<Future<Boolean>> asyncSupplier    = () -> async;
-		return this.lockUtil.run(id, asyncSupplier);
+	@Observed
+    public Future<Void> asyncUpdatePasswordByPersonId(final Long personId, final String personEncodedPassword) {
+		// do encode and updatePassword asynchronously
+    	final ThrowingSupplier<Void> innerSupplier = () -> encodeAndUpdateById(personId, personEncodedPassword);
+		final Future<Void>           innerAsync    = ThreadUtil.supplyAsync(innerSupplier);
+
+		// wrap inner async to avoid concurrent execution for same ID
+		final Supplier<Future<Void>> outerSupplier = () -> innerAsync;
+		final Future<Void>           outerAsync    = this.lockUtil.run(personId, outerSupplier);
+
+		return outerAsync;
 	}
 
-	private boolean sync(final Long id, final String clearPassword) {
-		final String newEncodedPassword;
+	@Observed
+	private Void encodeAndUpdateById(final Long personId, final String personEncodedPassword) {
+		final String newEncodedPassword = this.encode(personEncodedPassword);
+		this.updatePassword(personId, newEncodedPassword);
+		return null;
+	}
+
+	@Observed
+	private String encode(final String personEncodedPassword) {
 		try (Timer x = Timer.go("PasswordUpgradeEncodingService.encode")) {
-			newEncodedPassword = this.passwordEncoder.encode(clearPassword); // design intent is slow
+			return this.passwordEncoder.encode(personEncodedPassword); // design intent is slow
 		}
+	}
+
+	@Observed
+	private void updatePassword(final Long personId, final String newEncodedPassword) {
 		try (Timer x = Timer.go("PasswordUpgradeEncodingService.updatePassword")) {
-			this.personLookupService.updatePassword(id, newEncodedPassword);
+			this.personLookupService.updatePasswordById(personId, newEncodedPassword);
 		}
-		return true;
 	}
 }
