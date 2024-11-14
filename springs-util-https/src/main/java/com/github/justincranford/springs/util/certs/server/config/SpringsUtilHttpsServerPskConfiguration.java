@@ -17,7 +17,9 @@ import com.github.justincranford.springs.util.certs.util.TlsPskUtil;
 @Configuration
 public class SpringsUtilHttpsServerPskConfiguration {
 	private static final boolean ADD_TLS_PSK_CONNECTOR = true;
-    @Bean
+	private static final int PORT = 9443;
+
+	@Bean
     public JettyServletWebServerFactory jettyServletWebServerFactory(final SslBundles sslBundles) {
 		final JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
 		if (ADD_TLS_PSK_CONNECTOR) {
@@ -29,7 +31,7 @@ public class SpringsUtilHttpsServerPskConfiguration {
 
 					@SuppressWarnings({"resource"})
 					final ServerConnector serverConnector = new ServerConnector(server, sslContextFactory);
-	                serverConnector.setPort(9443);
+					serverConnector.setPort(PORT);
 	                server.addConnector(serverConnector);
 	            }
 	        });

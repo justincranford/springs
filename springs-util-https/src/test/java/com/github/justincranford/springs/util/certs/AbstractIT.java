@@ -24,8 +24,10 @@ import com.github.justincranford.springs.util.certs.client.config.SpringsUtilTls
 import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
 import com.github.justincranford.springs.util.certs.server.TlsInitializer;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest(
 	webEnvironment = WebEnvironment.RANDOM_PORT,
@@ -41,15 +43,34 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @ActiveProfiles({"test"})
 @SuppressWarnings({"static-method"})
+@Slf4j
 public class AbstractIT {
+	@PostConstruct
+	public void postConstruct() {
+		this.httpBaseUrl     = "http://"  + serverAddress() + ":" + localServerPort();
+		this.httpsBaseUrl    = "https://" + serverAddress() + ":" + localServerPort();
+		this.httpsPskBaseUrl = "https://" + serverAddress() + ":" + 9443;
+		log.info("urls, http: {}, https: {}, psk: {}", this.httpBaseUrl, this.httpsBaseUrl, this.httpsPskBaseUrl);
+	}
+
+	@Value("${server.address}")
+	private String serverAddress;
+
 	@LocalServerPort
 	private long localServerPort;
+
+	@Autowired
+	private String httpBaseUrl;
+
+	@Autowired
+	private String httpsBaseUrl;
+
+    @Autowired
+    private String httpsPskBaseUrl;
 
 	@Value("${" + TlsInitializer.SslAutoConfigPropertyNames.ENABLED + ":false}")
 	private boolean sslAutoConfigEnabled;
 
-	@Value("${server.address}")
-	private String serverAddress;
 	@Autowired
 	@Qualifier("httpRestTemplate")
 	private RestTemplate httpRestTemplate; /** @see SpringsUtilHttpClientConfiguration#httpRestTemplate */
@@ -78,21 +99,11 @@ public class AbstractIT {
 	@Qualifier("ptlsSslContext")
 	private SSLContext ptlsSslContext; /** @see SpringsUtilTlsClientsConfiguration#ptlsSslContext */
 
-	@Autowired
-	private String httpBaseUrl;
-
-	@Autowired
-	private String httpsBaseUrl;
-
     @Configuration
-	@EnableAutoConfiguration(exclude = { UserDetailsServiceAutoConfiguration.class }) // TODO Needed?
     static class AbstractITConfiguration {
 	    @Bean
 	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-	        http
-	        	.authorizeHttpRequests(authz -> authz.anyRequest().permitAll())
-	        	.csrf(csrf -> csrf.disable());
-	        return http.build();
+	        return http.authorizeHttpRequests(authz -> authz.anyRequest().permitAll()).csrf(csrf -> csrf.disable()).build();
 	    }
     }
 }

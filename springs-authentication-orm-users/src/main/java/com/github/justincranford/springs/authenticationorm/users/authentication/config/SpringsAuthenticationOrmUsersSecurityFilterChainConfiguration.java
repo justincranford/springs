@@ -122,24 +122,4 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
 
         return http.build();
     }
-
-	@Bean
-	public String httpBaseUrl(
-		@Value("${server.address}") final String serverAddress,
-		@Value("${server.port}") final long serverPort
-	) {
-		final String httpBaseUrl = "http://" + serverAddress + ":" + serverPort;
-		log.info("httpBaseUrl: {}", httpBaseUrl);
-		return httpBaseUrl;
-	}
-
-	@Bean
-	public String httpsBaseUrl(
-		@Value("${server.address}") final String serverAddress,
-		@Value("${server.port}") final long serverPort
-	) {
-		final String httpsBaseUrl = "https://" + serverAddress + ":" + serverPort;
-		log.info("httpsBaseUrl: {}", httpsBaseUrl);
-		return httpsBaseUrl;
-	}
 }

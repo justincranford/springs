@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,29 +26,37 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @Slf4j
 public class HttpsHelloWorldIT extends AbstractIT {
-	private String httpUrl;
-	private String httpsUrl;
-	private String httpsPskUrl;
-
-	@BeforeEach
-	public void beforeEach() {
-		this.httpUrl     = "http://"  + serverAddress() + ":" + localServerPort() + "/helloworld";
-		this.httpsUrl    = "https://" + serverAddress() + ":" + localServerPort() + "/helloworld";
-		this.httpsPskUrl = "https://" + serverAddress() + ":" + "9443"            + "/helloworld";
-		log.info("urls, http: {}, https: {}, httpsPsk: {}", this.httpUrl, this.httpsUrl, this.httpsPskUrl);
-	}
-
 	@Nested
 	public class ConditionalBeans {
 		@Test
-		void testConditionalBeans() {
+		void testHttpRestTemplate() {
 			assertThat(httpRestTemplate()).isNotNull();
+		}
+
+		@Test
+		void testStlsHttpsRestTemplate() {
 			if (sslAutoConfigEnabled()) {
-				assertThat(mtlsRestTemplate()).isNotNull();
+				assertThat(stlsRestTemplate()).isNotNull();
+			} else {
+				assertThat(stlsRestTemplate()).isNull();
+			}
+		}
+
+		@Test
+		void testMtlsHttpsRestTemplate() {
+			if (sslAutoConfigEnabled()) {
 				assertThat(mtlsRestTemplate()).isNotNull();
 			} else {
 				assertThat(mtlsRestTemplate()).isNull();
-				assertThat(mtlsRestTemplate()).isNull();
+			}
+		}
+
+		@Test
+		void testPtlsHttpsRestTemplate() {
+			if (sslAutoConfigEnabled()) {
+				assertThat(ptlsRestTemplate()).isNotNull();
+			} else {
+				assertThat(ptlsRestTemplate()).isNull();
 			}
 		}
 	}
@@ -65,7 +72,7 @@ public class HttpsHelloWorldIT extends AbstractIT {
 			)));
 			assertThatThrownBy(() -> {
 				try {
-					final ResponseEntity<String> x = httpRestTemplate().exchange(HttpsHelloWorldIT.this.httpUrl, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+					final ResponseEntity<String> x = httpRestTemplate().exchange(httpBaseUrl() + "/helloworld", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 					log.info("HTTPS Status Code: {}\nResponse Headers: {}\nResponse Body: {}", x.getStatusCode(), x.getHeaders(), x.getBody());
 		        } catch (HttpStatusCodeException e) {
 		        	log.error("HTTP Error Response: [" + e.getStatusCode() + "]\nResponse headers:\n" + e.getResponseHeaders() + "\nResponse body: " + e.getResponseBodyAsString());
@@ -82,7 +89,7 @@ public class HttpsHelloWorldIT extends AbstractIT {
 				"Accept", List.of("*/*")
 			)));
 			try {
-				final ResponseEntity<String> x = httpRestTemplate().exchange(HttpsHelloWorldIT.this.httpUrl, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+				final ResponseEntity<String> x = httpRestTemplate().exchange(httpBaseUrl() + "/helloworld", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 				log.info("HTTPS Status Code: {}\nResponse Headers: {}\nResponse Body: {}", x.getStatusCode(), x.getHeaders(), x.getBody());
 				assertThat(x.getBody()).isEqualTo(HelloWorldController.Constants.RESPONSE_BODY);
 	        } catch (HttpStatusCodeException e) {
@@ -103,7 +110,7 @@ public class HttpsHelloWorldIT extends AbstractIT {
 				"Accept", List.of("*/*")
 			)));
 			try {
-				final ResponseEntity<String> x = ptlsRestTemplate().exchange(HttpsHelloWorldIT.this.httpsPskUrl, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+				final ResponseEntity<String> x = ptlsRestTemplate().exchange(httpBaseUrl() + "/helloworld", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 				log.info("HTTPS Status Code: {}\nResponse Headers: {}\nResponse Body: {}", x.getStatusCode(), x.getHeaders(), x.getBody());
 				assertThat(x.getBody()).isEqualTo(HelloWorldController.Constants.RESPONSE_BODY);
 	        } catch (HttpStatusCodeException e) {
@@ -123,7 +130,7 @@ public class HttpsHelloWorldIT extends AbstractIT {
 				"Accept", List.of("*/*")
 			)));
 			try {
-				final ResponseEntity<String> x = stlsRestTemplate().exchange(HttpsHelloWorldIT.this.httpsUrl, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+				final ResponseEntity<String> x = stlsRestTemplate().exchange(httpsBaseUrl() + "/helloworld", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 				log.info("HTTPS Status Code: {}\nResponse Headers: {}\nResponse Body: {}", x.getStatusCode(), x.getHeaders(), x.getBody());
 				assertThat(x.getBody()).isEqualTo(HelloWorldController.Constants.RESPONSE_BODY);
 	        } catch (HttpStatusCodeException e) {
@@ -143,7 +150,7 @@ public class HttpsHelloWorldIT extends AbstractIT {
 				"Accept", List.of("*/*")
 			)));
 			try {
-				final ResponseEntity<String> x = mtlsRestTemplate().exchange(HttpsHelloWorldIT.this.httpsUrl, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+				final ResponseEntity<String> x = mtlsRestTemplate().exchange(httpsBaseUrl() + "/helloworld", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 				log.info("HTTPS Status Code: {}\nResponse Headers: {}\nResponse Body: {}", x.getStatusCode(), x.getHeaders(), x.getBody());
 				assertThat(x.getBody()).isEqualTo(HelloWorldController.Constants.RESPONSE_BODY);
 	        } catch (HttpStatusCodeException e) {

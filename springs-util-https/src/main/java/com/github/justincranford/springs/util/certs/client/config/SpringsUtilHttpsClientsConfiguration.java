@@ -26,13 +26,12 @@ import com.github.justincranford.springs.util.certs.server.TlsInitializer;
 import com.github.justincranford.springs.util.certs.util.TlsPskUtil;
 
 @Configuration
-@SuppressWarnings({"resource"})
 public class SpringsUtilHttpsClientsConfiguration {
 	@Autowired
-	private SslBundles sslBundles;
+	private RestTemplateBuilder restTemplateBuilder;
 
 	@Autowired
-	private RestTemplateBuilder restTemplateBuilder;
+	private SslBundles sslBundles;
 
 	/**
 	 * @return RestTemplate instance for performing HTTP/TLS client connections with sTls (TLS Server Authentication)
@@ -65,6 +64,7 @@ public class SpringsUtilHttpsClientsConfiguration {
 	@ConditionalOnProperty(name=TlsInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
 	@Qualifier("ptlsRestTemplate")
 	@Bean
+	@SuppressWarnings({"resource"})
 	public RestTemplate ptlsRestTemplate(final WebServerApplicationContext webServerApplicationContext) {
 		final SslBundle serverTlsPskBundle = this.sslBundles.getBundle(TlsInitializer.SslBundleNames.SERVER_TLS_PSK);
 		final String webServerClassName = webServerApplicationContext.getWebServer().getClass().getName();

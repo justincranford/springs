@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -179,6 +178,7 @@ public class SpringsServiceWebauthnConfiguration {
         return http.build();
     }
 
+	// TODO Remove
 	@Bean
 	public String httpBaseUrl(
 		@Value("${server.address}") final String serverAddress,
@@ -189,6 +189,7 @@ public class SpringsServiceWebauthnConfiguration {
 		return httpBaseUrl;
 	}
 
+	// TODO Remove
 	@Bean
 	public String httpsBaseUrl(
 		@Value("${server.address}") final String serverAddress,
