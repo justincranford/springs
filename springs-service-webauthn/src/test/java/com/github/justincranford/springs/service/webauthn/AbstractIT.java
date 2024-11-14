@@ -22,6 +22,7 @@ import com.github.justincranford.springs.util.certs.client.config.SpringsUtilHtt
 import com.github.justincranford.springs.util.certs.client.config.SpringsUtilTlsClientsConfiguration;
 import com.github.justincranford.springs.util.certs.server.TlsInitializer;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -42,11 +43,28 @@ import lombok.extern.slf4j.Slf4j;
 @ActiveProfiles({"test"})
 @Slf4j
 public class AbstractIT {
-	@LocalServerPort
-	private long localServerPort;
+	@PostConstruct
+	public void postConstruct() {
+		this.httpBaseUrl     = "http://"  + serverAddress() + ":" + localServerPort();
+		this.httpsBaseUrl    = "https://" + serverAddress() + ":" + localServerPort();
+		this.httpsPskBaseUrl = "https://" + serverAddress() + ":" + 9443;
+		log.info("urls, httpBaseUrl: {}, httpsBaseUrl: {}, httpsPskBaseUrl: {}", this.httpBaseUrl, this.httpsBaseUrl, this.httpsPskBaseUrl);
+	}
 
 	@Value("${server.address}")
 	private String serverAddress;
+
+	@LocalServerPort
+	private long localServerPort;
+
+	@Autowired
+	private String httpBaseUrl;
+
+	@Autowired
+	private String httpsBaseUrl;
+
+    @Autowired
+    private String httpsPskBaseUrl;
 
 	@Autowired
 	private WebServerApplicationContext webServerApplicationContext;
@@ -80,10 +98,4 @@ public class AbstractIT {
 
 	@Autowired
 	private ObjectMapper objectMapper;
-
-	@Autowired
-	private String httpBaseUrl;
-
-	@Autowired
-	private String httpsBaseUrl;
 }

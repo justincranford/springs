@@ -22,11 +22,11 @@ import lombok.extern.slf4j.Slf4j;
 public class SpringsUtilHttpServerConfiguration {
 	@Bean
 	public String httpBaseUrl(
-			@Value("${server.address}") final String serverAddress,
-			@Value("${server.port}") final long serverPort
-		) {
-			final String httpBaseUrl = "http://" + serverAddress + ":" + serverPort;
-			log.info("httpBaseUrl: {}", httpBaseUrl);
-			return httpBaseUrl;
-		}
+		@Value("${server.address}") final String serverAddress,
+		@Value("${server.port}") final long serverPort
+	) {
+		final String httpBaseUrl = "http://" + serverAddress + ":" + serverPort;
+		log.info("httpBaseUrl: {}", httpBaseUrl);
+		return httpBaseUrl;
+	}
 }

@@ -37,7 +37,7 @@ public class AbstractIT {
 		this.httpBaseUrl     = "http://"  + serverAddress() + ":" + localServerPort();
 		this.httpsBaseUrl    = "https://" + serverAddress() + ":" + localServerPort();
 		this.httpsPskBaseUrl = "https://" + serverAddress() + ":" + 9443;
-		log.info("urls, http: {}, https: {}, psk: {}", this.httpBaseUrl, this.httpsBaseUrl, this.httpsPskBaseUrl);
+		log.info("urls, httpBaseUrl: {}, httpsBaseUrl: {}, httpsPskBaseUrl: {}", this.httpBaseUrl, this.httpsBaseUrl, this.httpsPskBaseUrl);
 	}
 
 	@Value("${server.address}")

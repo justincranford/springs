@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -177,26 +176,4 @@ public class SpringsServiceWebauthnConfiguration {
             .csrf(csrf -> csrf.disable());
         return http.build();
     }
-
-	// TODO Remove
-	@Bean
-	public String httpBaseUrl(
-		@Value("${server.address}") final String serverAddress,
-		@Value("${server.port}") final long serverPort
-	) {
-		final String httpBaseUrl = "http://"  + serverAddress + ":" + serverPort;
-		log.info("httpBaseUrl: {}", httpBaseUrl);
-		return httpBaseUrl;
-	}
-
-	// TODO Remove
-	@Bean
-	public String httpsBaseUrl(
-		@Value("${server.address}") final String serverAddress,
-		@Value("${server.port}") final long serverPort
-	) {
-		final String httpsBaseUrl = "https://"  + serverAddress + ":" + serverPort;
-		log.info("httpsBaseUrl: {}", httpsBaseUrl);
-		return httpsBaseUrl;
-	}
 }

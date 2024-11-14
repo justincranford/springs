@@ -5,8 +5,6 @@ import javax.net.ssl.SSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -50,7 +48,7 @@ public class AbstractIT {
 		this.httpBaseUrl     = "http://"  + serverAddress() + ":" + localServerPort();
 		this.httpsBaseUrl    = "https://" + serverAddress() + ":" + localServerPort();
 		this.httpsPskBaseUrl = "https://" + serverAddress() + ":" + 9443;
-		log.info("urls, http: {}, https: {}, psk: {}", this.httpBaseUrl, this.httpsBaseUrl, this.httpsPskBaseUrl);
+		log.info("urls, httpBaseUrl: {}, httpsBaseUrl: {}, httpsPskBaseUrl: {}", this.httpBaseUrl, this.httpsBaseUrl, this.httpsPskBaseUrl);
 	}
 
 	@Value("${server.address}")
