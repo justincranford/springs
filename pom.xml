@@ -64,8 +64,7 @@
 		<module>springs-persistence-orm-example</module>
 		<module>springs-persistence-orm-users</module>
 		<module>springs-persistence-orm-clients</module>
-		<module>springs-persistence-orm-sessions</module>
-		<module>springs-authentication-orm-users</module>
+		<module>springs-persistence-orm-session</module>
 		<module>springs-service-chatbot</module>
 		<module>springs-service-ollama</module>
 		<module>springs-service-webauthn</module>

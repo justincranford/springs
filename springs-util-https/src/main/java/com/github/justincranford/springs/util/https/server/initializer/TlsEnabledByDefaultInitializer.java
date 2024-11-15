@@ -243,7 +243,7 @@ public class TlsEnabledByDefaultInitializer implements ApplicationContextInitial
     				}
     			}
     		}
-    		final Boolean enabled       = Boolean.valueOf((String) foundPropertyValues.getOrDefault("server.ssl.auto-config.enabled",   "false"));
+    		final Boolean enabled       = Boolean.valueOf((String) foundPropertyValues.getOrDefault("server.ssl.auto-config.enabled",   "true"));
     		final String  algorithm     =                 (String) foundPropertyValues.getOrDefault("server.ssl.auto-config.algorithm", "EC-P384");
     		final String  serverAddress =                 (String) foundPropertyValues.getOrDefault("server.address",                   "localhost");
     		final String  clientEmail   =                 (String) foundPropertyValues.getOrDefault("client.ssl.auto-config.email",     "client@example.com");
