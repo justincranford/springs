@@ -53,19 +53,19 @@ public class UsernamePasswordAuthenticationTokenDeserializer extends JsonDeseria
 		return principalNode.asText();
 	}
 
-	private static List<GrantedAuthority> parseAuthorities(JsonNode authoritiesNode) {
+	private static List<GrantedAuthority> parseAuthorities(final JsonNode authoritiesNode) {
 		final List<GrantedAuthority> authorities = new ArrayList<>();
 
 		// Handle case where 'authorities' is wrapped in an UnmodifiableRandomAccessList (i.e., an array inside an array)
 		if (authoritiesNode != null && authoritiesNode.isArray()) {
 			// The first element contains the actual authorities
-			JsonNode authorityListNode = authoritiesNode.get(1);
+			final JsonNode authorityListNode = authoritiesNode.get(1);
 			// Get the list from inside the UnmodifiableRandomAccessList
 			if (authorityListNode != null && authorityListNode.isArray()) {
 				// Loop through the array and extract SimpleGrantedAuthority objects
-				for (JsonNode authorityNode : authorityListNode) {
+				for (final JsonNode authorityNode : authorityListNode) {
 					if (authorityNode != null && authorityNode.has("authority")) {
-						String authority = authorityNode.get("authority").asText();
+						final String authority = authorityNode.get("authority").asText();
 						if (authority != null) {
 							authorities.add(new SimpleGrantedAuthority(authority));
 						}
