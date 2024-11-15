@@ -1,7 +1,6 @@
 package com.github.justincranford.springs.authenticationorm.users.authentication.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +41,6 @@ import lombok.extern.slf4j.Slf4j;
 })
 @RequiredArgsConstructor
 @Slf4j
-@SuppressWarnings({"static-method"})
 public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
 	@Autowired
 	private final PersonaEmailPasswordAuthenticationProvider personaEmailPasswordAuthenticationProvider;
@@ -73,11 +71,11 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     	// STATELESS API AUTHENTICATION WITHOUT SESSIONS
         http.securityMatcher("/static/**", "/public/**", "/templates/**", "/META-INF/resources/**", "/helloworld", "/v1/api/authenticate/**", "/v1/api/register/**", "/v1/api/**")
-            .csrf(csrf -> csrf.disable()) // Typically disabled for stateless APIs
-            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+        	.authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers("/static/**", "/public/**", "/templates/**", "/META-INF/resources/**", "/helloworld", "/v1/api/authenticate/**", "/v1/api/register/**").permitAll()
                 .requestMatchers("/v1/api/**").authenticated()
             )
+            .csrf(csrf -> csrf.disable()) // Typically disabled for stateless APIs
             .httpBasic(Customizer.withDefaults())
             .sessionManagement(management -> management
         		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
