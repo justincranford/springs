@@ -115,7 +115,7 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
 				.expiredUrl("/login?expired=true")
 			)
 			.requestCache(cache -> cache
-				.disable()
+				.disable() // skip serdes DefaultSavedRequest to SessionRepository Session.attributes
 			)
 			.addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
