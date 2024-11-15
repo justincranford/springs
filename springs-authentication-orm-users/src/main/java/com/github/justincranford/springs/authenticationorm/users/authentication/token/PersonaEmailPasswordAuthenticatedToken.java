@@ -1,17 +1,33 @@
 package com.github.justincranford.springs.authenticationorm.users.authentication.token;
 
-import org.springframework.security.authentication.AbstractAuthenticationToken;
+import java.util.List;
 
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.github.justincranford.springs.persistenceorm.sessions.database.util.CustomGrantedAuthority;
 import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonaDetails;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 1L;
 
-	private final PersonaDetails personaDetails;
+	private PersonaDetails personaDetails;
+
+	private List<CustomGrantedAuthority> authorities;
+
+	public PersonaEmailPasswordAuthenticatedToken() {
+		this(null);
+	}
+
 	public PersonaEmailPasswordAuthenticatedToken(final PersonaDetails _personaDetails) {
-		super(_personaDetails.getAuthorities());
+		super(_personaDetails == null ? null : _personaDetails.getAuthorities());
 		super.setAuthenticated(true);
 		this.personaDetails = _personaDetails;
+		this.authorities = _personaDetails == null ? null : _personaDetails.getAuthorities();
 	}
 
 	@Override
@@ -21,7 +37,17 @@ public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticati
 
 	@Override
 	public Object getCredentials() {
-		return null;//this.personaDetails.getPassword();
+		return null;
+	}
+
+	@Override
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public List<GrantedAuthority> getAuthorities() {
+		return (List) this.authorities;
+	}
+
+	public void setAuthorities(final List<CustomGrantedAuthority> _authorities) {
+		this.authorities = _authorities;
 	}
 
 	@Override

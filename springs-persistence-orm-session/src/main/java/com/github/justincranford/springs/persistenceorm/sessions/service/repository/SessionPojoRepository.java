@@ -15,7 +15,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.stereotype.Repository;
 
@@ -46,10 +50,11 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
     private PrettyJson prettyJson;
 
 	public List<SessionOrm> cleanUpExpiredSessions() {
-		this.prettyJson.logAndSave(this.sessionOrmRepository.findAll());
+		log.info("Cleaning up expired sessions");
+//		this.prettyJson.logAndSave(this.sessionOrmRepository.findAll());
 //		final List<SessionOrm> sessionOrms = this.sessionOrmRepository.findAllExpired(DateTimeUtil.nowUtcTruncatedToMicroseconds());
 		final List<SessionOrm> sessionOrms = this.sessionOrmRepository.findAll();
-		this.prettyJson.logAndSave(sessionOrms);
+//		this.prettyJson.logAndSave(sessionOrms);
 		final List<SessionOrm> cleanedSessionOrms = new ArrayList<>();
 		for (SessionOrm sessionOrm : sessionOrms) {
 			final Instant expiresAt = sessionOrm.expiresAt().toInstant();
@@ -62,12 +67,13 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
 				cleanedSessionOrms.add(sessionOrm);
 			}
 		}
-		this.prettyJson.logAndSave(this.sessionOrmRepository.findAll());
+//		this.prettyJson.logAndSave(this.sessionOrmRepository.findAll());
 		return cleanedSessionOrms;
 	}
 
 	@Override
 	public Map<String, SessionPojo> findByIndexNameAndIndexValue(final String name, final String value) {
+		log.info("Finding by index name [{}] and index value [{}]", name, value);
 		if (!PRINCIPAL_NAME_INDEX_NAME.equals(name)) {
 			return Collections.emptyMap();
 		}
@@ -111,6 +117,7 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
 
 	@Override
     public SessionPojo createSession() {
+		log.info("Create session");
         final SessionPojo sessionPojo = SessionPojo.builder().build();
         if (sessionPojo.getMaxInactiveInterval().isPositive()) {
             sessionPojo.setExpiresTime(sessionPojo.getCreationTime().plus(sessionPojo.getMaxInactiveInterval()));
@@ -122,16 +129,20 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
 
     @Override
     public void save(SessionPojo sessionPojo) {
+		log.info("Save session, pojo:\n{}", this.prettyJson.pretty(sessionPojo));
         final byte[] externalIdBytes = Base64Util.URL.decodeFromString(sessionPojo.getId());
-		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllIncludingDeleted());
+//		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllIncludingDeleted());
 //		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllByExternalIdIncludingDeleted(externalIdBytes));
 
 		if (sessionPojo.getReplacedIds().size() > 0) {
+			log.info("Deleting replaced IDs");
 			for (final String oldId : sessionPojo.getReplacedIds()) {
+				log.info("Finding ID {}", oldId);
 		        final byte[] oldExternalIdBytes = Base64Util.URL.decodeFromString(oldId);
 				final Optional<SessionOrm> optionalSessionOrm = this.sessionOrmRepository.findByExternalIdIncludingDeleted(oldExternalIdBytes);
 				this.prettyJson.logAndSave(optionalSessionOrm);
 				if (optionalSessionOrm.isPresent()) { // DELETE
+					log.info("Deleting ID {}", oldId);
 					this.sessionOrmRepository.delete(optionalSessionOrm.get());
 				}
 			}
@@ -141,30 +152,36 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
 		final SessionOrm sessionOrm;
 		if (optionalSessionOrm.isEmpty()) { // INSERT
 			sessionOrm = this.pojoToOrm(sessionPojo);
+			log.info("Inserting session, orm:\n{}", this.prettyJson.pretty(sessionOrm));
 		} else { // UPDATE
 			sessionOrm = optionalSessionOrm.get();
 			sessionOrm.lastAccessedAt(sessionPojo.getLastAccessedTime().atOffset(ZoneOffset.UTC));
 			sessionOrm.maxInactiveInterval(sessionPojo.getMaxInactiveInterval());
 			sessionOrm.expiresAt(sessionPojo.getExpiresTime().atOffset(ZoneOffset.UTC));
 			sessionOrm.attributes(pojoToOrm(sessionPojo.getAttributes()));
+			log.info("Updating session, orm:\n{}", this.prettyJson.pretty(sessionOrm));
 		}
 		this.sessionOrmRepository.save(sessionOrm);
-		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllIncludingDeleted());
+//		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllIncludingDeleted());
     }
 
     @Override
     public SessionPojo findById(String externalIdBase64Url) {
+		log.info("Finding by ID: {}", externalIdBase64Url);
     	// TODO Cleanup expired sessions
         final byte[] externalIdBytes = Base64Util.URL.decodeFromString(externalIdBase64Url);
-		return this.sessionOrmRepository.findByExternalId(externalIdBytes)
+		final SessionPojo sessionPojo = this.sessionOrmRepository.findByExternalId(externalIdBytes)
             .map(this::ormToPojo)
 			.orElse(null);
+		log.info("Found by ID: {}", this.prettyJson.pretty(sessionPojo));
+		return sessionPojo;
     }
 
     @Override
     public void deleteById(final String externalIdBase64Url) {
+		log.info("Deleting by ID: {}", externalIdBase64Url);
         final byte[] externalIdBytes = Base64Util.URL.decodeFromString(externalIdBase64Url);
-		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllIncludingDeleted());
+//		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllIncludingDeleted());
 		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllByExternalIdIncludingDeleted(externalIdBytes));
 		final Optional<Long> optionalSessionOrmId = this.sessionOrmRepository.findIdByExternalIdIncludingDeleted(externalIdBytes);
 		this.prettyJson.logAndSave(optionalSessionOrmId);
@@ -174,15 +191,15 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
 			final Long id = optionalSessionOrmId.get();
 			log.warn("Session ID {} found for externalId: {}", id, externalIdBase64Url);
 	        this.sessionOrmRepository.deleteById(id);
-			this.prettyJson.logAndSave(this.sessionOrmRepository.findAllIncludingDeleted());
-			this.prettyJson.logAndSave(this.sessionOrmRepository.findAllByExternalIdIncludingDeleted(externalIdBytes));
+//			this.prettyJson.logAndSave(this.sessionOrmRepository.findAllIncludingDeleted());
+//			this.prettyJson.logAndSave(this.sessionOrmRepository.findAllByExternalIdIncludingDeleted(externalIdBytes));
 		}
-		this.prettyJson.logAndSave(this.sessionOrmRepository.findAll());
+//		this.prettyJson.logAndSave(this.sessionOrmRepository.findAll());
     }
 
     public List<SessionPojo> findAll() {
         final List<SessionOrm> findAll = this.sessionOrmRepository.findAll();
-        this.prettyJson.log(findAll);
+//        this.prettyJson.log(findAll);
 		return findAll.stream().map(this::ormToPojo).toList();
     }
 
@@ -232,7 +249,15 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
         				return null;
         			}
 					final String encoded = value.encoded();
-					return (encoded == null) ? null : this.objectMapper.readValue(encoded, Object.class);
+	                return switch (entry.getKey()) {
+	                    case "SPRING_SECURITY_CONTEXT"            -> this.objectMapper.readValue(encoded, SecurityContextImpl.class);
+	                    case "SPRING_SECURITY_SAVED_REQUEST"      -> this.objectMapper.readValue(encoded, SavedRequest.class);
+	                    case "SPRING_SECURITY_LAST_EXCEPTION"     -> this.objectMapper.readValue(encoded, AuthenticationException.class);
+	                    case "SPRING_SECURITY_FILTER_CHAIN"       -> this.objectMapper.readValue(encoded, FilterChainProxy.class);
+	                    case "SPRING_SECURITY_REAUTHENTICATE"     -> Boolean.parseBoolean(encoded);
+	                    case "SPRING_SECURITY_REMEMBER_ME_COOKIE" -> encoded;
+	                    default                                   -> this.objectMapper.readValue(encoded, Object.class);
+	                };
         		} catch (JsonProcessingException e) {
         			throw new RuntimeException(e);
         		}

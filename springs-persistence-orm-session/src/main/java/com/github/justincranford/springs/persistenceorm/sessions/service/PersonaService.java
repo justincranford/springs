@@ -35,7 +35,7 @@ public class PersonaService implements UserDetailsService {
     	final PersonOrm personOrm = personaOrm.person();
     	log.trace("Person found by persona, person: {}", personOrm);
 
-		return new PersonaDetails(emailAddressMixedCase, personOrm, personaOrm);
+		return new PersonaDetails(emailAddressMixedCase, personOrm.id(), personOrm, personaOrm.id(), personaOrm, true, true, true, true);
     }
 
     @Transactional

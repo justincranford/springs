@@ -40,13 +40,13 @@ public class PersonService implements UserDetailsService {
 		final List<PersonaOrm> personaOrms = personOrm.personas();
 		if (personaOrms.isEmpty()) {
 			log.trace("Personas not found by person: {}", personOrm);
-			return new PersonDetails(personOrm, null);
+			return new PersonDetails(usernameMixedCase, personOrm.id(), personOrm, null, null, true, true, true, true);
 		}
 
 		final PersonaOrm personaOrm = personaOrms.getFirst();
 		log.trace("Persona found by person, persona: {}", personaOrm);
 
-		return new PersonDetails(personOrm, personaOrm);
+		return new PersonDetails(usernameMixedCase, personOrm.id(), personOrm, personaOrm.id(), personaOrm, true, true, true, true);
 	}
 
     @Transactional

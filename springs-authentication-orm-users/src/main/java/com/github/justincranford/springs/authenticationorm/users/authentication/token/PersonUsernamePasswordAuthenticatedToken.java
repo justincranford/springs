@@ -1,17 +1,33 @@
 package com.github.justincranford.springs.authenticationorm.users.authentication.token;
 
-import org.springframework.security.authentication.AbstractAuthenticationToken;
+import java.util.List;
 
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.github.justincranford.springs.persistenceorm.sessions.database.util.CustomGrantedAuthority;
 import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonDetails;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class PersonUsernamePasswordAuthenticatedToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 1L;
 
-	private final PersonDetails personDetails;
+	private PersonDetails personDetails;
+
+	private List<CustomGrantedAuthority> authorities;
+
+	public PersonUsernamePasswordAuthenticatedToken() {
+		this(null);
+	}
+
 	public PersonUsernamePasswordAuthenticatedToken(final PersonDetails actualPersonDetails) {
-		super(actualPersonDetails.getAuthorities());
+		super(actualPersonDetails == null ? null : actualPersonDetails.getAuthorities());
 		super.setAuthenticated(true);
 		this.personDetails = actualPersonDetails;
+		this.authorities = actualPersonDetails == null ? null : actualPersonDetails.getAuthorities();
 	}
 
 	@Override
@@ -21,7 +37,17 @@ public class PersonUsernamePasswordAuthenticatedToken extends AbstractAuthentica
 
 	@Override
 	public Object getCredentials() {
-		return null;//this.personDetails.getPassword();
+		return null;
+	}
+
+	@Override
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public List<GrantedAuthority> getAuthorities() {
+		return (List) this.authorities;
+	}
+
+	public void setAuthorities(final List<CustomGrantedAuthority> _authorities) {
+		this.authorities = _authorities;
 	}
 
 	@Override

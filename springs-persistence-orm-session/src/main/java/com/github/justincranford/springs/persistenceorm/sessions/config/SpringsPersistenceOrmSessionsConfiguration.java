@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.github.justincranford.springs.persistenceorm.sessions.database.config.SpringsPersistenceOrmSessionsDatabaseConfiguration;
+import com.github.justincranford.springs.persistenceorm.sessions.json.serdes.SpringsPersistenceOrmSessionsCustomObjectMapperConfiguration;
 import com.github.justincranford.springs.persistenceorm.sessions.service.config.SpringsPersistenceOrmSessionsServiceConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
@@ -15,7 +16,8 @@ import com.github.justincranford.springs.util.security.hashes.config.SpringsUtil
 	SpringsUtilHttpsConfiguration.class,
     SpringsUtilSecurityHashesConfiguration.class,
 	SpringsPersistenceOrmSessionsDatabaseConfiguration.class,
-	SpringsPersistenceOrmSessionsServiceConfiguration.class
+	SpringsPersistenceOrmSessionsServiceConfiguration.class,
+	SpringsPersistenceOrmSessionsCustomObjectMapperConfiguration.class
 })
 public class SpringsPersistenceOrmSessionsConfiguration {
 	// do nothing
