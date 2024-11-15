@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.http.client.config;
+package com.github.justincranford.springs.util.http.client.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

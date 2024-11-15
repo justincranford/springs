@@ -19,10 +19,10 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonUsernamePasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonaEmailPasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.authentication.root.controller.RedirectController;
-import com.github.justincranford.springs.service.http.server.HelloWorldController;
-import com.github.justincranford.springs.service.http.server.RedirectToLoginConfigurer;
-import com.github.justincranford.springs.util.http.logging.filter.RequestLogFilter;
-import com.github.justincranford.springs.util.http.ratelimit.filter.RateLimitFilter;
+import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
+import com.github.justincranford.springs.util.http.server.logging.filter.RequestLogFilter;
+import com.github.justincranford.springs.util.http.server.ratelimit.filter.RateLimitFilter;
+import com.github.justincranford.springs.util.http.server.redirect.RedirectToLoginConfigurer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.http.logging.filter;
+package com.github.justincranford.springs.util.http.server.logging.filter;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;

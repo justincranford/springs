@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.http.server;
+package com.github.justincranford.springs.util.http.server.redirect;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;

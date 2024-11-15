@@ -1,10 +1,10 @@
-package com.github.justincranford.springs.service.http.config;
+package com.github.justincranford.springs.util.http.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.github.justincranford.springs.service.http.client.config.SpringsUtilHttpClientConfiguration;
-import com.github.justincranford.springs.service.http.server.config.SpringsUtilHttpServerConfiguration;
+import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
+import com.github.justincranford.springs.util.http.server.config.SpringsUtilHttpServerConfiguration;
 
 import lombok.extern.slf4j.Slf4j;
 

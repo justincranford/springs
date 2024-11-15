@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.http.ratelimit.properties;
+package com.github.justincranford.springs.util.http.server.ratelimit.properties;
 import java.time.Duration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;

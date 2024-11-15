@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
-import com.github.justincranford.springs.service.http.config.SpringsUtilHttpConfiguration;
+import com.github.justincranford.springs.util.http.config.SpringsUtilHttpConfiguration;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;

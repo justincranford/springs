@@ -16,11 +16,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.RestTemplate;
 
-import com.github.justincranford.springs.service.http.client.config.SpringsUtilHttpClientConfiguration;
 import com.github.justincranford.springs.util.certs.client.config.SpringsUtilHttpsClientsConfiguration;
 import com.github.justincranford.springs.util.certs.client.config.SpringsUtilTlsClientsConfiguration;
 import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
 import com.github.justincranford.springs.util.certs.server.TlsInitializer;
+import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;

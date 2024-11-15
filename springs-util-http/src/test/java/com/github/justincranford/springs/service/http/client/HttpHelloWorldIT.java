@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.client.ResourceAccessException;
 
 import com.github.justincranford.springs.service.http.AbstractIT;
-import com.github.justincranford.springs.service.http.server.HelloWorldController;
+import com.github.justincranford.springs.util.http.client.util.RestTemplateUtil;
+import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
 
 import lombok.extern.slf4j.Slf4j;
 

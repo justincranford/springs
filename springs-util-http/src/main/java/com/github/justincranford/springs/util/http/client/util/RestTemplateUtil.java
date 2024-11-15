@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.service.http.client;
+package com.github.justincranford.springs.util.http.client.util;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

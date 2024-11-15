@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.HttpClientErrorException;
 
-import com.github.justincranford.springs.service.http.client.RestTemplateUtil;
+import com.github.justincranford.springs.util.http.client.util.RestTemplateUtil;
 
 public class SpringsAuthenticationOrmUsersSecurityFilterChainConfigurationIT extends AbstractIT {
     @Test

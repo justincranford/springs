@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.http.ratelimit.filter;
+package com.github.justincranford.springs.util.http.server.ratelimit.filter;
 
 import java.io.IOException;
 
@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.github.justincranford.springs.util.http.ratelimit.properties.SpringsUtilHttpRateLimitProperties;
+import com.github.justincranford.springs.util.http.server.ratelimit.properties.SpringsUtilHttpRateLimitProperties;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;

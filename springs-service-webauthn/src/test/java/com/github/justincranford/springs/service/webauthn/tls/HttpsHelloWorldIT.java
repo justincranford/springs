@@ -9,9 +9,9 @@ import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.HttpClientErrorException;
 
-import com.github.justincranford.springs.service.http.client.RestTemplateUtil;
-import com.github.justincranford.springs.service.http.server.HelloWorldController;
 import com.github.justincranford.springs.service.webauthn.AbstractIT;
+import com.github.justincranford.springs.util.http.client.util.RestTemplateUtil;
+import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
 
 public class HttpsHelloWorldIT extends AbstractIT {
 	@Test

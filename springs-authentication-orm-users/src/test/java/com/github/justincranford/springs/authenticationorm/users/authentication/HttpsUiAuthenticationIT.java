@@ -24,7 +24,7 @@ import com.github.justincranford.springs.authenticationorm.users.AbstractIT;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties.Person.Persona;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties.Person.Persona.EmailAddress;
-import com.github.justincranford.springs.service.http.client.RestTemplateUtil;
+import com.github.justincranford.springs.util.http.client.util.RestTemplateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

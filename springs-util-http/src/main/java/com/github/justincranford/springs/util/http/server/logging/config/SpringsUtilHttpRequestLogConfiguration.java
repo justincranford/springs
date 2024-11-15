@@ -1,9 +1,9 @@
-package com.github.justincranford.springs.util.http.logging.config;
+package com.github.justincranford.springs.util.http.server.logging.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import com.github.justincranford.springs.util.http.logging.filter.RequestLogFilter;
+import com.github.justincranford.springs.util.http.server.logging.filter.RequestLogFilter;
 
 @Configuration
 @ComponentScan(

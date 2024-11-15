@@ -18,8 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 
-import com.github.justincranford.springs.service.http.server.HelloWorldController;
 import com.github.justincranford.springs.util.certs.AbstractIT;
+import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
 
 import lombok.extern.slf4j.Slf4j;
 
