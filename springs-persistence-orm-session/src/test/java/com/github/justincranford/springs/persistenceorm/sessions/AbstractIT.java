@@ -164,6 +164,9 @@ public class AbstractIT {
 					.logoutSuccessUrl("/helloworld?logout=true")
 					.invalidateHttpSession(true)
 	            )
+    			.requestCache(cache -> cache
+					.disable() // skip serdes DefaultSavedRequest to SessionRepository Session.attributes
+				)
                 ;
             return http.build();
     	}
