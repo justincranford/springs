@@ -2,12 +2,12 @@ package com.github.justincranford.springs.persistenceorm.sessions.service.model;
 
 import java.util.List;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.github.justincranford.springs.persistenceorm.sessions.database.util.CustomGrantedAuthority;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.PersonaType;
@@ -63,16 +63,16 @@ public class PersonDetails implements UserDetails {
 	}
 
 	@Override
-	public List<CustomGrantedAuthority> getAuthorities() {
+	public List<SimpleGrantedAuthority> getAuthorities() {
 		if (this.personaOrm == null) {
 			return List.of();
 		}
 		final PersonaType personaType = this.personaOrm.personaType();
-		return List.of(new CustomGrantedAuthority("ROLE_" + personaType.name()));
+		return List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
 	}
 
 	@SuppressWarnings("unused")
-	public void setAuthorities(final List<CustomGrantedAuthority> _authorities) {
+	public void setAuthorities(final List<SimpleGrantedAuthority> _authorities) {
 		// do nothing
 	}
 }

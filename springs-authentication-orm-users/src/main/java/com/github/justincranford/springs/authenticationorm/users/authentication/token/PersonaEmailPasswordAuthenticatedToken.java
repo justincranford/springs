@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.github.justincranford.springs.persistenceorm.sessions.database.util.CustomGrantedAuthority;
 import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonaDetails;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -17,7 +17,7 @@ public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticati
 
 	private PersonaDetails personaDetails;
 
-	private List<CustomGrantedAuthority> authorities;
+	private List<SimpleGrantedAuthority> authorities;
 
 	public PersonaEmailPasswordAuthenticatedToken() {
 		this(null);
@@ -46,7 +46,7 @@ public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticati
 		return (List) this.authorities;
 	}
 
-	public void setAuthorities(final List<CustomGrantedAuthority> _authorities) {
+	public void setAuthorities(final List<SimpleGrantedAuthority> _authorities) {
 		this.authorities = _authorities;
 	}
 

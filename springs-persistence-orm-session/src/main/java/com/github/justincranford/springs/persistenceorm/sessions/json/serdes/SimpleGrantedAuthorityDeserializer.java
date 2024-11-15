@@ -8,13 +8,12 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.github.justincranford.springs.persistenceorm.sessions.database.util.CustomGrantedAuthority;
 
 public class SimpleGrantedAuthorityDeserializer extends StdDeserializer<SimpleGrantedAuthority> {
 	private static final long serialVersionUID = 1L;
 
     public SimpleGrantedAuthorityDeserializer() {
-        super(CustomGrantedAuthority.class);
+        super(SimpleGrantedAuthority.class);
     }
 
     @Override
