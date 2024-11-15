@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 import com.github.justincranford.springs.authenticationorm.users.config.SpringsAuthenticationOrmUsersConfiguration;
-import com.github.justincranford.springs.util.https.server.initializer.TlsInitializer;
+import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
 
 @SpringBootApplication
 @Import({SpringsAuthenticationOrmUsersConfiguration.class})
@@ -13,7 +13,7 @@ import com.github.justincranford.springs.util.https.server.initializer.TlsInitia
 public class SpringsAuthenticationOrmUsersMain {
 	public static void main(final String[] args) {
 		final SpringApplication springApplication = new SpringApplication(SpringsAuthenticationOrmUsersMain.class);
-		springApplication.addInitializers(new TlsInitializer());
+		springApplication.addInitializers(new TlsEnabledByDefaultInitializer());
 		springApplication.run(args);
 	}
 }

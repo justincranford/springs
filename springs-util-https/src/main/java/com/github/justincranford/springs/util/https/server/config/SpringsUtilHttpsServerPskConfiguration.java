@@ -10,7 +10,7 @@ import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.github.justincranford.springs.util.https.server.initializer.TlsInitializer;
+import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
 import com.github.justincranford.springs.util.https.util.TlsPskUtil;
 
 @SuppressWarnings({"static-method"})
@@ -26,7 +26,7 @@ public class SpringsUtilHttpsServerPskConfiguration {
 	        factory.addServerCustomizers(new JettyServerCustomizer() {
 				@Override
 	            public void customize(Server server) {
-					final SslBundle                serverTlsPskBundle = sslBundles.getBundle(TlsInitializer.SslBundleNames.SERVER_TLS_PSK);
+					final SslBundle                serverTlsPskBundle = sslBundles.getBundle(TlsEnabledByDefaultInitializer.SslBundleNames.SERVER_TLS_PSK);
 					final SslContextFactory.Server sslContextFactory  = TlsPskUtil.createServerSslContextFactory(serverTlsPskBundle);
 
 					@SuppressWarnings({"resource"})

@@ -22,7 +22,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-import com.github.justincranford.springs.util.https.server.initializer.TlsInitializer;
+import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
 import com.github.justincranford.springs.util.https.util.TlsPskUtil;
 
 @Configuration
@@ -35,38 +35,38 @@ public class SpringsUtilHttpsClientsConfiguration {
 
 	/**
 	 * @return RestTemplate instance for performing HTTP/TLS client connections with sTls (TLS Server Authentication)
-	 * @see TlsInitializer#prependPropertySource
+	 * @see TlsEnabledByDefaultInitializer#prependPropertySource
 	 */
-	@ConditionalOnProperty(name=TlsInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
+	@ConditionalOnProperty(name=TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
 	@Qualifier("stlsRestTemplate")
 	@Bean
 	public RestTemplate stlsRestTemplate() {
-        final SslBundle clientSslBundle = this.sslBundles.getBundle(TlsInitializer.SslBundleNames.CLIENT_STLS_CERT);
+        final SslBundle clientSslBundle = this.sslBundles.getBundle(TlsEnabledByDefaultInitializer.SslBundleNames.CLIENT_STLS_CERT);
 		return this.restTemplateBuilder.setSslBundle(clientSslBundle).build();
 	}
 
 	/**
 	 * @return RestTemplate instance for performing HTTP/TLS client connections with mTls (TLS Mutual Authentication)
-	 * @see TlsInitializer#prependPropertySource
+	 * @see TlsEnabledByDefaultInitializer#prependPropertySource
 	 */
-	@ConditionalOnProperty(name=TlsInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
+	@ConditionalOnProperty(name=TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
 	@Qualifier("mtlsRestTemplate")
 	@Bean
 	public RestTemplate mtlsRestTemplate() {
-        final SslBundle clientSslBundle = this.sslBundles.getBundle(TlsInitializer.SslBundleNames.CLIENT_MTLS_CERT);
+        final SslBundle clientSslBundle = this.sslBundles.getBundle(TlsEnabledByDefaultInitializer.SslBundleNames.CLIENT_MTLS_CERT);
 		return this.restTemplateBuilder.setSslBundle(clientSslBundle).build();
 	}
 
 	/**
 	 * @return RestTemplate instance for performing HTTP/TLS client connections with pTls (TLS PSK Authentication)
-	 * @see TlsInitializer#prependPropertySource
+	 * @see TlsEnabledByDefaultInitializer#prependPropertySource
 	 */
-	@ConditionalOnProperty(name=TlsInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
+	@ConditionalOnProperty(name=TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
 	@Qualifier("ptlsRestTemplate")
 	@Bean
 	@SuppressWarnings({"resource"})
 	public RestTemplate ptlsRestTemplate(final WebServerApplicationContext webServerApplicationContext) {
-		final SslBundle serverTlsPskBundle = this.sslBundles.getBundle(TlsInitializer.SslBundleNames.SERVER_TLS_PSK);
+		final SslBundle serverTlsPskBundle = this.sslBundles.getBundle(TlsEnabledByDefaultInitializer.SslBundleNames.SERVER_TLS_PSK);
 		final String webServerClassName = webServerApplicationContext.getWebServer().getClass().getName();
 		if (webServerClassName.contains("Tomcat")) { // Use Apache HTTP Client
 			final SSLContext                             ptlsSslContext    = serverTlsPskBundle.createSslContext();

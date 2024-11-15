@@ -36,7 +36,7 @@ import com.github.justincranford.springs.persistenceorm.users.properties.Springs
 import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
-import com.github.justincranford.springs.util.https.server.initializer.TlsInitializer;
+import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
 import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -52,7 +52,7 @@ import lombok.extern.slf4j.Slf4j;
     }
 )
 @ContextConfiguration(
-	initializers={TlsInitializer.class}
+	initializers={TlsEnabledByDefaultInitializer.class}
 )
 @Getter
 @Accessors(fluent = true)

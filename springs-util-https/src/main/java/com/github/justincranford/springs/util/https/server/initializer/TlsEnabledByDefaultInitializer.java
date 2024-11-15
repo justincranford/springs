@@ -46,7 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings({"static-method"})
-public class TlsInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class TlsEnabledByDefaultInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
     @Override
     public void initialize(final ConfigurableApplicationContext configurableApplicationContext) {
     	Security.addProvider(new BouncyCastleProvider());
