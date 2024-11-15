@@ -114,6 +114,9 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
 				.maximumSessions(3)
 				.expiredUrl("/login?expired=true")
 			)
+			.requestCache(cache -> cache
+				.disable()
+			)
 			.addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
 //			.addFilterBefore(new BasicAuthenticationFilter(htmlAuthenticationManager(http)), UsernamePasswordAuthenticationFilter.class)
