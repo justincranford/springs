@@ -64,7 +64,7 @@
 		<module>springs-persistence-orm-session</module>
 		<module>springs-service-chatbot</module>
 		<module>springs-service-ollama</module>
-		<module>springs-service-webauthn</module>
+		<module>springs-server-webauthn</module>
 		<module>springs-server-authentication</module>
 	</modules>
 
