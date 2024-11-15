@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.authenticationorm.users.session;
+package com.github.justincranford.springs.persistenceorm.sessions;
 
 import static com.github.justincranford.springs.persistenceorm.sessions.service.util.RandomPersonUtil.generatePerson;
 import static com.github.justincranford.springs.persistenceorm.sessions.service.util.RandomPersonaUtil.generatePersona;
@@ -26,7 +26,6 @@ import org.springframework.session.MapSession;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.justincranford.springs.authenticationorm.users.AbstractIT;
 import com.github.justincranford.springs.persistenceorm.sessions.service.model.SessionPojo;
 
 import lombok.extern.slf4j.Slf4j;
