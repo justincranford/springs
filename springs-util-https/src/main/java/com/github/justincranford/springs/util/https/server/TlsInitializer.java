@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.certs.server;
+package com.github.justincranford.springs.util.https.server;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
@@ -34,10 +34,10 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 
 import com.github.justincranford.springs.util.basic.ThreadUtil;
-import com.github.justincranford.springs.util.certs.util.CertUtil;
-import com.github.justincranford.springs.util.certs.util.KeyGenUtil;
-import com.github.justincranford.springs.util.certs.util.PemUtil;
-import com.github.justincranford.springs.util.certs.util.SignUtil;
+import com.github.justincranford.springs.util.https.util.CertUtil;
+import com.github.justincranford.springs.util.https.util.KeyGenUtil;
+import com.github.justincranford.springs.util.https.util.PemUtil;
+import com.github.justincranford.springs.util.https.util.SignUtil;
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 import com.google.common.net.InternetDomainName;

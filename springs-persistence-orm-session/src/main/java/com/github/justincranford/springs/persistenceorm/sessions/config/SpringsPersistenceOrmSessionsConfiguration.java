@@ -7,7 +7,7 @@ import com.github.justincranford.springs.persistenceorm.sessions.database.config
 import com.github.justincranford.springs.persistenceorm.sessions.json.config.SpringsPersistenceOrmSessionsCustomObjectMapperConfiguration;
 import com.github.justincranford.springs.persistenceorm.sessions.service.config.SpringsPersistenceOrmSessionsServiceConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
-import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
+import com.github.justincranford.springs.util.https.config.SpringsUtilHttpsConfiguration;
 import com.github.justincranford.springs.util.security.hashes.config.SpringsUtilSecurityHashesConfiguration;
 
 @Configuration

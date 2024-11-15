@@ -8,7 +8,7 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.config.SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration;
 import com.github.justincranford.springs.persistenceorm.sessions.config.SpringsPersistenceOrmSessionsConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
-import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
+import com.github.justincranford.springs.util.https.config.SpringsUtilHttpsConfiguration;
 import com.github.justincranford.springs.util.security.hashes.config.SpringsUtilSecurityHashesConfiguration;
 
 @Configuration

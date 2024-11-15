@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.certs.client.config;
+package com.github.justincranford.springs.util.https.client.config;
 
 import javax.net.ssl.SSLContext;
 
@@ -10,7 +10,7 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.github.justincranford.springs.util.certs.server.TlsInitializer;
+import com.github.justincranford.springs.util.https.server.TlsInitializer;
 
 @Configuration
 public class SpringsUtilTlsClientsConfiguration {

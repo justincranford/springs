@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.pks;
+package com.github.justincranford.springs.util.https.client.pks;
 
 import java.io.InputStream;
 import java.io.OutputStream;

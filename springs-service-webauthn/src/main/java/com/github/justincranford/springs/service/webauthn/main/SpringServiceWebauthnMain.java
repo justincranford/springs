@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 import com.github.justincranford.springs.service.webauthn.config.SpringsServiceWebauthnConfiguration;
-import com.github.justincranford.springs.util.certs.server.TlsInitializer;
+import com.github.justincranford.springs.util.https.server.TlsInitializer;
 
 @SpringBootApplication
 @Import({SpringsServiceWebauthnConfiguration.class})

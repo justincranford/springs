@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.certs;
+package com.github.justincranford.springs.util.https;
 
 import javax.net.ssl.SSLContext;
 
@@ -16,11 +16,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.RestTemplate;
 
-import com.github.justincranford.springs.util.certs.client.config.SpringsUtilHttpsClientsConfiguration;
-import com.github.justincranford.springs.util.certs.client.config.SpringsUtilTlsClientsConfiguration;
-import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
-import com.github.justincranford.springs.util.certs.server.TlsInitializer;
 import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
+import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
+import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
+import com.github.justincranford.springs.util.https.config.SpringsUtilHttpsConfiguration;
+import com.github.justincranford.springs.util.https.server.TlsInitializer;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;

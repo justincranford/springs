@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.certs.server.config;
+package com.github.justincranford.springs.util.https.server.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.github.justincranford.springs.util.certs.server.TlsInitializer;
+import com.github.justincranford.springs.util.https.server.TlsInitializer;
 
 import lombok.extern.slf4j.Slf4j;
 

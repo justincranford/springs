@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 import com.github.justincranford.springs.persistenceorm.sessions.config.SpringsPersistenceOrmSessionsConfiguration;
-import com.github.justincranford.springs.util.certs.server.TlsInitializer;
+import com.github.justincranford.springs.util.https.server.TlsInitializer;
 
 @SpringBootApplication
 @Import({SpringsPersistenceOrmSessionsConfiguration.class})

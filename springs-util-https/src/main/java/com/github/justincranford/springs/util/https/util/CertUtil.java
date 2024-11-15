@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.certs.util;
+package com.github.justincranford.springs.util.https.util;
 
 import java.math.BigInteger;
 import java.security.KeyPair;

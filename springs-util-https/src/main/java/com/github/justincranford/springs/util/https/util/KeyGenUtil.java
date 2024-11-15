@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.certs.util;
+package com.github.justincranford.springs.util.https.util;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;

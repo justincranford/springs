@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.certs.client.config;
+package com.github.justincranford.springs.util.https.client.config;
 
 import javax.net.ssl.SSLContext;
 
@@ -22,8 +22,8 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-import com.github.justincranford.springs.util.certs.server.TlsInitializer;
-import com.github.justincranford.springs.util.certs.util.TlsPskUtil;
+import com.github.justincranford.springs.util.https.server.TlsInitializer;
+import com.github.justincranford.springs.util.https.util.TlsPskUtil;
 
 @Configuration
 public class SpringsUtilHttpsClientsConfiguration {

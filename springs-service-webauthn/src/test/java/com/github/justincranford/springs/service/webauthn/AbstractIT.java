@@ -16,11 +16,11 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.justincranford.springs.service.webauthn.config.SpringsServiceWebauthnConfiguration;
-import com.github.justincranford.springs.util.certs.client.config.SpringsUtilHttpsClientsConfiguration;
-import com.github.justincranford.springs.util.certs.client.config.SpringsUtilTlsClientsConfiguration;
-import com.github.justincranford.springs.util.certs.server.TlsInitializer;
 import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
 import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
+import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
+import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
+import com.github.justincranford.springs.util.https.server.TlsInitializer;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;

@@ -1,10 +1,10 @@
-package com.github.justincranford.springs.util.certs.config;
+package com.github.justincranford.springs.util.https.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.justincranford.springs.util.certs.AbstractIT;
+import com.github.justincranford.springs.util.https.AbstractIT;
 
 import lombok.extern.slf4j.Slf4j;
 

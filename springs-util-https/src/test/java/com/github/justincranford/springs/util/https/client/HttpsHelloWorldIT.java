@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.certs.tls;
+package com.github.justincranford.springs.util.https.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,8 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 
-import com.github.justincranford.springs.util.certs.AbstractIT;
 import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
+import com.github.justincranford.springs.util.https.AbstractIT;
 
 import lombok.extern.slf4j.Slf4j;
 

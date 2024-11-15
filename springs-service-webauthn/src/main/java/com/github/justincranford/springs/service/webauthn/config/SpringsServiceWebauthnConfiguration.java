@@ -37,7 +37,7 @@ import com.github.justincranford.springs.service.webauthn.authenticate.config.Au
 import com.github.justincranford.springs.service.webauthn.credential.config.CredentialConfiguration;
 import com.github.justincranford.springs.service.webauthn.register.config.RegistrationConfiguration;
 import com.github.justincranford.springs.service.webauthn.relyingparty.config.RelyingPartyConfiguration;
-import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
+import com.github.justincranford.springs.util.https.config.SpringsUtilHttpsConfiguration;
 import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
 
 import io.micrometer.observation.annotation.Observed;

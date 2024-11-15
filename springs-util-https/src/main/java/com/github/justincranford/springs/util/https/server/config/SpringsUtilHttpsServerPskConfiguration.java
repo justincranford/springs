@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.certs.server.config;
+package com.github.justincranford.springs.util.https.server.config;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -10,8 +10,8 @@ import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.github.justincranford.springs.util.certs.server.TlsInitializer;
-import com.github.justincranford.springs.util.certs.util.TlsPskUtil;
+import com.github.justincranford.springs.util.https.server.TlsInitializer;
+import com.github.justincranford.springs.util.https.util.TlsPskUtil;
 
 @SuppressWarnings({"static-method"})
 @Configuration

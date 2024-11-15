@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.certs.util;
+package com.github.justincranford.springs.util.https.util;
 
 import java.io.IOException;
 import java.security.PrivateKey;
