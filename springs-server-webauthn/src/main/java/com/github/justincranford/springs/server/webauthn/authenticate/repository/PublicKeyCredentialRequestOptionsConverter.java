@@ -13,6 +13,6 @@ import jakarta.persistence.Converter;
 @Converter
 public class PublicKeyCredentialRequestOptionsConverter extends JsonConverter<PublicKeyCredentialRequestOptions> {
     public PublicKeyCredentialRequestOptionsConverter(final ObjectMapper objectMapper) {
-		super(objectMapper, new TypeReference<PublicKeyCredentialRequestOptions>() {/*empty block*/});
+		super(objectMapper, new TypeReference<>() {/*empty block*/});
 	}
 }

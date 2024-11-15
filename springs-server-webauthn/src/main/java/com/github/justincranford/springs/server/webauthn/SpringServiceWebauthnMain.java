@@ -9,7 +9,6 @@ import com.github.justincranford.springs.util.https.server.initializer.TlsEnable
 
 @SpringBootApplication
 @Import({SpringsServiceWebauthnConfiguration.class})
-@SuppressWarnings({"resource"})
 public class SpringServiceWebauthnMain {
 	public static void main(final String[] args) {
 		final SpringApplication springApplication = new SpringApplication(SpringServiceWebauthnMain.class);

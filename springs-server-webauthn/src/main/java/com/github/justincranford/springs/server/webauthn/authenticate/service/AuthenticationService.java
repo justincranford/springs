@@ -87,7 +87,7 @@ public class AuthenticationService {
 					log.info("Authenticate with username {} may work because it exists", authenticationStartClient.getUsername());
 				}
 			} else {
-				log.info("Authenticate with passkey (aka without username)", authenticationStartClient.getUsername());
+				log.info("Authenticate with passkey (aka without username {})", authenticationStartClient.getUsername());
 			}
 
 			final StartAssertionOptions startAssertionOptions = StartAssertionOptions.builder()

@@ -15,6 +15,6 @@ import jakarta.persistence.Converter;
 @Converter
 public class SetAuthenticatorTransportConverter extends JsonConverter<Set<AuthenticatorTransport>> {
     public SetAuthenticatorTransportConverter(final ObjectMapper objectMapper) {
-		super(objectMapper, new TypeReference<Set<AuthenticatorTransport>>() {/*empty block*/});
+		super(objectMapper, new TypeReference<>() {/*empty block*/});
 	}
 }
