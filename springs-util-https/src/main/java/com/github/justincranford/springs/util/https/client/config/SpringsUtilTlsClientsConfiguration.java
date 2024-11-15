@@ -10,7 +10,7 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.github.justincranford.springs.util.https.server.TlsInitializer;
+import com.github.justincranford.springs.util.https.server.initializer.TlsInitializer;
 
 @Configuration
 public class SpringsUtilTlsClientsConfiguration {

@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.https.server;
+package com.github.justincranford.springs.util.https.server.initializer;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;

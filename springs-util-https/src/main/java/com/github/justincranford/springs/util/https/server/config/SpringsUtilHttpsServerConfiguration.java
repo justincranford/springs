@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.github.justincranford.springs.util.https.server.TlsInitializer;
+import com.github.justincranford.springs.util.https.server.initializer.TlsInitializer;
 
 import lombok.extern.slf4j.Slf4j;
 

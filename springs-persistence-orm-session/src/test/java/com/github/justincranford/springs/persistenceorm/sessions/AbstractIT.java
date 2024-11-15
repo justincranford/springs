@@ -34,7 +34,7 @@ import com.github.justincranford.springs.persistenceorm.users.properties.Springs
 import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
-import com.github.justincranford.springs.util.https.server.TlsInitializer;
+import com.github.justincranford.springs.util.https.server.initializer.TlsInitializer;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
 
 import io.micrometer.core.instrument.MeterRegistry;

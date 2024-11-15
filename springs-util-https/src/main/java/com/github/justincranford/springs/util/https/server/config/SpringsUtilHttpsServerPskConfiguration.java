@@ -10,7 +10,7 @@ import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.github.justincranford.springs.util.https.server.TlsInitializer;
+import com.github.justincranford.springs.util.https.server.initializer.TlsInitializer;
 import com.github.justincranford.springs.util.https.util.TlsPskUtil;
 
 @SuppressWarnings({"static-method"})
