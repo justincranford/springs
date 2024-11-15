@@ -18,10 +18,10 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonTokenClassNotSupportedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonTokenNullNotAllowedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.PasswordUpgradeEncodingService;
-import com.github.justincranford.springs.authenticationorm.users.authentication.service.PersonService;
-import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonDetails;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonUsernamePasswordAuthenticatedToken;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonUsernamePasswordUnauthenticatedToken;
+import com.github.justincranford.springs.persistenceorm.sessions.service.PersonService;
+import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonDetails;
 import com.github.justincranford.springs.persistenceorm.users.config.projection.PersonIdPasswordProjection;
 import com.github.justincranford.springs.persistenceorm.users.persona.email.EmailRfc5321Validator;
 import com.github.justincranford.springs.util.basic.Timer;
@@ -79,11 +79,11 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
 			doesPasswordMatch = this.passwordEncoder.matches(password, personIdPasswordProjection.getPersonPassword());
 		}
 		if (doesPasswordMatch) {
-			if (this.passwordEncoder.upgradeEncoding(password)) {
-				log.debug("Person password matched for username [{}]; pgrade encoding is required.", usernameMixedCase);
+			if (this.passwordEncoder.upgradeEncoding(personIdPasswordProjection.getPersonPassword())) {
+				log.debug("Person password matched for username [{}]; upgrade encoding is required.", usernameMixedCase);
 				this.upgradeEncodingService.asyncUpdatePasswordByPersonId(personIdPasswordProjection.getPersonId(), password);
 			} else {
-				log.trace("Person password matched for username [{}]; pgrade encoding isn't required.", usernameMixedCase);
+				log.trace("Person password matched for username [{}]; upgrade encoding isn't required.", usernameMixedCase);
 			}
 			final PersonDetails personDetails;
 			try (Timer x = Timer.go("personService.loadUserByUsername")) {

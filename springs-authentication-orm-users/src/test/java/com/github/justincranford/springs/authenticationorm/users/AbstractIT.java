@@ -27,9 +27,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonUsernamePasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonaEmailPasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.config.SpringsAuthenticationOrmUsersConfiguration;
-import com.github.justincranford.springs.authenticationorm.users.session.SessionOrmRepository;
-import com.github.justincranford.springs.authenticationorm.users.session.SessionPojoRepository;
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
+import com.github.justincranford.springs.persistenceorm.sessions.database.repository.SessionOrmRepository;
+import com.github.justincranford.springs.persistenceorm.sessions.service.repository.SessionPojoRepository;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
@@ -71,6 +71,8 @@ public class AbstractIT {
     private PersonaOrmRepository personaOrmRepository;
     @Autowired
     private SessionOrmRepository sessionOrmRepository;
+	@Autowired
+	private SessionPojoRepository repository;
     @Autowired
     private SpringsPersistenceOrmBaseProperties springsPersistenceOrmBaseProperties;
     @Autowired
@@ -81,8 +83,6 @@ public class AbstractIT {
     private PersonUsernamePasswordAuthenticationProvider personUsernamePasswordAuthenticationProvider;
     @Autowired
     private HttpSecurity http;
-	@Autowired
-	private SessionPojoRepository repository;
 
 	@Value("${server.address}")
 	private String serverAddress;

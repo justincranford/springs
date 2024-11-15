@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.github.justincranford.springs.persistenceorm.sessions.service.PersonService;
+import com.github.justincranford.springs.persistenceorm.sessions.service.util.LockUtil;
 import com.github.justincranford.springs.util.basic.ThreadUtil;
 import com.github.justincranford.springs.util.basic.ThreadUtil.ThrowingSupplier;
 import com.github.justincranford.springs.util.basic.Timer;
@@ -14,6 +16,7 @@ import com.github.justincranford.springs.util.basic.Timer;
 import io.micrometer.observation.annotation.Observed;
 import lombok.extern.slf4j.Slf4j;
 
+// TODO Move to springs-persistence-orm-users
 @Component
 @Observed
 @Slf4j

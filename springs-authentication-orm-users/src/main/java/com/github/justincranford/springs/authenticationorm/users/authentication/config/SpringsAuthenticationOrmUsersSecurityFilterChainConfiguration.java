@@ -19,7 +19,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonUsernamePasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonaEmailPasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.authentication.root.controller.RedirectController;
-import com.github.justincranford.springs.authenticationorm.users.logging.config.RequestLoggingFilter;
+import com.github.justincranford.springs.authenticationorm.users.logging.filter.RequestLoggingFilter;
 import com.github.justincranford.springs.authenticationorm.users.ratelimit.filter.RateLimitingFilter;
 import com.github.justincranford.springs.service.http.server.HelloWorldController;
 import com.github.justincranford.springs.service.http.server.RedirectToLoginConfigurer;
@@ -107,6 +107,7 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
                 .permitAll()
 				.logoutSuccessUrl("/login?logout=true")
 				.invalidateHttpSession(true)
+//				.deleteCookies("JSESSIONID")
             )
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)

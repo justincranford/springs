@@ -13,16 +13,16 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaEmailNotFoundException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaPasswordBlankNotAllowedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaPasswordNoMatchException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaTokenClassNotSupportedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaTokenNullNotAllowedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.PasswordUpgradeEncodingService;
-import com.github.justincranford.springs.authenticationorm.users.authentication.service.PersonaService;
-import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonaDetails;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonaEmailPasswordAuthenticatedToken;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonaEmailPasswordUnauthenticatedToken;
+import com.github.justincranford.springs.persistenceorm.sessions.service.PersonaService;
+import com.github.justincranford.springs.persistenceorm.sessions.service.exception.PersonaEmailNotFoundException;
+import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonaDetails;
 import com.github.justincranford.springs.persistenceorm.users.config.projection.PersonaIdAndPersonIdPasswordProjection;
 import com.github.justincranford.springs.persistenceorm.users.persona.email.EmailRfc5321Validator;
 import com.github.justincranford.springs.util.basic.Timer;
@@ -78,7 +78,7 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 			doesPasswordMatch = this.passwordEncoder.matches(password, personaIdAndPersonIdPasswordProjection.getPersonPassword());
 		}
 		if (doesPasswordMatch) {
-			if (this.passwordEncoder.upgradeEncoding(password)) {
+			if (this.passwordEncoder.upgradeEncoding(personaIdAndPersonIdPasswordProjection.getPersonPassword())) {
 				log.debug("Person password matched for persona email address [{}]; upgrade encoding is required", emailAddressMixedCase);
 				this.upgradeEncodingService.asyncUpdatePasswordByPersonId(personaIdAndPersonIdPasswordProjection.getPersonId(), password);
 			} else {

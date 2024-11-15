@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.authenticationorm.users.logging.config;
+package com.github.justincranford.springs.authenticationorm.users.logging.filter;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;

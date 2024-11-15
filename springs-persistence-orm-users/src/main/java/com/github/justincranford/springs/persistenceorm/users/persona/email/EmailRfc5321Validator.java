@@ -68,7 +68,7 @@ public class EmailRfc5321Validator implements ConstraintValidator<EmailRfc5321Co
 
 		final List<String> parts = StringUtil.split(email, "@"); // tokenize without regex overhead
 		if (parts.size() != 2) {
-			return throwOrFalse(throwException, "Email violates <username>@<domainPartname> format");
+			return throwOrFalse(throwException, "Email violates localPart@domainPart format");
 		}
 		final String localPart = parts.removeFirst();
 		final String domainPart = parts.removeLast();

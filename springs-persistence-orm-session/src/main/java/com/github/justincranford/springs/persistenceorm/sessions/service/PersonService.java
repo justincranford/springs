@@ -20,6 +20,7 @@ import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
+// TODO Move to springs-persistence-orm-users
 @Service
 @Slf4j
 public class PersonService implements UserDetailsService {
@@ -64,7 +65,7 @@ public class PersonService implements UserDetailsService {
     @Transactional // TODO Retries?
 	public void updatePasswordById(final Long id, final String password) {
     	final int rowsUpdated = this.personOrmRepository.updatePasswordById(id, password, DateTimeUtil.nowUtcTruncatedToMicroseconds());
-    	if (rowsUpdated != 0) {
+    	if (rowsUpdated < 1) {
     		log.error("Failed to update password for person, id: {}", id);
     		throw new OptimisticLockException("Failed to update password for person");
     	}

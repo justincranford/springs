@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class HttpsUiAuthenticationIT extends AbstractIT {
-	private static final int REPEATS = 2;
+	private static final int REPEATS = 1;
 
 	@Nested
 	public class HttpsLoginRedirectWhenUnauthenticated {

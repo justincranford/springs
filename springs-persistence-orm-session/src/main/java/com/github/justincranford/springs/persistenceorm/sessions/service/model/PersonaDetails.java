@@ -29,7 +29,7 @@ public class PersonaDetails implements UserDetails {
 	}
 	@Override
 	public String getPassword() {
-		return this.personOrm.password().password();
+		return null;//this.personOrm.password().password();
 	}
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

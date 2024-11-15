@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.Lob;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +29,8 @@ public class AttributeOrm {
 	private int rank;
 
 	@Nullable
-	@Column(length=8192)
-	@Size(min=0,max=8192)
+	@Column(columnDefinition = "TEXT")
+	@Lob
+	@Size(min=0,max=1048576)
 	private String encoded;
 }

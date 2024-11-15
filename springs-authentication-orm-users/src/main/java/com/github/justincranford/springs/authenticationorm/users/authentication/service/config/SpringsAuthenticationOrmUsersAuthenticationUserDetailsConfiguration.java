@@ -3,11 +3,11 @@ package com.github.justincranford.springs.authenticationorm.users.authentication
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import com.github.justincranford.springs.authenticationorm.users.authentication.service.PersonaService;
+import com.github.justincranford.springs.authenticationorm.users.authentication.service.PasswordUpgradeEncodingService;
 
 @Configuration
 @ComponentScan(
-	basePackageClasses={PersonaService.class}
+	basePackageClasses={PasswordUpgradeEncodingService.class}
 )
 public class SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration {
 	// do nothing

@@ -2,7 +2,7 @@ package com.github.justincranford.springs.authenticationorm.users.authentication
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
-import com.github.justincranford.springs.authenticationorm.users.authentication.service.model.PersonDetails;
+import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonDetails;
 
 public class PersonUsernamePasswordAuthenticatedToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 1L;
@@ -21,7 +21,7 @@ public class PersonUsernamePasswordAuthenticatedToken extends AbstractAuthentica
 
 	@Override
 	public Object getCredentials() {
-		return this.personDetails.getPassword();
+		return null;//this.personDetails.getPassword();
 	}
 
 	@Override

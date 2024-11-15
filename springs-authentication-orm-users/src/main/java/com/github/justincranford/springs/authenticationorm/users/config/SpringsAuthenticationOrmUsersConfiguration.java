@@ -8,7 +8,7 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.config.SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration;
 import com.github.justincranford.springs.authenticationorm.users.logging.config.SpringsAuthenticationOrmUsersRequestLoggingConfiguration;
 import com.github.justincranford.springs.authenticationorm.users.ratelimit.config.SpringsAuthenticationOrmUsersRateLimitConfiguration;
-import com.github.justincranford.springs.authenticationorm.users.session.config.SpringsAuthenticationOrmUsersSessionConfiguration;
+import com.github.justincranford.springs.persistenceorm.sessions.config.SpringsPersistenceOrmSessionsConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
 import com.github.justincranford.springs.util.security.hashes.config.SpringsUtilSecurityHashesConfiguration;
@@ -16,11 +16,11 @@ import com.github.justincranford.springs.util.security.hashes.config.SpringsUtil
 @Configuration
 @Import({
 	SpringsPersistenceOrmUsersConfiguration.class,
+	SpringsPersistenceOrmSessionsConfiguration.class,
 	SpringsUtilHttpsConfiguration.class,
     SpringsUtilSecurityHashesConfiguration.class,
 	SpringsAuthenticationOrmUsersAuthenticationProvidersConfiguration.class,
 	SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration.class,
-	SpringsAuthenticationOrmUsersSessionConfiguration.class,
 	SpringsAuthenticationOrmUsersRateLimitConfiguration.class,
 	SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration.class,
     SpringsAuthenticationOrmUsersRequestLoggingConfiguration.class

@@ -15,6 +15,7 @@ import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
+//TODO Move to springs-persistence-orm-users
 @Service
 @Slf4j
 public class PersonaService implements UserDetailsService {
