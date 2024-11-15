@@ -3,29 +3,18 @@ package com.github.justincranford.springs.persistenceorm.sessions;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import org.apache.hc.core5.http.NoHttpResponseException;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.github.justincranford.springs.service.http.client.RestTemplateUtil;
 import com.github.justincranford.springs.service.http.server.HelloWorldController;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -69,6 +58,8 @@ public class HttpsHelloWorldIT extends AbstractIT {
 		final SessionIdCookieInterceptor sessionIdCookieInterceptor = new SessionIdCookieInterceptor();
 		restTemplate.getInterceptors().add(sessionIdCookieInterceptor);
 		try {
+			// CREATE SESSION
+
 			final String helloWorld = RestTemplateUtil.plainGet(restTemplate, httpsBaseUrl() + HelloWorldController.Constants.PATH, String.class);
 			assertThat(helloWorld).isEqualTo(HelloWorldController.Constants.RESPONSE_BODY);
 
@@ -79,15 +70,13 @@ public class HttpsHelloWorldIT extends AbstractIT {
 			log.info("Hello World Session ID: " + helloWorldSessionId);
 			prettyJson().log(sessionOrmRepository().findAll());
 
+			// DELETE SESSION
+
 			final String logout = RestTemplateUtil.plainGet(restTemplate, httpsBaseUrl() + "/logout", String.class);
 			assertThat(logout).isEqualTo(HelloWorldController.Constants.RESPONSE_BODY);
 
 		    final List<String> logoutSessionIdCookies = sessionIdCookieInterceptor.getSessionIdCookies();
-		    assertThat(logoutSessionIdCookies).isNotNull().hasSize(1);
-		    final String logoutSessionId = logoutSessionIdCookies.getFirst();
-			assertThat(logoutSessionId).isNotBlank();
-			log.info("Logout Session ID: " + logoutSessionId);
-			prettyJson().log(sessionOrmRepository().findAll());
+		    assertThat(logoutSessionIdCookies).isNull();
 		} finally {
 			mtlsRestTemplate().getInterceptors().remove(sessionIdCookieInterceptor);
 		}
