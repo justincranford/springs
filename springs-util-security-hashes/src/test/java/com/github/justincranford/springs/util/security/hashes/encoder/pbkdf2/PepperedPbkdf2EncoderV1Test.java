@@ -31,7 +31,7 @@ public class PepperedPbkdf2EncoderV1Test {
 	private static final int REPEATS = 3;
 
 	private static final Map<String, PasswordEncoder> keyEncodersMap = new LinkedHashMap<>() {{
-		final AtomicInteger id = new AtomicInteger(0);
+		final AtomicInteger id = new AtomicInteger(1);
 		List.of(
 //			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_CONS_NULL_NULL_NULL,
 			PepperedPbkdf2EncoderV1TestInstances.Derived.VARS_CONS_HPWDNOD_HPWDNOD_HPWDNOD,
@@ -144,7 +144,7 @@ public class PepperedPbkdf2EncoderV1Test {
 			PepperedPbkdf2EncoderV1TestInstances.Constant.NONE_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX,
 			PepperedPbkdf2EncoderV1TestInstances.Constant.NONE_CKEYDER_CKEYDER_CKEYDER,
 			PepperedPbkdf2EncoderV1TestInstances.Constant.NONE_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX
-		).forEach(valueEncoder -> put("k" + id.incrementAndGet(), valueEncoder));
+		).forEach(valueEncoder -> put("k" + id.getAndIncrement(), valueEncoder));
 	}};
 	private static final String keyEncodersDefault = keyEncodersMap.keySet().iterator().next();
 	private static final DelegatingPasswordEncoder keyEncoders = new DelegatingPasswordEncoder(
@@ -153,7 +153,7 @@ public class PepperedPbkdf2EncoderV1Test {
 	);
 
 	private static final Map<String, PasswordEncoder> valueEncodersMap = new LinkedHashMap<>() {{
-		final AtomicInteger id = new AtomicInteger(0);
+		final AtomicInteger id = new AtomicInteger(1);
 		List.of(
 			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_CONS_NULL_NULL_NULL,
 			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_CONS_HPWDNOD_HPWDNOD_HPWDNOD,
@@ -182,7 +182,7 @@ public class PepperedPbkdf2EncoderV1Test {
 			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_CPWDDERCTX_CPWDDERCTX_CPWDDERCTX,
 			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_CKEYDER_CKEYDER_CKEYDER,
 			PepperedPbkdf2EncoderV1TestInstances.Random.VARS_CKEYDERCTX_CKEYDERCTX_CKEYDERCTX
-		).forEach(valueEncoder -> put("v" + id.incrementAndGet(), valueEncoder));
+		).forEach(valueEncoder -> put("v" + id.getAndIncrement(), valueEncoder));
 	}};
 	private static final String valueEncodersDefault = valueEncodersMap.keySet().iterator().next();
 	private static final DelegatingPasswordEncoder valueEncoders = new DelegatingPasswordEncoder(
@@ -245,7 +245,7 @@ public class PepperedPbkdf2EncoderV1Test {
 //						assertThat(upgradeEncoding).isFalse();
 					} catch(Throwable t) {
 						log.info("class: {}, idForEncode: {}, raw: {}", className, idForEncode, raw, t);
-						numFailures.incrementAndGet();
+						numFailures.getAndIncrement();
 					}
 				});
 			});

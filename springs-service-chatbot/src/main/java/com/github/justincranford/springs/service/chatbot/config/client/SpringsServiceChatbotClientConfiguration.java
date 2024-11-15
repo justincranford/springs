@@ -37,12 +37,12 @@ public class SpringsServiceChatbotClientConfiguration {
 	}
 
 	public static class LoggingInterceptor implements ClientHttpRequestInterceptor {
-	    private AtomicInteger requestNumberSequence = new AtomicInteger(0);
+	    private AtomicInteger requestNumberSequence = new AtomicInteger(1);
 
 	    @SuppressWarnings("resource")
 		@Override
 	    public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-	        int requestNumber = this.requestNumberSequence.incrementAndGet();
+	        int requestNumber = this.requestNumberSequence.getAndIncrement();
 	        logRequest(requestNumber, request, body);
 	        ClientHttpResponse response = execution.execute(request, body);
 	        response = new BufferedClientHttpResponse(response);

@@ -19,10 +19,10 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonUsernamePasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonaEmailPasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.authentication.root.controller.RedirectController;
-import com.github.justincranford.springs.authenticationorm.users.logging.filter.RequestLoggingFilter;
-import com.github.justincranford.springs.authenticationorm.users.ratelimit.filter.RateLimitingFilter;
 import com.github.justincranford.springs.service.http.server.HelloWorldController;
 import com.github.justincranford.springs.service.http.server.RedirectToLoginConfigurer;
+import com.github.justincranford.springs.util.http.logging.filter.RequestLogFilter;
+import com.github.justincranford.springs.util.http.ratelimit.filter.RateLimitFilter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,9 +47,9 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
 	@Autowired
 	private final PersonUsernamePasswordAuthenticationProvider personUsernamePasswordAuthenticationProvider;
 	@Autowired
-	private final RateLimitingFilter rateLimitingFilter;
+	private final RateLimitFilter rateLimitingFilter;
 	@Autowired
-	private final RequestLoggingFilter requestLoggingFilter;
+	private final RequestLogFilter requestLoggingFilter;
 
 	@Primary
 	@Bean

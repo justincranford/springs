@@ -1,7 +1,7 @@
-package com.github.justincranford.springs.authenticationorm.users.logging.filter;
+package com.github.justincranford.springs.util.http.logging.filter;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -16,14 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class RequestLoggingFilter extends OncePerRequestFilter {
-	private static final AtomicInteger REQUEST_NUMBER = new AtomicInteger(0);
+public class RequestLogFilter extends OncePerRequestFilter {
+	private static final AtomicLong REQUEST_NUMBER = new AtomicLong(1);
 
 	@Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final int requestNumber = REQUEST_NUMBER.incrementAndGet();
-		request.setAttribute("requestId", requestNumber);
-        log.info("Request Number: {}", requestNumber);
+        final Long requestNumber = REQUEST_NUMBER.getAndIncrement();
+		request.setAttribute("X-REQUEST_NUMBER", requestNumber);
+        log.debug("X-Request-Number: {}", requestNumber);
+		response.addHeader("X-Request-Number", requestNumber.toString());
         filterChain.doFilter(request, response);
     }
 }

@@ -6,8 +6,6 @@ import org.springframework.context.annotation.Import;
 import com.github.justincranford.springs.authenticationorm.users.authentication.config.SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.config.SpringsAuthenticationOrmUsersAuthenticationProvidersConfiguration;
 import com.github.justincranford.springs.authenticationorm.users.authentication.service.config.SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration;
-import com.github.justincranford.springs.authenticationorm.users.logging.config.SpringsAuthenticationOrmUsersRequestLoggingConfiguration;
-import com.github.justincranford.springs.authenticationorm.users.ratelimit.config.SpringsAuthenticationOrmUsersRateLimitConfiguration;
 import com.github.justincranford.springs.persistenceorm.sessions.config.SpringsPersistenceOrmSessionsConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.util.certs.config.SpringsUtilHttpsConfiguration;
@@ -21,9 +19,7 @@ import com.github.justincranford.springs.util.security.hashes.config.SpringsUtil
     SpringsUtilSecurityHashesConfiguration.class,
 	SpringsAuthenticationOrmUsersAuthenticationProvidersConfiguration.class,
 	SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration.class,
-	SpringsAuthenticationOrmUsersRateLimitConfiguration.class,
-	SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration.class,
-    SpringsAuthenticationOrmUsersRequestLoggingConfiguration.class
+	SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration.class
 })
 public class SpringsAuthenticationOrmUsersConfiguration {
 	// do nothing

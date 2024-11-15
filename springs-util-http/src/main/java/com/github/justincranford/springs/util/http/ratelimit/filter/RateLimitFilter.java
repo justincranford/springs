@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.authenticationorm.users.ratelimit.filter;
+package com.github.justincranford.springs.util.http.ratelimit.filter;
 
 import java.io.IOException;
 
@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.github.justincranford.springs.authenticationorm.users.ratelimit.properties.SpringsAuthenticationOrmUsersRateLimitProperties;
+import com.github.justincranford.springs.util.http.ratelimit.properties.SpringsUtilHttpRateLimitProperties;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -18,23 +18,28 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
-public class RateLimitingFilter extends OncePerRequestFilter {
+@Slf4j
+public class RateLimitFilter extends OncePerRequestFilter {
 	@Autowired
-	private SpringsAuthenticationOrmUsersRateLimitProperties springsAuthenticationOrmUsersRateLimitProperties;
+	private SpringsUtilHttpRateLimitProperties springsAuthenticationOrmUsersRateLimitProperties;
 
     private Bucket bucket;
 
     @PostConstruct
     public void postConstruct() {
-    	if (this.springsAuthenticationOrmUsersRateLimitProperties.isEnabled()) {
+		if (this.springsAuthenticationOrmUsersRateLimitProperties.isEnabled()) {
     		final Bandwidth limit = Bandwidth.builder()
 				.capacity(this.springsAuthenticationOrmUsersRateLimitProperties.getCapacity())
 				.refillGreedy(this.springsAuthenticationOrmUsersRateLimitProperties.getRefillAmount(), this.springsAuthenticationOrmUsersRateLimitProperties.getRefillDuration())
 				.build();
+            log.debug("RateLimitFilter is enabled, bandwidth: {}", limit);
             this.bucket = Bucket.builder().addLimit(limit).build();
+    	} else {
+            log.trace("RateLimitFilter is disabled");
     	}
     }
 
@@ -43,12 +48,15 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     	if (this.springsAuthenticationOrmUsersRateLimitProperties.isEnabled()) {
     		final ConsumptionProbe probe = this.bucket.tryConsumeAndReturnRemaining(1);
     		if (!probe.isConsumed()) {
-    			final double waitForRefillNanos = Math.ceil(probe.getNanosToWaitForRefill() / 1_000_000_000D);
-    			response.addHeader("X-Rate-Limit-Retry-After-Seconds", String.valueOf(waitForRefillNanos));
     			response.sendError(HttpStatus.TOO_MANY_REQUESTS.value());
+    			final String retryAfterSeconds = String.valueOf(Math.ceil(probe.getNanosToWaitForRefill() / 1_000_000_000D));
+				response.addHeader("X-Rate-Limit-Retry-After-Seconds", retryAfterSeconds);
+                log.trace("X-Rate-Limit-Retry-After-Seconds: {}", retryAfterSeconds);
     			return;
     		}
-    		response.addHeader("X-Rate-Limit-Remaining", String.valueOf(probe.getRemainingTokens()));
+    		final String remaining = String.valueOf(probe.getRemainingTokens());
+            log.trace("X-Rate-Limit-Remaining: {}", remaining);
+			response.addHeader("X-Rate-Limit-Remaining", remaining);
     	}
         filterChain.doFilter(request, response);
     }

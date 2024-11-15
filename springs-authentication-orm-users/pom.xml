@@ -65,10 +65,6 @@
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcpkix-debug-jdk18on</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.bucket4j</groupId>
-			<artifactId>bucket4j-core</artifactId>
-		</dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>

@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.github.justincranford.springs.service.http.server.HelloWorldController;
+import com.github.justincranford.springs.util.http.logging.config.SpringsUtilHttpRequestLogConfiguration;
+import com.github.justincranford.springs.util.http.ratelimit.config.SpringsUtilHttpRateLimitConfiguration;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,7 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 @EnableAutoConfiguration
 @EnableConfigurationProperties
 @Import(value={
-	HelloWorldController.class
+	HelloWorldController.class,
+	SpringsUtilHttpRequestLogConfiguration.class,
+	SpringsUtilHttpRateLimitConfiguration.class
 })
 @Slf4j
 @SuppressWarnings({"static-method"})

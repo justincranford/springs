@@ -61,7 +61,7 @@ public class ProducersConsumersUtil {
     				throw wrap("Producer", t);
     		    } finally {
                 	if (next != null) {
-        		    	producedTotal.incrementAndGet();
+        		    	producedTotal.getAndIncrement();
                 	}
                 	next = null;
     		    }
@@ -91,7 +91,7 @@ public class ProducersConsumersUtil {
     				throw wrap("Consumer", t);
                 } finally {
                 	if (next != null) {
-                    	consumedTotal.incrementAndGet();
+                    	consumedTotal.getAndIncrement();
                 	}
                 	next = null;
                 }
