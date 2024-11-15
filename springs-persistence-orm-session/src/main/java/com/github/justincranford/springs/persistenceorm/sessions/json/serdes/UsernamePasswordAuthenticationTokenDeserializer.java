@@ -11,7 +11,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -19,18 +18,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.MissingNode;
 
-@SuppressWarnings({"static-method", "unused", "resource"})
+@SuppressWarnings({"static-method", "resource"})
 public class UsernamePasswordAuthenticationTokenDeserializer extends JsonDeserializer<UsernamePasswordAuthenticationToken> {
 	@Override
-	public UsernamePasswordAuthenticationToken deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-		final ObjectMapper mapper = (ObjectMapper) jp.getCodec();
-		final JsonNode jsonNode = mapper.readTree(jp);
+	public UsernamePasswordAuthenticationToken deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+		final ObjectMapper mapper   = (ObjectMapper) jp.getCodec();
+		final JsonNode     jsonNode = mapper.readTree(jp);
 
-		final Object principal = getPrincipal(readJsonNode(jsonNode, "principal"), mapper);
-		final Object credentials = getCredentials(readJsonNode(jsonNode, "credentials"));
-		final List<GrantedAuthority> authorities = parseAuthorities(jsonNode, mapper);
-		final Boolean authenticated = readJsonNode(jsonNode, "authenticated").asBoolean();
-		final Object details = getDetails(readJsonNode(jsonNode, "details"), mapper);
+		final Object                 principal     = getPrincipal(readJsonNode(jsonNode, "principal"), mapper);
+		final Object                 credentials   = getCredentials(readJsonNode(jsonNode, "credentials"));
+		final List<GrantedAuthority> authorities   = parseAuthorities(jsonNode);
+		final Boolean                authenticated = getAuthenticated(readJsonNode(jsonNode, "authenticated"));
+		final Object                 details       = getDetails(readJsonNode(jsonNode, "details"), mapper);
 
 		final UsernamePasswordAuthenticationToken token = (!authenticated)
 				? UsernamePasswordAuthenticationToken.unauthenticated(principal, credentials)
@@ -50,24 +49,21 @@ public class UsernamePasswordAuthenticationTokenDeserializer extends JsonDeseria
 		return credentialsNode.asText();
 	}
 
-	private Object getPrincipal(JsonNode principalNode, ObjectMapper mapper)
-			throws IOException, JsonParseException, JsonMappingException {
+	private Object getPrincipal(JsonNode principalNode, ObjectMapper mapper) throws IOException, JsonParseException, JsonMappingException {
 		if (principalNode.isObject()) {
 			return mapper.readValue(principalNode.traverse(mapper), Object.class);
 		}
 		return principalNode.asText();
 	}
 
-	private List<GrantedAuthority> parseAuthorities(JsonNode authoritiesNode, ObjectMapper mapper) throws IOException {
-		List<GrantedAuthority> authorities = new ArrayList<>();
+	private List<GrantedAuthority> parseAuthorities(JsonNode authoritiesNode) {
+		final List<GrantedAuthority> authorities = new ArrayList<>();
 
-		// Handle case where 'authorities' is wrapped in an UnmodifiableRandomAccessList
-		// (i.e., an array inside an array)
+		// Handle case where 'authorities' is wrapped in an UnmodifiableRandomAccessList (i.e., an array inside an array)
 		if (authoritiesNode != null && authoritiesNode.isArray()) {
 			// The first element contains the actual authorities
-			JsonNode authorityListNode = authoritiesNode.get(1); // Get the list from inside the
-																	// UnmodifiableRandomAccessList
-
+			JsonNode authorityListNode = authoritiesNode.get(1);
+			// Get the list from inside the UnmodifiableRandomAccessList
 			if (authorityListNode != null && authorityListNode.isArray()) {
 				// Loop through the array and extract SimpleGrantedAuthority objects
 				for (JsonNode authorityNode : authorityListNode) {
@@ -80,8 +76,11 @@ public class UsernamePasswordAuthenticationTokenDeserializer extends JsonDeseria
 				}
 			}
 		}
-
 		return authorities;
+	}
+
+	private boolean getAuthenticated(final JsonNode authenticatedNode) {
+		return authenticatedNode.asBoolean();
 	}
 
 	private Object getDetails(JsonNode detailsNode, ObjectMapper mapper) throws JsonProcessingException, JsonMappingException {
