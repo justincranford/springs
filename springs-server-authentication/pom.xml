@@ -12,9 +12,9 @@
 		<relativePath>..</relativePath>
 	</parent>
 
-	<artifactId>springs-authentication-orm-users</artifactId>
-	<name>Springs Authentication ORM Users</name>
-	<description>Springs Authentication ORM Users</description>
+	<artifactId>springs-server-authentication</artifactId>
+	<name>Springs Server Authentication</name>
+	<description>Springs Server Authentication</description>
 
 	<dependencies>
 		<dependency>
