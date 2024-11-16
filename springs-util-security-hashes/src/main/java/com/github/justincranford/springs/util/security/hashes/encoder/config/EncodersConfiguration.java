@@ -1,5 +1,6 @@
 package com.github.justincranford.springs.util.security.hashes.encoder.config;
 
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 
 import org.springframework.context.annotation.Bean;
@@ -15,7 +16,7 @@ import com.github.justincranford.springs.util.security.hashes.properties.Springs
 import com.github.justincranford.springs.util.security.hashes.properties.SpringsUtilSecurityHashesProperties.Encoders;
 
 @Configuration
-@SuppressWarnings({"static-method"})
+@SuppressWarnings({"unused", "static-method"})
 public class EncodersConfiguration {
 	@Bean
 	public PasswordEncoder passwordEncoder(final ValueEncoders valueEncoders) {
@@ -59,14 +60,14 @@ public class EncodersConfiguration {
 	}
 
 	private KeyEncoder buildKeyEncoder(final Encoders.Argon2.DerivedSalt derivedSalt) {
-		return new KeyEncoder(derivedSalt.getId(), new Argon2Encoder.DerivedSalt(derivedSalt.getDerivedSaltLength(), derivedSalt.getAssociatedData().getBytes(), derivedSalt.getHashLength(), derivedSalt.getParallelism(), derivedSalt.getMemoryInKB(), derivedSalt.getIterations()));
+		return new KeyEncoder(derivedSalt.getId(), new Argon2Encoder.DerivedSalt(derivedSalt.getDerivedSaltLength(), derivedSalt.getAssociatedData().getBytes(StandardCharsets.UTF_8), derivedSalt.getHashLength(), derivedSalt.getParallelism(), derivedSalt.getMemoryInKB(), derivedSalt.getIterations()));
 	}
 
 	private KeyEncoder buildKeyEncoder(final Encoders.Argon2.ConstantSalt constantSalt) {
-		return new KeyEncoder(constantSalt.getId(), new Argon2Encoder.ConstantSalt(constantSalt.getConstantSalt().getBytes(), constantSalt.getAssociatedData().getBytes(), constantSalt.getHashLength(), constantSalt.getParallelism(), constantSalt.getMemoryInKB(), constantSalt.getIterations()));
+		return new KeyEncoder(constantSalt.getId(), new Argon2Encoder.ConstantSalt(constantSalt.getConstantSalt().getBytes(StandardCharsets.UTF_8), constantSalt.getAssociatedData().getBytes(StandardCharsets.UTF_8), constantSalt.getHashLength(), constantSalt.getParallelism(), constantSalt.getMemoryInKB(), constantSalt.getIterations()));
 	}
 
 	private ValueEncoder buildValueEncoder(final Encoders.Argon2.RandomSalt randomSalt) {
-		return new ValueEncoder(randomSalt.getId(), new Argon2Encoder.RandomSalt(randomSalt.getRandomSaltLength(), randomSalt.getAssociatedData().getBytes(), randomSalt.getHashLength(), randomSalt.getParallelism(), randomSalt.getMemoryInKB(), randomSalt.getIterations()));
+		return new ValueEncoder(randomSalt.getId(), new Argon2Encoder.RandomSalt(randomSalt.getRandomSaltLength(), randomSalt.getAssociatedData().getBytes(StandardCharsets.UTF_8), randomSalt.getHashLength(), randomSalt.getParallelism(), randomSalt.getMemoryInKB(), randomSalt.getIterations()));
 	}
 }

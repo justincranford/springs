@@ -16,16 +16,18 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class HttpHelloWorldIT extends AbstractIT {
+	private static final String AUTHORIZE = null;
+
 	@Test
 	void testHttpSuccess() {
-		final String response = RestTemplateUtil.plainGet(httpRestTemplate(), httpBaseUrl() + HelloWorldController.Constants.PATH, String.class);
+		final String response = RestTemplateUtil.plainGet(httpRestTemplate(), httpBaseUrl() + HelloWorldController.Constants.PATH, AUTHORIZE, String.class);
 		assertThat(response).isEqualTo(HelloWorldController.Constants.RESPONSE_BODY);
 	}
 
 	@Test
 	void testHttpsFail() {
 		assertThatThrownBy(
-			() -> RestTemplateUtil.plainGet(httpRestTemplate(), httpsBaseUrl() + HelloWorldController.Constants.PATH, String.class)
+			() -> RestTemplateUtil.plainGet(httpRestTemplate(), httpsBaseUrl() + HelloWorldController.Constants.PATH, AUTHORIZE, String.class)
 		)
 		.isInstanceOf(ResourceAccessException.class)
 		.hasMessage("I/O error on GET request for \"" + httpsBaseUrl() + HelloWorldController.Constants.PATH + "\": Unrecognized SSL message, plaintext connection?")

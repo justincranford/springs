@@ -58,7 +58,7 @@ public class CredentialOrm extends AbstractEntity {
 	@JsonBackReference
 	@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_identity_id",nullable=false)
-    public UserIdentityOrm                     userIdentity;            // RegisteredCredential.userHandle, UserIdentity.username/id/displayName
+    private UserIdentityOrm                     userIdentity;            // RegisteredCredential.userHandle, UserIdentity.username/id/displayName
 
 	// TODO byte[]
 	private String                             credentialId;            // RegisteredCredential.credentialId, PublicKeyCredentialDescriptor.id
@@ -103,7 +103,7 @@ public class CredentialOrm extends AbstractEntity {
 			.credentialId(decodeBase64Url(this.credentialId))
 			.userHandle(new ByteArray(this.userIdentity().userHandle()))
 			.publicKeyCose(decodeBase64Url(this.publicKeyCose))
-			.signatureCount(this.signatureCount.longValue())
+			.signatureCount(this.signatureCount)
 			.backupEligible(this.backupEligible)
 			.backupState(this.backupState)
 			.build();

@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.github.justincranford.springs.util.basic.Base64Util.EncoderDecoder;
 
+@SuppressWarnings({"unused"})
 public class SecureRandomUtil  {
 	public static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
@@ -29,9 +30,9 @@ public class SecureRandomUtil  {
 	 * Useful for generating random values that behave similar to UUID Type 7, which are performant for BTREE indexes.
 	 * UUID Type 4 values don't cluster together in a BTREE index, due to randomness, which leads to fragmentation.
 	 * UUID Type 7 values do    cluster together in a BTREE index, due to timestamp-based prefix, which mitigates fragmentation.
-	 * 
+	 * <p>
 	 * Prefixing random bytes with first N highest-order bytes of an 8-byte timestamp should lead to clustering by these time buckets:
-	 * 
+	 * <p>
 	 * First 1 bytes: 72,057,594,037,927,936 msec ≈ ~2,284,931.32 Years
 	 * First 2 bytes:    281,474,976,710,656 msec ≈     ~8,925.51 Years
 	 * First 3 bytes:      1,073,741,824,000 msec =        ~34.05 Years
@@ -44,6 +45,7 @@ public class SecureRandomUtil  {
 	 * @param randomBytes Random number of bytes
 	 * @return Concatenation of timestamp bytes and random bytes
 	 */
+	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="UC_USELESS_CONDITION",justification="Design intent for clarity")
 	public static byte[] timeStampBytesAndRandomBytes(final int timestampBytes, final int randomBytes) {
 		if ((timestampBytes < 4) || (timestampBytes > 8)) {
 			throw new RuntimeException("Timestamp bytes must be 4-8 inclusive");

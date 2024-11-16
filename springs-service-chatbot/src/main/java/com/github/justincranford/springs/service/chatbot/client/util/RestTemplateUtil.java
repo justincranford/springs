@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@SuppressWarnings({"unused"})
 public class RestTemplateUtil {
 	private static final JsonFactory JSON_FACTORY = new JsonFactory();
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -65,7 +67,7 @@ public class RestTemplateUtil {
 			log.debug("Method: [{}], URL: [{}], entity: [{}], class: [{}]", method, url, entity, clazz);
 			final ResponseEntity<RESPONSE> response = restTemplate.exchange(url, method, entity, clazz);
 			final RESPONSE body = response.getBody();
-			log.debug("Status Code: {}\nResponse Headers: {}\nResponse Body: {}\nResponse Body: {}", response.getStatusCode(), response.getHeaders(), body);
+			log.debug("Status Code: {}\nResponse Headers: {}\nResponse Body: {}", response.getStatusCode(), response.getHeaders(), body);
 			return body;
 		} catch (HttpStatusCodeException e) {
         	log.error("Error Response: [" + e.getStatusCode() + "]\nResponse headers:\n" + e.getResponseHeaders() + "\nResponse body: " + e.getResponseBodyAsString());
@@ -80,7 +82,6 @@ public class RestTemplateUtil {
 		return httpStream(restTemplate, url, HttpMethod.POST, new HttpEntity<>(postRequest, postHttpHeaders(url, CONTENT_TYPE_APPLCIATION_JSON, ACCEPT_APPLCIATION_JSON)), clazz);
 	}
 
-	@SuppressWarnings("resource")
 	private static <REQUEST, RESPONSE> BlockingQueue<RESPONSE> httpStream(final RestTemplate restTemplate, final String url, final HttpMethod method, final HttpEntity<REQUEST> entity, final Class<RESPONSE> clazz) {
 		try {
 			final BlockingQueue<RESPONSE> responseQueue = new LinkedBlockingQueue<>();
@@ -97,7 +98,7 @@ public class RestTemplateUtil {
 					}
 				},
 				(clientHttpResponse) -> {
-					try (JsonParser parser = JSON_FACTORY.createParser(new BufferedReader(new InputStreamReader(clientHttpResponse.getBody())))) {
+					try (JsonParser parser = JSON_FACTORY.createParser(new BufferedReader(new InputStreamReader(clientHttpResponse.getBody(), StandardCharsets.UTF_8)))) {
 					    while (!parser.isClosed()) {
 					        if (parser.nextToken() == null) {
 					            break;
@@ -110,7 +111,7 @@ public class RestTemplateUtil {
 			);
 			return responseQueue;
 		} catch (HttpStatusCodeException e) {
-			log.error("HTTP Error Response: [" + e.getStatusCode() + "]\nResponse body: " + e.getResponseBodyAsString());
+			log.error("HTTP Error Response: [{}]\nResponse body: {}", e.getStatusCode(), e.getResponseBodyAsString());
 			throw new RuntimeException("HTTP Error Response: [" + e.getStatusCode() + "]", e);
 		} catch (Exception e) {
 			log.error("Error processing streaming response", e);

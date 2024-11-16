@@ -202,6 +202,12 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<artifactId>spotbugs-annotations</artifactId>
+			<groupId>com.github.spotbugs</groupId>
+			<version>RELEASE</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

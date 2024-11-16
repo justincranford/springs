@@ -14,7 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @Slf4j
+@SuppressWarnings({"unused"})
 public class WebauthnIT extends AbstractIT {
+    private static final String AUTHORIZE = null;
+
     @Value("classpath:non-resident-registration-start-client.json")
     private Resource nonResidentRegistrationStartClientJson;
 
@@ -29,7 +32,7 @@ public class WebauthnIT extends AbstractIT {
 
     @Test
 	void testHome() {
-		final String response = RestTemplateUtil.plainGet(stlsRestTemplate(), httpsBaseUrl() + "/index.html", String.class);
+		final String response = RestTemplateUtil.plainGet(stlsRestTemplate(), httpsBaseUrl() + "/index.html", AUTHORIZE, String.class);
 		assertThat(response).contains("WebAuthn");
 	}
 

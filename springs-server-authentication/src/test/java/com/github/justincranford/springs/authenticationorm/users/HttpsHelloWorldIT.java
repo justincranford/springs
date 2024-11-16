@@ -13,10 +13,12 @@ import com.github.justincranford.springs.util.http.client.util.RestTemplateUtil;
 import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
 
 public class HttpsHelloWorldIT extends AbstractIT {
+	private static final String AUTHORIZE = null;
+
 	@Test
 	void testHttpFailure() {
 		final AbstractThrowableAssert<?, ? extends Throwable> assertThatThrownBy = assertThatThrownBy(
-			() -> RestTemplateUtil.plainGet(httpRestTemplate(), httpBaseUrl() + HelloWorldController.Constants.PATH, String.class)
+			() -> RestTemplateUtil.plainGet(httpRestTemplate(), httpBaseUrl() + HelloWorldController.Constants.PATH, AUTHORIZE, String.class)
 		);
 		final String webServerClassName = webServerApplicationContext().getWebServer().getClass().getName();
 		if (webServerClassName.contains("Tomcat")) {
@@ -40,13 +42,13 @@ public class HttpsHelloWorldIT extends AbstractIT {
 
 	@Test
 	void testHttpsSuccessServerTls() {
-		final String response = RestTemplateUtil.plainGet(stlsRestTemplate(), httpsBaseUrl() + HelloWorldController.Constants.PATH, String.class);
+		final String response = RestTemplateUtil.plainGet(stlsRestTemplate(), httpsBaseUrl() + HelloWorldController.Constants.PATH, AUTHORIZE, String.class);
 		assertThat(response).isEqualTo(HelloWorldController.Constants.RESPONSE_BODY);
 	}
 
 	@Test
 	void testHttpsSuccessMutualTls() {
-		final String response = RestTemplateUtil.plainGet(mtlsRestTemplate(), httpsBaseUrl() + HelloWorldController.Constants.PATH, String.class);
+		final String response = RestTemplateUtil.plainGet(mtlsRestTemplate(), httpsBaseUrl() + HelloWorldController.Constants.PATH, AUTHORIZE, String.class);
 		assertThat(response).isEqualTo(HelloWorldController.Constants.RESPONSE_BODY);
 	}
 }

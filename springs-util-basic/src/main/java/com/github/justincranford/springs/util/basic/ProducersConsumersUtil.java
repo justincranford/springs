@@ -143,6 +143,7 @@ public class ProducersConsumersUtil {
 		return new Exception(name + " " + Thread.currentThread().threadId() + " recoverable exception", e);
 	}
 
+	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="DMI_RANDOM_USED_ONLY_ONCE",justification="Design intent for testing")
 	@SuppressWarnings("unused")
 	private static void throwRandomException() throws Exception {
 		if (new Random().nextBoolean()) {

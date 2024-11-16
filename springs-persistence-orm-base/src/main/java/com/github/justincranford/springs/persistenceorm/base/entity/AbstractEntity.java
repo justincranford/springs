@@ -40,12 +40,13 @@ import lombok.extern.slf4j.Slf4j;
 @MappedSuperclass
 @Getter(onMethod = @__(@JsonProperty)) // Jackson JSON
 @Setter
-@ToString(callSuper=false)
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
 @EntityListeners({AuditingEntityListener.class,EntityListener.class})
 @Slf4j
+@SuppressWarnings({"unused"})
 public class AbstractEntity {
 	public static final String SQL_WHERE_CLAUSE = "(pre_delete_date_time IS NULL OR pre_delete_date_time < CURRENT_TIMESTAMP)";
 	public static final int SEQUENCE_ID_INITIAL_VALUE = 1000;
@@ -54,6 +55,17 @@ public class AbstractEntity {
 	public static final int SEQUENCE_ID_ALLOCATION_SIZE_LARGE = 1000;
 	public static final int SEQUENCE_ID_ALLOCATION_SIZE_EXTRA_LARGE = 10000;
 	public static final String SEQUENCE_ID = "ABSTRACT_ENTITY_SEQUENCE_ID";
+
+	/**
+	 * SpotBugs: Be wary of letting constructors throw exceptions. Classes that throw exceptions in their constructors are vulnerable to Finalizer attacks.
+	 * A finalizer attack can be prevented, by declaring the class final, using an empty finalizer declared a s final, or by a clever use of a private constructor.
+	 * See SEI CERT Rule OBJ-11 for more information.
+	 * @see <a href="https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#ct-be-wary-of-letting-constructors-throw-exceptions-ct-constructor-throw">CT_CONSTRUCTOR_THROW</a>
+	 */
+	@Override
+	protected final void finalize() {
+		// Do nothing
+	}
 
 	@Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE,generator=AbstractEntity.SEQUENCE_ID)

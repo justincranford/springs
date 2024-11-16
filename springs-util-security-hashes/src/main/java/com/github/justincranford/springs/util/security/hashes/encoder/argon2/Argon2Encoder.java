@@ -60,30 +60,41 @@ public class Argon2Encoder {
 			if (clazz.equals(ConstantSalt.class)) {
 				final Argon2Parameters parameters = parameters(saltSupplier.apply(""), associatedData, parallelism, memory, iterations);
 				this.encode = (rawPassword) ->  encodeHashNoParameters(computeHash(rawPassword, parameters, hashLength)); // exclude parameters from output
-				this.matches = (rawPassword, encodedPassword) -> Boolean.valueOf(MessageDigest.isEqual(encode(rawPassword).getBytes(StandardCharsets.UTF_8), encodedPassword.getBytes(StandardCharsets.UTF_8)));
+				this.matches = (rawPassword, encodedPassword) -> MessageDigest.isEqual(encode(rawPassword).getBytes(StandardCharsets.UTF_8), encodedPassword.getBytes(StandardCharsets.UTF_8));
 				this.upgradeEncoding = (encodedPassword) -> Boolean.FALSE; // never upgrade encoding when using constant salt
 			} else {
 				this.encode = (rawPassword) -> {
 					final Argon2Parameters parameters = parameters(saltSupplier.apply(rawPassword), associatedData, parallelism, memory, iterations);
 					return Argon2EncodingUtils.encode(computeHash(rawPassword, parameters, hashLength), parameters); // include parameters in output
 				};
-				this.matches = (rawPassword, encodedPassword) -> Boolean.valueOf(super.matches(rawPassword, encodedPassword));
+				this.matches = (rawPassword, encodedPassword) -> super.matches(rawPassword, encodedPassword);
 				if (clazz.equals(DerivedSalt.class)) {
 					this.upgradeEncoding = (encodedPassword) -> Boolean.FALSE; // never upgrade encoding when using derived salt
 				} else if (clazz.equals(RandomSalt.class)) {
 					this.upgradeEncoding = (encodedPassword) -> {
-						if (encodedPassword == null || encodedPassword.length() == 0) {
+						if (encodedPassword == null || encodedPassword.isEmpty()) {
 							return Boolean.FALSE;
 						}
 						final Argon2Hash hashAndParameters = Argon2EncodingUtils.decode(encodedPassword); // conditionally upgrade encoding when using random salt
 						final byte[] hash = hashAndParameters.getHash();
 						final Argon2Parameters parameters = hashAndParameters.getParameters();
-						return Boolean.valueOf(hash.length < hashLength || parameters.getLanes() < parallelism || parameters.getMemory() < memory || parameters.getIterations() < iterations);
+						return hash.length < hashLength || parameters.getLanes() < parallelism || parameters.getMemory() < memory || parameters.getIterations() < iterations;
 					};
 				} else {
 					throw new RuntimeException("Unsupported class " + clazz.getCanonicalName());
 				}
 			}
+		}
+
+		/**
+		 * SpotBugs: Be wary of letting constructors throw exceptions. Classes that throw exceptions in their constructors are vulnerable to Finalizer attacks.
+		 * A finalizer attack can be prevented, by declaring the class final, using an empty finalizer declared a s final, or by a clever use of a private constructor.
+		 * See SEI CERT Rule OBJ-11 for more information.
+		 * @see <a href="https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#ct-be-wary-of-letting-constructors-throw-exceptions-ct-constructor-throw">CT_CONSTRUCTOR_THROW</a>
+		 */
+		@Override
+		protected final void finalize() {
+			// Do nothing
 		}
 
 		@Override
@@ -92,11 +103,11 @@ public class Argon2Encoder {
 		}
 		@Override
 		public boolean matches(final CharSequence rawPassword, final String encodedPassword) {
-			return this.matches.apply(rawPassword, encodedPassword).booleanValue();
+			return this.matches.apply(rawPassword, encodedPassword);
 		}
 		@Override
 		public boolean upgradeEncoding(final String encodedPassword) {
-			return this.upgradeEncoding.apply(encodedPassword).booleanValue();
+			return this.upgradeEncoding.apply(encodedPassword);
 		}
 	}
 

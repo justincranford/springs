@@ -18,6 +18,7 @@ import com.yubico.webauthn.extension.appid.InvalidAppIdException;
 
 @Configuration
 @Import({CredentialRepositoryFacade.class})
+@SuppressWarnings({"unused"})
 public class RelyingPartyConfiguration {
 	@Value("${server.address}")
 	private String serverAddress;
@@ -37,7 +38,7 @@ public class RelyingPartyConfiguration {
 	}
 
 	@Bean
-	public RelyingParty RelyingParty(final RelyingPartyIdentity relyingPartyIdentity, final CredentialRepository credentialRepository) throws InvalidAppIdException {
+	public RelyingParty relyingParty(final RelyingPartyIdentity relyingPartyIdentity, final CredentialRepository credentialRepository) throws InvalidAppIdException {
 		return RelyingParty.builder()
 		    .identity(relyingPartyIdentity)
 		    .credentialRepository(credentialRepository)

@@ -1,5 +1,6 @@
 package com.github.justincranford.springs.server.webauthn.config;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,7 @@ import org.springframework.data.envers.repository.support.EnversRevisionReposito
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.GrantedAuthority;
 // TODO com.github.justincranford.springs.persistenceorm.sessions.database.util.SimpleGrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -63,7 +65,7 @@ import lombok.extern.slf4j.Slf4j;
 	RelyingPartyConfiguration.class
 })
 @Slf4j
-@SuppressWarnings({"static-method", "deprecation"})
+@SuppressWarnings({"unused", "static-method", "deprecation"})
 public class SpringsServiceWebauthnConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(PasswordEncoder.class)
@@ -81,6 +83,7 @@ public class SpringsServiceWebauthnConfiguration {
 	@Getter
 	@Setter
 	public static class MyUserPass implements UserDetails {
+		@Serial
 		private static final long serialVersionUID = 1L;
 		private String username;
 		private String password;
@@ -90,7 +93,7 @@ public class SpringsServiceWebauthnConfiguration {
 	@Observed
 	@Bean
 	@ConditionalOnMissingBean(UserDetailsService.class)
-	@SuppressWarnings({"resource"})
+	@SuppressWarnings({"unused", "resource"})
 	public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) throws Exception {
 		final InMemoryUserDetailsManager userDetailsService = new InMemoryUserDetailsManager();
 		final LinkedBlockingQueue<UserDetails> users = new LinkedBlockingQueue<>();
@@ -102,7 +105,7 @@ public class SpringsServiceWebauthnConfiguration {
 		executor.submit(() -> users.add(MyUserPass.builder().username("admin").password(passwordEncoder.encode("adminPwd")).authorities(Set.of(new SimpleGrantedAuthority("ADMIN"))).build()));
         executor.shutdown();
         executor.awaitTermination(10, TimeUnit.SECONDS);
-        users.forEach(userDetails -> userDetailsService.createUser(userDetails));
+        users.forEach(userDetailsService::createUser);
 		return userDetailsService;
 	}
 
@@ -113,7 +116,7 @@ public class SpringsServiceWebauthnConfiguration {
         	.authorizeHttpRequests(authorize -> authorize
     			.anyRequest().permitAll()
 			)
-            .csrf(csrf -> csrf.disable());
+            .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 
@@ -125,7 +128,7 @@ public class SpringsServiceWebauthnConfiguration {
 	    		.requestMatchers("/static/**").permitAll()
 	            .anyRequest().authenticated()
 	        )
-	    	.csrf(csrf -> csrf.disable());
+	    	.csrf(AbstractHttpConfigurer::disable);
 	    return http.build();
 	}
 
@@ -137,7 +140,7 @@ public class SpringsServiceWebauthnConfiguration {
         		.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
         		.anyRequest().authenticated()
     		)
-            .csrf(csrf -> csrf.disable())
+            .csrf(AbstractHttpConfigurer::disable)
             .formLogin(Customizer.withDefaults());
 //            .oauth2Login(Customizer.withDefaults());
         return http.build();
@@ -151,7 +154,7 @@ public class SpringsServiceWebauthnConfiguration {
            		.requestMatchers("/api/v1/user/**").hasRole("USER")
         		.anyRequest().authenticated()
     		)
-            .csrf(csrf -> csrf.disable())
+            .csrf(AbstractHttpConfigurer::disable)
             .httpBasic(Customizer.withDefaults());
         return http.build();
     }
@@ -163,7 +166,7 @@ public class SpringsServiceWebauthnConfiguration {
         	.authorizeHttpRequests(authorize -> authorize
     			.anyRequest().permitAll()
 			)
-            .csrf(csrf -> csrf.disable());
+            .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 
@@ -174,7 +177,7 @@ public class SpringsServiceWebauthnConfiguration {
         	.authorizeHttpRequests(authorize -> authorize
     			.anyRequest().permitAll()
 			)
-            .csrf(csrf -> csrf.disable());
+            .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 }

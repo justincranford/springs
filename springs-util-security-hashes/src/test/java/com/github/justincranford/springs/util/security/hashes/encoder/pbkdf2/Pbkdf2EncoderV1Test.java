@@ -2,6 +2,7 @@ package com.github.justincranford.springs.util.security.hashes.encoder.pbkdf2;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.HexFormat;
 import java.util.Set;
@@ -107,9 +108,8 @@ public class Pbkdf2EncoderV1Test {
 			private static final byte[] CONSTANT_SALT_SEED_BYTES = SecureRandomUtil.randomBytes(64); // doesn't need to be secret
 			private static final HmacAlgorithm PEPPER_ALG = HmacAlgorithm.HmacSHA256;
 			private static final SecretKeySpec RANDOM_HMAC_KEY = new SecretKeySpec(SecureRandomUtil.randomBytes(64), "PepperTheSalt"); // needs to be secret
-			private static final  Function<CharSequence, byte[]> DERIVED_SALT_SUPPLIER = (charSequence) -> {
-				return PEPPER_ALG.compute(RANDOM_HMAC_KEY, ArrayUtil.concat(charSequence.toString().getBytes(), CONSTANT_SALT_SEED_BYTES));
-			};
+			private static final  Function<CharSequence, byte[]> DERIVED_SALT_SUPPLIER = (charSequence) ->
+				PEPPER_ALG.compute(RANDOM_HMAC_KEY, ArrayUtil.concat(charSequence.toString().getBytes(StandardCharsets.UTF_8), CONSTANT_SALT_SEED_BYTES));
 
 			@Test
 			public void quadraticSearchSpaceForSalt() { // saltBytes => HmacSha256(SecretKey(randomKeyBytes), piiBytes+constantSeedBytes)

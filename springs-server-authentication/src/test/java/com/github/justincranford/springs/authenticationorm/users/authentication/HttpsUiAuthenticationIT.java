@@ -35,11 +35,11 @@ public class HttpsUiAuthenticationIT extends AbstractIT {
 	@Nested
 	public class HttpsLoginRedirectWhenUnauthenticated {
 		@RepeatedTest(REPEATS)
-		void stls() throws Exception {
+		void stls() {
 			attemptUnauthenticatedHttpGet(stlsRestTemplate());
 		}
 		@RepeatedTest(REPEATS)
-		void mtls() throws Exception {
+		void mtls() {
 			attemptUnauthenticatedHttpGet(mtlsRestTemplate());
 		}
 	}
@@ -103,6 +103,7 @@ public class HttpsUiAuthenticationIT extends AbstractIT {
 	// <input type="password" id="password" name="password" class="form-control" placeholder="Password" required=""/>
 	// <input name="_csrf" type="hidden" value="JmqZF4H33AOhG1U5tBnEWzQWH0Zt7OI8UOIyqK7505Koa8ZRFlr7LuKV62eMKGQJ0TTwa1YjMiQPjtERMYELkcjPtqGeCv9h"/>
 	// <button class="btn btn-lg btn-primary btn-block" type="submit">
+	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="DLS_DEAD_LOCAL_STORE",justification="Design intent for clarity")
 	private boolean attemptUiLogin(final SSLContext sslContext, final String username, final String password) throws Exception {
 		try (final WebClient webClient = new WebClient()) {
 			webClient.getOptions().setSSLContext(sslContext);
@@ -140,19 +141,19 @@ public class HttpsUiAuthenticationIT extends AbstractIT {
 	}
 
 	private void attemptUnauthenticatedHttpGet(final RestTemplate httpsRestTemplate) {
-		final String response = RestTemplateUtil.plainGet(httpsRestTemplate, httpsBaseUrl() + "/secure/home", String.class);
+		final String response = RestTemplateUtil.plainGet(httpsRestTemplate, httpsBaseUrl() + "/secure/home", null, String.class);
 		assertThat(response).contains("action=\"/login\"");
 	}
 
 	private void attemptLoginPersonaEmail(final SSLContext sslContext, final boolean assertLoginSuccess) throws Exception {
 		final List<SpringsPersistenceOrmUsersPeopleProperties.Person> people = springsPersistenceOrmUsersPeopleProperties().getPeople();
-		Assertions.assertTrue(people.size() > 0);
+        Assertions.assertFalse(people.isEmpty());
 		final SpringsPersistenceOrmUsersPeopleProperties.Person person = people.getFirst();
 		final List<Persona> personas = person.getPersonas();
-		Assertions.assertTrue(personas.size() > 0);
+        Assertions.assertFalse(personas.isEmpty());
 		final Persona persona = personas.getFirst();
 		final List<EmailAddress> emailAddresses = persona.getEmailAddresses();
-		Assertions.assertTrue(emailAddresses.size() > 0);
+        Assertions.assertFalse(emailAddresses.isEmpty());
 		final EmailAddress emailAddress = emailAddresses.getFirst();
 		final boolean success = attemptUiLogin(sslContext, emailAddress.getEmailAddress(), assertLoginSuccess ? person.getPassword() : "Wrong");
 		if (assertLoginSuccess) {
@@ -164,7 +165,7 @@ public class HttpsUiAuthenticationIT extends AbstractIT {
 
 	private void attemptLoginPersonUsername(final SSLContext sslContext, final boolean assertLoginSuccess) throws Exception {
 		final List<SpringsPersistenceOrmUsersPeopleProperties.Person> people = springsPersistenceOrmUsersPeopleProperties().getPeople();
-		Assertions.assertTrue(people.size() > 0);
+        Assertions.assertFalse(people.isEmpty());
 		final SpringsPersistenceOrmUsersPeopleProperties.Person person = people.getFirst();
 		final boolean success = attemptUiLogin(sslContext, person.getUsername(), assertLoginSuccess ? person.getPassword() : "Wrong");
 		if (assertLoginSuccess) {
