@@ -1,5 +1,13 @@
 package com.github.justincranford.springs.util.basic;
 
+import org.junit.jupiter.api.ClassOrderer;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestClassOrder;
+import org.junit.jupiter.api.TestMethodOrder;
+
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -14,22 +22,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.ClassOrderer;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestClassOrder;
-import org.junit.jupiter.api.TestMethodOrder;
-
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SuppressWarnings({"static-method"})
 public class ProducersConsumersTest {
-	private static record UtcAndI18nLog(OffsetDateTime utc, I18nLog log) {}
-	private static record I18nLog(String tag, List<Object> args) {}
+	private record UtcAndI18nLog(OffsetDateTime utc, I18nLog log) {}
+	private record I18nLog(String tag, List<Object> args) {}
 
-	private static final Duration DELAY_BEFORE_TRIGGERING_STOP = Duration.ofMillis(500);
+	private static final Duration DELAY_BEFORE_TRIGGERING_STOP = Duration.ofMillis(200);
 	private static final Duration WAIT_FOR_GRACEFUL_SHUTDOWN = Duration.ofMillis(100);
 
 	@Order(1)
@@ -117,7 +117,7 @@ public class ProducersConsumersTest {
 			)
 		);
 		final BlockingQueue<UtcAndI18nLog> consumerQueue    = new LinkedBlockingQueue<>(consumerQueueSize);
-		final Consumer<UtcAndI18nLog>      consumerFunction = (utcI18n) -> 
+		final Consumer<UtcAndI18nLog>      consumerFunction = (utcI18n) ->
 			logs.compute(utcI18n.utc(), (utc, existingList) -> {
 				synchronized(logs) {
 					final List<I18nLog> list = (existingList == null) ? new ArrayList<>() : existingList;
