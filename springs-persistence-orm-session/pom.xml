@@ -77,37 +77,37 @@
         <dependency>
             <groupId>com.github.justincranford.springs</groupId>
             <artifactId>springs-persistence-orm-users</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.justincranford.springs</groupId>
             <artifactId>springs-persistence-orm-base</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.justincranford.springs</groupId>
             <artifactId>springs-util-security-hashes</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.justincranford.springs</groupId>
             <artifactId>springs-util-https</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${parent.version}</version>
         </dependency>
 		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-util-basic</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-util-json</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-util-observability</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${parent.version}</version>
 		</dependency>
 
 		<dependency>
@@ -119,7 +119,7 @@
 		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-util-testcontainers</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${parent.version}</version>
 		    <scope>test</scope>
 		</dependency>
 		<dependency>
