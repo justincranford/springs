@@ -6,7 +6,6 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.3.5</version>
-		<relativePath />
 	</parent>
 
 	<groupId>com.github.justincranford.springs</groupId>
@@ -60,11 +59,7 @@
 		<module>springs-persistence-orm-base</module>
 		<module>springs-persistence-orm-example</module>
 		<module>springs-persistence-orm-users</module>
-		<module>springs-persistence-orm-clients</module>
 		<module>springs-persistence-orm-session</module>
-		<module>springs-service-chatbot</module>
-		<module>springs-service-ollama</module>
-		<module>springs-server-webauthn</module>
 		<module>springs-server-authentication</module>
 	</modules>
 
@@ -202,11 +197,12 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-annotations -->
 		<dependency>
-			<artifactId>spotbugs-annotations</artifactId>
 			<groupId>com.github.spotbugs</groupId>
-			<version>RELEASE</version>
-			<scope>compile</scope>
+			<artifactId>spotbugs-annotations</artifactId>
+			<version>4.8.6</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
