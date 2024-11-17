@@ -1,6 +1,5 @@
 package com.github.justincranford.springs.service.ollama.client;
 
-import OllamaClientServiceConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
