@@ -21,6 +21,7 @@ import java.util.List;
 // TODO Move to springs-persistence-orm-users
 @Service
 @Slf4j
+@SuppressWarnings({ "unused" })
 public class PersonService implements UserDetailsService {
     @Autowired
     private PersonOrmRepository personOrmRepository;
@@ -31,7 +32,7 @@ public class PersonService implements UserDetailsService {
         final String usernameLowerCase = usernameMixedCase.toLowerCase();
         final PersonOrm personOrm = this.personOrmRepository.findByUsername(usernameLowerCase).orElseThrow(() -> {
             log.debug("Person not found by username [{}]", usernameMixedCase);
-            throw new PersonUsernameNotFoundException("Username not found");
+            return new PersonUsernameNotFoundException("Username not found");
         });
         log.trace("Person found by username, person: {}", personOrm);
 
@@ -52,7 +53,7 @@ public class PersonService implements UserDetailsService {
         final String usernameLowerCase = usernameMixedCase.toLowerCase();
         final PersonIdPasswordProjection personIdPasswordProjection = this.personOrmRepository.findPersonIdPasswordProjectionByUsername(usernameLowerCase).orElseThrow(() -> {
             log.debug("Person id+password not found by username [{}]", usernameMixedCase);
-            throw new PersonaEmailNotFoundException("Username not found");
+            return new PersonaEmailNotFoundException("Username not found");
         });
         assert personIdPasswordProjection.getPersonId() != null : "Person ID must be non-null";
         assert personIdPasswordProjection.getPersonPassword() != null : "Person password must be non-null";

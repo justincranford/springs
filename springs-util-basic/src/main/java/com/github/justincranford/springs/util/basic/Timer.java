@@ -48,6 +48,7 @@ import java.util.logging.Logger;
  * } // Triggers print "timer3" details (if currentAutoPrintInternal matches)
  * } // Triggers print "timer2" details (if currentAutoPrintInternal matches)
  */
+@SuppressWarnings({"unused", "boxing"})
 public class Timer implements AutoCloseable {
     private static final Logger LOG = Logger.getLogger(Timer.class.getCanonicalName());
 
@@ -69,7 +70,7 @@ public class Timer implements AutoCloseable {
     private static int currentAutoLogInternal = Timer.DEFAULT_AUTO_LOG_INTERNAL;
     private static int currentAutoResetInterval = Timer.DEFAULT_AUTO_RESET_INTERVAL;
 
-    private String[] reverseTimers;
+    private final String[] reverseTimers;
 
     public Timer(final String... timers) {
         Timer.start(timers);
@@ -197,24 +198,16 @@ public class Timer implements AutoCloseable {
     }
 
     private static float normalizeNanoTimeToTimeUnits(final float nanoTime, final TimeUnit timeUnit) {    // NOSONAR The Cyclomatic Complexity of this method "convertTimeToTimeUnits" is 11 which is greater than 10 authorized.
-        switch (timeUnit) {
-            case NANOSECONDS:
-                return nanoTime;
-            case MICROSECONDS:
-                return nanoTime / 1000F;
-            case MILLISECONDS:
-                return nanoTime / 1000000F;
-            case SECONDS:
-                return nanoTime / 1000000000F;
-            case MINUTES:
-                return nanoTime / 60000000000F;
-            case HOURS:
-                return nanoTime / 3600000000000F;
-            case DAYS:
-                return nanoTime / 86400000000000F;
-            default:
-                return Float.MIN_VALUE;
-        }
+        return switch (timeUnit) {
+            case NANOSECONDS -> nanoTime;
+            case MICROSECONDS -> nanoTime / 1000F;
+            case MILLISECONDS -> nanoTime / 1000000F;
+            case SECONDS -> nanoTime / 1000000000F;
+            case MINUTES -> nanoTime / 60000000000F;
+            case HOURS -> nanoTime / 3600000000000F;
+            case DAYS -> nanoTime / 86400000000000F;
+            default -> Float.MIN_VALUE;
+        };
     }
 
     /*package*/
@@ -222,24 +215,16 @@ public class Timer implements AutoCloseable {
         if (null == timeUnit) {
             return null;
         }
-        switch (timeUnit) {
-            case NANOSECONDS:
-                return "nsec";
-            case MICROSECONDS:
-                return "usec";
-            case MILLISECONDS:
-                return "msec";
-            case SECONDS:
-                return "sec";
-            case MINUTES:
-                return "min";
-            case HOURS:
-                return "hour";
-            case DAYS:
-                return "day";
-            default:
-                return null;
-        }
+        return switch (timeUnit) {
+            case NANOSECONDS -> "nsec";
+            case MICROSECONDS -> "usec";
+            case MILLISECONDS -> "msec";
+            case SECONDS -> "sec";
+            case MINUTES -> "min";
+            case HOURS -> "hour";
+            case DAYS -> "day";
+            default -> null;
+        };
     }
 
     public static synchronized float getTotalTime(final String timer) {

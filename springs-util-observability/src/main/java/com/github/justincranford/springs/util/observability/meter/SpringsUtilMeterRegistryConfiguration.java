@@ -21,12 +21,13 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 
 @Configuration
 @EnableAspectJAutoProxy
 //@ComponentScan(basePackages={"com.github.justincranford.springs.util.observability"})
-@SuppressWarnings({ "static-method" })
 @Slf4j
+@SuppressWarnings({ "unused", "static-method" })
 public class SpringsUtilMeterRegistryConfiguration {
     @Autowired
     private ApplicationContext applicationContext;
@@ -46,7 +47,7 @@ public class SpringsUtilMeterRegistryConfiguration {
     private List<Tag> metricsCommonTags() {
         return List.of(
             new ImmutableTag("java.version", System.getProperty("java.version")),
-            new ImmutableTag("spring.application.name", this.applicationContext.getId()),
+            new ImmutableTag("spring.application.name", Objects.requireNonNull(this.applicationContext.getId())),
             new ImmutableTag("spring.application.start", OffsetDateTime.ofInstant(Instant.ofEpochMilli(this.applicationContext.getStartupDate()), ZoneOffset.UTC).truncatedTo(ChronoUnit.NANOS).toString())
         );
     }

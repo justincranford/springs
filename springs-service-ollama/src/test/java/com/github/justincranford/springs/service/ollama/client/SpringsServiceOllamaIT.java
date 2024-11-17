@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
+@SuppressWarnings({ "unused" })
 public class SpringsServiceOllamaIT extends AbstractIT {
     private static final boolean USE_TEST_CONTAINER = false;
     private final List<Message> messages = List.of(
@@ -31,14 +32,14 @@ public class SpringsServiceOllamaIT extends AbstractIT {
     );
 
     @BeforeAll
-    private static void beforeAll() {
+    public static void beforeAll() {
         if (USE_TEST_CONTAINER) {
             SpringsUtilTestContainers.startContainer(SpringsUtilTestContainers.OLLAMA);
         }
     }
 
     @AfterAll
-    private static void afterAll() {
+    public static void afterAll() {
         if (USE_TEST_CONTAINER) {
             SpringsUtilTestContainers.stopContainer(SpringsUtilTestContainers.OLLAMA);
         }

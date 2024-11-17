@@ -43,7 +43,7 @@ public class PasswordGenerator {
             System.out.print('\n');
             return;
         }
-        final int totalIndividualCodePointsAvailable = availableCodePointsAndCounts.values().stream().map(listOfNumbers -> Integer.valueOf(listOfNumbers.get(0).intValue())).reduce(Integer.valueOf(0), Integer::sum).intValue();
+        final int totalIndividualCodePointsAvailable = availableCodePointsAndCounts.values().stream().map(listOfNumbers -> listOfNumbers.getFirst().intValue()).reduce(0, Integer::sum);
         if (numCodePointsRequested > totalIndividualCodePointsAvailable) {
             throw new IllegalArgumentException("Insufficient code points available " + totalIndividualCodePointsAvailable + " for request " + numCodePointsRequested + ".");
         }
@@ -84,17 +84,17 @@ public class PasswordGenerator {
     }
 
     private static long count(final List<Integer> selectedCodePoints, final List<Integer> availableCodePoints) {
-        return selectedCodePoints.stream().filter(c -> availableCodePoints.contains(c)).count();
+        return selectedCodePoints.stream().filter(availableCodePoints::contains).count();
     }
 
     private static String toString(final Integer selectedCodePoint) {
-        return new String(Character.toChars(selectedCodePoint.intValue()));
+        return new String(Character.toChars(selectedCodePoint));
     }
 
     private static String toString(final List<Integer> selectedCodePoints) {
         final StringBuilder passwordBuilder = new StringBuilder(selectedCodePoints.size());
         for (final Integer selectedCodePoint : selectedCodePoints) {
-            passwordBuilder.append(Character.toChars(selectedCodePoint.intValue()));
+            passwordBuilder.append(Character.toChars(selectedCodePoint));
         }
         return passwordBuilder.toString();
     }
@@ -119,8 +119,8 @@ public class PasswordGenerator {
             throw new IllegalArgumentException("Max consecutive repeats must be greater than one");
         }
 
-        final boolean chooseFirst = this.constraints.firsts().length() > 0;
-        final boolean chooseLast = this.constraints.lasts().length() > 0;
+        final boolean chooseFirst = !this.constraints.firsts().isEmpty();
+        final boolean chooseLast = !this.constraints.lasts().isEmpty();
         final int maxAnywhereRepeats = this.constraints.maxAnywhereRepeats();
         final AtomicInteger maxFirsts = new AtomicInteger(chooseFirst ? 1 : 0);         // group count instance needs to be shared by all entries in availableFirstsCounts
         final AtomicInteger maxLasts = new AtomicInteger(chooseLast ? 1 : 0);         // group count instance needs to be shared by all entries in availableLastCounts

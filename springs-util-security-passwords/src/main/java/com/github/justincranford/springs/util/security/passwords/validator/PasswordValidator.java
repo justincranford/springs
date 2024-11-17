@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
+@SuppressWarnings({"boxing"})
 public class PasswordValidator implements ConstraintValidator<PasswordConstraints,String> {
     private Set<Integer> firsts;
     private Set<Integer> lasts;
@@ -84,9 +85,9 @@ public class PasswordValidator implements ConstraintValidator<PasswordConstraint
         }
         final List<Integer> passwordCodePoints = password.codePoints().boxed().toList();
 
-        if ((this.firsts.size() > 0) && (!(this.firsts.contains(passwordCodePoints.get(0))))) {
+        if ((!this.firsts.isEmpty()) && (!(this.firsts.contains(passwordCodePoints.getFirst())))) {
             return throwOrFalse(throwException, "Password violates first constraint");
-        } else if ((this.lasts.size() > 0) && (!(this.lasts.contains(passwordCodePoints.get(0))))) {
+        } else if ((!this.lasts.isEmpty()) && (!(this.lasts.contains(passwordCodePoints.getFirst())))) {
             return throwOrFalse(throwException, "Password violates last constraint");
         }
 

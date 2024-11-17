@@ -42,7 +42,7 @@ import static com.github.justincranford.springs.server.webauthn.util.ByteArrayUt
 
 @Service
 @Slf4j
-@SuppressWarnings({ "deprecation" })
+@SuppressWarnings({ "unused", "deprecation" })
 public class RegistrationService {
     private static final int NUM_RANDOM_BYTES_CREDENTIAL_ID = 32;
     private static final int NUM_RANDOM_BYTES_SESSION_TOKEN = 32;

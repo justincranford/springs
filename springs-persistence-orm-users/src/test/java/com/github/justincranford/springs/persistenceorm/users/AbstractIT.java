@@ -42,6 +42,7 @@ import java.util.List;
 @ActiveProfiles({ "test" })
 @Slf4j
 @Observed
+@SuppressWarnings({"unused"})
 public class AbstractIT {
     @LocalServerPort
     private long localServerPort;
@@ -61,20 +62,19 @@ public class AbstractIT {
     private SpringsPersistenceOrmUsersPeopleProperties peopleProperties;
 
     @BeforeAll
-    private static void beforeAll() {
+    public static void beforeAll() {
         SpringsUtilTestContainers.startContainers(List.of(SpringsUtilTestContainers.POSTGRESQL));
     }
 
-    @SuppressWarnings("resource")
     @DynamicPropertySource
     public static void postgresqlContainerProperties(final DynamicPropertyRegistry registry) {
         final PostgreSQLContainer<?> instance = SpringsUtilTestContainers.POSTGRESQL.getInstance();
         if (instance.isRunning()) {
             log.info("Setting dynamic properties from SpringsUtilTestContainers.POSTGRESQL");
-            registry.add("spring.jpa.properties.hibernate.dialect", () -> PostgreSQLDialect.class.getCanonicalName());
-            registry.add("spring.datasource.url", () -> instance.getJdbcUrl());
-            registry.add("spring.datasource.username", () -> instance.getUsername());
-            registry.add("spring.datasource.password", () -> instance.getPassword());
+            registry.add("spring.jpa.properties.hibernate.dialect", PostgreSQLDialect.class::getCanonicalName);
+            registry.add("spring.datasource.url", instance::getJdbcUrl);
+            registry.add("spring.datasource.username", instance::getUsername);
+            registry.add("spring.datasource.password", instance::getPassword);
         } else {
             log.info("Using static properties");
         }

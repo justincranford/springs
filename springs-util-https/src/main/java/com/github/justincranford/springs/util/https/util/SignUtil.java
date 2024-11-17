@@ -39,5 +39,5 @@ public class SignUtil {
         throw new IllegalArgumentException("Unsupported key " + key.getAlgorithm());
     }
 
-    public static record ProviderAndAlgorithm(Provider provider, String algorithm) { }
+    public record ProviderAndAlgorithm(Provider provider, String algorithm) { }
 }

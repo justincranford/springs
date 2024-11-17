@@ -84,7 +84,7 @@ public class SessionOrm extends AbstractEntity {
         }
     )
     @org.hibernate.annotations.Cascade({ org.hibernate.annotations.CascadeType.ALL })
-    @MapKeyColumn(name = "name", nullable = false, updatable = false, length = 128)
+    @MapKeyColumn(name = "name", updatable = false, length = 128)
     @OrderBy("session_id,rank")
     @Column(name = "encoded")
     @NotNull

@@ -25,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.net.ssl.SSLContext;
 
 @Configuration
+@SuppressWarnings({ "unused" })
 public class SpringsUtilHttpsClientsConfiguration {
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
@@ -37,7 +38,7 @@ public class SpringsUtilHttpsClientsConfiguration {
      *
      * @see TlsEnabledByDefaultInitializer#prependPropertySource
      */
-    @ConditionalOnProperty(name = TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
+    @ConditionalOnProperty(name = TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED)
     @Qualifier("stlsRestTemplate")
     @Bean
     public RestTemplate stlsRestTemplate() {
@@ -50,7 +51,7 @@ public class SpringsUtilHttpsClientsConfiguration {
      *
      * @see TlsEnabledByDefaultInitializer#prependPropertySource
      */
-    @ConditionalOnProperty(name = TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
+    @ConditionalOnProperty(name = TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED)
     @Qualifier("mtlsRestTemplate")
     @Bean
     public RestTemplate mtlsRestTemplate() {
@@ -63,10 +64,9 @@ public class SpringsUtilHttpsClientsConfiguration {
      *
      * @see TlsEnabledByDefaultInitializer#prependPropertySource
      */
-    @ConditionalOnProperty(name = TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
+    @ConditionalOnProperty(name = TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED)
     @Qualifier("ptlsRestTemplate")
     @Bean
-    @SuppressWarnings({ "resource" })
     public RestTemplate ptlsRestTemplate(final WebServerApplicationContext webServerApplicationContext) {
         final SslBundle serverTlsPskBundle = this.sslBundles.getBundle(TlsEnabledByDefaultInitializer.SslBundleNames.SERVER_TLS_PSK);
         final String webServerClassName = webServerApplicationContext.getWebServer().getClass().getName();

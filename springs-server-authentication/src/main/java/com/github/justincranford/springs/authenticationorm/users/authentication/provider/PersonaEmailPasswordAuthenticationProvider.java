@@ -29,6 +29,7 @@ import static org.slf4j.event.Level.TRACE;
 
 @Component
 @Slf4j
+@SuppressWarnings({"unused"})
 public class PersonaEmailPasswordAuthenticationProvider implements AuthenticationProvider {
     private static final EmailRfc5321Validator EMAIL_VALIDATOR = EmailRfc5321Validator.create(null);
 

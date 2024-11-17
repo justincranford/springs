@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@SuppressWarnings({ "static-method" })
+@SuppressWarnings({ "static-method", "boxing" })
 public class ProducersConsumersTest {
     private static final Duration DELAY_BEFORE_TRIGGERING_STOP = Duration.ofMillis(500);
     private static final Duration WAIT_FOR_GRACEFUL_SHUTDOWN = Duration.ofMillis(100);
@@ -58,9 +58,9 @@ public class ProducersConsumersTest {
         System.out.println("Unique time stamps: " + logs.size() + ", Log lists stats: " + logs.values().stream().mapToInt(List::size).summaryStatistics() + "\n");
     }
 
-    private static record UtcAndI18nLog(OffsetDateTime utc, I18nLog log) { }
+    private record UtcAndI18nLog(OffsetDateTime utc, I18nLog log) { }
 
-    private static record I18nLog(String tag, List<Object> args) { }
+    private record I18nLog(String tag, List<Object> args) { }
 
     @Order(1)
     @Nested

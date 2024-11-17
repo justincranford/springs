@@ -78,7 +78,8 @@ public class HttpsUiAuthenticationIT extends AbstractIT {
             final HtmlPasswordInput passwordField = requireNonNull(loginForm.getInputByName("password"));
             @SuppressWarnings("unused") final HtmlHiddenInput csrfField = requireNonNull(loginForm.getInputByName("_csrf"));
 //			final HtmlButton        loginButton   = requireNonNull(loginForm.getButtonsByName("submit")).getFirst();
-            final HtmlButton loginButton = (HtmlButton) loginForm.getFirstByXPath("//button[@class='btn btn-lg btn-primary btn-block']");
+            final HtmlButton loginButton = loginForm.getFirstByXPath("//button[@class='btn btn-lg btn-primary btn-block']");
+            assertThat(loginButton).isNotNull();
 
             usernameField.type(username);
             passwordField.type(password);

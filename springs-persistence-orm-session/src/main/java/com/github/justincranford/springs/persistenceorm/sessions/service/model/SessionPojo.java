@@ -23,6 +23,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @ToString
+@SuppressWarnings({"unused"})
 public class SessionPojo implements Session {
     @Getter
     @Setter
@@ -48,6 +49,10 @@ public class SessionPojo implements Session {
     @Builder.Default
     private Duration maxInactiveInterval = Constants.MAX_INACTIVE_INTERNAL;
 
+    //		this.lastAccessedTime = nowInstant();
+    //		this.lastAccessedTime = nowInstant();
+    @Setter
+    @Getter
     private Instant expiresTime;
 
     @Builder.Default
@@ -114,10 +119,7 @@ public class SessionPojo implements Session {
         return this.creationTime;
     }
 
-    public Instant getExpiresTime() {
-//		this.lastAccessedTime = nowInstant();
-        return this.expiresTime;
-    }    @Override
+    @Override
     public void setMaxInactiveInterval(Duration _maxInactiveInterval) {
 //		this.lastAccessedTime = nowInstant();
         this.maxInactiveInterval = _maxInactiveInterval;
@@ -126,11 +128,6 @@ public class SessionPojo implements Session {
         } else {
             this.expiresTime = DateTimeUtil.nowUtcTruncatedToMicroseconds().plusYears(100).toInstant();
         }
-    }
-
-    public void setExpiresTime(Instant _expiresTime) {
-//		this.lastAccessedTime = nowInstant();
-        this.expiresTime = _expiresTime;
     }
 
     public synchronized LinkedHashMap<String,Object> getAttributes() {

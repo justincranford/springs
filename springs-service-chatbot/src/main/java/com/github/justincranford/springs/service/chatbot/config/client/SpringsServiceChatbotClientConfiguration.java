@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Configuration
 @ComponentScan(basePackageClasses = { SpringsServiceChatbotClient.class })
-@SuppressWarnings({ "static-method" })
 @Slf4j
+@SuppressWarnings({"unused", "static-method" })
 public class SpringsServiceChatbotClientConfiguration {
     @Bean
     public RestTemplate restTemplate() {
@@ -35,9 +35,8 @@ public class SpringsServiceChatbotClientConfiguration {
     }
 
     public static class LoggingInterceptor implements ClientHttpRequestInterceptor {
-        private AtomicInteger requestNumberSequence = new AtomicInteger(1);
+        private final AtomicInteger requestNumberSequence = new AtomicInteger(1);
 
-        @SuppressWarnings("resource")
         @Override
         public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
             int requestNumber = this.requestNumberSequence.getAndIncrement();
@@ -66,7 +65,7 @@ public class SpringsServiceChatbotClientConfiguration {
                 log.debug("{} Headers: {}", prefix, response.getHeaders());
                 try (final InputStream originalBody = response.getBody()) {
                     String body = StreamUtils.copyToString(originalBody, StandardCharsets.UTF_8);
-                    if (body.length() > 0) {
+                    if (!body.isEmpty()) {
                         log.debug("{} Body: \n{}", prefix, body);
                     }
                 }

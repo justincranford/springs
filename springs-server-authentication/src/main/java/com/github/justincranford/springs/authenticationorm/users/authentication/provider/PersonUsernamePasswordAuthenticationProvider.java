@@ -28,6 +28,7 @@ import static org.slf4j.event.Level.TRACE;
 
 @Component
 @Slf4j
+@SuppressWarnings({"unused"})
 public class PersonUsernamePasswordAuthenticationProvider implements AuthenticationProvider {
     private static final EmailRfc5321Validator EMAIL_VALIDATOR = EmailRfc5321Validator.create(null);
 
@@ -40,14 +41,11 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
 
     @Override
     public Authentication authenticate(final Authentication unauthenticatedToken) throws AuthenticationException {
-        if (unauthenticatedToken instanceof PersonUsernamePasswordUnauthenticatedToken) {
-            log.trace("Token class PersonaEmailPasswordUnauthenticatedToken supported by PersonUsernamePasswordAuthenticationProvider");
-        } else if (unauthenticatedToken instanceof UsernamePasswordAuthenticationToken) {
-            log.trace("Token class UsernamePasswordAuthenticationToken supported by PersonUsernamePasswordAuthenticationProvider");
-        } else if (unauthenticatedToken == null) {
-            throw logAndCreate(PersonTokenNullNotAllowedException.class, DEBUG, "Token null not supported by PersonaEmailPasswordAuthenticationProvider");
-        } else {
-            throw logAndCreate(PersonTokenClassNotSupportedException.class, TRACE, "Token class " + unauthenticatedToken.getClass().getSimpleName() + " not supported by PersonaEmailPasswordAuthenticationProvider");
+        switch (unauthenticatedToken) {
+            case PersonUsernamePasswordUnauthenticatedToken personUsernamePasswordUnauthenticatedToken -> log.trace("Token class PersonaEmailPasswordUnauthenticatedToken supported by PersonUsernamePasswordAuthenticationProvider");
+            case UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken -> log.trace("Token class UsernamePasswordAuthenticationToken supported by PersonUsernamePasswordAuthenticationProvider");
+            case null -> throw logAndCreate(PersonTokenNullNotAllowedException.class, DEBUG, "Token null not supported by PersonaEmailPasswordAuthenticationProvider");
+            default -> throw logAndCreate(PersonTokenClassNotSupportedException.class, TRACE, "Token class " + unauthenticatedToken.getClass().getSimpleName() + " not supported by PersonaEmailPasswordAuthenticationProvider");
         }
         final String usernameMixedCase = unauthenticatedToken.getName();
         final String password = unauthenticatedToken.getCredentials().toString();

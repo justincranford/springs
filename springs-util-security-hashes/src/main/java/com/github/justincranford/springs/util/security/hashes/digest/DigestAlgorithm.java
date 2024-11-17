@@ -9,7 +9,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-@SuppressWarnings({ "hiding" })
+@SuppressWarnings({ "unused", "hiding" })
 public enum DigestAlgorithm {
     MD2("MD2", I.P61, 16, Oid.MD2),
     MD4("MD4", I.P61, 16, Oid.MD4),
@@ -41,7 +41,7 @@ public enum DigestAlgorithm {
     private final String canonicalString;
     private final String toString;
 
-    private DigestAlgorithm(final String algorithm0, final BigInteger maxInputBytesLen0, final int digestOutputBytesLen0, final ASN1ObjectIdentifier asnOid0) {
+    DigestAlgorithm(final String algorithm0, final BigInteger maxInputBytesLen0, final int digestOutputBytesLen0, final ASN1ObjectIdentifier asnOid0) {
         this.algorithm = algorithm0;
         this.maxInputBytesLen = maxInputBytesLen0;
         this.digestOutputBytesLen = digestOutputBytesLen0;

@@ -16,6 +16,8 @@
 
 package com.github.justincranford.springs.util.security.hashes.encoder.argon2;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.bouncycastle.crypto.params.Argon2Parameters;
 import org.bouncycastle.util.Arrays;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
@@ -148,6 +150,8 @@ final class Argon2EncodingUtils {
 
         private byte[] hash;
 
+        @Setter
+        @Getter
         private Argon2Parameters parameters;
 
         Argon2Hash(byte[] _hash, Argon2Parameters _parameters) {
@@ -161,14 +165,6 @@ final class Argon2EncodingUtils {
 
         public void setHash(byte[] _hash) {
             this.hash = Arrays.clone(_hash);
-        }
-
-        public Argon2Parameters getParameters() {
-            return this.parameters;
-        }
-
-        public void setParameters(Argon2Parameters _parameters) {
-            this.parameters = _parameters;
         }
 
     }

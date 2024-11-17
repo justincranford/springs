@@ -16,6 +16,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+@SuppressWarnings({ "unused" })
 public enum HmacAlgorithm implements MacAlgorithm {
     HmacMD5("HmacMD5", DigestAlgorithm.MD5, Oid.HMAC_MD5),
     HmacSHA1("HmacSHA1", DigestAlgorithm.SHA1, Oid.HMAC_SHA1),
@@ -40,7 +41,7 @@ public enum HmacAlgorithm implements MacAlgorithm {
     private final String canonicalString;
     private final String toString;
 
-    private HmacAlgorithm(final String algorithm0, final DigestAlgorithm digestAlgorithm0, final ASN1ObjectIdentifier asn1Oid0) {
+    HmacAlgorithm(final String algorithm0, final DigestAlgorithm digestAlgorithm0, final ASN1ObjectIdentifier asn1Oid0) {
         this.algorithm = algorithm0;
         this.digestAlgorithm = digestAlgorithm0;
         this.maxInputBytesLen = this.digestAlgorithm.maxInputBytesLen();

@@ -13,6 +13,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
@@ -28,7 +29,7 @@ import org.springframework.web.client.RestTemplate;
 @Accessors(fluent = true)
 @ActiveProfiles({ "test" })
 @Slf4j
-@SuppressWarnings({ "static-method" })
+@SuppressWarnings({ "unused", "static-method" })
 public class AbstractIT {
     @Value("${server.address}")
     private String serverAddress;
@@ -55,7 +56,7 @@ public class AbstractIT {
     public static class AbstractITConfiguration {
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            return http.authorizeHttpRequests(authz -> authz.anyRequest().permitAll()).csrf(csrf -> csrf.disable()).build();
+            return http.authorizeHttpRequests(authz -> authz.anyRequest().permitAll()).csrf(AbstractHttpConfigurer::disable).build();
         }
     }
 }

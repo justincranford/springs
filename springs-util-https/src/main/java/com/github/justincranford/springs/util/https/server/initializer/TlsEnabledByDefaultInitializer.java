@@ -59,7 +59,7 @@ public class TlsEnabledByDefaultInitializer implements ApplicationContextInitial
             final String sslAutoConfigAlgorithm = sslAutoConfigProperties.algorithm();
             final String sslAutoConfigServerAddress = sslAutoConfigProperties.serverAddress();
             final String sslAutoConfigClientEmail = sslAutoConfigProperties.clientEmail();
-            if (!sslAutoConfigEnabled.booleanValue()) {
+            if (!sslAutoConfigEnabled) {
                 log.info("SSL Auto Config disabled");
                 return;
             }

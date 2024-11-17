@@ -41,6 +41,7 @@ import java.util.Set;
 //@Filter(name="isNotDeletedBushelFilter", condition="deleted=:(deleteDateTime IS NULL) OR (deleteDateTime < CURRENT_TIMESTAMP)")
 //@Filter(name="isDeletedBushelFilter", condition="deleted=:(deleteDateTime IS NOT NULL) AND (CURRENT_TIMESTAMP <= deleteDateTime)")
 @SequenceGenerator(sequenceName = "bushel_sequence", name = AbstractEntity.SEQUENCE_ID, initialValue = AbstractEntity.SEQUENCE_ID_INITIAL_VALUE, allocationSize = AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_SMALL)
+@SuppressWarnings({"unused"})
 public class BushelOrm extends AbstractEntity {
     @OneToMany(mappedBy = "bushel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 //	@JoinColumn(name="bushel_id")

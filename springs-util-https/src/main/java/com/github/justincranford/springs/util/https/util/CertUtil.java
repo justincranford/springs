@@ -34,7 +34,7 @@ import java.util.Set;
 public class CertUtil {
     // uses opinionated values for root CA X509Certificate
     public static X509Certificate createSignedServerRootCaCert(final Provider caSigningProvider, final String caSigningAlgorithm, final KeyPair caKeyPair) throws Exception {
-        X509Certificate rootCaCert = CertUtil.createCert(
+        return CertUtil.createCert(
             Date.from(ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant()),
             Date.from(ZonedDateTime.of(2099, 12, 31, 23, 59, 59, 999999999, ZoneOffset.UTC).toInstant()),
             new BigInteger(159, SecureRandomUtil.SECURE_RANDOM),
@@ -49,7 +49,6 @@ public class CertUtil {
                 new Extension(Extension.keyUsage, true, new KeyUsage(KeyUsage.keyCertSign).toASN1Primitive().getEncoded())
             })
         );
-        return rootCaCert;
     }
 
     // general purpose X509Certificate settings (e.g. root CA, sub CA, end entity, etc)
@@ -81,7 +80,7 @@ public class CertUtil {
 
     // uses opinionated values for root CA X509Certificate
     public static X509Certificate createSignedClientRootCaCert(final Provider caSigningProvider, final String caSigningAlgorithm, final KeyPair caKeyPair) throws Exception {
-        X509Certificate rootCaCert = CertUtil.createCert(
+        return CertUtil.createCert(
             Date.from(ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant()),
             Date.from(ZonedDateTime.of(2099, 12, 31, 23, 59, 59, 999999999, ZoneOffset.UTC).toInstant()),
             new BigInteger(159, SecureRandomUtil.SECURE_RANDOM),
@@ -96,7 +95,6 @@ public class CertUtil {
                 new Extension(Extension.keyUsage, true, new KeyUsage(KeyUsage.keyCertSign).toASN1Primitive().getEncoded())
             })
         );
-        return rootCaCert;
     }
 
     // uses opinionated values for Web server X509Certificate
@@ -104,9 +102,9 @@ public class CertUtil {
         final List<GeneralName> generalNameList = new ArrayList<>(sanDnsNames.size() + sanIpAddresses.size());
         generalNameList.addAll(sanDnsNames.stream().map(sanDnsName -> new GeneralName(GeneralName.dNSName, sanDnsName)).toList());
         generalNameList.addAll(sanIpAddresses.stream().map(sanIpAddress -> new GeneralName(GeneralName.iPAddress, sanIpAddress)).toList());
-        final GeneralName[] generalNames = generalNameList.toArray(new GeneralName[generalNameList.size()]);
+        final GeneralName[] generalNames = generalNameList.toArray(new GeneralName[0]);
 
-        final X509Certificate serverCert = CertUtil.createCert(
+        return CertUtil.createCert(
             Date.from(ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant()),
             Date.from(ZonedDateTime.of(2099, 12, 31, 23, 59, 59, 999999999, ZoneOffset.UTC).toInstant()),
             new BigInteger(159, SecureRandomUtil.SECURE_RANDOM),
@@ -122,16 +120,15 @@ public class CertUtil {
                 new Extension(Extension.subjectAlternativeName, false, new GeneralNames(generalNames).toASN1Primitive().getEncoded())
             })
         );
-        return serverCert;
     }
 
     // uses opinionated values for Web server X509Certificate
     public static X509Certificate createSignedClientCert(final Provider caSigningProvider, final String caSigningAlgorithm, final PrivateKey caPrivateKey, final PublicKey serverPublicKey, final Set<String> emailAddresses) throws Exception {
         final List<GeneralName> generalNameList = new ArrayList<>(emailAddresses.size());
         generalNameList.addAll(emailAddresses.stream().map(sanEmailAddress -> new GeneralName(GeneralName.rfc822Name, sanEmailAddress)).toList());
-        final GeneralName[] generalNames = generalNameList.toArray(new GeneralName[generalNameList.size()]);
+        final GeneralName[] generalNames = generalNameList.toArray(new GeneralName[0]);
 
-        final X509Certificate clientCert = CertUtil.createCert(
+        return CertUtil.createCert(
             Date.from(ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant()),
             Date.from(ZonedDateTime.of(2099, 12, 31, 23, 59, 59, 999999999, ZoneOffset.UTC).toInstant()),
             new BigInteger(159, SecureRandomUtil.SECURE_RANDOM),
@@ -147,6 +144,5 @@ public class CertUtil {
                 new Extension(Extension.subjectAlternativeName, false, new GeneralNames(generalNames).toASN1Primitive().getEncoded())
             })
         );
-        return clientCert;
     }
 }

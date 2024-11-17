@@ -8,6 +8,7 @@ import org.bouncycastle.asn1.DERSequence;
 
 import java.util.Arrays;
 
+@SuppressWarnings({"unused"})
 public enum Pbkdf2AlgorithmV1 implements HashAlgorithm {
     PBKDF2WithHmacMD5("PBKDF2withHmacMD5", HmacAlgorithm.HmacMD5),
     PBKDF2WithHmacSHA1("PBKDF2withHmacSHA1", HmacAlgorithm.HmacSHA1),
@@ -30,7 +31,7 @@ public enum Pbkdf2AlgorithmV1 implements HashAlgorithm {
     private final String canonicalString;
     private final String toString;
 
-    private Pbkdf2AlgorithmV1(final String algorithm0, final HmacAlgorithm macAlgorithm0) {
+    Pbkdf2AlgorithmV1(final String algorithm0, final HmacAlgorithm macAlgorithm0) {
         this.algorithm = algorithm0;
         this.macAlgorithm = macAlgorithm0;
         this.asn1DerSequence = Asn1Util.derSequence(Constants.PBKDF2_OID, this.macAlgorithm.asn1Oid());

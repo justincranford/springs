@@ -46,9 +46,9 @@ import java.util.List;
 @SequenceGenerator(sequenceName = "apple_sequence", name = AbstractEntity.SEQUENCE_ID, initialValue = AbstractEntity.SEQUENCE_ID_INITIAL_VALUE, allocationSize = AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 public class AppleOrm extends AbstractEntity {
     static {
-        final List<Integer> lengths = Arrays.stream(Type.values()).map(e -> Integer.valueOf(e.name().length())).toList();
-        final int actualMinLength = lengths.stream().min(Integer::compare).get().intValue();
-        final int actualMaxLength = lengths.stream().max(Integer::compare).get().intValue();
+        final List<Integer> lengths = Arrays.stream(Type.values()).map(e -> e.name().length()).toList();
+        final int actualMinLength = lengths.stream().min(Integer::compare).orElseThrow();
+        final int actualMaxLength = lengths.stream().max(Integer::compare).orElseThrow();
         assert Type.MIN_LENGTH == actualMinLength : "Expected MIN_LENGTH " + Type.MIN_LENGTH + " does not match actual " + actualMinLength;
         assert Type.MAX_LENGTH == actualMaxLength : "Expected MAX_LENGTH " + Type.MAX_LENGTH + " does not match actual " + actualMaxLength;
     }

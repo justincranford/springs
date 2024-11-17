@@ -20,6 +20,8 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -39,6 +41,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 })
 @RequiredArgsConstructor
 @Slf4j
+@SuppressWarnings({ "unused" })
 public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
     @Autowired
     private final PersonaEmailPasswordAuthenticationProvider personaEmailPasswordAuthenticationProvider;
@@ -53,12 +56,12 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
     @Bean
     public AuthenticationManager htmlAuthenticationManager(HttpSecurity http) throws Exception {
         final AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        final AuthenticationManager authenticationManager = authenticationManagerBuilder
+        // Prevent ProviderManager recursively calling `this.parent.authenticate(authentication)`
+        return authenticationManagerBuilder
                                                                 .authenticationProvider(this.personaEmailPasswordAuthenticationProvider)
                                                                 .authenticationProvider(this.personUsernamePasswordAuthenticationProvider)
                                                                 .parentAuthenticationManager(null) // Prevent ProviderManager recursively calling `this.parent.authenticate(authentication)`
                                                                 .build();
-        return authenticationManager;
     }
 
     /**
@@ -73,7 +76,7 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
                                                             .requestMatchers("/static/**", "/public/**", "/templates/**", "/META-INF/resources/**", "/helloworld", "/v1/api/authenticate/**", "/v1/api/register/**").permitAll()
                                                             .requestMatchers("/v1/api/**").authenticated()
             )
-            .csrf(csrf -> csrf.disable()) // Typically disabled for stateless APIs
+            .csrf(AbstractHttpConfigurer::disable) // Typically disabled for stateless APIs
             .httpBasic(Customizer.withDefaults())
             .sessionManagement(management -> management
                                                  .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -91,8 +94,7 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
                                                             .requestMatchers("/login", "/logout").permitAll()
                                                             .requestMatchers("/secure/**").authenticated()
             )
-            .httpBasic(basic -> basic
-                                    .disable()
+            .httpBasic(AbstractHttpConfigurer::disable
             )
             .formLogin(form -> form
 //                .loginPage("/login")
@@ -112,8 +114,7 @@ public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
                                               .maximumSessions(3)
                                               .expiredUrl("/login?expired=true")
             )
-            .requestCache(cache -> cache
-                                       .disable() // skip serdes DefaultSavedRequest to SessionRepository Session.attributes
+            .requestCache(RequestCacheConfigurer::disable // skip serdes DefaultSavedRequest to SessionRepository Session.attributes
             )
             .addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)

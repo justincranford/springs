@@ -40,6 +40,7 @@ import javax.net.ssl.SSLContext;
 @Accessors(fluent = true)
 @ActiveProfiles({ "test" })
 @Slf4j
+@SuppressWarnings({ "unused" })
 public class AbstractIT {
     @Value("${server.address}")
     private String serverAddress;

@@ -24,7 +24,6 @@ import org.springframework.stereotype.Repository;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -37,6 +36,7 @@ import java.util.stream.Collectors;
 @Repository
 @RequiredArgsConstructor
 @Slf4j
+@SuppressWarnings({ "unused" })
 public class SessionPojoRepository implements FindByIndexNameSessionRepository<SessionPojo> {
     private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 
@@ -47,13 +47,12 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
     @Autowired
     private PrettyJson prettyJson;
 
-    public List<SessionOrm> cleanUpExpiredSessions() {
+    public void cleanUpExpiredSessions() {
         log.info("Cleaning up expired sessions");
 //		this.prettyJson.logAndSave(this.sessionOrmRepository.findAll());
 //		final List<SessionOrm> sessionOrms = this.sessionOrmRepository.findAllExpired(DateTimeUtil.nowUtcTruncatedToMicroseconds());
         final List<SessionOrm> sessionOrms = this.sessionOrmRepository.findAll();
 //		this.prettyJson.logAndSave(sessionOrms);
-        final List<SessionOrm> cleanedSessionOrms = new ArrayList<>();
         for (SessionOrm sessionOrm : sessionOrms) {
             final Instant expiresAt = sessionOrm.expiresAt().toInstant();
             final Instant nowInstant = DateTimeUtil.nowUtcTruncatedToMicroseconds().toInstant();
@@ -62,11 +61,9 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
             log.info("\nnowInstant:     {}, \nexpiresAt:      {}, \nlastAccessedAt: {}, \nmaxInactiveInterval: {}", nowInstant, expiresAt, lastAccessedAt, maxInactiveInterval);
             if (expiresAt.isBefore(nowInstant)) {
                 this.sessionOrmRepository.delete(sessionOrm);
-                cleanedSessionOrms.add(sessionOrm);
             }
         }
 //		this.prettyJson.logAndSave(this.sessionOrmRepository.findAll());
-        return cleanedSessionOrms;
     }
 
     @Override
@@ -173,7 +170,7 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
 //		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllIncludingDeleted());
 //		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllByExternalIdIncludingDeleted(externalIdBytes));
 
-        if (sessionPojo.getReplacedIds().size() > 0) {
+        if (!sessionPojo.getReplacedIds().isEmpty()) {
             log.info("Deleting replaced IDs");
             for (final String oldId : sessionPojo.getReplacedIds()) {
                 log.info("Finding ID {}", oldId);

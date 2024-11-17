@@ -25,6 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles({ "test" })
 @Slf4j
 @Observed
+@SuppressWarnings({ "unused" })
 public class AbstractIT {
     @Autowired
     private ApplicationContext applicationContext;

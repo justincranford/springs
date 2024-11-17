@@ -44,14 +44,6 @@ public class SpringsPersistenceOrmUsersPeopleProperties {
     @Builder.Default
     private List<SpringsPersistenceOrmUsersPeopleProperties.Person> people = new ArrayList<>();
 
-    public List<SpringsPersistenceOrmUsersPeopleProperties.Person> getPeople() {
-        return this.people;
-    }
-
-    public void setPeople(List<SpringsPersistenceOrmUsersPeopleProperties.Person> _people) {
-        this.people = _people;
-    }
-
     @Validated
     @Getter
     @Setter

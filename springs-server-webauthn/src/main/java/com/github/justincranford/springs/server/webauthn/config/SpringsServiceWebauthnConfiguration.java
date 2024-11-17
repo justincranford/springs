@@ -49,7 +49,6 @@ import java.util.concurrent.TimeUnit;
 @EnableAutoConfiguration
 @EnableConfigurationProperties
 @EnableJpaRepositories(
-    basePackageClasses = { },
     repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class
 )
 @Import(value = {

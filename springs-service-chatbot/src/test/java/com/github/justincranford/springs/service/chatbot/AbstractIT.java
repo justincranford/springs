@@ -31,6 +31,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles({ "test" })
 @Slf4j
 @Observed
+@SuppressWarnings({ "unused" })
 public abstract class AbstractIT {
     @Autowired
     private ObjectMapper objectMapper;

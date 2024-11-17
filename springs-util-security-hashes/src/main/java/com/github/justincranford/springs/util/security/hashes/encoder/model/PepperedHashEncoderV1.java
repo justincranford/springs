@@ -30,7 +30,7 @@ public abstract class PepperedHashEncoderV1 extends IocEncoder {
             return Hash.isEqual(actualHash, expectedHash);
         };
         super.upgradeEncoding = (actualHashInputsAndHashEncoded) -> {
-            if (actualHashInputsAndHashEncoded == null || actualHashInputsAndHashEncoded.length() == 0) {
+            if (actualHashInputsAndHashEncoded == null || actualHashInputsAndHashEncoded.isEmpty()) {
                 return Boolean.FALSE;
             }
             final CharSequence expectedRawInput = "";

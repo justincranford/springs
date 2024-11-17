@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @RequiredArgsConstructor
+@SuppressWarnings({ "unused" })
 public class PasswordGeneratorConfiguration {
     @Autowired
     private final SpringsUtilSecurityPasswordsProperties springsUtilSecurityPasswordsProperties;
@@ -26,8 +27,7 @@ public class PasswordGeneratorConfiguration {
 
     private PasswordConstraints usersPasswordContraints() {
         final Users usersProperties = this.springsUtilSecurityPasswordsProperties.getUsers();
-        final PasswordConstraints usersPasswordContraints = PasswordConstraintsUtil.proxy(usersProperties);
-        return usersPasswordContraints;
+        return PasswordConstraintsUtil.proxy(usersProperties);
     }
 
     @Bean
@@ -42,8 +42,7 @@ public class PasswordGeneratorConfiguration {
 
     private PasswordConstraints clientsPasswordConstraints() {
         final Clients clientsProperties = this.springsUtilSecurityPasswordsProperties.getClients();
-        final PasswordConstraints clientsPasswordContraints = PasswordConstraintsUtil.proxy(clientsProperties);
-        return clientsPasswordContraints;
+        return PasswordConstraintsUtil.proxy(clientsProperties);
     }
 
     @Bean
@@ -58,8 +57,7 @@ public class PasswordGeneratorConfiguration {
 
     private PasswordConstraints serverPasswordContraints() {
         final Servers serversProperties = this.springsUtilSecurityPasswordsProperties.getServers();
-        final PasswordConstraints serverPasswordContraints = PasswordConstraintsUtil.proxy(serversProperties);
-        return serverPasswordContraints;
+        return PasswordConstraintsUtil.proxy(serversProperties);
     }
 
     @Bean
@@ -74,8 +72,7 @@ public class PasswordGeneratorConfiguration {
 
     private PasswordConstraints defaultsPasswordContraints() {
         final Defaults defaultsProperties = this.springsUtilSecurityPasswordsProperties.getDefaults();
-        final PasswordConstraints defaultsPasswordContraints = PasswordConstraintsUtil.proxy(defaultsProperties);
-        return defaultsPasswordContraints;
+        return PasswordConstraintsUtil.proxy(defaultsProperties);
     }
 
     @Bean

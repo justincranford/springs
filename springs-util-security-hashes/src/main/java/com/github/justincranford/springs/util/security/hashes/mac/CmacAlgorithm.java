@@ -15,7 +15,9 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Objects;
 
+@SuppressWarnings({ "unused" })
 public enum CmacAlgorithm implements MacAlgorithm {
     AesCmac128("AesCmac128", DigestAlgorithm.SHA256, Oid.AES_CMAC_128, CipherAlgorithm.AESCMAC128),
     AesCmac192("AesCmac192", DigestAlgorithm.SHA256, Oid.AES_CMAC_192, CipherAlgorithm.AESCMAC192),
@@ -33,7 +35,7 @@ public enum CmacAlgorithm implements MacAlgorithm {
     private final String toString;
     private final CipherAlgorithm cipherAlgorithm;
 
-    private CmacAlgorithm(@NotEmpty final String algorithm0, @NotNull final DigestAlgorithm digestAlgorithm0, @NotNull final ASN1ObjectIdentifier asn1Oid0, @NotNull final CipherAlgorithm cipherAlgorithm0) {
+    CmacAlgorithm(@NotEmpty final String algorithm0, @NotNull final DigestAlgorithm digestAlgorithm0, @NotNull final ASN1ObjectIdentifier asn1Oid0, @NotNull final CipherAlgorithm cipherAlgorithm0) {
         this.algorithm = algorithm0;
         this.digestAlgorithm = digestAlgorithm0;
         this.maxInputBytesLen = cipherAlgorithm0.maxInputBytesLen();
@@ -113,8 +115,8 @@ public enum CmacAlgorithm implements MacAlgorithm {
 
     @Override
     public SecretKeySpec secretKeyFromDataChunks(@NotNull DigestAlgorithm secretKeyDigest, @NotEmpty final byte[][] dataChunks) {
-        final byte[] cmacDigestBytes = secretKeyDigest.compute(dataChunks); // digest chain the data chunks
-        final byte[] cmacKeyBytes = new byte[this.cipherAlgorithm.keyBytesLens().iterator().next().intValue()]; // use first supported keyBytes length
+        final byte[] cmacDigestBytes = Objects.requireNonNull(secretKeyDigest).compute(dataChunks); // digest chain the data chunks
+        final byte[] cmacKeyBytes = new byte[this.cipherAlgorithm.keyBytesLens().iterator().next()]; // use first supported keyBytes length
         if (cmacDigestBytes.length < cmacKeyBytes.length) {
             throw new RuntimeException("Not enough digested bytes to fill Cmac secretKey");
         }

@@ -15,7 +15,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-@SuppressWarnings({ "hiding" })
+@SuppressWarnings({ "unused", "hiding" })
 public enum CipherAlgorithm {
     AESGCM256("AES/GCM/NoPadding", true, K.K32, I.P39, O.U, 0, Oid.AESGCM256),
     AESGCM192("AES/GCM/NoPadding", true, K.K24, I.P39, O.U, 0, Oid.AESGCM192),
@@ -40,7 +40,7 @@ public enum CipherAlgorithm {
     private final String canonicalString;
     private final String toString;
 
-    private CipherAlgorithm(
+    CipherAlgorithm(
         final String algorithm0,
         final boolean supportsAad0,
         final Set<Integer> keyBytesLens0,
@@ -146,10 +146,10 @@ public enum CipherAlgorithm {
     }
 
     public static class K {
-        public static final Set<Integer> ALL = new LinkedHashSet<>(List.of(Integer.valueOf(32), Integer.valueOf(24), Integer.valueOf(16)));
-        public static final Set<Integer> K32 = new LinkedHashSet<>(List.of(Integer.valueOf(32)));
-        public static final Set<Integer> K24 = new LinkedHashSet<>(List.of(Integer.valueOf(24)));
-        public static final Set<Integer> K16 = new LinkedHashSet<>(List.of(Integer.valueOf(16)));
+        public static final Set<Integer> ALL = new LinkedHashSet<>(List.of(32, 24, 16));
+        public static final Set<Integer> K32 = new LinkedHashSet<>(List.of(32));
+        public static final Set<Integer> K24 = new LinkedHashSet<>(List.of(24));
+        public static final Set<Integer> K16 = new LinkedHashSet<>(List.of(16));
     }
 
     public static class I {

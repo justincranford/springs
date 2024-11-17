@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
-@SuppressWarnings({ "resource" })
+@SuppressWarnings({ "unused" })
 public class SpringsServiceChatbotServiceIT extends AbstractIT {
     /**
      * True => Automatically start and use an ephemeral ollama container
@@ -62,14 +62,14 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
 //	private static final String MODEL = "mistral-7b";
 
     @BeforeAll
-    private static void beforeAll() {
+    public static void beforeAll() {
         if (USE_TEST_CONTAINER) {
             SpringsUtilTestContainers.startContainer(SpringsUtilTestContainers.OLLAMA);
         }
     }
 
     @AfterAll
-    private static void afterAll() {
+    public static void afterAll() {
         if (USE_TEST_CONTAINER) {
             SpringsUtilTestContainers.stopContainer(SpringsUtilTestContainers.OLLAMA);
         }
@@ -89,7 +89,7 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
             if (instance.isRunning()) {
                 log.info("Setting dynamic properties from SpringsUtilTestContainers.OLLAMA");
                 registry.add("springs.service.chatbot.protocol", () -> "http");
-                registry.add("springs.service.chatbot.host", () -> instance.getHost());
+                registry.add("springs.service.chatbot.host", instance::getHost);
                 registry.add("springs.service.chatbot.port", () -> instance.getMappedPort(11434));
             } else {
                 log.info("Will use static properties from springs-service-chatbot.properties");
@@ -185,7 +185,7 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
         @Order(1)
         @Test
         void testLoad() {
-            final Generate.Request request = Generate.Request.builder().model(MODEL).stream(Boolean.FALSE).keepAlive(Long.valueOf(-1L)).build();
+            final Generate.Request request = Generate.Request.builder().model(MODEL).stream(Boolean.FALSE).keepAlive(-1L).build();
             final Generate.Response response = springsServiceChatbotClient().generate(request);
             assertThat(response.response()).isNotNull();
         }
@@ -193,7 +193,7 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
         @Order(2)
         @Test
         void testUnload() {
-            final Generate.Request request = Generate.Request.builder().model(MODEL).stream(Boolean.FALSE).keepAlive(Long.valueOf(0L)).build();
+            final Generate.Request request = Generate.Request.builder().model(MODEL).stream(Boolean.FALSE).keepAlive(0L).build();
             final Generate.Response response = springsServiceChatbotClient().generate(request);
             assertThat(response.response()).isNotNull();
         }
@@ -205,8 +205,8 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
                                                              .prompt("Why is the sky blue?")
                                                              .options(
                                                                  Abstract.Options.builder()
-                                                                                 .temperature(Double.valueOf(SecureRandomUtil.SECURE_RANDOM.nextDouble(5d, 10d)))
-                                                                                 .seed(Integer.valueOf(SecureRandomUtil.SECURE_RANDOM.nextInt()))
+                                                                                 .temperature(SecureRandomUtil.SECURE_RANDOM.nextDouble(5d, 10d))
+                                                                                 .seed(SecureRandomUtil.SECURE_RANDOM.nextInt())
                                                                                  .build())
                                                              .build();
 
@@ -228,7 +228,7 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
                         log.info("generate response timed out [{} usec, {} msec]", micros(responseNanos), millis(totalNanos));
                         fail("Timed out");
                         break;
-                    } else if (response.done().booleanValue()) {
+                    } else if (response.done()) {
                         log.info("done [{} usec, {} msec]: true, done_reason: {}", micros(responseNanos), millis(totalNanos), response.doneReason());
                         break;
                     }
@@ -242,11 +242,11 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
         }
 
         private Float micros(final long startNanos) {
-            return Float.valueOf((System.nanoTime() - startNanos) / 1000F);
+            return (System.nanoTime() - startNanos) / 1000F;
         }
 
         private Float millis(final long startNanos) {
-            return Float.valueOf((System.nanoTime() - startNanos) / 1000000F);
+            return (System.nanoTime() - startNanos) / 1000000F;
         }
     }
 
@@ -258,7 +258,7 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
         @Order(1)
         @Test
         void testLoad() {
-            final Chat.Request request = Chat.Request.builder().model(MODEL).stream(Boolean.FALSE).keepAlive(Long.valueOf(-1L)).build();
+            final Chat.Request request = Chat.Request.builder().model(MODEL).stream(Boolean.FALSE).keepAlive(-1L).build();
             final Chat.Response response = springsServiceChatbotClient().chat(request);
             assertThat(response.message()).isNotNull();
         }
@@ -266,7 +266,7 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
         @Order(2)
         @Test
         void testUnload() {
-            final Chat.Request request = Chat.Request.builder().model(MODEL).stream(Boolean.FALSE).keepAlive(Long.valueOf(0L)).build();
+            final Chat.Request request = Chat.Request.builder().model(MODEL).stream(Boolean.FALSE).keepAlive(0L).build();
             final Chat.Response response = springsServiceChatbotClient().chat(request);
             assertThat(response.message()).isNotNull();
         }
@@ -280,8 +280,8 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
                                                      ))
                                                      .options(
                                                          Abstract.Options.builder()
-                                                                         .temperature(Double.valueOf(SecureRandomUtil.SECURE_RANDOM.nextDouble(5d, 10d)))
-                                                                         .seed(Integer.valueOf(SecureRandomUtil.SECURE_RANDOM.nextInt()))
+                                                                         .temperature(SecureRandomUtil.SECURE_RANDOM.nextDouble(5d, 10d))
+                                                                         .seed(SecureRandomUtil.SECURE_RANDOM.nextInt())
                                                                          .build())
                                                      .build();
             final Chat.Response response = springsServiceChatbotClient().chat(request);

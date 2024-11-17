@@ -21,6 +21,7 @@ import java.util.concurrent.BlockingQueue;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@SuppressWarnings({ "unused", "static-method" })
 public class SpringsServiceChatbotClient {
     @Autowired
     private final ObjectMapper objectMapper;

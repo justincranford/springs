@@ -12,6 +12,7 @@ import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PhoneNumberOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.UrlOrm;
+import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties.Person;
 import com.github.justincranford.springs.util.security.hashes.encoder.EncodeUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
@@ -25,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Slf4j
+@SuppressWarnings({"unused"})
 public class LoadPeoplePropertiesIntoDatabase {
     @Autowired
     private SpringsPersistenceOrmUsersPeopleProperties personProperties;
@@ -39,7 +41,7 @@ public class LoadPeoplePropertiesIntoDatabase {
     @PostConstruct
     public void loadUsers() {
         final List<SpringsPersistenceOrmUsersPeopleProperties.Person> users = this.personProperties.getPeople();
-        final List<String> encodedPasswords = EncodeUtil.encode(this.passwordEncoder, users.stream().map(user -> user.getPassword()).toList());
+        final List<String> encodedPasswords = EncodeUtil.encode(this.passwordEncoder, users.stream().map(Person::getPassword).toList());
 
         int userOffset = 0;
         for (final SpringsPersistenceOrmUsersPeopleProperties.Person user : users) {
