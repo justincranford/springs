@@ -1,24 +1,23 @@
 package com.github.justincranford.springs.persistenceorm.base.config;
 
+import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
+import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
+import com.github.justincranford.springs.util.observability.config.SpringsUtilObservabilityConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
-import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
-import com.github.justincranford.springs.util.observability.config.SpringsUtilObservabilityConfiguration;
-
 @Configuration
 @ComponentScan(
-	basePackageClasses = {SpringsPersistenceOrmBaseProperties.class}
+    basePackageClasses = { SpringsPersistenceOrmBaseProperties.class }
 )
 @EnableConfigurationProperties
 @Import({
-	SpringsPersistenceOrmBaseJpaAuditingConfiguration.class,
-	SpringsUtilJsonConfiguration.class,
-	SpringsUtilObservabilityConfiguration.class
+    SpringsPersistenceOrmBaseJpaAuditingConfiguration.class,
+    SpringsUtilJsonConfiguration.class,
+    SpringsUtilObservabilityConfiguration.class
 })
 public class SpringsPersistenceOrmBaseConfiguration {
-	// do nothing
+    // do nothing
 }

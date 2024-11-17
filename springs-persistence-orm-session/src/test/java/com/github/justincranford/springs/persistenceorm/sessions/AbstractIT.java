@@ -1,7 +1,24 @@
 package com.github.justincranford.springs.persistenceorm.sessions;
 
-import javax.net.ssl.SSLContext;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
+import com.github.justincranford.springs.persistenceorm.sessions.config.SpringsPersistenceOrmSessionsConfiguration;
+import com.github.justincranford.springs.persistenceorm.sessions.database.repository.SessionOrmRepository;
+import com.github.justincranford.springs.persistenceorm.sessions.service.PersonService;
+import com.github.justincranford.springs.persistenceorm.sessions.service.repository.SessionPojoRepository;
+import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
+import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
+import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
+import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
+import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
+import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
+import com.github.justincranford.springs.util.json.config.PrettyJson;
+import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
+import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,66 +39,34 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
-import com.github.justincranford.springs.persistenceorm.sessions.config.SpringsPersistenceOrmSessionsConfiguration;
-import com.github.justincranford.springs.persistenceorm.sessions.database.repository.SessionOrmRepository;
-import com.github.justincranford.springs.persistenceorm.sessions.service.PersonService;
-import com.github.justincranford.springs.persistenceorm.sessions.service.repository.SessionPojoRepository;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
-import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
-import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
-import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
-import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
-import com.github.justincranford.springs.util.json.config.PrettyJson;
-
-import io.micrometer.core.instrument.MeterRegistry;
-import jakarta.annotation.PostConstruct;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
+import javax.net.ssl.SSLContext;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
     classes = {
-		SpringsPersistenceOrmSessionsConfiguration.class,
-		AbstractIT.AbstractITConfiguration.class
+        SpringsPersistenceOrmSessionsConfiguration.class,
+        AbstractIT.AbstractITConfiguration.class
     }
 )
 @ContextConfiguration(
-	initializers={TlsEnabledByDefaultInitializer.class}
+    initializers = { TlsEnabledByDefaultInitializer.class }
 )
 @Getter
 @Accessors(fluent = true)
-@ActiveProfiles({"test"})
+@ActiveProfiles({ "test" })
 @Slf4j
-@SuppressWarnings({"static-method"})
+@SuppressWarnings({ "static-method" })
 public class AbstractIT {
-	@PostConstruct
-	public void postConstruct() {
-		this.httpBaseUrl     = "http://"  + serverAddress() + ":" + localServerPort();
-		this.httpsBaseUrl    = "https://" + serverAddress() + ":" + localServerPort();
-		this.httpsPskBaseUrl = "https://" + serverAddress() + ":" + 9443;
-		log.info("urls, httpBaseUrl: {}, httpsBaseUrl: {}, httpsPskBaseUrl: {}", this.httpBaseUrl, this.httpsBaseUrl, this.httpsPskBaseUrl);
-	}
-
-	@Value("${server.address}")
-	private String serverAddress;
-
-	@LocalServerPort
-	private long localServerPort;
-
+    @Value("${server.address}")
+    private String serverAddress;
+    @LocalServerPort
+    private long localServerPort;
     @Autowired
     private String httpBaseUrl;
-
     @Autowired
     private String httpsBaseUrl;
-
     @Autowired
     private String httpsPskBaseUrl;
-
     @Autowired
     private MeterRegistry meterRegistry;
     @Autowired
@@ -98,83 +83,94 @@ public class AbstractIT {
     private SpringsPersistenceOrmUsersPeopleProperties springsPersistenceOrmUsersPeopleProperties;
     @Autowired
     private HttpSecurity http;
-	@Autowired
-	private SessionPojoRepository repository;
+    @Autowired
+    private SessionPojoRepository repository;
+    @Autowired
+    private WebServerApplicationContext webServerApplicationContext;
+    @Autowired
+    private SslBundles sslBundles;
+    @Autowired
+    @Qualifier("httpRestTemplate")
+    private RestTemplate httpRestTemplate;
+    /** @see SpringsUtilHttpClientConfiguration#httpRestTemplate */
 
-	@Autowired
-	private WebServerApplicationContext webServerApplicationContext;
+    @Autowired(required = false)
+    @Qualifier("mtlsRestTemplate")
+    private RestTemplate mtlsRestTemplate;
+    /** @see SpringsUtilHttpsClientsConfiguration#mtlsRestTemplate */
 
-	@Autowired
-	private SslBundles sslBundles;
+    @Autowired(required = false)
+    @Qualifier("stlsRestTemplate")
+    private RestTemplate stlsRestTemplate;
+    /** @see SpringsUtilHttpsClientsConfiguration#stlsRestTemplate */
 
-	@Autowired
-	@Qualifier("httpRestTemplate")
-	private RestTemplate httpRestTemplate; /** @see SpringsUtilHttpClientConfiguration#httpRestTemplate */
+    @Autowired(required = false)
+    @Qualifier("ptlsRestTemplate")
+    private RestTemplate ptlsRestTemplate;
+    /** @see SpringsUtilHttpsClientsConfiguration#ptlsRestTemplate */
 
-	@Autowired(required=false)
-	@Qualifier("mtlsRestTemplate")
-	private RestTemplate mtlsRestTemplate; /** @see SpringsUtilHttpsClientsConfiguration#mtlsRestTemplate */
+    @Autowired(required = false)
+    @Qualifier("stlsSslContext")
+    private SSLContext stlsSslContext;
+    /** @see SpringsUtilTlsClientsConfiguration#stlsSslContext */
 
-	@Autowired(required=false)
-	@Qualifier("stlsRestTemplate")
-	private RestTemplate stlsRestTemplate; /** @see SpringsUtilHttpsClientsConfiguration#stlsRestTemplate */
+    @Autowired(required = false)
+    @Qualifier("mtlsSslContext")
+    private SSLContext mtlsSslContext;
+    /** @see SpringsUtilTlsClientsConfiguration#mtlsSslContext */
 
-	@Autowired(required=false)
-	@Qualifier("ptlsRestTemplate")
-	private RestTemplate ptlsRestTemplate; /** @see SpringsUtilHttpsClientsConfiguration#ptlsRestTemplate */
+    @Autowired(required = false)
+    @Qualifier("ptlsSslContext")
+    private SSLContext ptlsSslContext;
+    /** @see SpringsUtilTlsClientsConfiguration#ptlsSslContext */
 
-	@Autowired(required=false)
-	@Qualifier("stlsSslContext")
-	private SSLContext stlsSslContext; /** @see SpringsUtilTlsClientsConfiguration#stlsSslContext */
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private PrettyJson prettyJson;
 
-	@Autowired(required=false)
-	@Qualifier("mtlsSslContext")
-	private SSLContext mtlsSslContext; /** @see SpringsUtilTlsClientsConfiguration#mtlsSslContext */
+    @PostConstruct
+    public void postConstruct() {
+        this.httpBaseUrl = "http://" + serverAddress() + ":" + localServerPort();
+        this.httpsBaseUrl = "https://" + serverAddress() + ":" + localServerPort();
+        this.httpsPskBaseUrl = "https://" + serverAddress() + ":" + 9443;
+        log.info("urls, httpBaseUrl: {}, httpsBaseUrl: {}, httpsPskBaseUrl: {}", this.httpBaseUrl, this.httpsBaseUrl, this.httpsPskBaseUrl);
+    }
 
-	@Autowired(required=false)
-	@Qualifier("ptlsSslContext")
-	private SSLContext ptlsSslContext; /** @see SpringsUtilTlsClientsConfiguration#ptlsSslContext */
-
-	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
-	private PrettyJson prettyJson;
-
-	@Configuration
-	public static class AbstractITConfiguration {
-    	/**
-    	 * @see org.springframework.security.config.annotation.web.configuration.HttpSecurityConfiguration#httpSecurity
-    	 */
-    	@Primary
+    @Configuration
+    public static class AbstractITConfiguration {
+        /**
+         * @see org.springframework.security.config.annotation.web.configuration.HttpSecurityConfiguration#httpSecurity
+         */
+        @Primary
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             http.securityMatcher("/**")
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                    .requestMatchers("/**").permitAll()
+                                                                .requestMatchers("/**").permitAll()
                 )
                 .csrf(csrf -> csrf.disable())
                 .httpBasic(Customizer.withDefaults())
-    			.sessionManagement(session -> session
-    				.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-    				.maximumSessions(3)
-    			)
-    			.logout(logout -> logout
-	                .permitAll()
-					.logoutSuccessUrl("/helloworld?logout=true")
-					.invalidateHttpSession(true)
-	            )
-    			.requestCache(cache -> cache
-					.disable() // skip serdes DefaultSavedRequest to SessionRepository Session.attributes
-				)
-                ;
+                .sessionManagement(session -> session
+                                                  .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                                                  .maximumSessions(3)
+                )
+                .logout(logout -> logout
+                                      .permitAll()
+                                      .logoutSuccessUrl("/helloworld?logout=true")
+                                      .invalidateHttpSession(true)
+                )
+                .requestCache(cache -> cache
+                                           .disable() // skip serdes DefaultSavedRequest to SessionRepository Session.attributes
+                )
+            ;
             return http.build();
-    	}
+        }
 
-    	@Primary
-		@Bean
-		public UserDetailsService userDetailsService(final PersonService personService) {
-    		return personService;
-		}
+        @Primary
+        @Bean
+        public UserDetailsService userDetailsService(final PersonService personService) {
+            return personService;
+        }
     }
 }

@@ -1,13 +1,4 @@
 package com.github.justincranford.springs.persistenceorm.users.properties;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
 
 import com.github.justincranford.springs.persistenceorm.users.person.enums.I18nLanguageType;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.L10nRegionType;
@@ -19,7 +10,6 @@ import com.github.justincranford.springs.persistenceorm.users.persona.enums.Loca
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.PersonaType;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.PhoneNumberType;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.URLType;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -28,15 +18,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
-@ConfigurationProperties(prefix="springs.persistenceorm.users", ignoreUnknownFields=false, ignoreInvalidFields=false)
+@ConfigurationProperties(prefix = "springs.persistenceorm.users", ignoreUnknownFields = false)
 @PropertySource("classpath:springs-persistence-orm-users.properties")
 @Validated
 @Getter
 @Setter
-@ToString(callSuper=false)
-@Builder(toBuilder=true)
+@ToString
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpringsPersistenceOrmUsersPeopleProperties {
@@ -56,31 +55,31 @@ public class SpringsPersistenceOrmUsersPeopleProperties {
     @Validated
     @Getter
     @Setter
-    @ToString(callSuper=false)
+    @ToString
     public static class Person {
-    	@NotEmpty
+        @NotEmpty
         private String username;
-    	@Nullable
+        @Nullable
         private String password;
-    	@NotNull
+        @NotNull
         private Name name;
-    	@NotNull
+        @NotNull
         private LocalDate dateOfBirth;
-    	@NotNull
+        @NotNull
         private PersonStatusType status;
         private List<Language> languages = new ArrayList<>();
         private List<String> timezones = new ArrayList<>();
-    	@NotEmpty
+        @NotEmpty
         private List<Persona> personas = new ArrayList<>();
 
         @Validated
         @Getter
         @Setter
-        @ToString(callSuper=false)
+        @ToString
         public static class Language {
-        	@NotNull
+            @NotNull
             private I18nLanguageType i18n;
-        	@NotNull
+            @NotNull
             private L10nRegionType l10n;
             private boolean canSpeak;
             private boolean canListen;
@@ -91,28 +90,28 @@ public class SpringsPersistenceOrmUsersPeopleProperties {
         @Validated
         @Getter
         @Setter
-        @ToString(callSuper=false)
+        @ToString
         public static class Name {
-        	@Nullable
+            @Nullable
             private SalutationType salutation;
-        	@NotEmpty
+            @NotEmpty
             private String first;
-        	@Nullable
+            @Nullable
             private String middle;
-        	@Nullable
+            @Nullable
             private String last;
-        	@Nullable
+            @Nullable
             private SuffixType suffix;
         }
 
         @Validated
         @Getter
         @Setter
-        @ToString(callSuper=false)
+        @ToString
         public static class Persona {
-        	@NotEmpty
+            @NotEmpty
             private List<EmailAddress> emailAddresses = new ArrayList<>();
-        	@NotEmpty
+            @NotEmpty
             private List<PhoneNumber> phoneNumbers = new ArrayList<>();
             private List<LocationAddress> locationAddresses = new ArrayList<>();
             private List<URL> urls = new ArrayList<>();
@@ -122,55 +121,55 @@ public class SpringsPersistenceOrmUsersPeopleProperties {
             @Validated
             @Getter
             @Setter
-            @ToString(callSuper=false)
+            @ToString
             public static class EmailAddress {
-            	@NotEmpty
+                @NotEmpty
                 private String emailAddress;
-            	@NotNull
+                @NotNull
                 private EmailAddressType type;
             }
 
             @Validated
             @Getter
             @Setter
-            @ToString(callSuper=false)
+            @ToString
             public static class PhoneNumber {
-            	@NotEmpty
+                @NotEmpty
                 private String phoneNumber;
                 private boolean canTalk;
                 private boolean canText;
                 private boolean hasData;
-            	@NotNull
+                @NotNull
                 private PhoneNumberType type;
             }
 
             @Validated
             @Getter
             @Setter
-            @ToString(callSuper=false)
+            @ToString
             public static class LocationAddress {
-            	@NotEmpty
+                @NotEmpty
                 private String street1;
-            	@Nullable
+                @Nullable
                 private String street2;
-            	@NotEmpty
+                @NotEmpty
                 private String city;
-            	@NotEmpty
+                @NotEmpty
                 private String state;
-            	@NotEmpty
+                @NotEmpty
                 private String country;
-            	@NotNull
+                @NotNull
                 private LocationAddressType type;
             }
 
             @Validated
             @Getter
             @Setter
-            @ToString(callSuper=false)
+            @ToString
             public static class URL {
-            	@NotEmpty
+                @NotEmpty
                 private String url;
-            	@Nullable
+                @Nullable
                 private URLType type;
             }
         }

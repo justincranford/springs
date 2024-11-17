@@ -1,6 +1,10 @@
 package com.github.justincranford.springs.persistenceorm.clients.client.enums;
 
-public enum ClientStatusType { 
+import lombok.Getter;
+
+@Getter
+@SuppressWarnings({"unused"})
+public enum ClientStatusType {
     ACT("Activated", "Activé", "Activado", "The account is active and fully functional."),
     SUS("Suspended", "Suspendu", "Suspendido", "The account is temporarily suspended."),
     LCK("Locked", "Verrouillé", "Bloqueado", "The account is locked and requires user action to unlock."),
@@ -43,19 +47,4 @@ public enum ClientStatusType {
         this.description = _description;
     }
 
-    public String getEnglish() {
-        return this.english;
-    }
-
-    public String getFrench() {
-        return this.french;
-    }
-
-    public String getSpanish() {
-        return this.spanish;
-    }
-
-    public String getdescription() {
-        return this.description;
-    }
 }

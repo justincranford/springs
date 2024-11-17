@@ -2,12 +2,18 @@ package com.github.justincranford.springs.persistenceorm.sessions.service.except
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.io.Serial;
+
+@SuppressWarnings({"unused"})
 public class PersonUsernameNotFoundException extends UsernameNotFoundException {
-	private static final long serialVersionUID = 1L;
-	public PersonUsernameNotFoundException(String msg) {
-		super(msg);
-	}
-	public PersonUsernameNotFoundException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public PersonUsernameNotFoundException(String msg) {
+        super(msg);
+    }
+
+    public PersonUsernameNotFoundException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

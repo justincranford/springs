@@ -1,5 +1,14 @@
 package com.github.justincranford.springs.authenticationorm.users.authentication.config;
 
+import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonUsernamePasswordAuthenticationProvider;
+import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonaEmailPasswordAuthenticationProvider;
+import com.github.justincranford.springs.authenticationorm.users.authentication.root.controller.RedirectController;
+import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
+import com.github.justincranford.springs.util.http.server.logging.filter.RequestLogFilter;
+import com.github.justincranford.springs.util.http.server.ratelimit.filter.RateLimitFilter;
+import com.github.justincranford.springs.util.http.server.redirect.RedirectToLoginConfigurer;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -16,17 +25,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
-import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonUsernamePasswordAuthenticationProvider;
-import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonaEmailPasswordAuthenticationProvider;
-import com.github.justincranford.springs.authenticationorm.users.authentication.root.controller.RedirectController;
-import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
-import com.github.justincranford.springs.util.http.server.logging.filter.RequestLogFilter;
-import com.github.justincranford.springs.util.http.server.ratelimit.filter.RateLimitFilter;
-import com.github.justincranford.springs.util.http.server.redirect.RedirectToLoginConfigurer;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * @see org.springframework.security.config.annotation.web.builders.FilterOrderRegistration
  */
@@ -35,92 +33,92 @@ import lombok.extern.slf4j.Slf4j;
 @EnableWebSecurity
 //@EnableMethodSecurity(prePostEnabled=true, securedEnabled=true, jsr250Enabled=true)
 @Import(value = {
-	HelloWorldController.class,
-	RedirectController.class,
-	RedirectToLoginConfigurer.class
+    HelloWorldController.class,
+    RedirectController.class,
+    RedirectToLoginConfigurer.class
 })
 @RequiredArgsConstructor
 @Slf4j
 public class SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration {
-	@Autowired
-	private final PersonaEmailPasswordAuthenticationProvider personaEmailPasswordAuthenticationProvider;
-	@Autowired
-	private final PersonUsernamePasswordAuthenticationProvider personUsernamePasswordAuthenticationProvider;
-	@Autowired
-	private final RateLimitFilter rateLimitingFilter;
-	@Autowired
-	private final RequestLogFilter requestLoggingFilter;
+    @Autowired
+    private final PersonaEmailPasswordAuthenticationProvider personaEmailPasswordAuthenticationProvider;
+    @Autowired
+    private final PersonUsernamePasswordAuthenticationProvider personUsernamePasswordAuthenticationProvider;
+    @Autowired
+    private final RateLimitFilter rateLimitingFilter;
+    @Autowired
+    private final RequestLogFilter requestLoggingFilter;
 
-	@Primary
-	@Bean
-	public AuthenticationManager htmlAuthenticationManager(HttpSecurity http) throws Exception {
-		final AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-		final AuthenticationManager authenticationManager = authenticationManagerBuilder
-			.authenticationProvider(this.personaEmailPasswordAuthenticationProvider)
-			.authenticationProvider(this.personUsernamePasswordAuthenticationProvider)
-			.parentAuthenticationManager(null) // Prevent ProviderManager recursively calling `this.parent.authenticate(authentication)`
-			.build();
-		return authenticationManager;
-	}
+    @Primary
+    @Bean
+    public AuthenticationManager htmlAuthenticationManager(HttpSecurity http) throws Exception {
+        final AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        final AuthenticationManager authenticationManager = authenticationManagerBuilder
+                                                                .authenticationProvider(this.personaEmailPasswordAuthenticationProvider)
+                                                                .authenticationProvider(this.personUsernamePasswordAuthenticationProvider)
+                                                                .parentAuthenticationManager(null) // Prevent ProviderManager recursively calling `this.parent.authenticate(authentication)`
+                                                                .build();
+        return authenticationManager;
+    }
 
-	/**
-	 * @see org.springframework.security.config.annotation.web.configuration.HttpSecurityConfiguration#httpSecurity
-	 */
-	@Primary
+    /**
+     * @see org.springframework.security.config.annotation.web.configuration.HttpSecurityConfiguration#httpSecurity
+     */
+    @Primary
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    	// STATELESS API AUTHENTICATION WITHOUT SESSIONS
+        // STATELESS API AUTHENTICATION WITHOUT SESSIONS
         http.securityMatcher("/static/**", "/public/**", "/templates/**", "/META-INF/resources/**", "/helloworld", "/v1/api/authenticate/**", "/v1/api/register/**", "/v1/api/**")
-        	.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("/static/**", "/public/**", "/templates/**", "/META-INF/resources/**", "/helloworld", "/v1/api/authenticate/**", "/v1/api/register/**").permitAll()
-                .requestMatchers("/v1/api/**").authenticated()
+            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                                                            .requestMatchers("/static/**", "/public/**", "/templates/**", "/META-INF/resources/**", "/helloworld", "/v1/api/authenticate/**", "/v1/api/register/**").permitAll()
+                                                            .requestMatchers("/v1/api/**").authenticated()
             )
             .csrf(csrf -> csrf.disable()) // Typically disabled for stateless APIs
             .httpBasic(Customizer.withDefaults())
             .sessionManagement(management -> management
-        		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-    		)
-			.addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
-			.addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
-            ;
+                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
+        ;
 
         // STATEFUL HTML AUTHENTICATION AND SESSIONS
         http.securityMatcher("/login", "/logout", "/secure/**")
-        	.csrf(csrf -> csrf
-				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-			)
-            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("/login", "/logout").permitAll()
-                .requestMatchers("/secure/**").authenticated()
+            .csrf(csrf -> csrf
+                              .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             )
-			.httpBasic(basic -> basic
-				.disable()
-			)
+            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                                                            .requestMatchers("/login", "/logout").permitAll()
+                                                            .requestMatchers("/secure/**").authenticated()
+            )
+            .httpBasic(basic -> basic
+                                    .disable()
+            )
             .formLogin(form -> form
 //                .loginPage("/login")
-                .permitAll()
-				.defaultSuccessUrl("/secure/home", true)
+.permitAll()
+.defaultSuccessUrl("/secure/home", true)
 //				.failureUrl("/login?error=true")
             )
-			.logout(logout -> logout
+            .logout(logout -> logout
 //				.logoutUrl("/logout")
-                .permitAll()
-				.logoutSuccessUrl("/login?logout=true")
-				.invalidateHttpSession(true)
+.permitAll()
+.logoutSuccessUrl("/login?logout=true")
+.invalidateHttpSession(true)
 //				.deleteCookies("JSESSIONID")
             )
-			.sessionManagement(session -> session
-				.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-				.maximumSessions(3)
-				.expiredUrl("/login?expired=true")
-			)
-			.requestCache(cache -> cache
-				.disable() // skip serdes DefaultSavedRequest to SessionRepository Session.attributes
-			)
-			.addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
-			.addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
+            .sessionManagement(session -> session
+                                              .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                                              .maximumSessions(3)
+                                              .expiredUrl("/login?expired=true")
+            )
+            .requestCache(cache -> cache
+                                       .disable() // skip serdes DefaultSavedRequest to SessionRepository Session.attributes
+            )
+            .addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
 //			.addFilterBefore(new BasicAuthenticationFilter(htmlAuthenticationManager(http)), UsernamePasswordAuthenticationFilter.class)
-			;
+        ;
 
         return http.build();
     }

@@ -1,32 +1,31 @@
 package com.github.justincranford.springs.persistenceorm.clients.client;
 
-import java.util.stream.Stream;
-
+import com.github.justincranford.springs.persistenceorm.clients.AbstractIT;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.github.justincranford.springs.persistenceorm.clients.AbstractIT;
-
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import java.util.stream.Stream;
 
 //TODO
 @Slf4j
-@SuppressWarnings({"unused"})
+@SuppressWarnings({ "unused" })
 public class ClientOrmRepositoryIT extends AbstractIT {
-	public record Args(int numClients) {}
-	public static Stream<Args> args() {
-		return Stream.of(
-			new Args(0),
-			new Args(1),
-			new Args(3)
-		);
-	}
+    public static Stream<Args> args() {
+        return Stream.of(
+            new Args(0),
+            new Args(1),
+            new Args(3)
+        );
+    }
 
-	@Transactional
-	@ParameterizedTest
-	@MethodSource("args")
-	public void createRead(final Args args) {
-		// empty
-	}
+    @Transactional
+    @ParameterizedTest
+    @MethodSource("args")
+    public void createRead(final Args args) {
+        // empty
+    }
+
+    public record Args(int numClients) { }
 }

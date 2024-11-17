@@ -1,5 +1,6 @@
 package com.github.justincranford.springs.persistenceorm.users.persona.enums;
 
+@SuppressWarnings({"unused"})
 public enum EmailAddressType {
     PER("Personal", "Personnel", "Personal", "Personal email address"),
     WRK("Work", "Professionnel", "Trabajo", "Work email address"),
@@ -39,27 +40,26 @@ public enum EmailAddressType {
     private final String spanish;
     private final String description;
 
-    EmailAddressType(final String _english, final String _french, final String _spanish, final String _description) { 
+    EmailAddressType(final String _english, final String _french, final String _spanish, final String _description) {
         this.english = _english;
         this.french = _french;
         this.spanish = _spanish;
         this.description = _description;
     }
 
-	public String getEnglishName() {
-		return this.english;
-	}
+    public String getEnglishName() {
+        return this.english;
+    }
 
-	public String getFrenchName() {
-		return this.french;
-	}
+    public String getFrenchName() {
+        return this.french;
+    }
 
-	public String getSpanishName() {
-		return this.spanish;
-	}
+    public String getSpanishName() {
+        return this.spanish;
+    }
 
-	public String getShortDescription() {
-		return this.description;
-	}
+    public String getShortDescription() {
+        return this.description;
+    }
 }
-

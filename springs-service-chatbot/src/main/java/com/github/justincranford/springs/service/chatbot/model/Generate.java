@@ -1,10 +1,7 @@
 package com.github.justincranford.springs.service.chatbot.model;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,83 +10,79 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+
 public class Generate {
-	public static final String URL = "/api/generate";
+    public static final String URL = "/api/generate";
 
-	@Getter(onMethod = @__(@JsonProperty))
-	@Setter
-	@Accessors(fluent = true)
-	@JsonIgnoreProperties
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@Builder
-	@ToString(exclude = {})
-	public static class Request extends Abstract.Request {
-		@JsonProperty("model")
-		private String model;
+    @Getter(onMethod = @__(@JsonProperty))
+    @Setter
+    @Accessors(fluent = true)
+    @JsonIgnoreProperties
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class Request extends Abstract.Request {
+        @JsonProperty("options")
+        protected Options options;
+        @JsonProperty("template")
+        protected String template;
+        @JsonProperty("format")
+        protected Boolean format;
+        @JsonProperty("model")
+        private String model;
+        @JsonProperty("keep_alive")
+        private Long keepAlive;
+        @JsonProperty("stream")
+        private Boolean stream;
+        @JsonProperty("prompt")
+        private String prompt;
+    }
 
-		@JsonProperty("keep_alive")
-		private Long keepAlive;
+    @Getter(onMethod = @__(@JsonProperty))
+    @Setter
+    @Accessors(fluent = true)
+    @JsonIgnoreProperties
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class Response extends Abstract.Response {
+        @JsonProperty("model")
+        private String model;
 
-		@JsonProperty("stream")
-		private Boolean stream;
+        @JsonProperty("created_at")
+        private String createdAt;
 
-		@JsonProperty("options")
-		protected Options options;
+        @JsonProperty("response")
+        private String response;
 
-		@JsonProperty("template")
-		protected String template;
+        @JsonProperty("done")
+        private Boolean done;
 
-		@JsonProperty("format")
-		protected Boolean format;
+        @JsonProperty("done_reason")
+        private String doneReason;
 
-		@JsonProperty("prompt")
-		private String prompt;
-	}
+        @JsonProperty("context")
+        private List<Integer> context;
 
-	@Getter(onMethod = @__(@JsonProperty))
-	@Setter
-	@Accessors(fluent = true)
-	@JsonIgnoreProperties
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@Builder
-	@ToString(exclude = {})
-	public static class Response extends Abstract.Response {
-		@JsonProperty("model")
-		private String model;
+        @JsonProperty("total_duration")
+        private Long totalDuration;
 
-		@JsonProperty("created_at")
-		private String createdAt;
+        @JsonProperty("load_duration")
+        private Long loadDuration;
 
-		@JsonProperty("response")
-		private String response;
+        @JsonProperty("prompt_eval_duration")
+        private Long promptEvalDuration;
 
-		@JsonProperty("done")
-		private Boolean done;
+        @JsonProperty("eval_duration")
+        private Long evalDuration;
 
-		@JsonProperty("done_reason")
-		private String doneReason;
+        @JsonProperty("prompt_eval_count")
+        private Integer promptEvalCount;
 
-		@JsonProperty("context")
-		private List<Integer> context;
-
-		@JsonProperty("total_duration")
-		private Long totalDuration;
-
-		@JsonProperty("load_duration")
-		private Long loadDuration;
-
-		@JsonProperty("prompt_eval_duration")
-		private Long promptEvalDuration;
-
-		@JsonProperty("eval_duration")
-		private Long evalDuration;
-
-		@JsonProperty("prompt_eval_count")
-		private Integer promptEvalCount;
-
-		@JsonProperty("eval_count")
-		private Integer evalCount;
-	}
+        @JsonProperty("eval_count")
+        private Integer evalCount;
+    }
 }

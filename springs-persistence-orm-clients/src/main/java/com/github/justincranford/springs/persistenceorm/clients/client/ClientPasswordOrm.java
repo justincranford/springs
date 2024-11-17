@@ -1,10 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.clients.client;
 
-import org.springframework.lang.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.util.security.passwords.constraints.PasswordConstraints;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.Size;
@@ -15,19 +12,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.springframework.lang.Nullable;
 
 @Embeddable
-@Getter(onMethod=@__(@JsonProperty))
+@Getter(onMethod = @__(@JsonProperty))
 @Setter
-@ToString(callSuper=true,exclude="password")
-@Builder(toBuilder=true)
+@ToString(callSuper = true, exclude = "password")
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Accessors(fluent=true)
+@Accessors(fluent = true)
 public class ClientPasswordOrm {
-    @PasswordConstraints(minLength=12)
-    @Column(length=64)
-    @Size(min=12,max=64)
+    @PasswordConstraints(minLength = 12)
+    @Column(length = 64)
+    @Size(min = 12, max = 64)
     @Nullable
     private String password;
 }

@@ -8,13 +8,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
+@SuppressWarnings({ "unused" })
 public class SpringsUtilHttpClientConfiguration {
-	@Autowired
-	private RestTemplateBuilder restTemplateBuilder;
+    @Autowired
+    private RestTemplateBuilder restTemplateBuilder;
 
-	@Qualifier("httpRestTemplate")
-	@Bean
-	public RestTemplate httpRestTemplate() {
-		return this.restTemplateBuilder.build();
-	}
+    @Qualifier("httpRestTemplate")
+    @Bean
+    public RestTemplate httpRestTemplate() {
+        return this.restTemplateBuilder.build();
+    }
 }

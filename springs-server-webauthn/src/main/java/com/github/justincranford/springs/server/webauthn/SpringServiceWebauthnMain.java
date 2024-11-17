@@ -1,18 +1,17 @@
 package com.github.justincranford.springs.server.webauthn;
 
+import com.github.justincranford.springs.server.webauthn.config.SpringsServiceWebauthnConfiguration;
+import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
-import com.github.justincranford.springs.server.webauthn.config.SpringsServiceWebauthnConfiguration;
-import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
-
 @SpringBootApplication
-@Import({SpringsServiceWebauthnConfiguration.class})
+@Import({ SpringsServiceWebauthnConfiguration.class })
 public class SpringServiceWebauthnMain {
-	public static void main(final String[] args) {
-		final SpringApplication springApplication = new SpringApplication(SpringServiceWebauthnMain.class);
-		springApplication.addInitializers(new TlsEnabledByDefaultInitializer());
-		springApplication.run(args);
-	}
+    public static void main(final String[] args) {
+        final SpringApplication springApplication = new SpringApplication(SpringServiceWebauthnMain.class);
+        springApplication.addInitializers(new TlsEnabledByDefaultInitializer());
+        springApplication.run(args);
+    }
 }

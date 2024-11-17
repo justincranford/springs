@@ -1,20 +1,18 @@
 package com.github.justincranford.springs.server.webauthn.tls;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import com.github.justincranford.springs.server.webauthn.AbstractIT;
+import com.github.justincranford.springs.util.http.client.util.RestTemplateUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
-import com.github.justincranford.springs.server.webauthn.AbstractIT;
-import com.github.justincranford.springs.util.http.client.util.RestTemplateUtil;
-
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Configuration
 @Slf4j
-@SuppressWarnings({"unused"})
+@SuppressWarnings({ "unused" })
 public class WebauthnIT extends AbstractIT {
     private static final String AUTHORIZE = null;
 
@@ -31,10 +29,10 @@ public class WebauthnIT extends AbstractIT {
     private Resource nonResidentRegistrationFinishServerJson;
 
     @Test
-	void testHome() {
-		final String response = RestTemplateUtil.plainGet(stlsRestTemplate(), httpsBaseUrl() + "/index.html", AUTHORIZE, String.class);
-		assertThat(response).contains("WebAuthn");
-	}
+    void testHome() {
+        final String response = RestTemplateUtil.plainGet(stlsRestTemplate(), httpsBaseUrl() + "/index.html", AUTHORIZE, String.class);
+        assertThat(response).contains("WebAuthn");
+    }
 
 //	@Test
 //	void parseRegistrationRequest() throws IOException {

@@ -1,10 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.users.persona;
 
-import org.springframework.lang.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.LocationAddressType;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -19,47 +16,48 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.springframework.lang.Nullable;
 
 @Embeddable
-@Getter(onMethod=@__(@JsonProperty))
+@Getter(onMethod = @__(@JsonProperty))
 @Setter
-@ToString(callSuper=true)
-@Builder(toBuilder=true)
+@ToString(callSuper = true)
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Accessors(fluent=true)
+@Accessors(fluent = true)
 public class LocationAddressOrm {
-	@Column(nullable=false,columnDefinition="SMALLINT")
+    @Column(nullable = false, columnDefinition = "SMALLINT")
     private int rank;
 
-    @Column(length=64,nullable=false)
+    @Column(length = 64, nullable = false)
     @NotNull
-	@NotBlank
+    @NotBlank
     private String street1;
 
-    @Column(length=64)
+    @Column(length = 64)
     @Nullable
     private String street2;
 
-    @Column(length=64,nullable=false)
+    @Column(length = 64, nullable = false)
     @NotNull
-	@NotBlank
+    @NotBlank
     private String city;
 
-    @Column(length=64,nullable=false)
+    @Column(length = 64, nullable = false)
     @NotNull
-	@NotBlank
+    @NotBlank
     private String state;
 
-    @Column(length=64,nullable=false)
+    @Column(length = 64, nullable = false)
     @NotNull
-	@NotBlank
+    @NotBlank
     private String country;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="location_address_type",length=3,nullable=false,columnDefinition="CHAR(3)")
-    @Size(min=3,max=3)
+    @Column(name = "location_address_type", length = 3, nullable = false, columnDefinition = "CHAR(3)")
+    @Size(min = 3, max = 3)
     @NotNull
-	@NotBlank
+    @NotBlank
     private LocationAddressType type;
 }

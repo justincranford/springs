@@ -1,16 +1,8 @@
 package com.github.justincranford.springs.persistenceorm.example.bushel;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.envers.Audited;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.example.apple.AppleOrm;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -25,38 +17,44 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.envers.Audited;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Audited
-@Table(name="bushel")
-@Getter(onMethod=@__(@JsonProperty))
+@Table(name = "bushel")
+@Getter(onMethod = @__(@JsonProperty))
 @Setter
-@ToString(callSuper=true)
-@Builder(toBuilder=true)
+@ToString(callSuper = true)
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Accessors(fluent=true)
-@SQLDelete(sql="UPDATE bushel SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE id=? AND version=?")
+@Accessors(fluent = true)
+@SQLDelete(sql = "UPDATE bushel SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE id=? AND version=?")
 @SQLRestriction(AbstractEntity.SQL_WHERE_CLAUSE)
 //@FilterDef(name="isNotDeletedBushelFilter", parameters=@ParamDef(name="deleteDateTime",type=OffsetDateTime.class))
 //@FilterDef(name="isDeletedBushelFilter", parameters=@ParamDef(name="deleteDateTime",type=OffsetDateTime.class))
 //@Filter(name="isNotDeletedBushelFilter", condition="deleted=:(deleteDateTime IS NULL) OR (deleteDateTime < CURRENT_TIMESTAMP)")
 //@Filter(name="isDeletedBushelFilter", condition="deleted=:(deleteDateTime IS NOT NULL) AND (CURRENT_TIMESTAMP <= deleteDateTime)")
-@SequenceGenerator(sequenceName="bushel_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_SMALL)
+@SequenceGenerator(sequenceName = "bushel_sequence", name = AbstractEntity.SEQUENCE_ID, initialValue = AbstractEntity.SEQUENCE_ID_INITIAL_VALUE, allocationSize = AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_SMALL)
 public class BushelOrm extends AbstractEntity {
-	@OneToMany(mappedBy="bushel",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
+    @OneToMany(mappedBy = "bushel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 //	@JoinColumn(name="bushel_id")
-	@NotNull
-	@Builder.Default
-	private Set<AppleOrm> apples = new HashSet<>();
+    @NotNull
+    @Builder.Default
+    private Set<AppleOrm> apples = new HashSet<>();
 
-	public void addApple(AppleOrm apple) {
+    public void addApple(AppleOrm apple) {
         this.apples.add(apple);
         apple.bushel(this);
     }
- 
+
     public void removeApple(AppleOrm apple) {
-    	this.apples.remove(apple);
+        this.apples.remove(apple);
         apple.bushel(null);
     }
 }

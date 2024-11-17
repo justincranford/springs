@@ -1,7 +1,7 @@
 package com.github.justincranford.springs.util.https.client.config;
 
-import javax.net.ssl.SSLContext;
-
+import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
+import com.github.justincranford.springs.util.https.util.TlsPskUtil;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
@@ -22,71 +22,73 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
-import com.github.justincranford.springs.util.https.util.TlsPskUtil;
+import javax.net.ssl.SSLContext;
 
 @Configuration
 public class SpringsUtilHttpsClientsConfiguration {
-	@Autowired
-	private RestTemplateBuilder restTemplateBuilder;
+    @Autowired
+    private RestTemplateBuilder restTemplateBuilder;
 
-	@Autowired
-	private SslBundles sslBundles;
+    @Autowired
+    private SslBundles sslBundles;
 
-	/**
-	 * @return RestTemplate instance for performing HTTP/TLS client connections with sTls (TLS Server Authentication)
-	 * @see TlsEnabledByDefaultInitializer#prependPropertySource
-	 */
-	@ConditionalOnProperty(name=TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
-	@Qualifier("stlsRestTemplate")
-	@Bean
-	public RestTemplate stlsRestTemplate() {
+    /**
+     * @return RestTemplate instance for performing HTTP/TLS client connections with sTls (TLS Server Authentication)
+     *
+     * @see TlsEnabledByDefaultInitializer#prependPropertySource
+     */
+    @ConditionalOnProperty(name = TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
+    @Qualifier("stlsRestTemplate")
+    @Bean
+    public RestTemplate stlsRestTemplate() {
         final SslBundle clientSslBundle = this.sslBundles.getBundle(TlsEnabledByDefaultInitializer.SslBundleNames.CLIENT_STLS_CERT);
-		return this.restTemplateBuilder.setSslBundle(clientSslBundle).build();
-	}
+        return this.restTemplateBuilder.setSslBundle(clientSslBundle).build();
+    }
 
-	/**
-	 * @return RestTemplate instance for performing HTTP/TLS client connections with mTls (TLS Mutual Authentication)
-	 * @see TlsEnabledByDefaultInitializer#prependPropertySource
-	 */
-	@ConditionalOnProperty(name=TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
-	@Qualifier("mtlsRestTemplate")
-	@Bean
-	public RestTemplate mtlsRestTemplate() {
+    /**
+     * @return RestTemplate instance for performing HTTP/TLS client connections with mTls (TLS Mutual Authentication)
+     *
+     * @see TlsEnabledByDefaultInitializer#prependPropertySource
+     */
+    @ConditionalOnProperty(name = TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
+    @Qualifier("mtlsRestTemplate")
+    @Bean
+    public RestTemplate mtlsRestTemplate() {
         final SslBundle clientSslBundle = this.sslBundles.getBundle(TlsEnabledByDefaultInitializer.SslBundleNames.CLIENT_MTLS_CERT);
-		return this.restTemplateBuilder.setSslBundle(clientSslBundle).build();
-	}
+        return this.restTemplateBuilder.setSslBundle(clientSslBundle).build();
+    }
 
-	/**
-	 * @return RestTemplate instance for performing HTTP/TLS client connections with pTls (TLS PSK Authentication)
-	 * @see TlsEnabledByDefaultInitializer#prependPropertySource
-	 */
-	@ConditionalOnProperty(name=TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
-	@Qualifier("ptlsRestTemplate")
-	@Bean
-	@SuppressWarnings({"resource"})
-	public RestTemplate ptlsRestTemplate(final WebServerApplicationContext webServerApplicationContext) {
-		final SslBundle serverTlsPskBundle = this.sslBundles.getBundle(TlsEnabledByDefaultInitializer.SslBundleNames.SERVER_TLS_PSK);
-		final String webServerClassName = webServerApplicationContext.getWebServer().getClass().getName();
-		if (webServerClassName.contains("Tomcat")) { // Use Apache HTTP Client
-			final SSLContext                             ptlsSslContext    = serverTlsPskBundle.createSslContext();
-			final SSLConnectionSocketFactory             sslSocketFactory  = new SSLConnectionSocketFactory(ptlsSslContext);
-			final HttpClientConnectionManager            connectionManager = PoolingHttpClientConnectionManagerBuilder.create().setSSLSocketFactory(sslSocketFactory).build();
-	        final CloseableHttpClient                    httpClient        = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
-	        final HttpComponentsClientHttpRequestFactory factory           = new HttpComponentsClientHttpRequestFactory(httpClient);
-	        return new RestTemplate(factory);
-		} else if (webServerClassName.contains("Jetty")) { // Use Jetty HTTP Client
-			final SslContextFactory.Client sslContextFactory = TlsPskUtil.createClientSslContextFactory(serverTlsPskBundle);
-			final HttpClient               httpClient        = new HttpClient();
-			httpClient.setSslContextFactory(sslContextFactory);
-	        try {
-				httpClient.start();
-			} catch (Exception e) {
-				throw new RuntimeException("Failed to initialize Jetty HTTP Client", e);
-			}
-	        final JettyClientHttpRequestFactory factory = new JettyClientHttpRequestFactory(httpClient);
-	        return new RestTemplate(factory);
-		}
-		throw new RuntimeException("Unsupported web server class: " + webServerClassName);
-	}
+    /**
+     * @return RestTemplate instance for performing HTTP/TLS client connections with pTls (TLS PSK Authentication)
+     *
+     * @see TlsEnabledByDefaultInitializer#prependPropertySource
+     */
+    @ConditionalOnProperty(name = TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
+    @Qualifier("ptlsRestTemplate")
+    @Bean
+    @SuppressWarnings({ "resource" })
+    public RestTemplate ptlsRestTemplate(final WebServerApplicationContext webServerApplicationContext) {
+        final SslBundle serverTlsPskBundle = this.sslBundles.getBundle(TlsEnabledByDefaultInitializer.SslBundleNames.SERVER_TLS_PSK);
+        final String webServerClassName = webServerApplicationContext.getWebServer().getClass().getName();
+        if (webServerClassName.contains("Tomcat")) { // Use Apache HTTP Client
+            final SSLContext ptlsSslContext = serverTlsPskBundle.createSslContext();
+            final SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(ptlsSslContext);
+            final HttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create().setSSLSocketFactory(sslSocketFactory).build();
+            final CloseableHttpClient httpClient = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+            final HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+            return new RestTemplate(factory);
+        } else if (webServerClassName.contains("Jetty")) { // Use Jetty HTTP Client
+            final SslContextFactory.Client sslContextFactory = TlsPskUtil.createClientSslContextFactory(serverTlsPskBundle);
+            final HttpClient httpClient = new HttpClient();
+            httpClient.setSslContextFactory(sslContextFactory);
+            try {
+                httpClient.start();
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to initialize Jetty HTTP Client", e);
+            }
+            final JettyClientHttpRequestFactory factory = new JettyClientHttpRequestFactory(httpClient);
+            return new RestTemplate(factory);
+        }
+        throw new RuntimeException("Unsupported web server class: " + webServerClassName);
+    }
 }

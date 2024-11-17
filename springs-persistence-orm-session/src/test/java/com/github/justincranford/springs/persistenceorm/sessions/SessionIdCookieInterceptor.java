@@ -1,10 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.sessions;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatusCode;
@@ -13,8 +10,10 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 //	================================================================
 //	Example Response Headers
@@ -30,16 +29,16 @@ import lombok.extern.slf4j.Slf4j;
 //	X-Frame-Options=[DENY]
 //	Content-Length=[11]
 //	JSESSIONID=node0sh0uov655g6mrkeksueov3630.node0; Path=/; Secure
+@Getter
 @Slf4j
 public class SessionIdCookieInterceptor implements ClientHttpRequestInterceptor {
-	@Getter
-	private List<String> sessionIdCookies;
+    private List<String> sessionIdCookies;
 
-	@Override
+    @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
         ClientHttpResponse response = new BufferedClientHttpResponse(execution.execute(request, body));
         final HttpHeaders headers = response.getHeaders();
-		this.sessionIdCookies = headers.get(HttpHeaders.SET_COOKIE);
+        this.sessionIdCookies = headers.get(HttpHeaders.SET_COOKIE);
         return response;
     }
 
@@ -50,7 +49,7 @@ public class SessionIdCookieInterceptor implements ClientHttpRequestInterceptor 
         private final ClientHttpResponse response;
         private byte[] body;
 
-		public BufferedClientHttpResponse(ClientHttpResponse _response) {
+        public BufferedClientHttpResponse(ClientHttpResponse _response) {
             this.response = _response;
         }
 
@@ -60,7 +59,7 @@ public class SessionIdCookieInterceptor implements ClientHttpRequestInterceptor 
         }
 
         @SuppressWarnings("removal")
-		@Override
+        @Override
         public int getRawStatusCode() throws IOException {
             return this.response.getRawStatusCode();
         }
@@ -72,14 +71,14 @@ public class SessionIdCookieInterceptor implements ClientHttpRequestInterceptor 
 
         @Override
         public void close() {
-        	this.response.close();
+            this.response.close();
         }
 
         @Override
         public InputStream getBody() throws IOException {
             if (this.body == null) {
                 try (final InputStream originalBody = this.response.getBody()) {
-                	this.body = StreamUtils.copyToByteArray(originalBody);
+                    this.body = StreamUtils.copyToByteArray(originalBody);
                 }
             }
             return new ByteArrayInputStream(this.body);

@@ -1,18 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.sessions;
 
-import static com.github.justincranford.springs.persistenceorm.sessions.service.util.RandomPersonUtil.generatePerson;
-import static com.github.justincranford.springs.persistenceorm.sessions.service.util.RandomPersonaUtil.generatePersona;
-import static com.github.justincranford.springs.util.basic.SecureRandomUtil.SECURE_RANDOM;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.Duration;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.Supplier;
-
+import com.github.justincranford.springs.persistenceorm.sessions.service.model.SessionPojo;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -26,745 +15,796 @@ import org.springframework.session.MapSession;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.justincranford.springs.persistenceorm.sessions.service.model.SessionPojo;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Supplier;
 
-import lombok.extern.slf4j.Slf4j;
+import static com.github.justincranford.springs.persistenceorm.sessions.service.util.RandomPersonUtil.generatePerson;
+import static com.github.justincranford.springs.persistenceorm.sessions.service.util.RandomPersonaUtil.generatePersona;
+import static com.github.justincranford.springs.util.basic.SecureRandomUtil.SECURE_RANDOM;
+import static org.assertj.core.api.Assertions.assertThat;
 
 // TODO Move to springs-persistence-orm-session
 @Transactional
 @Slf4j
-@SuppressWarnings({"unused", "rawtypes"})
+@SuppressWarnings({ "unused", "rawtypes" })
 public class SessionPojoRepositoryIT extends AbstractIT {
-	private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
-	private static final String INDEX_NAME = FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME;
-	private SecurityContext context;
-	private SecurityContext changedContext;
-
-	@BeforeEach
-	void setUp() {
-		this.context = SecurityContextHolder.createEmptyContext();
-		this.context.setAuthentication(new UsernamePasswordAuthenticationToken("username-" + UUID.randomUUID(), "na", AuthorityUtils.createAuthorityList("ROLE_USER")));
-		this.changedContext = SecurityContextHolder.createEmptyContext();
-		this.changedContext.setAuthentication(new UsernamePasswordAuthenticationToken("changedContext-" + UUID.randomUUID(), "na", AuthorityUtils.createAuthorityList("ROLE_USER")));
-	}
-
-	private SessionPojo createSession() {
-		final SessionPojo sessionPojo = super.repository().createSession();
-
-		sessionPojo.setPerson(super.personOrmRepository().save(generatePerson()));
-		if (SECURE_RANDOM.nextBoolean()) {
-			sessionPojo.setPersona(super.personaOrmRepository().save(generatePersona(sessionPojo.getPerson())));
-		}
-
-		return sessionPojo;
-	}
-
-	@Test
-	void saveWhenNoAttributesThenCanBeFound1() {
-		final SessionPojo toSave = createSession();
-		super.repository().save(toSave);
-		final SessionPojo found = super.repository().findById(toSave.getId());
-		assertThat(found).isNotNull();
-
-		super.repository().deleteById(toSave.getId());
+    private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
+    private static final String INDEX_NAME = FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME;
+    private SecurityContext context;
+    private SecurityContext changedContext;
+
+    @BeforeEach
+    void setUp() {
+        this.context = SecurityContextHolder.createEmptyContext();
+        this.context.setAuthentication(new UsernamePasswordAuthenticationToken("username-" + UUID.randomUUID(), "na", AuthorityUtils.createAuthorityList("ROLE_USER")));
+        this.changedContext = SecurityContextHolder.createEmptyContext();
+        this.changedContext.setAuthentication(new UsernamePasswordAuthenticationToken("changedContext-" + UUID.randomUUID(), "na", AuthorityUtils.createAuthorityList("ROLE_USER")));
+    }
+
+    @Test
+    void saveWhenNoAttributesThenCanBeFound1() {
+        final SessionPojo toSave = createSession();
+        super.repository().save(toSave);
+        final SessionPojo found = super.repository().findById(toSave.getId());
+        assertThat(found).isNotNull();
+
+        super.repository().deleteById(toSave.getId());
+
+        final SessionPojo notFound = super.repository().findById(toSave.getId());
+        assertThat(notFound).isNull();
+    }
+
+    private SessionPojo createSession() {
+        final SessionPojo sessionPojo = super.repository().createSession();
+
+        sessionPojo.setPerson(super.personOrmRepository().save(generatePerson()));
+        if (SECURE_RANDOM.nextBoolean()) {
+            sessionPojo.setPersona(super.personaOrmRepository().save(generatePersona(sessionPojo.getPerson())));
+        }
+
+        return sessionPojo;
+    }
+
+    @Test
+    void saves1() {
+        String username = "saves-" + System.currentTimeMillis();
+        String expectedAttributeName = "a";
+        String expectedAttributeValue = "b";
+
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(expectedAttributeName, expectedAttributeValue);
+        Authentication toSaveToken = new UsernamePasswordAuthenticationToken(username, "password", AuthorityUtils.createAuthorityList("ROLE_USER"));
+        SecurityContext toSaveContext = SecurityContextHolder.createEmptyContext();
+        toSaveContext.setAuthentication(toSaveToken);
+        toSave.setAttribute(SPRING_SECURITY_CONTEXT, toSaveContext);
+        toSave.setAttribute(INDEX_NAME, username);
+
+        super.repository().save(toSave);
 
-		final SessionPojo notFound = super.repository().findById(toSave.getId());
-		assertThat(notFound).isNull();
-	}
+        final List<SessionPojo> all2a = super.repository().findAll();
+        log.info("all2a: {}", all2a);
 
-	@Test
-	void saves1() {
-		String username = "saves-" + System.currentTimeMillis();
-		String expectedAttributeName = "a";
-		String expectedAttributeValue = "b";
-
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(expectedAttributeName, expectedAttributeValue);
-		Authentication toSaveToken = new UsernamePasswordAuthenticationToken(username, "password", AuthorityUtils.createAuthorityList("ROLE_USER"));
-		SecurityContext toSaveContext = SecurityContextHolder.createEmptyContext();
-		toSaveContext.setAuthentication(toSaveToken);
-		toSave.setAttribute(SPRING_SECURITY_CONTEXT, toSaveContext);
-		toSave.setAttribute(INDEX_NAME, username);
+        SessionPojo session = super.repository().findById(toSave.getId());
+
+        assertThat(session.getId()).isEqualTo(toSave.getId());
+        assertThat(session.getAttributeNames()).isEqualTo(toSave.getAttributeNames());
+        assertThat(session.<String>getAttribute(expectedAttributeName))
+            .isEqualTo(toSave.getAttribute(expectedAttributeName));
+
+        super.repository().deleteById(toSave.getId());
+
+        final List<SessionPojo> all2b = super.repository().findAll();
+        log.info("all2b: {}", all2b);
+
+        assertThat(super.repository().findById(toSave.getId())).isNull();
+    }
+
+    @Test
+    void saveWhenNoAttributesThenCanBeFound() {
+        SessionPojo toSave = createSession();
+
+        super.repository().save(toSave);
+        SessionPojo session = super.repository().findById(toSave.getId());
+
+        assertThat(session).isNotNull();
+    }
 
-		super.repository().save(toSave);
+    @Test
+    void saves() {
+        String username = "saves-" + System.currentTimeMillis();
 
-		final List<SessionPojo> all2a = super.repository().findAll();
-		log.info("all2a: {}", all2a);
+        SessionPojo toSave = createSession();
+        String expectedAttributeName = "a";
+        String expectedAttributeValue = "b";
+        toSave.setAttribute(expectedAttributeName, expectedAttributeValue);
+        Authentication toSaveToken = new UsernamePasswordAuthenticationToken(
+            username, "password",
+            AuthorityUtils.createAuthorityList("ROLE_USER")
+        );
+        SecurityContext toSaveContext = SecurityContextHolder.createEmptyContext();
+        toSaveContext.setAuthentication(toSaveToken);
+        toSave.setAttribute(SPRING_SECURITY_CONTEXT, toSaveContext);
+        toSave.setAttribute(INDEX_NAME, username);
+
+        super.repository().save(toSave);
 
-		SessionPojo session = super.repository().findById(toSave.getId());
-
-		assertThat(session.getId()).isEqualTo(toSave.getId());
-		assertThat(session.getAttributeNames()).isEqualTo(toSave.getAttributeNames());
-		assertThat(session.<String>getAttribute(expectedAttributeName))
-			.isEqualTo(toSave.getAttribute(expectedAttributeName));
-
-		super.repository().deleteById(toSave.getId());
+        SessionPojo session = super.repository().findById(toSave.getId());
 
-		final List<SessionPojo> all2b = super.repository().findAll();
-		log.info("all2b: {}", all2b);
+        assertThat(session.getId()).isEqualTo(toSave.getId());
+        assertThat(session.getAttributeNames()).isEqualTo(toSave.getAttributeNames());
+        assertThat(session.<String>getAttribute(expectedAttributeName))
+            .isEqualTo(toSave.getAttribute(expectedAttributeName));
 
-		assertThat(super.repository().findById(toSave.getId())).isNull();
-	}
+        super.repository().deleteById(toSave.getId());
 
-	@Test
-	void saveWhenNoAttributesThenCanBeFound() {
-		SessionPojo toSave = createSession();
+        assertThat(super.repository().findById(toSave.getId())).isNull();
+    }
 
-		super.repository().save(toSave);
-		SessionPojo session = super.repository().findById(toSave.getId());
+    @Test
+    @Transactional(readOnly = true)
+    void savesInReadOnlyTransaction() {
+        SessionPojo toSave = createSession();
 
-		assertThat(session).isNotNull();
-	}
+        super.repository().save(toSave);
+    }
 
-	@Test
-	void saves() {
-		String username = "saves-" + System.currentTimeMillis();
+    @Test
+    void putAllOnSingleAttrDoesNotRemoveOld() {
+        SessionPojo toSave = createSession();
+        toSave.setAttribute("a", "b");
 
-		SessionPojo toSave = createSession();
-		String expectedAttributeName = "a";
-		String expectedAttributeValue = "b";
-		toSave.setAttribute(expectedAttributeName, expectedAttributeValue);
-		Authentication toSaveToken = new UsernamePasswordAuthenticationToken(username, "password",
-				AuthorityUtils.createAuthorityList("ROLE_USER"));
-		SecurityContext toSaveContext = SecurityContextHolder.createEmptyContext();
-		toSaveContext.setAuthentication(toSaveToken);
-		toSave.setAttribute(SPRING_SECURITY_CONTEXT, toSaveContext);
-		toSave.setAttribute(INDEX_NAME, username);
+        super.repository().save(toSave);
+        toSave = super.repository().findById(toSave.getId());
 
-		super.repository().save(toSave);
+        toSave.setAttribute("1", "2");
 
-		SessionPojo session = super.repository().findById(toSave.getId());
+        super.repository().save(toSave);
+        toSave = super.repository().findById(toSave.getId());
 
-		assertThat(session.getId()).isEqualTo(toSave.getId());
-		assertThat(session.getAttributeNames()).isEqualTo(toSave.getAttributeNames());
-		assertThat(session.<String>getAttribute(expectedAttributeName))
-			.isEqualTo(toSave.getAttribute(expectedAttributeName));
+        SessionPojo session = super.repository().findById(toSave.getId());
+        assertThat(session.getAttributeNames().size()).isEqualTo(2);
+        assertThat(session.<String>getAttribute("a")).isEqualTo("b");
+        assertThat(session.<String>getAttribute("1")).isEqualTo("2");
 
-		super.repository().deleteById(toSave.getId());
+        super.repository().deleteById(toSave.getId());
+    }
 
-		assertThat(super.repository().findById(toSave.getId())).isNull();
-	}
+    @Test
+    void updateLastAccessedTime() {
+        SessionPojo toSave = createSession();
+        toSave.setLastAccessedTime(Instant.now().minusSeconds(MapSession.DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS + 1));
 
-	@Test
-	@Transactional(readOnly = true)
-	void savesInReadOnlyTransaction() {
-		SessionPojo toSave = createSession();
+        super.repository().save(toSave);
 
-		super.repository().save(toSave);
-	}
+        Instant lastAccessedTime = Instant.now();
+        toSave.setLastAccessedTime(lastAccessedTime);
+        super.repository().save(toSave);
 
-	@Test
-	void putAllOnSingleAttrDoesNotRemoveOld() {
-		SessionPojo toSave = createSession();
-		toSave.setAttribute("a", "b");
+        SessionPojo session = super.repository().findById(toSave.getId());
 
-		super.repository().save(toSave);
-		toSave = super.repository().findById(toSave.getId());
+        assertThat(session).isNotNull();
+        assertThat(session.isExpired()).isFalse();
+        assertThat(session.getLastAccessedTime().truncatedTo(ChronoUnit.MILLIS))
+            .isEqualTo(lastAccessedTime.truncatedTo(ChronoUnit.MILLIS));
+    }
 
-		toSave.setAttribute("1", "2");
+    @Test
+    void findByPrincipalName() {
+        String principalName = "findByPrincipalName" + UUID.randomUUID();
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(INDEX_NAME, principalName);
 
-		super.repository().save(toSave);
-		toSave = super.repository().findById(toSave.getId());
+        super.repository().save(toSave);
 
-		SessionPojo session = super.repository().findById(toSave.getId());
-		assertThat(session.getAttributeNames().size()).isEqualTo(2);
-		assertThat(session.<String>getAttribute("a")).isEqualTo("b");
-		assertThat(session.<String>getAttribute("1")).isEqualTo("2");
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            principalName
+        );
 
-		super.repository().deleteById(toSave.getId());
-	}
+        assertThat(findByPrincipalName).hasSize(1);
+        assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
 
-	@Test
-	void updateLastAccessedTime() {
-		SessionPojo toSave = createSession();
-		toSave.setLastAccessedTime(Instant.now().minusSeconds(MapSession.DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS + 1));
+        super.repository().deleteById(toSave.getId());
 
-		super.repository().save(toSave);
+        findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME, principalName);
 
-		Instant lastAccessedTime = Instant.now();
-		toSave.setLastAccessedTime(lastAccessedTime);
-		super.repository().save(toSave);
+        assertThat(findByPrincipalName).hasSize(0);
+        assertThat(findByPrincipalName.keySet()).doesNotContain(toSave.getId());
+    }
 
-		SessionPojo session = super.repository().findById(toSave.getId());
+    @Test
+    void findByPrincipalNameExpireRemovesIndex() {
+        String principalName = "findByPrincipalNameExpireRemovesIndex" + UUID.randomUUID();
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(INDEX_NAME, principalName);
+        toSave.setLastAccessedTime(Instant.now().minusSeconds(MapSession.DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS + 1));
 
-		assertThat(session).isNotNull();
-		assertThat(session.isExpired()).isFalse();
-		assertThat(session.getLastAccessedTime().truncatedTo(ChronoUnit.MILLIS))
-			.isEqualTo(lastAccessedTime.truncatedTo(ChronoUnit.MILLIS));
-	}
+        super.repository().save(toSave);
+        super.repository().cleanUpExpiredSessions();
 
-	@Test
-	void findByPrincipalName() {
-		String principalName = "findByPrincipalName" + UUID.randomUUID();
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(INDEX_NAME, principalName);
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            principalName
+        );
 
-		super.repository().save(toSave);
+        assertThat(findByPrincipalName).hasSize(0);
+        assertThat(findByPrincipalName.keySet()).doesNotContain(toSave.getId());
+    }
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				principalName);
+    @Test
+    void findByPrincipalNameNoPrincipalNameChange() {
+        String principalName = "findByPrincipalNameNoPrincipalNameChange" + UUID.randomUUID();
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(INDEX_NAME, principalName);
 
-		assertThat(findByPrincipalName).hasSize(1);
-		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
+        super.repository().save(toSave);
 
-		super.repository().deleteById(toSave.getId());
+        toSave.setAttribute("other", "value");
+        super.repository().save(toSave);
 
-		findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME, principalName);
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            principalName
+        );
 
-		assertThat(findByPrincipalName).hasSize(0);
-		assertThat(findByPrincipalName.keySet()).doesNotContain(toSave.getId());
-	}
+        assertThat(findByPrincipalName).hasSize(1);
+        assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
+    }
 
-	@Test
-	void findByPrincipalNameExpireRemovesIndex() {
-		String principalName = "findByPrincipalNameExpireRemovesIndex" + UUID.randomUUID();
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(INDEX_NAME, principalName);
-		toSave.setLastAccessedTime(Instant.now().minusSeconds(MapSession.DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS + 1));
+    @Test
+    void findByPrincipalNameNoPrincipalNameChangeReload() {
+        String principalName = "findByPrincipalNameNoPrincipalNameChangeReload" + UUID.randomUUID();
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(INDEX_NAME, principalName);
 
-		super.repository().save(toSave);
-		super.repository().cleanUpExpiredSessions();
+        super.repository().save(toSave);
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				principalName);
+        toSave = super.repository().findById(toSave.getId());
 
-		assertThat(findByPrincipalName).hasSize(0);
-		assertThat(findByPrincipalName.keySet()).doesNotContain(toSave.getId());
-	}
+        toSave.setAttribute("other", "value");
+        super.repository().save(toSave);
 
-	@Test
-	void findByPrincipalNameNoPrincipalNameChange() {
-		String principalName = "findByPrincipalNameNoPrincipalNameChange" + UUID.randomUUID();
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(INDEX_NAME, principalName);
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            principalName
+        );
 
-		super.repository().save(toSave);
+        assertThat(findByPrincipalName).hasSize(1);
+        assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
+    }
 
-		toSave.setAttribute("other", "value");
-		super.repository().save(toSave);
+    @Test
+    void findByDeletedPrincipalName() {
+        String principalName = "findByDeletedPrincipalName" + UUID.randomUUID();
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(INDEX_NAME, principalName);
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				principalName);
+        super.repository().save(toSave);
 
-		assertThat(findByPrincipalName).hasSize(1);
-		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
-	}
+        toSave.setAttribute(INDEX_NAME, null);
+        super.repository().save(toSave);
 
-	@Test
-	void findByPrincipalNameNoPrincipalNameChangeReload() {
-		String principalName = "findByPrincipalNameNoPrincipalNameChangeReload" + UUID.randomUUID();
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(INDEX_NAME, principalName);
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            principalName
+        );
 
-		super.repository().save(toSave);
+        assertThat(findByPrincipalName).isEmpty();
+    }
 
-		toSave = super.repository().findById(toSave.getId());
+    @Test
+    void findByChangedPrincipalName() {
+        String principalName = "findByChangedPrincipalName" + UUID.randomUUID();
+        String principalNameChanged = "findByChangedPrincipalName" + UUID.randomUUID();
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(INDEX_NAME, principalName);
 
-		toSave.setAttribute("other", "value");
-		super.repository().save(toSave);
+        super.repository().save(toSave);
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				principalName);
+        toSave.setAttribute(INDEX_NAME, principalNameChanged);
+        super.repository().save(toSave);
 
-		assertThat(findByPrincipalName).hasSize(1);
-		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
-	}
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            principalName
+        );
+        assertThat(findByPrincipalName).isEmpty();
 
-	@Test
-	void findByDeletedPrincipalName() {
-		String principalName = "findByDeletedPrincipalName" + UUID.randomUUID();
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(INDEX_NAME, principalName);
+        findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME, principalNameChanged);
 
-		super.repository().save(toSave);
+        assertThat(findByPrincipalName).hasSize(1);
+        assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
+    }
 
-		toSave.setAttribute(INDEX_NAME, null);
-		super.repository().save(toSave);
+    @Test
+    void findByDeletedPrincipalNameReload() {
+        String principalName = "findByDeletedPrincipalName" + UUID.randomUUID();
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(INDEX_NAME, principalName);
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				principalName);
+        super.repository().save(toSave);
 
-		assertThat(findByPrincipalName).isEmpty();
-	}
+        SessionPojo getSession = super.repository().findById(toSave.getId());
+        getSession.setAttribute(INDEX_NAME, null);
+        super.repository().save(getSession);
 
-	@Test
-	void findByChangedPrincipalName() {
-		String principalName = "findByChangedPrincipalName" + UUID.randomUUID();
-		String principalNameChanged = "findByChangedPrincipalName" + UUID.randomUUID();
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(INDEX_NAME, principalName);
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            principalName
+        );
 
-		super.repository().save(toSave);
+        assertThat(findByPrincipalName).isEmpty();
+    }
 
-		toSave.setAttribute(INDEX_NAME, principalNameChanged);
-		super.repository().save(toSave);
+    @Test
+    void findByChangedPrincipalNameReload() {
+        String principalName = "findByChangedPrincipalName" + UUID.randomUUID();
+        String principalNameChanged = "findByChangedPrincipalName" + UUID.randomUUID();
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(INDEX_NAME, principalName);
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				principalName);
-		assertThat(findByPrincipalName).isEmpty();
+        super.repository().save(toSave);
 
-		findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME, principalNameChanged);
+        SessionPojo getSession = super.repository().findById(toSave.getId());
 
-		assertThat(findByPrincipalName).hasSize(1);
-		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
-	}
+        getSession.setAttribute(INDEX_NAME, principalNameChanged);
+        super.repository().save(getSession);
 
-	@Test
-	void findByDeletedPrincipalNameReload() {
-		String principalName = "findByDeletedPrincipalName" + UUID.randomUUID();
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(INDEX_NAME, principalName);
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            principalName
+        );
+        assertThat(findByPrincipalName).isEmpty();
 
-		super.repository().save(toSave);
+        findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME, principalNameChanged);
 
-		SessionPojo getSession = super.repository().findById(toSave.getId());
-		getSession.setAttribute(INDEX_NAME, null);
-		super.repository().save(getSession);
+        assertThat(findByPrincipalName).hasSize(1);
+        assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
+    }
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				principalName);
+    @Test
+    void findBySecurityPrincipalName() {
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
-		assertThat(findByPrincipalName).isEmpty();
-	}
+        super.repository().save(toSave);
 
-	@Test
-	void findByChangedPrincipalNameReload() {
-		String principalName = "findByChangedPrincipalName" + UUID.randomUUID();
-		String principalNameChanged = "findByChangedPrincipalName" + UUID.randomUUID();
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(INDEX_NAME, principalName);
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            getSecurityName()
+        );
 
-		super.repository().save(toSave);
+        assertThat(findByPrincipalName).hasSize(1);
+        assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
 
-		SessionPojo getSession = super.repository().findById(toSave.getId());
+        super.repository().deleteById(toSave.getId());
 
-		getSession.setAttribute(INDEX_NAME, principalNameChanged);
-		super.repository().save(getSession);
+        findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME, getSecurityName());
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				principalName);
-		assertThat(findByPrincipalName).isEmpty();
+        assertThat(findByPrincipalName).hasSize(0);
+        assertThat(findByPrincipalName.keySet()).doesNotContain(toSave.getId());
+    }
 
-		findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME, principalNameChanged);
+    private String getSecurityName() {
+        return this.context.getAuthentication().getName();
+    }
 
-		assertThat(findByPrincipalName).hasSize(1);
-		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
-	}
+    @Test
+    void findBySecurityPrincipalNameExpireRemovesIndex() {
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
+        toSave.setLastAccessedTime(Instant.now().minusSeconds(MapSession.DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS + 1));
 
-	@Test
-	void findBySecurityPrincipalName() {
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
+        super.repository().save(toSave);
+        super.repository().cleanUpExpiredSessions();
 
-		super.repository().save(toSave);
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            getSecurityName()
+        );
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				getSecurityName());
+        assertThat(findByPrincipalName).hasSize(0);
+        assertThat(findByPrincipalName.keySet()).doesNotContain(toSave.getId());
+    }
 
-		assertThat(findByPrincipalName).hasSize(1);
-		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
+    @Test
+    void findByPrincipalNameNoSecurityPrincipalNameChange() {
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
-		super.repository().deleteById(toSave.getId());
+        super.repository().save(toSave);
 
-		findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME, getSecurityName());
+        toSave.setAttribute("other", "value");
+        super.repository().save(toSave);
 
-		assertThat(findByPrincipalName).hasSize(0);
-		assertThat(findByPrincipalName.keySet()).doesNotContain(toSave.getId());
-	}
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            getSecurityName()
+        );
 
-	@Test
-	void findBySecurityPrincipalNameExpireRemovesIndex() {
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
-		toSave.setLastAccessedTime(Instant.now().minusSeconds(MapSession.DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS + 1));
+        assertThat(findByPrincipalName).hasSize(1);
+        assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
+    }
 
-		super.repository().save(toSave);
-		super.repository().cleanUpExpiredSessions();
+    @Test
+    void findByPrincipalNameNoSecurityPrincipalNameChangeReload() {
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				getSecurityName());
+        super.repository().save(toSave);
 
-		assertThat(findByPrincipalName).hasSize(0);
-		assertThat(findByPrincipalName.keySet()).doesNotContain(toSave.getId());
-	}
+        toSave = super.repository().findById(toSave.getId());
 
-	@Test
-	void findByPrincipalNameNoSecurityPrincipalNameChange() {
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
+        toSave.setAttribute("other", "value");
+        super.repository().save(toSave);
 
-		super.repository().save(toSave);
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            getSecurityName()
+        );
 
-		toSave.setAttribute("other", "value");
-		super.repository().save(toSave);
+        assertThat(findByPrincipalName).hasSize(1);
+        assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
+    }
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				getSecurityName());
+    @Test
+    void findByDeletedSecurityPrincipalName() {
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
-		assertThat(findByPrincipalName).hasSize(1);
-		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
-	}
+        super.repository().save(toSave);
 
-	@Test
-	void findByPrincipalNameNoSecurityPrincipalNameChangeReload() {
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
+        toSave.setAttribute(SPRING_SECURITY_CONTEXT, null);
+        super.repository().save(toSave);
 
-		super.repository().save(toSave);
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            getSecurityName()
+        );
 
-		toSave = super.repository().findById(toSave.getId());
+        assertThat(findByPrincipalName).isEmpty();
+    }
 
-		toSave.setAttribute("other", "value");
-		super.repository().save(toSave);
+    @Test
+    void findByChangedSecurityPrincipalName() {
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				getSecurityName());
+        super.repository().save(toSave);
 
-		assertThat(findByPrincipalName).hasSize(1);
-		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
-	}
+        toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.changedContext);
+        super.repository().save(toSave);
 
-	@Test
-	void findByDeletedSecurityPrincipalName() {
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            getSecurityName()
+        );
+        assertThat(findByPrincipalName).isEmpty();
 
-		super.repository().save(toSave);
+        findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME, getChangedSecurityName());
 
-		toSave.setAttribute(SPRING_SECURITY_CONTEXT, null);
-		super.repository().save(toSave);
+        assertThat(findByPrincipalName).hasSize(1);
+        assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
+    }
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				getSecurityName());
+    private String getChangedSecurityName() {
+        return this.changedContext.getAuthentication().getName();
+    }
 
-		assertThat(findByPrincipalName).isEmpty();
-	}
+    @Test
+    void findByDeletedSecurityPrincipalNameReload() {
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
-	@Test
-	void findByChangedSecurityPrincipalName() {
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
+        super.repository().save(toSave);
 
-		super.repository().save(toSave);
+        SessionPojo getSession = super.repository().findById(toSave.getId());
+        getSession.setAttribute(INDEX_NAME, null);
+        super.repository().save(getSession);
 
-		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.changedContext);
-		super.repository().save(toSave);
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            getChangedSecurityName()
+        );
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				getSecurityName());
-		assertThat(findByPrincipalName).isEmpty();
+        assertThat(findByPrincipalName).isEmpty();
+    }
 
-		findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME, getChangedSecurityName());
+    @Test
+    void findByChangedSecurityPrincipalNameReload() {
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
-		assertThat(findByPrincipalName).hasSize(1);
-		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
-	}
+        super.repository().save(toSave);
 
-	@Test
-	void findByDeletedSecurityPrincipalNameReload() {
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
+        SessionPojo getSession = super.repository().findById(toSave.getId());
 
-		super.repository().save(toSave);
+        getSession.setAttribute(SPRING_SECURITY_CONTEXT, this.changedContext);
+        super.repository().save(getSession);
 
-		SessionPojo getSession = super.repository().findById(toSave.getId());
-		getSession.setAttribute(INDEX_NAME, null);
-		super.repository().save(getSession);
+        Map<String,SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(
+            INDEX_NAME,
+            getSecurityName()
+        );
+        assertThat(findByPrincipalName).isEmpty();
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				getChangedSecurityName());
+        findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME, getChangedSecurityName());
 
-		assertThat(findByPrincipalName).isEmpty();
-	}
+        assertThat(findByPrincipalName).hasSize(1);
+        assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
+    }
 
-	@Test
-	void findByChangedSecurityPrincipalNameReload() {
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
+    @Test
+    void cleanupInactiveSessionsUsingRepositoryDefinedInterval() {
+        SessionPojo session = createSession();
 
-		super.repository().save(toSave);
+        super.repository().save(session);
 
-		SessionPojo getSession = super.repository().findById(toSave.getId());
+        assertThat(super.repository().findById(session.getId())).isNotNull();
 
-		getSession.setAttribute(SPRING_SECURITY_CONTEXT, this.changedContext);
-		super.repository().save(getSession);
+        super.repository().cleanUpExpiredSessions();
 
-		Map<String, SessionPojo> findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME,
-				getSecurityName());
-		assertThat(findByPrincipalName).isEmpty();
+        assertThat(super.repository().findById(session.getId())).isNotNull();
 
-		findByPrincipalName = super.repository().findByIndexNameAndIndexValue(INDEX_NAME, getChangedSecurityName());
+        Instant now = Instant.now();
 
-		assertThat(findByPrincipalName).hasSize(1);
-		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
-	}
+        session.setLastAccessedTime(now.minus(10, ChronoUnit.MINUTES));
+        super.repository().save(session);
+        super.repository().cleanUpExpiredSessions();
 
-	@Test
-	void cleanupInactiveSessionsUsingRepositoryDefinedInterval() {
-		SessionPojo session = createSession();
+        assertThat(super.repository().findById(session.getId())).isNotNull();
 
-		super.repository().save(session);
+        session.setLastAccessedTime(now.minus(30, ChronoUnit.MINUTES));
+        super.repository().save(session);
+        super.repository().cleanUpExpiredSessions();
 
-		assertThat(super.repository().findById(session.getId())).isNotNull();
+        assertThat(super.repository().findById(session.getId())).isNull();
+    }
 
-		super.repository().cleanUpExpiredSessions();
+    // gh-580
+    @Test
+    void cleanupInactiveSessionsUsingSessionDefinedInterval() {
+        SessionPojo session = createSession();
+        session.setMaxInactiveInterval(Duration.ofMinutes(45));
 
-		assertThat(super.repository().findById(session.getId())).isNotNull();
+        super.repository().save(session);
 
-		Instant now = Instant.now();
+        assertThat(super.repository().findById(session.getId())).isNotNull();
 
-		session.setLastAccessedTime(now.minus(10, ChronoUnit.MINUTES));
-		super.repository().save(session);
-		super.repository().cleanUpExpiredSessions();
+        super.repository().cleanUpExpiredSessions();
 
-		assertThat(super.repository().findById(session.getId())).isNotNull();
+        assertThat(super.repository().findById(session.getId())).isNotNull();
 
-		session.setLastAccessedTime(now.minus(30, ChronoUnit.MINUTES));
-		super.repository().save(session);
-		super.repository().cleanUpExpiredSessions();
+        Instant now = Instant.now();
 
-		assertThat(super.repository().findById(session.getId())).isNull();
-	}
+        session.setLastAccessedTime(now.minus(40, ChronoUnit.MINUTES));
+        super.repository().save(session);
+        super.repository().cleanUpExpiredSessions();
 
-	// gh-580
-	@Test
-	void cleanupInactiveSessionsUsingSessionDefinedInterval() {
-		SessionPojo session = createSession();
-		session.setMaxInactiveInterval(Duration.ofMinutes(45));
+        assertThat(super.repository().findById(session.getId())).isNotNull();
 
-		super.repository().save(session);
+        session.setLastAccessedTime(now.minus(50, ChronoUnit.MINUTES));
+        super.repository().save(session);
+        super.repository().cleanUpExpiredSessions();
 
-		assertThat(super.repository().findById(session.getId())).isNotNull();
+        assertThat(super.repository().findById(session.getId())).isNull();
+    }
 
-		super.repository().cleanUpExpiredSessions();
+    @Test
+    void cleanupExpiredSessionsWhenMaxInactiveIntervalNegativeThenSessionNotDeleted() {
+        SessionPojo session = createSession();
+        session.setMaxInactiveInterval(Duration.ofSeconds(-1));
+        session.setLastAccessedTime(Instant.now().minusSeconds(MapSession.DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS + 1));
 
-		assertThat(super.repository().findById(session.getId())).isNotNull();
+        super.repository().save(session);
+        super.repository().cleanUpExpiredSessions();
 
-		Instant now = Instant.now();
+        assertThat(super.repository().findById(session.getId())).isNotNull();
+    }
 
-		session.setLastAccessedTime(now.minus(40, ChronoUnit.MINUTES));
-		super.repository().save(session);
-		super.repository().cleanUpExpiredSessions();
+    @Test
+    void changeSessionIdWhenOnlyChangeId() {
+        String attrName = "changeSessionId";
+        String attrValue = "changeSessionId-value";
+        SessionPojo toSave = createSession();
+        toSave.setAttribute(attrName, attrValue);
 
-		assertThat(super.repository().findById(session.getId())).isNotNull();
+        super.repository().save(toSave);
 
-		session.setLastAccessedTime(now.minus(50, ChronoUnit.MINUTES));
-		super.repository().save(session);
-		super.repository().cleanUpExpiredSessions();
+        SessionPojo findById = super.repository().findById(toSave.getId());
 
-		assertThat(super.repository().findById(session.getId())).isNull();
-	}
+        assertThat(findById.<String>getAttribute(attrName)).isEqualTo(attrValue);
 
-	@Test
-	void cleanupExpiredSessionsWhenMaxInactiveIntervalNegativeThenSessionNotDeleted() {
-		SessionPojo session = createSession();
-		session.setMaxInactiveInterval(Duration.ofSeconds(-1));
-		session.setLastAccessedTime(Instant.now().minusSeconds(MapSession.DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS + 1));
+        String originalFindById = findById.getId();
+        String changeSessionId = findById.changeSessionId();
 
-		super.repository().save(session);
-		super.repository().cleanUpExpiredSessions();
+        super.repository().save(findById);
 
-		assertThat(super.repository().findById(session.getId())).isNotNull();
-	}
+        assertThat(super.repository().findById(originalFindById)).isNull();
 
-	@Test
-	void changeSessionIdWhenOnlyChangeId() {
-		String attrName = "changeSessionId";
-		String attrValue = "changeSessionId-value";
-		SessionPojo toSave = createSession();
-		toSave.setAttribute(attrName, attrValue);
+        SessionPojo findByChangeSessionId = super.repository().findById(changeSessionId);
 
-		super.repository().save(toSave);
+        assertThat(findByChangeSessionId.<String>getAttribute(attrName)).isEqualTo(attrValue);
+    }
 
-		SessionPojo findById = super.repository().findById(toSave.getId());
+    @Test
+    void changeSessionIdWhenChangeTwice() {
+        SessionPojo toSave = createSession();
 
-		assertThat(findById.<String>getAttribute(attrName)).isEqualTo(attrValue);
+        super.repository().save(toSave);
 
-		String originalFindById = findById.getId();
-		String changeSessionId = findById.changeSessionId();
+        String originalId = toSave.getId();
+        String changeId1 = toSave.changeSessionId();
+        String changeId2 = toSave.changeSessionId();
 
-		super.repository().save(findById);
+        super.repository().save(toSave);
 
-		assertThat(super.repository().findById(originalFindById)).isNull();
+        assertThat(super.repository().findById(originalId)).isNull();
+        assertThat(super.repository().findById(changeId1)).isNull();
+        assertThat(super.repository().findById(changeId2)).isNotNull();
+    }
 
-		SessionPojo findByChangeSessionId = super.repository().findById(changeSessionId);
+    @Test
+    void changeSessionIdWhenSetAttributeOnChangedSession() {
+        String attrName = "changeSessionId";
+        String attrValue = "changeSessionId-value";
 
-		assertThat(findByChangeSessionId.<String>getAttribute(attrName)).isEqualTo(attrValue);
-	}
+        SessionPojo toSave = createSession();
 
-	@Test
-	void changeSessionIdWhenChangeTwice() {
-		SessionPojo toSave = createSession();
+        super.repository().save(toSave);
 
-		super.repository().save(toSave);
+        SessionPojo findById = super.repository().findById(toSave.getId());
 
-		String originalId = toSave.getId();
-		String changeId1 = toSave.changeSessionId();
-		String changeId2 = toSave.changeSessionId();
+        findById.setAttribute(attrName, attrValue);
 
-		super.repository().save(toSave);
+        String originalFindById = findById.getId();
+        String changeSessionId = findById.changeSessionId();
 
-		assertThat(super.repository().findById(originalId)).isNull();
-		assertThat(super.repository().findById(changeId1)).isNull();
-		assertThat(super.repository().findById(changeId2)).isNotNull();
-	}
+        super.repository().save(findById);
 
-	@Test
-	void changeSessionIdWhenSetAttributeOnChangedSession() {
-		String attrName = "changeSessionId";
-		String attrValue = "changeSessionId-value";
+        assertThat(super.repository().findById(originalFindById)).isNull();
 
-		SessionPojo toSave = createSession();
+        SessionPojo findByChangeSessionId = super.repository().findById(changeSessionId);
 
-		super.repository().save(toSave);
+        assertThat(findByChangeSessionId.<String>getAttribute(attrName)).isEqualTo(attrValue);
+    }
 
-		SessionPojo findById = super.repository().findById(toSave.getId());
+    @Test
+    void changeSessionIdWhenHasNotSaved() {
+        SessionPojo toSave = createSession();
+        String originalId = toSave.getId();
+        toSave.changeSessionId();
 
-		findById.setAttribute(attrName, attrValue);
+        super.repository().save(toSave);
 
-		String originalFindById = findById.getId();
-		String changeSessionId = findById.changeSessionId();
+        assertThat(super.repository().findById(toSave.getId())).isNotNull();
+        assertThat(super.repository().findById(originalId)).isNull();
+    }
 
-		super.repository().save(findById);
+    @Test
+        // gh-1070
+    void saveUpdatedAddAndModifyAttribute() {
+        SessionPojo session = createSession();
+        super.repository().save(session);
+        session = super.repository().findById(session.getId());
+        session.setAttribute("testName", "testValue1");
+        session.setAttribute("testName", "testValue2");
+        super.repository().save(session);
+        session = super.repository().findById(session.getId());
 
-		assertThat(super.repository().findById(originalFindById)).isNull();
+        assertThat(session.<String>getAttribute("testName")).isEqualTo("testValue2");
+    }
 
-		SessionPojo findByChangeSessionId = super.repository().findById(changeSessionId);
+    @Test
+        // gh-1070
+    void saveUpdatedAddAndRemoveAttribute() {
+        SessionPojo session = createSession();
+        super.repository().save(session);
+        session = super.repository().findById(session.getId());
+        session.setAttribute("testName", "testValue");
+        session.removeAttribute("testName");
+        super.repository().save(session);
+        session = super.repository().findById(session.getId());
+        final Object attribute = session.<String>getAttribute("testName");
+        assertThat(attribute).isNull();
+    }
 
-		assertThat(findByChangeSessionId.<String>getAttribute(attrName)).isEqualTo(attrValue);
-	}
+    @Test
+        // gh-1070
+    void saveUpdatedModifyAndRemoveAttribute() {
+        SessionPojo session = createSession();
+        session.setAttribute("testName", "testValue1");
+        super.repository().save(session);
+        session = super.repository().findById(session.getId());
+        session.setAttribute("testName", "testValue2");
+        session.removeAttribute("testName");
+        super.repository().save(session);
+        session = super.repository().findById(session.getId());
 
-	@Test
-	void changeSessionIdWhenHasNotSaved() {
-		SessionPojo toSave = createSession();
-		String originalId = toSave.getId();
-		toSave.changeSessionId();
+        assertThat(session.<String>getAttribute("testName")).isNull();
+    }
 
-		super.repository().save(toSave);
+    @Test
+        // gh-1070
+    void saveUpdatedRemoveAndAddAttribute() {
+        SessionPojo session = createSession();
+        session.setAttribute("testName", "testValue1");
+        super.repository().save(session);
+        session = super.repository().findById(session.getId());
+        session.removeAttribute("testName");
+        session.setAttribute("testName", "testValue2");
+        super.repository().save(session);
+        session = super.repository().findById(session.getId());
 
-		assertThat(super.repository().findById(toSave.getId())).isNotNull();
-		assertThat(super.repository().findById(originalId)).isNull();
-	}
+        assertThat(session.<String>getAttribute("testName")).isEqualTo("testValue2");
+    }
 
-	@Test // gh-1070
-	void saveUpdatedAddAndModifyAttribute() {
-		SessionPojo session = createSession();
-		super.repository().save(session);
-		session = super.repository().findById(session.getId());
-		session.setAttribute("testName", "testValue1");
-		session.setAttribute("testName", "testValue2");
-		super.repository().save(session);
-		session = super.repository().findById(session.getId());
+    @Test
+        // gh-1031
+    void saveDeleted() {
+        SessionPojo session = createSession();
+        super.repository().save(session);
+        session = super.repository().findById(session.getId());
+        super.repository().deleteById(session.getId());
+        session.setLastAccessedTime(Instant.now());
+        super.repository().save(session);
 
-		assertThat(session.<String>getAttribute("testName")).isEqualTo("testValue2");
-	}
+        assertThat(super.repository().findById(session.getId())).isNull();
+    }
 
-	@Test // gh-1070
-	void saveUpdatedAddAndRemoveAttribute() {
-		SessionPojo session = createSession();
-		super.repository().save(session);
-		session = super.repository().findById(session.getId());
-		session.setAttribute("testName", "testValue");
-		session.removeAttribute("testName");
-		super.repository().save(session);
-		session = super.repository().findById(session.getId());
-		final Object attribute = session.<String>getAttribute("testName");
-		assertThat(attribute).isNull();
-	}
+    @Test
+        // gh-1031
+    void saveDeletedAddAttribute() {
+        SessionPojo session = createSession();
+        super.repository().save(session);
+        session = super.repository().findById(session.getId());
+        super.repository().deleteById(session.getId());
+        session.setLastAccessedTime(Instant.now());
+        session.setAttribute("testName", "testValue1");
+        super.repository().save(session);
 
-	@Test // gh-1070
-	void saveUpdatedModifyAndRemoveAttribute() {
-		SessionPojo session = createSession();
-		session.setAttribute("testName", "testValue1");
-		super.repository().save(session);
-		session = super.repository().findById(session.getId());
-		session.setAttribute("testName", "testValue2");
-		session.removeAttribute("testName");
-		super.repository().save(session);
-		session = super.repository().findById(session.getId());
+        assertThat(super.repository().findById(session.getId())).isNull();
+    }
 
-		assertThat(session.<String>getAttribute("testName")).isNull();
-	}
+    @Disabled("Makes assumptions about implementation, instead of sticking to SessionRepository APIs")
+    @Test
+        // gh-1133
+    void sessionFromStoreResolvesAttributesLazily() {
+        SessionPojo session = createSession();
+        session.setAttribute("attribute1", "value1");
+        session.setAttribute("attribute2", "value2");
+        super.repository().save(session);
+        session = super.repository().findById(session.getId());
+        MapSession delegate = (MapSession) ReflectionTestUtils.getField(session, "delegate");
 
-	@Test // gh-1070
-	void saveUpdatedRemoveAndAddAttribute() {
-		SessionPojo session = createSession();
-		session.setAttribute("testName", "testValue1");
-		super.repository().save(session);
-		session = super.repository().findById(session.getId());
-		session.removeAttribute("testName");
-		session.setAttribute("testName", "testValue2");
-		super.repository().save(session);
-		session = super.repository().findById(session.getId());
+        Supplier attribute1 = delegate.getAttribute("attribute1");
+        assertThat(ReflectionTestUtils.getField(attribute1, "value")).isNull();
+        assertThat((String) session.getAttribute("attribute1")).isEqualTo("value1");
+        assertThat(ReflectionTestUtils.getField(attribute1, "value")).isEqualTo("value1");
+        Supplier attribute2 = delegate.getAttribute("attribute2");
+        assertThat(ReflectionTestUtils.getField(attribute2, "value")).isNull();
+        assertThat((String) session.getAttribute("attribute2")).isEqualTo("value2");
+        assertThat(ReflectionTestUtils.getField(attribute2, "value")).isEqualTo("value2");
+    }
 
-		assertThat(session.<String>getAttribute("testName")).isEqualTo("testValue2");
-	}
+    @Disabled("Makes assumptions about implementation, instead of sticking to SessionRepository APIs")
+    @Test
+        // gh-1203
+    void saveWithLargeAttribute() {
+        String attributeName = "largeAttribute";
+        int arraySize = 4000;
 
-	@Test // gh-1031
-	void saveDeleted() {
-		SessionPojo session = createSession();
-		super.repository().save(session);
-		session = super.repository().findById(session.getId());
-		super.repository().deleteById(session.getId());
-		session.setLastAccessedTime(Instant.now());
-		super.repository().save(session);
+        SessionPojo session = createSession();
+        session.setAttribute(attributeName, new byte[arraySize]);
+        super.repository().save(session);
+        session = super.repository().findById(session.getId());
 
-		assertThat(super.repository().findById(session.getId())).isNull();
-	}
-
-	@Test // gh-1031
-	void saveDeletedAddAttribute() {
-		SessionPojo session = createSession();
-		super.repository().save(session);
-		session = super.repository().findById(session.getId());
-		super.repository().deleteById(session.getId());
-		session.setLastAccessedTime(Instant.now());
-		session.setAttribute("testName", "testValue1");
-		super.repository().save(session);
-
-		assertThat(super.repository().findById(session.getId())).isNull();
-	}
-
-	@Disabled("Makes assumptions about implementation, instead of sticking to SessionRepository APIs")
-	@Test // gh-1133
-	void sessionFromStoreResolvesAttributesLazily() {
-		SessionPojo session = createSession();
-		session.setAttribute("attribute1", "value1");
-		session.setAttribute("attribute2", "value2");
-		super.repository().save(session);
-		session = super.repository().findById(session.getId());
-		MapSession delegate = (MapSession) ReflectionTestUtils.getField(session, "delegate");
-
-		Supplier attribute1 = delegate.getAttribute("attribute1");
-		assertThat(ReflectionTestUtils.getField(attribute1, "value")).isNull();
-		assertThat((String) session.getAttribute("attribute1")).isEqualTo("value1");
-		assertThat(ReflectionTestUtils.getField(attribute1, "value")).isEqualTo("value1");
-		Supplier attribute2 = delegate.getAttribute("attribute2");
-		assertThat(ReflectionTestUtils.getField(attribute2, "value")).isNull();
-		assertThat((String) session.getAttribute("attribute2")).isEqualTo("value2");
-		assertThat(ReflectionTestUtils.getField(attribute2, "value")).isEqualTo("value2");
-	}
-
-	@Disabled("Makes assumptions about implementation, instead of sticking to SessionRepository APIs")
-	@Test // gh-1203
-	void saveWithLargeAttribute() {
-		String attributeName = "largeAttribute";
-		int arraySize = 4000;
-
-		SessionPojo session = createSession();
-		session.setAttribute(attributeName, new byte[arraySize]);
-		super.repository().save(session);
-		session = super.repository().findById(session.getId());
-
-		assertThat(session).isNotNull();
-		assertThat((byte[]) session.getAttribute(attributeName)).hasSize(arraySize);
-	}
-
-	private String getSecurityName() {
-		return this.context.getAuthentication().getName();
-	}
-
-	private String getChangedSecurityName() {
-		return this.changedContext.getAuthentication().getName();
-	}
+        assertThat(session).isNotNull();
+        assertThat((byte[]) session.getAttribute(attributeName)).hasSize(arraySize);
+    }
 }

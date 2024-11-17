@@ -1,14 +1,14 @@
 package com.github.justincranford.springs.util.security.passwords.constraints;
 
-import static org.mockito.Mockito.when;
-
+import com.github.justincranford.springs.util.security.passwords.properties.SpringsUtilSecurityPasswordsProperties;
 import org.mockito.Mockito;
 
-import com.github.justincranford.springs.util.security.passwords.properties.SpringsUtilSecurityPasswordsProperties;
+import static org.mockito.Mockito.when;
 
+@SuppressWarnings({"unused"})
 public class PasswordConstraintsTestUtil {
-	public static PasswordConstraints passwordConstraints(final SpringsUtilSecurityPasswordsProperties.Properties properties) {
-		final PasswordConstraints mockPasswordConstraints = Mockito.mock(PasswordConstraints.class);
+    public static PasswordConstraints passwordConstraints(final SpringsUtilSecurityPasswordsProperties.Properties properties) {
+        final PasswordConstraints mockPasswordConstraints = Mockito.mock(PasswordConstraints.class);
         when(mockPasswordConstraints.minLength()).thenReturn(properties.getMinLength());
         when(mockPasswordConstraints.maxLength()).thenReturn(properties.getMaxLength());
         when(mockPasswordConstraints.minUppers()).thenReturn(properties.getMinUppers());
@@ -24,6 +24,6 @@ public class PasswordConstraintsTestUtil {
         when(mockPasswordConstraints.maxAnywhereRepeats()).thenReturn(properties.getMaxAnywhereRepeats());
         when(mockPasswordConstraints.maxConsecutiveRepeats()).thenReturn(properties.getMaxConsecutiveRepeats());
         when(mockPasswordConstraints.specials()).thenReturn(properties.getSpecials());
-		return mockPasswordConstraints;
-	}
+        return mockPasswordConstraints;
+    }
 }

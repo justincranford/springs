@@ -1,16 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.base.entity;
 
-import java.time.OffsetDateTime;
-
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
-
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -36,6 +27,13 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.OffsetDateTime;
 
 @MappedSuperclass
 @Getter(onMethod = @__(@JsonProperty)) // Jackson JSON
@@ -43,121 +41,114 @@ import lombok.extern.slf4j.Slf4j;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Accessors(fluent=true)
-@EntityListeners({AuditingEntityListener.class,EntityListener.class})
+@Accessors(fluent = true)
+@EntityListeners({ AuditingEntityListener.class, EntityListener.class })
 @Slf4j
-@SuppressWarnings({"unused"})
+@SuppressWarnings({ "unused" })
 public class AbstractEntity {
-	public static final String SQL_WHERE_CLAUSE = "(pre_delete_date_time IS NULL OR pre_delete_date_time < CURRENT_TIMESTAMP)";
-	public static final int SEQUENCE_ID_INITIAL_VALUE = 1000;
-	public static final int SEQUENCE_ID_ALLOCATION_SIZE_SMALL = 10;
-	public static final int SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM = 100;
-	public static final int SEQUENCE_ID_ALLOCATION_SIZE_LARGE = 1000;
-	public static final int SEQUENCE_ID_ALLOCATION_SIZE_EXTRA_LARGE = 10000;
-	public static final String SEQUENCE_ID = "ABSTRACT_ENTITY_SEQUENCE_ID";
-
-	/**
-	 * SpotBugs: Be wary of letting constructors throw exceptions. Classes that throw exceptions in their constructors are vulnerable to Finalizer attacks.
-	 * A finalizer attack can be prevented, by declaring the class final, using an empty finalizer declared a s final, or by a clever use of a private constructor.
-	 * See SEI CERT Rule OBJ-11 for more information.
-	 * @see <a href="https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#ct-be-wary-of-letting-constructors-throw-exceptions-ct-constructor-throw">CT_CONSTRUCTOR_THROW</a>
-	 */
-	@Override
-	protected final void finalize() {
-		// Do nothing
-	}
-
-	@Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE,generator=AbstractEntity.SEQUENCE_ID)
+    public static final String SQL_WHERE_CLAUSE = "(pre_delete_date_time IS NULL OR pre_delete_date_time < CURRENT_TIMESTAMP)";
+    public static final int SEQUENCE_ID_INITIAL_VALUE = 1000;
+    public static final int SEQUENCE_ID_ALLOCATION_SIZE_SMALL = 10;
+    public static final int SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM = 100;
+    public static final int SEQUENCE_ID_ALLOCATION_SIZE_LARGE = 1000;
+    public static final int SEQUENCE_ID_ALLOCATION_SIZE_EXTRA_LARGE = 10000;
+    public static final String SEQUENCE_ID = "ABSTRACT_ENTITY_SEQUENCE_ID";
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = AbstractEntity.SEQUENCE_ID)
     private Long id;
-
     @Version
-    @Column(nullable=false,insertable=false,columnDefinition="bigint default 0")
+    @Column(nullable = false, insertable = false, columnDefinition = "bigint default 0")
     private Long version;
-
     @Nonnull
-	@NotNull
-	@NotEmpty
-	@Size(min=ExternalIdGenerator.TOTAL_BYTES_LENGTH,max=ExternalIdGenerator.TOTAL_BYTES_LENGTH)
-    @Column(length=ExternalIdGenerator.TOTAL_BYTES_LENGTH,nullable=false)
+    @NotNull
+    @NotEmpty
+    @Size(min = ExternalIdGenerator.TOTAL_BYTES_LENGTH, max = ExternalIdGenerator.TOTAL_BYTES_LENGTH)
+    @Column(length = ExternalIdGenerator.TOTAL_BYTES_LENGTH, nullable = false)
     private byte[] externalId;
-
-	@Column(updatable=false,nullable=false)
-	private OffsetDateTime prePersistDateTime;
-
-	@Column(insertable=false)
-	private OffsetDateTime postPersistDateTime;
-
-	@Column(insertable=false)
-	private OffsetDateTime preUpdateDateTime;
-
-	@Column(insertable=false)
-	private OffsetDateTime postUpdateDateTime;
-
-	@Column(insertable=false)
-	private OffsetDateTime preDeleteDateTime;
-
-	@Column(insertable=false)
-	private OffsetDateTime postDeleteDateTime;
-
-	@Column(insertable=false)
-	private OffsetDateTime postLoadDateTime;
-
-	@CreatedDate
-	@Column(nullable=false,updatable=false)
+    @Column(updatable = false, nullable = false)
+    private OffsetDateTime prePersistDateTime;
+    @Column(insertable = false)
+    private OffsetDateTime postPersistDateTime;
+    @Column(insertable = false)
+    private OffsetDateTime preUpdateDateTime;
+    @Column(insertable = false)
+    private OffsetDateTime postUpdateDateTime;
+    @Column(insertable = false)
+    private OffsetDateTime preDeleteDateTime;
+    @Column(insertable = false)
+    private OffsetDateTime postDeleteDateTime;
+    @Column(insertable = false)
+    private OffsetDateTime postLoadDateTime;
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
     private OffsetDateTime createdDate;
-    
     @CreatedBy
-	@Column(updatable=false)
+    @Column(updatable = false)
     private String createdBy;
-
-	@Column(insertable=false)
+    @Column(insertable = false)
     @LastModifiedDate
     private OffsetDateTime lastModifiedDate;
-    
-	@Column(insertable=false)
+    @Column(insertable = false)
     @LastModifiedBy
     private String lastModifiedBy;
 
     @PrePersist
-	public void prePersist() {
-		this.prePersistDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
-		if (this.externalId == null) {
-			this.externalId = ExternalIdGenerator.generate();
-		}
-	}
-	@PostPersist
-	public void postPersist() {
-		this.postPersistDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
-	}
-	@PreUpdate
-	public void preUpdate() {
-		this.preUpdateDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
-	}
-	@PostUpdate
-	public void postUpdate() {
-		this.postUpdateDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
-	}
-	@PreRemove
-	public void preDelete() {
-		this.preDeleteDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
-	}
-	@PostRemove
-	public void postDelete() {
-		this.postDeleteDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
-	}
-	@PostLoad
-	public void postLoad() {
-		this.postLoadDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
-	}
+    public void prePersist() {
+        this.prePersistDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
+        if (this.externalId == null) {
+            this.externalId = ExternalIdGenerator.generate();
+        }
+    }
 
-	@Override
-    public final boolean equals(Object o) {
-		return (this == o) || ( (o != null) && (this.getClass().equals(o.getClass())) && (this.id == ((AbstractEntity)o).id) );
+    @PostPersist
+    public void postPersist() {
+        this.postPersistDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.preUpdateDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
+    }
+
+    @PostUpdate
+    public void postUpdate() {
+        this.postUpdateDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
+    }
+
+    @PreRemove
+    public void preDelete() {
+        this.preDeleteDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
+    }
+
+    @PostRemove
+    public void postDelete() {
+        this.postDeleteDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
+    }
+
+    @PostLoad
+    public void postLoad() {
+        this.postLoadDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
     }
 
     @Override
     public final int hashCode() {
         return this.getClass().hashCode();
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        return (this == o) || ((o != null) && (this.getClass().equals(o.getClass())) && (this.id == ((AbstractEntity) o).id));
+    }
+
+    /**
+     * SpotBugs: Be wary of letting constructors throw exceptions. Classes that throw exceptions in their constructors are vulnerable to Finalizer attacks.
+     * A finalizer attack can be prevented, by declaring the class final, using an empty finalizer declared a s final, or by a clever use of a private constructor.
+     * See SEI CERT Rule OBJ-11 for more information.
+     *
+     * @see <a href="https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#ct-be-wary-of-letting-constructors-throw-exceptions-ct-constructor-throw">CT_CONSTRUCTOR_THROW</a>
+     */
+    @Override
+    protected final void finalize() {
+        // Do nothing
     }
 }

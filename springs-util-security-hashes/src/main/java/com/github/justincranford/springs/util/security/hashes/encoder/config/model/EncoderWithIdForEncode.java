@@ -3,5 +3,5 @@ package com.github.justincranford.springs.util.security.hashes.encoder.config.mo
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public interface EncoderWithIdForEncode extends PasswordEncoder {
-	public String idForEncode();
+    String idForEncode();
 }

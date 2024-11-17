@@ -1,12 +1,6 @@
 package com.github.justincranford.springs.util.security.passwords.properties;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.validation.annotation.Validated;
-
 import com.github.justincranford.springs.util.security.passwords.constraints.PasswordConstraintsValues;
-
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -17,72 +11,79 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.validation.annotation.Validated;
 
 @Configuration
-@ConfigurationProperties(prefix="springs.util.security.passwords",ignoreUnknownFields=false,ignoreInvalidFields=false)
+@ConfigurationProperties(prefix = "springs.util.security.passwords", ignoreUnknownFields = false)
 @PropertySource("classpath:springs-util-security-passwords.properties")
 @Validated
 @Getter
 @Setter
-@ToString(callSuper=false)
-@Builder(toBuilder=true)
+@ToString
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpringsUtilSecurityPasswordsProperties {
-	@Builder.Default
-    private Users    users    = new Users();
-	@Builder.Default
-    private Clients  clients  = new Clients();
-	@Builder.Default
-    private Servers  servers  = new Servers();
-	@Builder.Default
+    @Builder.Default
+    private Users users = new Users();
+    @Builder.Default
+    private Clients clients = new Clients();
+    @Builder.Default
+    private Servers servers = new Servers();
+    @Builder.Default
     private Defaults defaults = new Defaults();
 
-    public static class Users    extends Properties { /*empty*/ }
-    public static class Clients  extends Properties { /*empty*/ }
-    public static class Servers  extends Properties { /*empty*/ }
+    public static class Users extends Properties { /*empty*/ }
+
+    public static class Clients extends Properties { /*empty*/ }
+
+    public static class Servers extends Properties { /*empty*/ }
+
     public static class Defaults extends Properties { /*empty*/ }
 
     @Validated
     @Getter
     @Setter
-    @ToString(callSuper = false)
+    @ToString
     @Builder(toBuilder = true)
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Properties {
         @NotNull
-        @Size(min=1)
+        @Size(min = 1)
         @Builder.Default
         private String firsts = PasswordConstraintsValues.FIRSTS_DEFAULT;
 
         @NotNull
-        @Size(min=1)
+        @Size(min = 1)
         @Builder.Default
         private String lasts = PasswordConstraintsValues.LASTS_DEFAULT;
 
         @NotNull
-        @Size(min=0)
+        @Size()
         @Builder.Default
         private String uppers = PasswordConstraintsValues.UPPERS_DEFAULT;
 
         @NotNull
-        @Size(min=0)
+        @Size()
         @Builder.Default
         private String lowers = PasswordConstraintsValues.LOWERS_DEFAULT;
 
         @NotNull
-        @Size(min=0)
+        @Size()
         @Builder.Default
         private String digits = PasswordConstraintsValues.DIGITS_DEFAULT;
 
         @NotNull
-        @Size(min=0)
+        @Size()
         @Builder.Default
         private String specials = PasswordConstraintsValues.SPECIALS_DEFAULT;
 
         @NotNull
-        @Size(min=0)
+        @Size()
         @Builder.Default
         private String whitespace = PasswordConstraintsValues.WHITESPACE_DEFAULT;
 

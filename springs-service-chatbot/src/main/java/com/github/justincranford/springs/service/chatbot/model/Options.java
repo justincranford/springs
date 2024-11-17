@@ -1,9 +1,10 @@
 package com.github.justincranford.springs.service.chatbot.model;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
+@SuppressWarnings({"unused"})
 public class Options {
     @JsonProperty("mirostat")
     private Integer mirostat;

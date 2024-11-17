@@ -2,13 +2,18 @@ package com.github.justincranford.springs.authenticationorm.users.authentication
 
 import org.springframework.security.authentication.BadCredentialsException;
 
-public class PersonPasswordBlankNotAllowedException extends BadCredentialsException {
-	private static final long serialVersionUID = 1L;
+import java.io.Serial;
 
-	public PersonPasswordBlankNotAllowedException(String msg) {
-		super(msg);
-	}
-	public PersonPasswordBlankNotAllowedException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
+@SuppressWarnings({"unused"})
+public class PersonPasswordBlankNotAllowedException extends BadCredentialsException {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public PersonPasswordBlankNotAllowedException(String msg) {
+        super(msg);
+    }
+
+    public PersonPasswordBlankNotAllowedException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

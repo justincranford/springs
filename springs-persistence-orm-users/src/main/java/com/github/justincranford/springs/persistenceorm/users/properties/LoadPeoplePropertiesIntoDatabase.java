@@ -1,12 +1,5 @@
 package com.github.justincranford.springs.persistenceorm.users.properties;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.github.justincranford.springs.persistenceorm.users.person.LanguageOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.NameOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
@@ -20,15 +13,20 @@ import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm
 import com.github.justincranford.springs.persistenceorm.users.persona.PhoneNumberOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.UrlOrm;
 import com.github.justincranford.springs.util.security.hashes.encoder.EncodeUtil;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Slf4j
 public class LoadPeoplePropertiesIntoDatabase {
-	@Autowired
+    @Autowired
     private SpringsPersistenceOrmUsersPeopleProperties personProperties;
     @Autowired
     private PersonOrmRepository personOrmRepository;
@@ -42,12 +40,12 @@ public class LoadPeoplePropertiesIntoDatabase {
     public void loadUsers() {
         final List<SpringsPersistenceOrmUsersPeopleProperties.Person> users = this.personProperties.getPeople();
         final List<String> encodedPasswords = EncodeUtil.encode(this.passwordEncoder, users.stream().map(user -> user.getPassword()).toList());
-        
+
         int userOffset = 0;
         for (final SpringsPersistenceOrmUsersPeopleProperties.Person user : users) {
             final PersonOrm createPersonOrm = new PersonOrm();
             createPersonOrm.username(user.getUsername());
-			createPersonOrm.password(new PasswordOrm(encodedPasswords.get(userOffset++)));
+            createPersonOrm.password(new PasswordOrm(encodedPasswords.get(userOffset++)));
             createPersonOrm.name(namePropertiesToOrm(user.getName()));
             createPersonOrm.dateOfBirth(user.getDateOfBirth());
             createPersonOrm.status(user.getStatus());
@@ -57,7 +55,7 @@ public class LoadPeoplePropertiesIntoDatabase {
 
             int rank = 0;
             for (SpringsPersistenceOrmUsersPeopleProperties.Person.Persona persona : user.getPersonas()) {
-            	final PersonaOrm createPersonaOrm = new PersonaOrm();
+                final PersonaOrm createPersonaOrm = new PersonaOrm();
                 createPersonaOrm.rank(rank++);
                 createPersonaOrm.emailAddresses(emailAddressesPropertiesToOrm(persona.getEmailAddresses()));
                 createPersonaOrm.phoneNumbers(phoneNumberPropertiesToOrm(persona.getPhoneNumbers()));
@@ -72,80 +70,85 @@ public class LoadPeoplePropertiesIntoDatabase {
     }
 
     private static NameOrm namePropertiesToOrm(SpringsPersistenceOrmUsersPeopleProperties.Person.Name nameProperties) {
-		return NameOrm.builder()
-			.salutation(nameProperties.getSalutation())
-			.first(nameProperties.getFirst())
-			.middle(nameProperties.getMiddle())
-			.last(nameProperties.getLast())
-			.suffix(nameProperties.getSuffix())
-			.build();
-	}
+        return NameOrm.builder()
+                      .salutation(nameProperties.getSalutation())
+                      .first(nameProperties.getFirst())
+                      .middle(nameProperties.getMiddle())
+                      .last(nameProperties.getLast())
+                      .suffix(nameProperties.getSuffix())
+                      .build();
+    }
+
     private static List<LanguageOrm> languagesPropertiesToOrm(List<SpringsPersistenceOrmUsersPeopleProperties.Person.Language> languagesProperties) {
-    	final AtomicInteger rank = new AtomicInteger(0);
-    	return languagesProperties.stream()
-    		.map(languageProperties ->
-    			LanguageOrm.builder()
-					.rank(rank.getAndIncrement())
-					.i18n(languageProperties.getI18n())
-					.l10n(languageProperties.getL10n())
-					.canSpeak(languageProperties.isCanSpeak())
-					.canListen(languageProperties.isCanListen())
-					.canRead(languageProperties.isCanRead())
-					.canWrite(languageProperties.isCanWrite())
-					.build()
-    		)
-    		.toList();
-	}
+        final AtomicInteger rank = new AtomicInteger(0);
+        return languagesProperties.stream()
+                                  .map(languageProperties ->
+                                           LanguageOrm.builder()
+                                                      .rank(rank.getAndIncrement())
+                                                      .i18n(languageProperties.getI18n())
+                                                      .l10n(languageProperties.getL10n())
+                                                      .canSpeak(languageProperties.isCanSpeak())
+                                                      .canListen(languageProperties.isCanListen())
+                                                      .canRead(languageProperties.isCanRead())
+                                                      .canWrite(languageProperties.isCanWrite())
+                                                      .build()
+                                  )
+                                  .toList();
+    }
+
     private static List<EmailAddressOrm> emailAddressesPropertiesToOrm(List<SpringsPersistenceOrmUsersPeopleProperties.Person.Persona.EmailAddress> emailAddressesProperties) {
-    	final AtomicInteger rank = new AtomicInteger(0);
-    	return emailAddressesProperties.stream()
-    		.map(emailAddressProperties ->
-    			EmailAddressOrm.builder()
-    				.rank(rank.getAndIncrement())
-					.emailAddress(new EmailAddressRfc5321Orm(emailAddressProperties.getEmailAddress()))
-					.type(emailAddressProperties.getType())
-					.build()
-    		)
-    		.toList();
-	}
+        final AtomicInteger rank = new AtomicInteger(0);
+        return emailAddressesProperties.stream()
+                                       .map(emailAddressProperties ->
+                                                EmailAddressOrm.builder()
+                                                               .rank(rank.getAndIncrement())
+                                                               .emailAddress(new EmailAddressRfc5321Orm(emailAddressProperties.getEmailAddress()))
+                                                               .type(emailAddressProperties.getType())
+                                                               .build()
+                                       )
+                                       .toList();
+    }
+
     private static List<PhoneNumberOrm> phoneNumberPropertiesToOrm(List<SpringsPersistenceOrmUsersPeopleProperties.Person.Persona.PhoneNumber> phoneNumbersProperties) {
-    	final AtomicInteger rank = new AtomicInteger(0);
-    	return phoneNumbersProperties.stream()
-    		.map(phoneNumberProperties ->
-    			PhoneNumberOrm.builder()
-    				.rank(rank.getAndIncrement())
-					.phoneNumber(phoneNumberProperties.getPhoneNumber())
-					.type(phoneNumberProperties.getType())
-					.build()
-    		)
-    		.toList();
-	}
+        final AtomicInteger rank = new AtomicInteger(0);
+        return phoneNumbersProperties.stream()
+                                     .map(phoneNumberProperties ->
+                                              PhoneNumberOrm.builder()
+                                                            .rank(rank.getAndIncrement())
+                                                            .phoneNumber(phoneNumberProperties.getPhoneNumber())
+                                                            .type(phoneNumberProperties.getType())
+                                                            .build()
+                                     )
+                                     .toList();
+    }
+
     private static List<LocationAddressOrm> locationAddressPropertiesToOrm(List<SpringsPersistenceOrmUsersPeopleProperties.Person.Persona.LocationAddress> locationAddresssProperties) {
-    	final AtomicInteger rank = new AtomicInteger(0);
-    	return locationAddresssProperties.stream()
-    		.map(locationAddressProperties ->
-    			LocationAddressOrm.builder()
-					.rank(rank.getAndIncrement())
-					.street1(locationAddressProperties.getStreet1())
-					.street2(locationAddressProperties.getStreet2())
-					.city(locationAddressProperties.getCity())
-					.state(locationAddressProperties.getState())
-					.country(locationAddressProperties.getCountry())
-					.type(locationAddressProperties.getType())
-					.build()
-    		)
-    		.toList();
-	}
+        final AtomicInteger rank = new AtomicInteger(0);
+        return locationAddresssProperties.stream()
+                                         .map(locationAddressProperties ->
+                                                  LocationAddressOrm.builder()
+                                                                    .rank(rank.getAndIncrement())
+                                                                    .street1(locationAddressProperties.getStreet1())
+                                                                    .street2(locationAddressProperties.getStreet2())
+                                                                    .city(locationAddressProperties.getCity())
+                                                                    .state(locationAddressProperties.getState())
+                                                                    .country(locationAddressProperties.getCountry())
+                                                                    .type(locationAddressProperties.getType())
+                                                                    .build()
+                                         )
+                                         .toList();
+    }
+
     private static List<UrlOrm> urlPropertiesToOrm(List<SpringsPersistenceOrmUsersPeopleProperties.Person.Persona.URL> urlsProperties) {
-    	final AtomicInteger rank = new AtomicInteger(0);
-    	return urlsProperties.stream()
-    		.map(urlProperties ->
-    			UrlOrm.builder()
-    				.rank(rank.getAndIncrement())
-					.url(urlProperties.getUrl())
-					.type(urlProperties.getType())
-					.build()
-    		)
-    		.toList();
-	}
+        final AtomicInteger rank = new AtomicInteger(0);
+        return urlsProperties.stream()
+                             .map(urlProperties ->
+                                      UrlOrm.builder()
+                                            .rank(rank.getAndIncrement())
+                                            .url(urlProperties.getUrl())
+                                            .type(urlProperties.getType())
+                                            .build()
+                             )
+                             .toList();
+    }
 }

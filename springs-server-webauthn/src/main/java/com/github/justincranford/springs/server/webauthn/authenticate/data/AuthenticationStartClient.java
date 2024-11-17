@@ -1,7 +1,6 @@
 package com.github.justincranford.springs.server.webauthn.authenticate.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +17,8 @@ import lombok.ToString;
 @Setter
 @ToString
 @EqualsAndHashCode
-@Builder(toBuilder=true)
+@Builder(toBuilder = true)
 public class AuthenticationStartClient {
-	@NotBlank private String username;
+    @NotBlank
+    private String username;
 }

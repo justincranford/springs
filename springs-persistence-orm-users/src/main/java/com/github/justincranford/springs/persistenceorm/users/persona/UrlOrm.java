@@ -2,7 +2,6 @@ package com.github.justincranford.springs.persistenceorm.users.persona;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.URLType;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -19,27 +18,27 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 @Embeddable
-@Getter(onMethod=@__(@JsonProperty))
+@Getter(onMethod = @__(@JsonProperty))
 @Setter
-@ToString(callSuper=true)
-@Builder(toBuilder=true)
+@ToString(callSuper = true)
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Accessors(fluent=true)
+@Accessors(fluent = true)
 public class UrlOrm {
-	@Column(nullable=false,columnDefinition="SMALLINT")
+    @Column(nullable = false, columnDefinition = "SMALLINT")
     private int rank;
 
-    @Column(length=2048,nullable=false)
-    @Size(min=8,max=2048) // http://a
+    @Column(length = 2048, nullable = false)
+    @Size(min = 8, max = 2048) // http://a
     @NotNull
-	@NotBlank
+    @NotBlank
     private String url;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="url_type",length=16,nullable=false)
-    @Size(min=2,max=16)
+    @Column(name = "url_type", length = 16, nullable = false)
+    @Size(min = 2, max = 16)
     @NotNull
-	@NotBlank
+    @NotBlank
     private URLType type;
 }

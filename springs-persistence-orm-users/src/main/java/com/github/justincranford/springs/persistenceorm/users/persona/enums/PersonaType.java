@@ -1,5 +1,6 @@
 package com.github.justincranford.springs.persistenceorm.users.persona.enums;
 
+@SuppressWarnings({"unused"})
 public enum PersonaType {
     OWN("Owner", "Propriétaire", "Propietario", "Individual or entity who owns the property or business"),
     EMP("Employee", "Employé", "Empleado", "Staff member or worker"),
@@ -49,19 +50,19 @@ public enum PersonaType {
         this.description = _description;
     }
 
-	public String getEnglishName() {
-		return this.english;
-	}
+    public String getEnglishName() {
+        return this.english;
+    }
 
-	public String getFrenchName() {
-		return this.french;
-	}
+    public String getFrenchName() {
+        return this.french;
+    }
 
-	public String getSpanishName() {
-		return this.spanish;
-	}
+    public String getSpanishName() {
+        return this.spanish;
+    }
 
-	public String getShortDescription() {
-		return this.description;
-	}
+    public String getShortDescription() {
+        return this.description;
+    }
 }

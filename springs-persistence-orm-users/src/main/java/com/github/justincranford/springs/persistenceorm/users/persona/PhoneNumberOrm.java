@@ -2,7 +2,6 @@ package com.github.justincranford.springs.persistenceorm.users.persona;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.PhoneNumberType;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -20,38 +19,38 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 @Embeddable
-@Getter(onMethod=@__(@JsonProperty))
+@Getter(onMethod = @__(@JsonProperty))
 @Setter
-@ToString(callSuper=true)
-@Builder(toBuilder=true)
+@ToString(callSuper = true)
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Accessors(fluent=true)
+@Accessors(fluent = true)
 public class PhoneNumberOrm {
-	@Column(nullable=false,columnDefinition="SMALLINT")
+    @Column(nullable = false, columnDefinition = "SMALLINT")
     private int rank;
 
-	@Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Phone number must be in valid E.164 format. Optional + prefix, non-zero first digit, 1-15 digits total.")
-    @Column(length=16,nullable=false)
-	@Size(min=8,max=16) // +, then a non-zero digit, then up to 14 additional digits
-	@NotNull
-	@NotBlank
+    @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Phone number must be in valid E.164 format. Optional + prefix, non-zero first digit, 1-15 digits total.")
+    @Column(length = 16, nullable = false)
+    @Size(min = 8, max = 16) // +, then a non-zero digit, then up to 14 additional digits
+    @NotNull
+    @NotBlank
     private String phoneNumber;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     @NotNull
     private boolean talk;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private boolean text;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private boolean data;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="phone_number_type",length=16,nullable=false)
-	@Size(min=2,max=16)
+    @Column(name = "phone_number_type", length = 16, nullable = false)
+    @Size(min = 2, max = 16)
     @NotNull
-	@NotBlank
+    @NotBlank
     private PhoneNumberType type;
 }

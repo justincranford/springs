@@ -2,12 +2,18 @@ package com.github.justincranford.springs.persistenceorm.sessions.service.except
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.io.Serial;
+
+@SuppressWarnings({"unused"})
 public class PersonaEmailNotFoundException extends UsernameNotFoundException {
-	private static final long serialVersionUID = 1L;
-	public PersonaEmailNotFoundException(String msg) {
-		super(msg);
-	}
-	public PersonaEmailNotFoundException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public PersonaEmailNotFoundException(String msg) {
+        super(msg);
+    }
+
+    public PersonaEmailNotFoundException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

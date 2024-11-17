@@ -1,16 +1,5 @@
 package com.github.justincranford.springs.util.security.hashes.properties;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.stream.Stream;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.ValidationException;
 import jakarta.validation.constraints.Max;
@@ -25,237 +14,247 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
-@ConfigurationProperties(prefix="springs.util.security.hashes",ignoreUnknownFields=false,ignoreInvalidFields=false)
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import java.util.stream.Stream;
+
+@ConfigurationProperties(prefix = "springs.util.security.hashes", ignoreUnknownFields = false)
 @PropertySource("classpath:springs-util-security-hashes.properties")
 @Component
 @Validated
 @Getter
 @Setter
-@ToString(callSuper=false)
-@Builder(toBuilder=true)
+@ToString
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({ "unused", "unchecked", "rawtypes" })
+
 public class SpringsUtilSecurityHashesProperties {
-	@PostConstruct
-	public void init() {
-		// TODO more validation
+    @NotNull
+    @NotEmpty
+    @Size(min = Constants.MIN_KEY_ENCODERS, max = Constants.MAX_KEY_ENCODERS)
+    private TreeMap<Integer,String> keyEncoder; // rank => configName
+    @NotNull
+    @NotEmpty
+    @Size(min = Constants.MIN_VALUE_ENCODERS, max = Constants.MAX_VALUE_ENCODERS)
+    private TreeMap<Integer,String> valueEncoder; // rank => configName
+    private Encoders encoders;
 
-		this.keyEncoder.entrySet().stream().forEach(keyEncoders -> {
-			final int constantSaltCount = this.getEncoders().getArgon2().constantSalt.containsKey(keyEncoders.getValue()) ? 1 : 0;
-			final int derivedSaltCount  = this.getEncoders().getArgon2().derivedSalt.containsKey(keyEncoders.getValue())  ? 1 : 0;
-			final int randomSaltCount   = this.getEncoders().getArgon2().randomSalt.containsKey(keyEncoders.getValue())   ? 1 : 0;
-			final int count             = constantSaltCount + derivedSaltCount + randomSaltCount;
-			if (count == 0) {
-				throw new ValidationException("No encoder defined for keyEncoder[" + keyEncoders.getKey() + "]=" + keyEncoders.getValue());
-			} else if (count > 1) {
-				throw new ValidationException("Too many encoders defined for keyEncoder[" + keyEncoders.getKey() + "]=" + keyEncoders.getValue());
-			}
-		});
+    @PostConstruct
+    public void init() {
+        // TODO more validation
 
-		this.valueEncoder.entrySet().stream().forEach(valueEncoders -> {
-			final int constantSaltCount = this.getEncoders().getArgon2().constantSalt.containsKey(valueEncoders.getValue()) ? 1 : 0;
-			final int derivedSaltCount  = this.getEncoders().getArgon2().derivedSalt.containsKey(valueEncoders.getValue())  ? 1 : 0;
-			final int randomSaltCount   = this.getEncoders().getArgon2().randomSalt.containsKey(valueEncoders.getValue())   ? 1 : 0;
-			final int count             = constantSaltCount + derivedSaltCount + randomSaltCount;
-			if (count == 0) {
-				throw new ValidationException("No encoder defined for keyEncoder[" + valueEncoders.getKey() + "]=" + valueEncoders.getValue());
-			} else if (count > 1) {
-				throw new ValidationException("Too many encoders defined for keyEncoder[" + valueEncoders.getKey() + "]=" + valueEncoders.getValue());
-			}
-		});
-	}
+        this.keyEncoder.entrySet().stream().forEach(keyEncoders -> {
+            final int constantSaltCount = this.getEncoders().getArgon2().constantSalt.containsKey(keyEncoders.getValue()) ? 1 : 0;
+            final int derivedSaltCount = this.getEncoders().getArgon2().derivedSalt.containsKey(keyEncoders.getValue()) ? 1 : 0;
+            final int randomSaltCount = this.getEncoders().getArgon2().randomSalt.containsKey(keyEncoders.getValue()) ? 1 : 0;
+            final int count = constantSaltCount + derivedSaltCount + randomSaltCount;
+            if (count == 0) {
+                throw new ValidationException("No encoder defined for keyEncoder[" + keyEncoders.getKey() + "]=" + keyEncoders.getValue());
+            } else if (count > 1) {
+                throw new ValidationException("Too many encoders defined for keyEncoder[" + keyEncoders.getKey() + "]=" + keyEncoders.getValue());
+            }
+        });
 
-	@NotNull
-	@NotEmpty
-	@Size(min=Constants.MIN_KEY_ENCODERS, max=Constants.MAX_KEY_ENCODERS)
-	private TreeMap<Integer, String> keyEncoder; // rank => configName
+        this.valueEncoder.entrySet().stream().forEach(valueEncoders -> {
+            final int constantSaltCount = this.getEncoders().getArgon2().constantSalt.containsKey(valueEncoders.getValue()) ? 1 : 0;
+            final int derivedSaltCount = this.getEncoders().getArgon2().derivedSalt.containsKey(valueEncoders.getValue()) ? 1 : 0;
+            final int randomSaltCount = this.getEncoders().getArgon2().randomSalt.containsKey(valueEncoders.getValue()) ? 1 : 0;
+            final int count = constantSaltCount + derivedSaltCount + randomSaltCount;
+            if (count == 0) {
+                throw new ValidationException("No encoder defined for keyEncoder[" + valueEncoders.getKey() + "]=" + valueEncoders.getValue());
+            } else if (count > 1) {
+                throw new ValidationException("Too many encoders defined for keyEncoder[" + valueEncoders.getKey() + "]=" + valueEncoders.getValue());
+            }
+        });
+    }
 
-	@NotNull
-	@NotEmpty
-	@Size(min=Constants.MIN_VALUE_ENCODERS, max=Constants.MAX_VALUE_ENCODERS)
-	private TreeMap<Integer, String> valueEncoder; // rank => configName
+    @Component
+    @Validated
+    @Getter
+    @Setter
+    @ToString
+    @Builder(toBuilder = true)
+    public static class Encoders {
+        private Argon2 argon2;
 
-	private Encoders encoders;
+        public Argon2.AbstractSalt get(final String name) {
+            final Map<String,Argon2.AbstractSalt> constantSalt = (Map) this.getArgon2().getConstantSalt();
+            final Map<String,Argon2.AbstractSalt> derivedSalt = (Map) this.getArgon2().getDerivedSalt();
+            final Map<String,Argon2.AbstractSalt> randomSalt = (Map) this.getArgon2().getRandomSalt();
+            final List<Argon2.AbstractSalt> matches = Stream.of(constantSalt, derivedSalt, randomSalt)
+                                                            .map(map -> map.get(name)).filter(Objects::nonNull).toList();
+            if (matches.size() == 1) {
+                return matches.getFirst();
+            } else if (matches.isEmpty()) {
+                throw new RuntimeException("No encoders found. Expected one and only one.");
+            }
+            throw new RuntimeException("Multiple encoders found. Expected one and only one.");
+        }
 
-	@Component
-	@Validated
-	@Getter
-	@Setter
-	@ToString(callSuper=false)
-	@Builder(toBuilder=true)
-	public static class Encoders {
-		public Argon2.AbstractSalt get(final String name) {
-			final Map<String, Argon2.AbstractSalt> constantSalt = (Map) this.getArgon2().getConstantSalt();
-			final Map<String, Argon2.AbstractSalt>  derivedSalt = (Map) this.getArgon2().getDerivedSalt();
-			final Map<String, Argon2.AbstractSalt>   randomSalt = (Map) this.getArgon2().getRandomSalt();
-			final List<Argon2.AbstractSalt> matches = Stream.of(constantSalt, derivedSalt, randomSalt)
-				.map(map -> map.get(name)).filter(a -> a != null).toList();
-			if (matches.size() == 1) {
-				return matches.get(0);
-			} else if (matches.isEmpty()) {
-				throw new RuntimeException("No encoders found. Expected one and only one.");
-			}
-			throw new RuntimeException("Multiple encoders found. Expected one and only one.");
-		}
+        @Component
+        @Validated
+        @Getter
+        @Setter
+        @ToString
+        @Builder(toBuilder = true)
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class Argon2 {
+            @NotNull
+            @Builder.Default
+            @Size(min = Constants.MIN_CONSTANT_SALT_ENCODERS, max = Constants.MAX_CONSTANT_SALT_ENCODERS)
+            private Map<String,ConstantSalt> constantSalt = new HashMap<>(); // configName => settings
 
-		private Argon2 argon2;
+            @NotNull
+            @NotEmpty
+            @Size(min = Constants.MIN_DERIVED_SALT_ENCODERS, max = Constants.MAX_DERIVED_SALT_ENCODERS)
+            private Map<String,DerivedSalt> derivedSalt; // configName => settings
 
-		@Component
-		@Validated
-		@Getter
-		@Setter
-		@ToString(callSuper=false)
-		@Builder(toBuilder=true)
-		@NoArgsConstructor
-		@AllArgsConstructor
-		public static class Argon2 {
-			@NotNull
-			@Builder.Default
-			@Size(min=Constants.MIN_CONSTANT_SALT_ENCODERS, max=Constants.MAX_CONSTANT_SALT_ENCODERS)
-			private Map<String, ConstantSalt> constantSalt = new HashMap<>(); // configName => settings
+            @NotNull
+            @NotEmpty
+            @Size(min = Constants.MIN_RANDOM_SALT_ENCODERS, max = Constants.MAX_RANDOM_SALT_ENCODERS)
+            private Map<String,RandomSalt> randomSalt; // configName => settings
 
-			@NotNull
-			@NotEmpty
-			@Size(min=Constants.MIN_DERIVED_SALT_ENCODERS, max=Constants.MAX_DERIVED_SALT_ENCODERS)
-			private Map<String, DerivedSalt> derivedSalt; // configName => settings
+            @Component
+            @Validated
+            @Getter
+            @Setter
+            @ToString(callSuper = true)
+            @Builder(toBuilder = true)
+            @NoArgsConstructor
+            @AllArgsConstructor
+            public static class ConstantSalt extends AbstractSalt {
+                @NotNull
+                @Size(min = Constants.MIN_CONSTANT_SALT_LENGTH, max = Constants.MAX_CONSTANT_SALT_LENGTH)
+                private String constantSalt;
+            }
 
-			@NotNull
-			@NotEmpty
-			@Size(min=Constants.MIN_RANDOM_SALT_ENCODERS, max=Constants.MAX_RANDOM_SALT_ENCODERS)
-			private Map<String, RandomSalt> randomSalt; // configName => settings
+            @Component
+            @Validated
+            @Getter
+            @Setter
+            @ToString(callSuper = true)
+            @Builder(toBuilder = true)
+            @NoArgsConstructor
+            @AllArgsConstructor
+            public static class DerivedSalt extends AbstractSalt {
+                @NotNull
+                @Min(value = Constants.MIN_DERIVED_SALT_LENGTH)
+                @Max(value = Constants.MAX_DERIVED_SALT_LENGTH)
+                @Positive
+                private Integer derivedSaltLength;
+            }
 
-			@Component
-			@Validated
-			@Getter
-			@Setter
-			@ToString(callSuper=true)
-			@Builder(toBuilder=true)
-			@NoArgsConstructor
-			@AllArgsConstructor
-			public static class ConstantSalt extends AbstractSalt {
-				@NotNull
-				@Size(min=Constants.MIN_CONSTANT_SALT_LENGTH, max=Constants.MAX_CONSTANT_SALT_LENGTH)
-				private String constantSalt;
-			}
+            @Component
+            @Validated
+            @Getter
+            @Setter
+            @ToString(callSuper = true)
+            @Builder(toBuilder = true)
+            @NoArgsConstructor
+            @AllArgsConstructor
+            public static class RandomSalt extends AbstractSalt {
+                @NotNull
+                @Min(value = Constants.MIN_RANDOM_SALT_LENGTH)
+                @Max(value = Constants.MAX_RANDOM_SALT_LENGTH)
+                @Positive
+                private Integer randomSaltLength;
+            }
 
-			@Component
-			@Validated
-			@Getter
-			@Setter
-			@ToString(callSuper=true)
-			@Builder(toBuilder=true)
-			@NoArgsConstructor
-			@AllArgsConstructor
-			public static class DerivedSalt extends AbstractSalt {
-				@NotNull
-				@Min(value=Constants.MIN_DERIVED_SALT_LENGTH)
-				@Max(value=Constants.MAX_DERIVED_SALT_LENGTH)
-				@Positive
-				private Integer derivedSaltLength;
-			}
+            @Validated
+            @Getter
+            @Setter
+            @ToString
+            @NoArgsConstructor
+            @AllArgsConstructor
+            public static class AbstractSalt {
+                @NotNull
+                @NotEmpty
+                @Size(min = Constants.MIN_ID_LENGTH, max = Constants.MAX_ID_LENGTH)
+                private String id;
 
-			@Component
-			@Validated
-			@Getter
-			@Setter
-			@ToString(callSuper=true)
-			@Builder(toBuilder=true)
-			@NoArgsConstructor
-			@AllArgsConstructor
-			public static class RandomSalt extends AbstractSalt {
-				@NotNull
-				@Min(value=Constants.MIN_RANDOM_SALT_LENGTH)
-				@Max(value=Constants.MAX_RANDOM_SALT_LENGTH)
-				@Positive
-				private Integer randomSaltLength;
-			}
+                @NotNull
+                @Size(min = Constants.MIN_ASSOCIATED_DATA_LENGTH, max = Constants.MAX_ASSOCIATED_DATA_LENGTH)
+                private String associatedData;
 
-			@Validated
-			@Getter
-			@Setter
-			@ToString(callSuper=false)
-			@NoArgsConstructor
-			@AllArgsConstructor
-			public static class AbstractSalt {
-				@NotNull
-				@NotEmpty
-				@Size(min=Constants.MIN_ID_LENGTH, max=Constants.MAX_ID_LENGTH)
-				private String id;
+                @NotNull
+                @Min(value = Constants.MIN_HASH_LENGTH)
+                @Max(value = Constants.MAX_HASH_LENGTH)
+                @Positive
+                private Integer hashLength;
 
-				@NotNull
-				@Size(min=Constants.MIN_ASSOCIATED_DATA_LENGTH, max=Constants.MAX_ASSOCIATED_DATA_LENGTH)
-				private String associatedData;
+                @NotNull
+                @Min(value = Constants.MIN_PARALLELISM)
+                @Max(value = Constants.MAX_PARALLELISM)
+                @Positive
+                private Integer parallelism;
 
-				@NotNull
-				@Min(value=Constants.MIN_HASH_LENGTH)
-				@Max(value=Constants.MAX_HASH_LENGTH)
-				@Positive
-				private Integer hashLength;
+                @NotNull
+                @Min(value = Constants.MIN_MEMORY_IN_KB)
+                @Max(value = Constants.MAX_MEMORY_IN_KB)
+                @Positive
+                private Integer memoryInKB;
 
-				@NotNull
-				@Min(value=Constants.MIN_PARALLELISM)
-				@Max(value=Constants.MAX_PARALLELISM)
-				@Positive
-				private Integer parallelism;
+                @NotNull
+                @Min(value = Constants.MIN_ITERATIONS)
+                @Max(value = Constants.MAX_ITERATIONS)
+                @Positive
+                private Integer iterations;
+            }
+        }
+    }
 
-				@NotNull
-				@Min(value=Constants.MIN_MEMORY_IN_KB)
-				@Max(value=Constants.MAX_MEMORY_IN_KB)
-				@Positive
-				private Integer memoryInKB;
+    private static class Constants {
+        private static final int MIN_CONSTANT_SALT_ENCODERS = 0;
+        private static final int MAX_CONSTANT_SALT_ENCODERS = 1;
 
-				@NotNull
-				@Min(value=Constants.MIN_ITERATIONS)
-				@Max(value=Constants.MAX_ITERATIONS)
-				@Positive
-				private Integer iterations;
-			}
-		}
-	}
+        private static final int MIN_DERIVED_SALT_ENCODERS = 1;
+        private static final int MAX_DERIVED_SALT_ENCODERS = 8;
 
-	private static class Constants {
-		private static final int MIN_CONSTANT_SALT_ENCODERS = 0;
-		private static final int MAX_CONSTANT_SALT_ENCODERS = 1;
+        private static final int MIN_RANDOM_SALT_ENCODERS = 1;
+        private static final int MAX_RANDOM_SALT_ENCODERS = 8;
 
-		private static final int MIN_DERIVED_SALT_ENCODERS = 1;
-		private static final int MAX_DERIVED_SALT_ENCODERS = 8;
+        private static final int MIN_CONSTANT_SALT_LENGTH = 0;
+        private static final int MAX_CONSTANT_SALT_LENGTH = 1024;
 
-		private static final int MIN_RANDOM_SALT_ENCODERS = 1;
-		private static final int MAX_RANDOM_SALT_ENCODERS = 8;
+        private static final int MIN_DERIVED_SALT_LENGTH = 16;
+        private static final int MAX_DERIVED_SALT_LENGTH = 1024;
 
-		private static final int MIN_CONSTANT_SALT_LENGTH = 0;
-		private static final int MAX_CONSTANT_SALT_LENGTH = 1024;
+        private static final int MIN_RANDOM_SALT_LENGTH = 16;
+        private static final int MAX_RANDOM_SALT_LENGTH = 1024;
 
-		private static final int MIN_DERIVED_SALT_LENGTH = 16;
-		private static final int MAX_DERIVED_SALT_LENGTH = 1024;
+        private static final int MIN_ID_LENGTH = 1;
+        private static final int MAX_ID_LENGTH = 2;
 
-		private static final int MIN_RANDOM_SALT_LENGTH = 16;
-		private static final int MAX_RANDOM_SALT_LENGTH = 1024;
+        private static final int MIN_ASSOCIATED_DATA_LENGTH = 0;
+        private static final int MAX_ASSOCIATED_DATA_LENGTH = 1024;
 
-		private static final int MIN_ID_LENGTH = 1;
-		private static final int MAX_ID_LENGTH = 2;
+        private static final int MIN_HASH_LENGTH = 16;
+        private static final int MAX_HASH_LENGTH = 1024;
 
-		private static final int MIN_ASSOCIATED_DATA_LENGTH = 0;
-		private static final int MAX_ASSOCIATED_DATA_LENGTH = 1024;
+        private static final int MIN_PARALLELISM = 1;
+        private static final int MAX_PARALLELISM = 16;
 
-		private static final int MIN_HASH_LENGTH = 16;
-		private static final int MAX_HASH_LENGTH = 1024;
+        private static final int MIN_MEMORY_IN_KB = 16384;
+        private static final int MAX_MEMORY_IN_KB = 65536;
 
-		private static final int MIN_PARALLELISM = 1;
-		private static final int MAX_PARALLELISM = 16;
+        private static final int MIN_ITERATIONS = 1;
+        private static final int MAX_ITERATIONS = 256;
 
-		private static final int MIN_MEMORY_IN_KB = 16384;
-		private static final int MAX_MEMORY_IN_KB = 65536;
+        private static final int MIN_KEY_ENCODERS = 1;
+        private static final int MAX_KEY_ENCODERS = MAX_CONSTANT_SALT_ENCODERS + MAX_DERIVED_SALT_ENCODERS + MAX_RANDOM_SALT_ENCODERS;
 
-		private static final int MIN_ITERATIONS = 1;
-		private static final int MAX_ITERATIONS = 256;
-
-		private static final int MIN_KEY_ENCODERS = 1;
-		private static final int MAX_KEY_ENCODERS = MAX_CONSTANT_SALT_ENCODERS + MAX_DERIVED_SALT_ENCODERS + MAX_RANDOM_SALT_ENCODERS;
-
-		private static final int MIN_VALUE_ENCODERS = 1;
-		private static final int MAX_VALUE_ENCODERS = MAX_CONSTANT_SALT_ENCODERS + MAX_DERIVED_SALT_ENCODERS + MAX_RANDOM_SALT_ENCODERS;
-	}
+        private static final int MIN_VALUE_ENCODERS = 1;
+        private static final int MAX_VALUE_ENCODERS = MAX_CONSTANT_SALT_ENCODERS + MAX_DERIVED_SALT_ENCODERS + MAX_RANDOM_SALT_ENCODERS;
+    }
 }

@@ -6,6 +6,7 @@ import lombok.experimental.Delegate;
 
 @RequiredArgsConstructor
 public class HashPepperPreHash implements PepperInterface {
-	@Delegate
-	@NotNull private final Pepper delegate;
+    @Delegate
+    @NotNull
+    private final Pepper delegate;
 }

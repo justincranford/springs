@@ -6,7 +6,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class RedirectToLoginConfigurer implements WebMvcConfigurer {
-	@Override
+    @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addRedirectViewController("/", "/login");
         registry.addRedirectViewController("/index.html", "/login");

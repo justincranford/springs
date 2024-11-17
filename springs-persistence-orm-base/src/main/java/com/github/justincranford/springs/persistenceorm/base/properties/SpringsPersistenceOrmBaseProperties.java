@@ -1,17 +1,5 @@
 package com.github.justincranford.springs.persistenceorm.base.properties;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.convert.DataSizeUnit;
-import org.springframework.boot.convert.DurationUnit;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
-import org.springframework.util.unit.DataSize;
-import org.springframework.util.unit.DataUnit;
-import org.springframework.validation.annotation.Validated;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -26,44 +14,55 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.DataSizeUnit;
+import org.springframework.boot.convert.DurationUnit;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
+import org.springframework.util.unit.DataSize;
+import org.springframework.util.unit.DataUnit;
+import org.springframework.validation.annotation.Validated;
+
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 /**
  * Reserved for future use, for reusable properties across all modules that depend on this one.
  */
 @Component
-@ConfigurationProperties(prefix="springs.persistenceorm.base",ignoreUnknownFields=false,ignoreInvalidFields=false)
+@ConfigurationProperties(prefix = "springs.persistenceorm.base", ignoreUnknownFields = false)
 @PropertySource("classpath:springs-persistence-orm-base.properties")
 @Validated
 @Getter
 @Setter
-@ToString(callSuper=false)
-@Builder(toBuilder=true)
+@ToString
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpringsPersistenceOrmBaseProperties {
-	@NotNull
-	@NotEmpty
-	@Size(min=1, max=255)
+    @NotNull
+    @NotEmpty
+    @Size(min = 1, max = 255)
     private String hostName;
 
-	@NotNull
-	@Min(value=1)
-	@Max(value=65535)
-	@Positive
+    @NotNull
+    @Min(value = 1)
+    @Max(value = 65535)
+    @Positive
     private Integer port;
 
-	@NotNull
-	@NotEmpty
-	@Size(min=1+1+1, max=64+1+255)
-	@Email(flags = { Flag.CASE_INSENSITIVE })
+    @NotNull
+    @NotEmpty
+    @Size(min = 1 + 1 + 1, max = 64 + 1 + 255)
+    @Email(flags = { Flag.CASE_INSENSITIVE })
     private String from;
 
-	@NotNull
+    @NotNull
 //	@PositiveOrZero
     @DurationUnit(ChronoUnit.DAYS)
     private Duration durationInDays;
 
-	@NotNull
+    @NotNull
 //	@Min(value = 0)
 //	@PositiveOrZero
     @DataSizeUnit(DataUnit.TERABYTES)

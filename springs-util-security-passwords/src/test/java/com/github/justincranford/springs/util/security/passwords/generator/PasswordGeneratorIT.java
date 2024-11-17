@@ -1,27 +1,26 @@
 package com.github.justincranford.springs.util.security.passwords.generator;
 
+import com.github.justincranford.springs.util.security.passwords.AbstractIT;
 import org.junit.jupiter.api.RepeatedTest;
 
-import com.github.justincranford.springs.util.security.passwords.AbstractIT;
-
 public class PasswordGeneratorIT extends AbstractIT {
-	@RepeatedTest(PasswordGeneratorTestUtil.REPEATS)
+    @RepeatedTest(PasswordGeneratorTestUtil.REPEATS)
     public void testGeneratePassword_usersProperties() {
-		PasswordGeneratorTestUtil.generateAndValidate(super.usersPasswordGenerator(), super.usersPasswordValidator());
+        PasswordGeneratorTestUtil.generateAndValidate(super.usersPasswordGenerator(), super.usersPasswordValidator());
     }
 
-	@RepeatedTest(PasswordGeneratorTestUtil.REPEATS)
+    @RepeatedTest(PasswordGeneratorTestUtil.REPEATS)
     public void testGeneratePassword_clientsProperties() {
-		PasswordGeneratorTestUtil.generateAndValidate(super.clientsPasswordGenerator(), super.clientsPasswordValidator());
+        PasswordGeneratorTestUtil.generateAndValidate(super.clientsPasswordGenerator(), super.clientsPasswordValidator());
     }
 
-	@RepeatedTest(PasswordGeneratorTestUtil.REPEATS)
+    @RepeatedTest(PasswordGeneratorTestUtil.REPEATS)
     public void testGeneratePassword_serversProperties() {
-		PasswordGeneratorTestUtil.generateAndValidate(super.serversPasswordGenerator(), super.serversPasswordValidator());
+        PasswordGeneratorTestUtil.generateAndValidate(super.serversPasswordGenerator(), super.serversPasswordValidator());
     }
 
-	@RepeatedTest(PasswordGeneratorTestUtil.REPEATS)
+    @RepeatedTest(PasswordGeneratorTestUtil.REPEATS)
     public void testGeneratePassword_defaultsProperties() {
-		PasswordGeneratorTestUtil.generateAndValidate(super.defaultsPasswordGenerator(), super.defaultsPasswordValidator());
+        PasswordGeneratorTestUtil.generateAndValidate(super.defaultsPasswordGenerator(), super.defaultsPasswordValidator());
     }
 }

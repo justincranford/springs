@@ -1,7 +1,16 @@
 package com.github.justincranford.springs.persistenceorm.example;
 
-import java.util.List;
-
+import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
+import com.github.justincranford.springs.persistenceorm.example.apple.AppleOrmRepository;
+import com.github.justincranford.springs.persistenceorm.example.bushel.BushelOrmRepository;
+import com.github.justincranford.springs.persistenceorm.example.config.SpringsPersistenceOrmExampleConfiguration;
+import com.github.justincranford.springs.persistenceorm.example.properties.SpringsPersistenceOrmExampleProperties;
+import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.observation.annotation.Observed;
+import lombok.Getter;
+import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,18 +24,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
-import com.github.justincranford.springs.persistenceorm.example.apple.AppleOrmRepository;
-import com.github.justincranford.springs.persistenceorm.example.bushel.BushelOrmRepository;
-import com.github.justincranford.springs.persistenceorm.example.config.SpringsPersistenceOrmExampleConfiguration;
-import com.github.justincranford.springs.persistenceorm.example.properties.SpringsPersistenceOrmExampleProperties;
-import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
-
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.observation.annotation.Observed;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -40,13 +38,13 @@ import lombok.extern.slf4j.Slf4j;
 @AutoConfigureObservability
 @Getter
 @Accessors(fluent = true)
-@ActiveProfiles({"test"})
+@ActiveProfiles({ "test" })
 @Slf4j
 @Observed
 public class AbstractIT {
-	@LocalServerPort
-	private long localServerPort;
-	@Autowired
+    @LocalServerPort
+    private long localServerPort;
+    @Autowired
     private MeterRegistry meterRegistry;
     @Autowired
     private ApplicationContext applicationContext;
@@ -65,17 +63,17 @@ public class AbstractIT {
     }
 
     @SuppressWarnings("resource")
-	@DynamicPropertySource
+    @DynamicPropertySource
     public static void postgresqlContainerProperties(final DynamicPropertyRegistry registry) {
-		final PostgreSQLContainer<?> instance = SpringsUtilTestContainers.POSTGRESQL.getInstance();
-		if (instance.isRunning()) {
-			log.info("Setting dynamic properties from SpringsUtilTestContainers.POSTGRESQL");
-	        registry.add("spring.jpa.properties.hibernate.dialect", () -> PostgreSQLDialect.class.getCanonicalName());
-	        registry.add("spring.datasource.url",                   () -> instance.getJdbcUrl());
-	        registry.add("spring.datasource.username",              () -> instance.getUsername());
-	        registry.add("spring.datasource.password",              () -> instance.getPassword());
-		} else {
-			log.info("Using static properties");
-		}
+        final PostgreSQLContainer<?> instance = SpringsUtilTestContainers.POSTGRESQL.getInstance();
+        if (instance.isRunning()) {
+            log.info("Setting dynamic properties from SpringsUtilTestContainers.POSTGRESQL");
+            registry.add("spring.jpa.properties.hibernate.dialect", () -> PostgreSQLDialect.class.getCanonicalName());
+            registry.add("spring.datasource.url", () -> instance.getJdbcUrl());
+            registry.add("spring.datasource.username", () -> instance.getUsername());
+            registry.add("spring.datasource.password", () -> instance.getPassword());
+        } else {
+            log.info("Using static properties");
+        }
     }
 }

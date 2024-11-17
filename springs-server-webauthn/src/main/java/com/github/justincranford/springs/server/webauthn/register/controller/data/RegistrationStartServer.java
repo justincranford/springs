@@ -2,7 +2,6 @@ package com.github.justincranford.springs.server.webauthn.register.controller.da
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -18,8 +17,8 @@ import lombok.ToString;
 @Setter
 @ToString
 @EqualsAndHashCode
-@Builder(toBuilder=true)
+@Builder(toBuilder = true)
 public class RegistrationStartServer {
-	private String sessionToken;
-	private PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
+    private String sessionToken;
+    private PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
 }

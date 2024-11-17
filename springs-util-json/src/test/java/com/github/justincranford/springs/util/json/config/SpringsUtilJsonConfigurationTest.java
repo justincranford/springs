@@ -1,48 +1,47 @@
 package com.github.justincranford.springs.util.json.config;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.IOException;
-import java.time.OffsetDateTime;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.justincranford.springs.util.basic.Base64Util;
+import com.github.justincranford.springs.util.basic.DateTimeUtil;
+import com.github.justincranford.springs.util.basic.SecureRandomUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.util.basic.Base64Util;
-import com.github.justincranford.springs.util.basic.DateTimeUtil;
-import com.github.justincranford.springs.util.basic.SecureRandomUtil;
+import java.io.IOException;
+import java.time.OffsetDateTime;
 
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes={SpringsUtilJsonConfiguration.class})
+@ContextConfiguration(classes = { SpringsUtilJsonConfiguration.class })
 @Slf4j
+@SuppressWarnings({"unused"})
 public class SpringsUtilJsonConfigurationTest {
-	private static record Pojo(Integer integer, String string, OffsetDateTime offsetDateTime) { }
+    @Autowired
+    private ObjectMapper objectMapper;
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @Test
+    void testSerializeDeserializeNonNulls() throws IOException {
+        helper(new Pojo(Integer.valueOf(SecureRandomUtil.SECURE_RANDOM.nextInt()), Base64Util.MIME.encodeToString(SecureRandomUtil.randomBytes(32)), DateTimeUtil.nowUtcTruncatedToNanoseconds()));
+    }
 
-	@Test
-	void testSerializeDeserializeNonNulls() throws IOException {
-		helper(new Pojo(Integer.valueOf(SecureRandomUtil.SECURE_RANDOM.nextInt()), Base64Util.MIME.encodeToString(SecureRandomUtil.randomBytes(32)), DateTimeUtil.nowUtcTruncatedToNanoseconds()));
-	}
+    private void helper(final Pojo pojo) throws IOException {
+        log.atDebug().addArgument(() -> pojo).log("pojo: {}");
+        final String serialized = this.objectMapper.writeValueAsString(pojo);
+        log.atDebug().addArgument(() -> serialized).log("serialized: {}");
+        final Pojo deserialized = this.objectMapper.readValue(serialized, Pojo.class);
+        log.atDebug().addArgument(() -> deserialized).log("deserialized: {}");
+        assertThat(deserialized).isEqualTo(pojo);
+    }
 
-	@Test
-	void testSerializeDeserializeNulls() throws IOException {
-		helper(new Pojo(null, null, null));
-	}
+    @Test
+    void testSerializeDeserializeNulls() throws IOException {
+        helper(new Pojo(null, null, null));
+    }
 
-	private void helper(final Pojo pojo) throws IOException {
-		log.atDebug().addArgument(() -> pojo).log("pojo: {}");
-		final String serialized = this.objectMapper.writeValueAsString(pojo);
-		log.atDebug().addArgument(() -> serialized).log("serialized: {}");
-		final Pojo deserialized = this.objectMapper.readValue(serialized, Pojo.class);
-		log.atDebug().addArgument(() -> deserialized).log("deserialized: {}");
-		assertThat(deserialized).isEqualTo(pojo);
-	}
+    private record Pojo(Integer integer, String string, OffsetDateTime offsetDateTime) { }
 }

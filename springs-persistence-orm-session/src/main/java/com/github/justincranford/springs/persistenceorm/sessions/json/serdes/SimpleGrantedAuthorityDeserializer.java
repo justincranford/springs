@@ -1,16 +1,17 @@
 package com.github.justincranford.springs.persistenceorm.sessions.json.serdes;
 
-import java.io.IOException;
-
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.io.IOException;
+import java.io.Serial;
 
 public class SimpleGrantedAuthorityDeserializer extends StdDeserializer<SimpleGrantedAuthority> {
-	private static final long serialVersionUID = 1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public SimpleGrantedAuthorityDeserializer() {
         super(SimpleGrantedAuthority.class);
@@ -19,7 +20,7 @@ public class SimpleGrantedAuthorityDeserializer extends StdDeserializer<SimpleGr
     @Override
     public SimpleGrantedAuthority deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonNode node = p.getCodec().readTree(p);
-		final String authority = node.has("authority") ? node.get("authority").asText() : null;
+        final String authority = node.has("authority") ? node.get("authority").asText() : null;
         return new SimpleGrantedAuthority(authority);
     }
 }

@@ -1,41 +1,34 @@
 package com.github.justincranford.springs.util.https.server.config;
 
-import org.eclipse.jetty.server.Server;
+import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
+import com.github.justincranford.springs.util.https.util.TlsPskUtil;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
-import com.github.justincranford.springs.util.https.util.TlsPskUtil;
-
-@SuppressWarnings({"static-method"})
 @Configuration
+@SuppressWarnings({"unused", "static-method" })
 public class SpringsUtilHttpsServerPskConfiguration {
-	private static final boolean ADD_TLS_PSK_CONNECTOR = true;
-	private static final int PORT = 9443;
+    private static final boolean ADD_TLS_PSK_CONNECTOR = true;
+    private static final int PORT = 9443;
 
-	@Bean
+    @Bean
     public JettyServletWebServerFactory jettyServletWebServerFactory(final SslBundles sslBundles) {
-		final JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
-		if (ADD_TLS_PSK_CONNECTOR) {
-	        factory.addServerCustomizers(new JettyServerCustomizer() {
-				@Override
-	            public void customize(Server server) {
-					final SslBundle                serverTlsPskBundle = sslBundles.getBundle(TlsEnabledByDefaultInitializer.SslBundleNames.SERVER_TLS_PSK);
-					final SslContextFactory.Server sslContextFactory  = TlsPskUtil.createServerSslContextFactory(serverTlsPskBundle);
+        final JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
+        if (ADD_TLS_PSK_CONNECTOR) {
+            factory.addServerCustomizers(server -> {
+                final SslBundle serverTlsPskBundle = sslBundles.getBundle(TlsEnabledByDefaultInitializer.SslBundleNames.SERVER_TLS_PSK);
+                final SslContextFactory.Server sslContextFactory = TlsPskUtil.createServerSslContextFactory(serverTlsPskBundle);
 
-					@SuppressWarnings({"resource"})
-					final ServerConnector serverConnector = new ServerConnector(server, sslContextFactory);
-					serverConnector.setPort(PORT);
-	                server.addConnector(serverConnector);
-	            }
-	        });
-		}
+                final ServerConnector serverConnector = new ServerConnector(server, sslContextFactory);
+                serverConnector.setPort(PORT);
+                server.addConnector(serverConnector);
+            });
+        }
         return factory;
     }
 

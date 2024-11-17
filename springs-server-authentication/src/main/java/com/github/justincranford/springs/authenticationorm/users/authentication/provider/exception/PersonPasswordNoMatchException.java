@@ -2,13 +2,18 @@ package com.github.justincranford.springs.authenticationorm.users.authentication
 
 import org.springframework.security.authentication.BadCredentialsException;
 
-public class PersonPasswordNoMatchException extends BadCredentialsException {
-	private static final long serialVersionUID = 1L;
+import java.io.Serial;
 
-	public PersonPasswordNoMatchException(String msg) {
-		super(msg);
-	}
-	public PersonPasswordNoMatchException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
+@SuppressWarnings({"unused"})
+public class PersonPasswordNoMatchException extends BadCredentialsException {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public PersonPasswordNoMatchException(String msg) {
+        super(msg);
+    }
+
+    public PersonPasswordNoMatchException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

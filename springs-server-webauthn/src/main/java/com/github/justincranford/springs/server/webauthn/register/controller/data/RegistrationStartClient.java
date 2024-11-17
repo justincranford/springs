@@ -1,10 +1,7 @@
 package com.github.justincranford.springs.server.webauthn.register.controller.data;
 
-import org.springframework.lang.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yubico.webauthn.data.ResidentKeyRequirement;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.lang.Nullable;
 
 //@Accessors(fluent = true)
 @AllArgsConstructor
@@ -22,10 +20,14 @@ import lombok.ToString;
 @Setter
 @ToString
 @EqualsAndHashCode
-@Builder(toBuilder=true)
+@Builder(toBuilder = true)
 public class RegistrationStartClient {
-	@NotBlank private String username;
-	@NotBlank private String displayName;
-	@Nullable private String credentialNickname;
-	@NotNull  private ResidentKeyRequirement residentKeyRequirement;
+    @NotBlank
+    private String username;
+    @NotBlank
+    private String displayName;
+    @Nullable
+    private String credentialNickname;
+    @NotNull
+    private ResidentKeyRequirement residentKeyRequirement;
 }

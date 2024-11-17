@@ -1,32 +1,32 @@
 package com.github.justincranford.springs.util.security.hashes.mac;
 
-import java.math.BigInteger;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
+import com.github.justincranford.springs.util.basic.ArrayUtil;
+import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.springframework.lang.Nullable;
 
-import com.github.justincranford.springs.util.basic.ArrayUtil;
-import com.github.justincranford.springs.util.security.hashes.digest.DigestAlgorithm;
-
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.math.BigInteger;
 
 public interface MacAlgorithm {
-	public String algorithm();
-	public BigInteger maxInputBytesLen();
-	public int outputBytesLen();
-	public ASN1ObjectIdentifier asn1Oid();
-	public byte[] asn1OidBytes();
-	public String canonicalString();
+    String algorithm();
 
-    public SecretKeySpec secretKeyFromDataChunks(@Nullable DigestAlgorithm secretKeyDigest, @NotEmpty final byte[][] dataChunks);
+    BigInteger maxInputBytesLen();
 
-    public byte[] compute(@NotNull final SecretKey key, @NotNull final byte[] data);
+    int outputBytesLen();
 
-    default public byte[] chain(@NotNull final SecretKey key, @NotNull final byte[][] dataChunks) {
+    ASN1ObjectIdentifier asn1Oid();
+
+    byte[] asn1OidBytes();
+
+    String canonicalString();
+
+    SecretKeySpec secretKeyFromDataChunks(@Nullable DigestAlgorithm secretKeyDigest, @NotEmpty final byte[][] dataChunks);
+
+    default byte[] chain(@NotNull final SecretKey key, @NotNull final byte[][] dataChunks) {
         byte[] mac = null;
         for (final byte[] data : dataChunks) {
             if (mac == null) {
@@ -37,4 +37,6 @@ public interface MacAlgorithm {
         }
         return mac;
     }
+
+    byte[] compute(@NotNull final SecretKey key, @NotNull final byte[] data);
 }

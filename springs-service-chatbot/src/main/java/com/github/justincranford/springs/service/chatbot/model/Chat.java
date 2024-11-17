@@ -1,10 +1,7 @@
 package com.github.justincranford.springs.service.chatbot.model;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,86 +10,82 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+
 public class Chat {
-	public static final String URL = "/api/chat";
+    public static final String URL = "/api/chat";
 
-	@Getter(onMethod=@__(@JsonProperty))
-	@Setter
-	@Accessors(fluent=true)
-	@JsonIgnoreProperties
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@Builder
-	@ToString(exclude={})
-	public static class Request extends Abstract.Request {
-	    @JsonProperty("model")
-	    private String model;
-	
-	    @JsonProperty("keep_alive")
-	    private Long keepAlive;
+    @Getter(onMethod = @__(@JsonProperty))
+    @Setter
+    @Accessors(fluent = true)
+    @JsonIgnoreProperties
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class Request extends Abstract.Request {
+        @JsonProperty("options")
+        protected Options options;
+        @JsonProperty("template")
+        protected String template;
+        @JsonProperty("format")
+        protected Boolean format;
+        @JsonProperty("model")
+        private String model;
+        @JsonProperty("keep_alive")
+        private Long keepAlive;
+        @JsonProperty("stream")
+        private Boolean stream;
+        @JsonProperty("messages")
+        private List<Message> messages;
+    }
 
-	    @JsonProperty("stream")
-	    private Boolean stream;
+    @Getter(onMethod = @__(@JsonProperty))
+    @Setter
+    @Accessors(fluent = true)
+    @JsonIgnoreProperties
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class Response extends Abstract.Response {
+        @JsonProperty("model")
+        private String model;
 
-		@JsonProperty("options")
-		protected Options options;
+        @JsonProperty("created_at")
+        private String createdAt;
 
-		@JsonProperty("template")
-		protected String template;
+        @JsonProperty("message")
+        private Message message;
 
-		@JsonProperty("format")
-		protected Boolean format;
+        @JsonProperty("done")
+        private Boolean done;
 
-	    @JsonProperty("messages")
-	    private List<Message> messages;
-	}
+        @JsonProperty("done_reason")
+        private String doneReason;
 
-	@Getter(onMethod=@__(@JsonProperty))
-	@Setter
-	@Accessors(fluent=true)
-	@JsonIgnoreProperties
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@Builder
-	@ToString(exclude={})
-	public static class Response extends Abstract.Response {
-	    @JsonProperty("model")
-	    private String model;
+        @JsonProperty("error")
+        private String error;
 
-	    @JsonProperty("created_at")
-	    private String createdAt;
+        @JsonProperty("context")
+        private List<Integer> context;
 
-	    @JsonProperty("message")
-	    private Message message;
+        @JsonProperty("total_duration")
+        private Long totalDuration;
 
-	    @JsonProperty("done")
-	    private Boolean done;
+        @JsonProperty("load_duration")
+        private Long loadDuration;
 
-	    @JsonProperty("done_reason")
-	    private String doneReason;
+        @JsonProperty("prompt_eval_count")
+        private Integer promptEvalCount;
 
-	    @JsonProperty("error")
-	    private String error;
+        @JsonProperty("prompt_eval_duration")
+        private Long promptEvalDuration;
 
-	    @JsonProperty("context")
-	    private List<Integer> context;
+        @JsonProperty("eval_count")
+        private Integer evalCount;
 
-	    @JsonProperty("total_duration")
-	    private Long totalDuration;
-
-	    @JsonProperty("load_duration")
-	    private Long loadDuration;
-
-	    @JsonProperty("prompt_eval_count")
-	    private Integer promptEvalCount;
-
-	    @JsonProperty("prompt_eval_duration")
-	    private Long promptEvalDuration;
-
-	    @JsonProperty("eval_count")
-	    private Integer evalCount;
-
-	    @JsonProperty("eval_duration")
-	    private Long evalDuration;
+        @JsonProperty("eval_duration")
+        private Long evalDuration;
     }
 }

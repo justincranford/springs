@@ -1,20 +1,10 @@
 package com.github.justincranford.springs.persistenceorm.users.person;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.envers.Audited;
-import org.springframework.lang.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonStatusType;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -42,25 +32,33 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.envers.Audited;
+import org.springframework.lang.Nullable;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Audited
-@Table(name="person")
-@SQLDelete(sql="UPDATE person SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE id=? AND version=?")
+@Table(name = "person")
+@SQLDelete(sql = "UPDATE person SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE id=? AND version=?")
 @SQLRestriction(AbstractEntity.SQL_WHERE_CLAUSE)
-@SequenceGenerator(sequenceName="person_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
-@Getter(onMethod=@__(@JsonProperty))
+@SequenceGenerator(sequenceName = "person_sequence", name = AbstractEntity.SEQUENCE_ID, initialValue = AbstractEntity.SEQUENCE_ID_INITIAL_VALUE, allocationSize = AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
+@Getter(onMethod = @__(@JsonProperty))
 @Setter
-@Accessors(fluent=true)
-@Builder(toBuilder=true)
+@Accessors(fluent = true)
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(callSuper=true,exclude="password")
+@ToString(callSuper = true, exclude = "password")
 public class PersonOrm extends AbstractEntity {
-    @Column(length=64,nullable=false,unique=true)
-	@Size(min=5,max=64)
-	@NotNull
-	@NotBlank
+    @Column(length = 64, nullable = false, unique = true)
+    @Size(min = 5, max = 64)
+    @NotNull
+    @NotBlank
     private String username;
 
     @Embedded
@@ -70,47 +68,47 @@ public class PersonOrm extends AbstractEntity {
     private NameOrm name;
 
     @Column
-	@Nullable
+    @Nullable
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false,length=6)
+    @Column(nullable = false, length = 6)
 //    @Size(min=2,max=6)
     @NotNull
     private PersonStatusType status;
 
     @ElementCollection
     @CollectionTable(
-		name="languages",
-    	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name = "fk_languages_persona_id"),
-    	indexes= {@Index(name="idx_languages_persona_id_rank",columnList="persona_id,rank")}
+        name = "languages",
+        joinColumns = @JoinColumn(name = "personaId", referencedColumnName = "id"),
+        foreignKey = @ForeignKey(name = "fk_languages_persona_id"),
+        indexes = { @Index(name = "idx_languages_persona_id_rank", columnList = "persona_id,rank") }
     )
-    @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @org.hibernate.annotations.Cascade({ org.hibernate.annotations.CascadeType.ALL })
     @OrderBy("persona_id,rank")
     @NotNull
-    @Size(min=1,max=4)
+    @Size(min = 1, max = 4)
     @Builder.Default
     private List<@NotNull LanguageOrm> languages = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(
-		name="timezones",
-    	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name = "fk_timezones_persona_id"),
-    	indexes= {@Index(name="idx_timezones_persona_id_rank",columnList="persona_id,rank")}
+        name = "timezones",
+        joinColumns = @JoinColumn(name = "personaId", referencedColumnName = "id"),
+        foreignKey = @ForeignKey(name = "fk_timezones_persona_id"),
+        indexes = { @Index(name = "idx_timezones_persona_id_rank", columnList = "persona_id,rank") }
     )
-    @OrderColumn(name="rank")
+    @OrderColumn(name = "rank")
     @NotNull
-    @Size(min=1,max=4)
+    @Size(min = 1, max = 4)
     @Builder.Default
     private List<@NotNull String> timezones = new ArrayList<>();
 
     @JsonManagedReference
-    @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("id,rank")
     @NotNull
-    @Size(min=0,max=4)
-	@Builder.Default
+    @Size(max = 4)
+    @Builder.Default
     private List<PersonaOrm> personas = new ArrayList<>(1);
 }

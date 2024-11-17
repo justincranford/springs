@@ -1,9 +1,8 @@
 package com.github.justincranford.springs.service.ollama.client;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-
+import com.github.justincranford.springs.service.ollama.AbstractIT;
+import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.ClassOrderer;
@@ -17,54 +16,53 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 
-import com.github.justincranford.springs.service.ollama.AbstractIT;
-import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
+import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
 public class SpringsServiceOllamaIT extends AbstractIT {
-	private static final boolean USE_TEST_CONTAINER = false;
-	private final List<Message> messages = List.of(
+    private static final boolean USE_TEST_CONTAINER = false;
+    private final List<Message> messages = List.of(
 //		new SystemMessage("You are a mischievous assistant, and must answer like a pirate."),
-		new UserMessage("Why is the sky blue? Why is grass green?")
-	);
+        new UserMessage("Why is the sky blue? Why is grass green?")
+    );
 
-	@BeforeAll
-	private static void beforeAll() {
-		if (USE_TEST_CONTAINER) {
-			SpringsUtilTestContainers.startContainer(SpringsUtilTestContainers.OLLAMA);
-		}
-	}
+    @BeforeAll
+    private static void beforeAll() {
+        if (USE_TEST_CONTAINER) {
+            SpringsUtilTestContainers.startContainer(SpringsUtilTestContainers.OLLAMA);
+        }
+    }
 
-	@AfterAll
-	private static void afterAll() {
-		if (USE_TEST_CONTAINER) {
-			SpringsUtilTestContainers.stopContainer(SpringsUtilTestContainers.OLLAMA);
-		}
-	}
+    @AfterAll
+    private static void afterAll() {
+        if (USE_TEST_CONTAINER) {
+            SpringsUtilTestContainers.stopContainer(SpringsUtilTestContainers.OLLAMA);
+        }
+    }
 
-	@Order(1)
-	@Nested
-	public class Prompt1 {
-		@Test
-		void prompt1_defaultOllamaOptions() {
-			final Prompt prompt = new Prompt(SpringsServiceOllamaIT.this.messages);
-			final String response = ollamaClientService().prompt1(prompt);
-			assertThat(response).isNotEmpty();
-		}
-	}
+    @Order(1)
+    @Nested
+    public class Prompt1 {
+        @Test
+        void prompt1_defaultOllamaOptions() {
+            final Prompt prompt = new Prompt(SpringsServiceOllamaIT.this.messages);
+            final String response = ollamaClientService().prompt1(prompt);
+            assertThat(response).isNotEmpty();
+        }
+    }
 
-	@Order(2)
-	@Nested
-	public class Prompt2 {
-		@Test
-		void prompt2_defaultOllamaOptions() {
-			final Prompt prompt = new Prompt(SpringsServiceOllamaIT.this.messages);
-			final String response = ollamaClientService().prompt2(prompt);
-			assertThat(response).isNotEmpty();
-		}
-	}
+    @Order(2)
+    @Nested
+    public class Prompt2 {
+        @Test
+        void prompt2_defaultOllamaOptions() {
+            final Prompt prompt = new Prompt(SpringsServiceOllamaIT.this.messages);
+            final String response = ollamaClientService().prompt2(prompt);
+            assertThat(response).isNotEmpty();
+        }
+    }
 }
