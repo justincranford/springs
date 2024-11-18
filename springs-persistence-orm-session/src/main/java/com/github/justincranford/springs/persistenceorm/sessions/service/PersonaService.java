@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.justincranford.springs.persistenceorm.sessions.service.exception.PersonaEmailNotFoundException;
 import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonaDetails;
-import com.github.justincranford.springs.persistenceorm.users.config.projection.PersonaIdAndPersonIdPasswordProjection;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaProjectionIdAndPersonIdPassword;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
@@ -41,16 +41,16 @@ public class PersonaService implements UserDetailsService {
     }
 
     @Transactional
-    public PersonaIdAndPersonIdPasswordProjection findPersonaIdAndPersonIdPasswordByEmailAddress(final String emailAddressMixedCase) throws UsernameNotFoundException {
+    public PersonaProjectionIdAndPersonIdPassword findPersonaIdAndPersonIdPasswordByEmailAddress(final String emailAddressMixedCase) throws UsernameNotFoundException {
     	final String lowerCaseEmailAddress = emailAddressMixedCase.toLowerCase();
-		final PersonaIdAndPersonIdPasswordProjection personaIdAndPersonIdPasswordProjection = this.personaOrmRepository.findPersonaIdAndPersonIdAndPasswordByEmailAddress(lowerCaseEmailAddress).orElseThrow(() -> {
+		final PersonaProjectionIdAndPersonIdPassword personaProjectionIdAndPersonIdPassword = this.personaOrmRepository.findPersonaIdAndPersonIdAndPasswordByEmailAddress(lowerCaseEmailAddress).orElseThrow(() -> {
         	log.debug("Persona ID and Person ID+password not found by email address [{}]", emailAddressMixedCase);
         	return new PersonaEmailNotFoundException("Email address not found");
 		});
-		assert personaIdAndPersonIdPasswordProjection.getPersonaId()      != null : "Persona ID must be non-null";
-		assert personaIdAndPersonIdPasswordProjection.getPersonId()       != null : "Person ID must be non-null";
-		assert personaIdAndPersonIdPasswordProjection.getPersonPassword() != null : "Person password must be non-null";
+		assert personaProjectionIdAndPersonIdPassword.getId() != null : "Persona ID must be non-null";
+		assert personaProjectionIdAndPersonIdPassword.getPersonId() != null : "Person ID must be non-null";
+		assert personaProjectionIdAndPersonIdPassword.getPersonPassword() != null : "Person password must be non-null";
     	log.trace("Persona ID and Person ID+password found by email address [{}]", emailAddressMixedCase);
-		return personaIdAndPersonIdPasswordProjection;
+		return personaProjectionIdAndPersonIdPassword;
     }
 }

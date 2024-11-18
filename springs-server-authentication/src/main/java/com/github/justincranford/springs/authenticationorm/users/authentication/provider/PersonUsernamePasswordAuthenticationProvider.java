@@ -22,7 +22,7 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonUsernamePasswordUnauthenticatedToken;
 import com.github.justincranford.springs.persistenceorm.sessions.service.PersonService;
 import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonDetails;
-import com.github.justincranford.springs.persistenceorm.users.config.projection.PersonIdPasswordProjection;
+import com.github.justincranford.springs.persistenceorm.users.person.PersonProjectionIdPassword;
 import com.github.justincranford.springs.persistenceorm.users.persona.email.EmailRfc5321Validator;
 import com.github.justincranford.springs.util.basic.Timer;
 
@@ -62,26 +62,26 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
 
 		if (EMAIL_VALIDATOR.isValid(usernameMixedCase, false)) {
         	log.trace("Ignoring name [{}] because it is a valid email address.", usernameMixedCase);
-    		return null; // ASSUME: Handled by PersonaEmailPasswordAuthenticationProvider 
-		} else 
+    		return null; // ASSUME: Handled by PersonaEmailPasswordAuthenticationProvider
+		} else
 		if (Strings.isBlank(password)) {
     		throw logAndCreate(PersonPasswordBlankNotAllowedException.class, TRACE, "Password must not be blank");
 		}
 		final String usernameLowerCase = usernameMixedCase.toLowerCase();
 
-		final PersonIdPasswordProjection personIdPasswordProjection;
+		final PersonProjectionIdPassword personProjectionIdPassword;
 		try (Timer x = Timer.go("personService.findPersonIdPasswordByUsername")) {
-			personIdPasswordProjection = this.personService.findPersonIdPasswordByUsername(usernameLowerCase);
+			personProjectionIdPassword = this.personService.findPersonIdPasswordByUsername(usernameLowerCase);
 		}
 
 		final boolean doesPasswordMatch;
 		try (Timer x = Timer.go("passwordEncoder.matches")) {
-			doesPasswordMatch = this.passwordEncoder.matches(password, personIdPasswordProjection.getPersonPassword());
+			doesPasswordMatch = this.passwordEncoder.matches(password, personProjectionIdPassword.getPassword());
 		}
 		if (doesPasswordMatch) {
-			if (this.passwordEncoder.upgradeEncoding(personIdPasswordProjection.getPersonPassword())) {
+			if (this.passwordEncoder.upgradeEncoding(personProjectionIdPassword.getPassword())) {
 				log.debug("Person password matched for username [{}]; upgrade encoding is required.", usernameMixedCase);
-				this.upgradeEncodingService.asyncUpdatePasswordByPersonId(personIdPasswordProjection.getPersonId(), password);
+				this.upgradeEncodingService.asyncUpdatePasswordByPersonId(personProjectionIdPassword.getId(), password);
 			} else {
 				log.trace("Person password matched for username [{}]; upgrade encoding isn't required.", usernameMixedCase);
 			}

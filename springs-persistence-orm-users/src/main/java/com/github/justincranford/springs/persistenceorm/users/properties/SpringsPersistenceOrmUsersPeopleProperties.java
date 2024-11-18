@@ -30,12 +30,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Component
-@ConfigurationProperties(prefix="springs.persistenceorm.users", ignoreUnknownFields=false, ignoreInvalidFields=false)
+@ConfigurationProperties(prefix="springs.persistenceorm.users", ignoreUnknownFields=false)
 @PropertySource("classpath:springs-persistence-orm-users.properties")
 @Validated
 @Getter
 @Setter
-@ToString(callSuper=false)
+@ToString
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,18 +45,10 @@ public class SpringsPersistenceOrmUsersPeopleProperties {
     @Builder.Default
     private List<SpringsPersistenceOrmUsersPeopleProperties.Person> people = new ArrayList<>();
 
-    public List<SpringsPersistenceOrmUsersPeopleProperties.Person> getPeople() {
-        return this.people;
-    }
-
-    public void setPeople(List<SpringsPersistenceOrmUsersPeopleProperties.Person> _people) {
-        this.people = _people;
-    }
-
     @Validated
     @Getter
     @Setter
-    @ToString(callSuper=false)
+    @ToString
     public static class Person {
     	@NotEmpty
         private String username;
@@ -68,7 +60,9 @@ public class SpringsPersistenceOrmUsersPeopleProperties {
         private LocalDate dateOfBirth;
     	@NotNull
         private PersonStatusType status;
+        @NotNull
         private List<Language> languages = new ArrayList<>();
+        @NotNull
         private List<String> timezones = new ArrayList<>();
     	@NotEmpty
         private List<Persona> personas = new ArrayList<>();
@@ -76,7 +70,7 @@ public class SpringsPersistenceOrmUsersPeopleProperties {
         @Validated
         @Getter
         @Setter
-        @ToString(callSuper=false)
+        @ToString
         public static class Language {
         	@NotNull
             private I18nLanguageType i18n;
@@ -91,7 +85,7 @@ public class SpringsPersistenceOrmUsersPeopleProperties {
         @Validated
         @Getter
         @Setter
-        @ToString(callSuper=false)
+        @ToString
         public static class Name {
         	@Nullable
             private SalutationType salutation;
@@ -108,13 +102,15 @@ public class SpringsPersistenceOrmUsersPeopleProperties {
         @Validated
         @Getter
         @Setter
-        @ToString(callSuper=false)
+        @ToString
         public static class Persona {
         	@NotEmpty
             private List<EmailAddress> emailAddresses = new ArrayList<>();
         	@NotEmpty
             private List<PhoneNumber> phoneNumbers = new ArrayList<>();
+            @NotNull
             private List<LocationAddress> locationAddresses = new ArrayList<>();
+            @NotNull
             private List<URL> urls = new ArrayList<>();
             @NotNull
             private PersonaType personaType;
@@ -122,7 +118,7 @@ public class SpringsPersistenceOrmUsersPeopleProperties {
             @Validated
             @Getter
             @Setter
-            @ToString(callSuper=false)
+            @ToString
             public static class EmailAddress {
             	@NotEmpty
                 private String emailAddress;
@@ -133,7 +129,7 @@ public class SpringsPersistenceOrmUsersPeopleProperties {
             @Validated
             @Getter
             @Setter
-            @ToString(callSuper=false)
+            @ToString
             public static class PhoneNumber {
             	@NotEmpty
                 private String phoneNumber;
@@ -147,7 +143,7 @@ public class SpringsPersistenceOrmUsersPeopleProperties {
             @Validated
             @Getter
             @Setter
-            @ToString(callSuper=false)
+            @ToString
             public static class LocationAddress {
             	@NotEmpty
                 private String street1;
@@ -166,7 +162,7 @@ public class SpringsPersistenceOrmUsersPeopleProperties {
             @Validated
             @Getter
             @Setter
-            @ToString(callSuper=false)
+            @ToString
             public static class URL {
             	@NotEmpty
                 private String url;

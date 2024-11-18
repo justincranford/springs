@@ -26,7 +26,7 @@ import lombok.ToString;
 @Validated
 @Getter
 @Setter
-@ToString(callSuper=false)
+@ToString
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,27 +36,20 @@ public class SpringsPersistenceOrmClientsClientProperties {
     @Builder.Default
     private List<SpringsPersistenceOrmClientsClientProperties.Client> clients = new ArrayList<>();
 
-    public List<SpringsPersistenceOrmClientsClientProperties.Client> getClients() {
-        return this.clients;
-    }
-
-    public void setClient(List<SpringsPersistenceOrmClientsClientProperties.Client> _clients) {
-        this.clients = _clients;
-    }
-
     @Validated
     @Getter
     @Setter
-    @ToString(callSuper=false)
+    @ToString
     public static class Client {
     	@NotEmpty
         private String clientId;
     	@Nullable
-        private String password;
+        private String secret;
     	@NotNull
         private ClientStatusType status;
     	@NotNull
         private ClientType type;
+        @NotNull
         private List<String> timezones = new ArrayList<>();
     }
 }

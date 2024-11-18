@@ -48,7 +48,7 @@ import lombok.experimental.Accessors;
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(callSuper=true,exclude="password")
+@ToString(callSuper=true,exclude="secret")
 public class ClientOrm extends AbstractEntity {
     @Column(length=64,nullable=false,unique=true)
 	@Size(min=10,max=64)
@@ -57,10 +57,10 @@ public class ClientOrm extends AbstractEntity {
     private String clientId;
 
     @Embedded
-    private ClientPasswordOrm password;
+    private ClientSecretOrm secret;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false,length=6)
+    @Column(nullable=false,length=3)
     @NotNull
     private ClientStatusType status;
 
@@ -78,7 +78,7 @@ public class ClientOrm extends AbstractEntity {
     )
     @OrderColumn(name="rank")
     @NotNull
-    @Size(min=1,max=4)
+    @Size(max=4)
     @Builder.Default
     private List<@NotNull String> timezones = new ArrayList<>();
 }

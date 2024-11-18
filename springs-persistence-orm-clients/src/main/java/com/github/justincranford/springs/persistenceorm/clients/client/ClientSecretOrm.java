@@ -19,15 +19,15 @@ import lombok.experimental.Accessors;
 @Embeddable
 @Getter(onMethod=@__(@JsonProperty))
 @Setter
-@ToString(callSuper=true,exclude="password")
+@ToString(exclude="secret")
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-public class ClientPasswordOrm {
-    @PasswordConstraints(minLength=12)
-    @Column(length=64)
-    @Size(min=12,max=64)
+public class ClientSecretOrm {
+    @PasswordConstraints(minLength=43)
+    @Column(length=86)
+    @Size(min=43,max=86)
     @Nullable
-    private String password;
+    private String secret;
 }

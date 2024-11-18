@@ -3,6 +3,7 @@ package com.github.justincranford.springs.util.security.hashes.properties;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
@@ -32,7 +33,7 @@ import lombok.ToString;
 @Validated
 @Getter
 @Setter
-@ToString(callSuper=false)
+@ToString
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -42,29 +43,29 @@ public class SpringsUtilSecurityHashesProperties {
 	public void init() {
 		// TODO more validation
 
-		this.keyEncoder.entrySet().stream().forEach(keyEncoders -> {
-			final int constantSaltCount = this.getEncoders().getArgon2().constantSalt.containsKey(keyEncoders.getValue()) ? 1 : 0;
-			final int derivedSaltCount  = this.getEncoders().getArgon2().derivedSalt.containsKey(keyEncoders.getValue())  ? 1 : 0;
-			final int randomSaltCount   = this.getEncoders().getArgon2().randomSalt.containsKey(keyEncoders.getValue())   ? 1 : 0;
-			final int count             = constantSaltCount + derivedSaltCount + randomSaltCount;
-			if (count == 0) {
-				throw new ValidationException("No encoder defined for keyEncoder[" + keyEncoders.getKey() + "]=" + keyEncoders.getValue());
-			} else if (count > 1) {
-				throw new ValidationException("Too many encoders defined for keyEncoder[" + keyEncoders.getKey() + "]=" + keyEncoders.getValue());
-			}
-		});
+		this.keyEncoder.forEach((key, value) -> {
+            final int constantSaltCount = this.getEncoders().getArgon2().constantSalt.containsKey(value) ? 1 : 0;
+            final int derivedSaltCount = this.getEncoders().getArgon2().derivedSalt.containsKey(value) ? 1 : 0;
+            final int randomSaltCount = this.getEncoders().getArgon2().randomSalt.containsKey(value) ? 1 : 0;
+            final int count = constantSaltCount + derivedSaltCount + randomSaltCount;
+            if (count == 0) {
+                throw new ValidationException("No encoder defined for keyEncoder[" + key + "]=" + value);
+            } else if (count > 1) {
+                throw new ValidationException("Too many encoders defined for keyEncoder[" + key + "]=" + value);
+            }
+        });
 
-		this.valueEncoder.entrySet().stream().forEach(valueEncoders -> {
-			final int constantSaltCount = this.getEncoders().getArgon2().constantSalt.containsKey(valueEncoders.getValue()) ? 1 : 0;
-			final int derivedSaltCount  = this.getEncoders().getArgon2().derivedSalt.containsKey(valueEncoders.getValue())  ? 1 : 0;
-			final int randomSaltCount   = this.getEncoders().getArgon2().randomSalt.containsKey(valueEncoders.getValue())   ? 1 : 0;
-			final int count             = constantSaltCount + derivedSaltCount + randomSaltCount;
-			if (count == 0) {
-				throw new ValidationException("No encoder defined for keyEncoder[" + valueEncoders.getKey() + "]=" + valueEncoders.getValue());
-			} else if (count > 1) {
-				throw new ValidationException("Too many encoders defined for keyEncoder[" + valueEncoders.getKey() + "]=" + valueEncoders.getValue());
-			}
-		});
+		this.valueEncoder.forEach((key, value) -> {
+            final int constantSaltCount = this.getEncoders().getArgon2().constantSalt.containsKey(value) ? 1 : 0;
+            final int derivedSaltCount = this.getEncoders().getArgon2().derivedSalt.containsKey(value) ? 1 : 0;
+            final int randomSaltCount = this.getEncoders().getArgon2().randomSalt.containsKey(value) ? 1 : 0;
+            final int count = constantSaltCount + derivedSaltCount + randomSaltCount;
+            if (count == 0) {
+                throw new ValidationException("No encoder defined for keyEncoder[" + key + "]=" + value);
+            } else if (count > 1) {
+                throw new ValidationException("Too many encoders defined for keyEncoder[" + key + "]=" + value);
+            }
+        });
 	}
 
 	@NotNull
@@ -83,7 +84,7 @@ public class SpringsUtilSecurityHashesProperties {
 	@Validated
 	@Getter
 	@Setter
-	@ToString(callSuper=false)
+	@ToString
 	@Builder(toBuilder=true)
 	public static class Encoders {
 		public Argon2.AbstractSalt get(final String name) {
@@ -91,9 +92,9 @@ public class SpringsUtilSecurityHashesProperties {
 			final Map<String, Argon2.AbstractSalt>  derivedSalt = (Map) this.getArgon2().getDerivedSalt();
 			final Map<String, Argon2.AbstractSalt>   randomSalt = (Map) this.getArgon2().getRandomSalt();
 			final List<Argon2.AbstractSalt> matches = Stream.of(constantSalt, derivedSalt, randomSalt)
-				.map(map -> map.get(name)).filter(a -> a != null).toList();
+                                                            .map(map -> map.get(name)).filter(Objects::nonNull).toList();
 			if (matches.size() == 1) {
-				return matches.get(0);
+				return matches.getFirst();
 			} else if (matches.isEmpty()) {
 				throw new RuntimeException("No encoders found. Expected one and only one.");
 			}
@@ -106,7 +107,7 @@ public class SpringsUtilSecurityHashesProperties {
 		@Validated
 		@Getter
 		@Setter
-		@ToString(callSuper=false)
+		@ToString
 		@Builder(toBuilder=true)
 		@NoArgsConstructor
 		@AllArgsConstructor
@@ -175,7 +176,7 @@ public class SpringsUtilSecurityHashesProperties {
 			@Validated
 			@Getter
 			@Setter
-			@ToString(callSuper=false)
+			@ToString
 			@NoArgsConstructor
 			@AllArgsConstructor
 			public static class AbstractSalt {

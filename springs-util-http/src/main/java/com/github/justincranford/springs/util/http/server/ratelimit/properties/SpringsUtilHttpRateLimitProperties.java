@@ -16,12 +16,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Component
-@ConfigurationProperties(prefix="springs.util.http.rate-limit", ignoreUnknownFields=false, ignoreInvalidFields=false)
+@ConfigurationProperties(prefix="springs.util.http.rate-limit", ignoreUnknownFields=false)
 @PropertySource("classpath:springs-util-http-rate-limit.properties")
 @Validated
 @Getter
 @Setter
-@ToString(callSuper=false)
+@ToString
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor

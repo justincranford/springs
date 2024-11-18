@@ -23,7 +23,7 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.persistenceorm.sessions.service.PersonaService;
 import com.github.justincranford.springs.persistenceorm.sessions.service.exception.PersonaEmailNotFoundException;
 import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonaDetails;
-import com.github.justincranford.springs.persistenceorm.users.config.projection.PersonaIdAndPersonIdPasswordProjection;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaProjectionIdAndPersonIdPassword;
 import com.github.justincranford.springs.persistenceorm.users.persona.email.EmailRfc5321Validator;
 import com.github.justincranford.springs.util.basic.Timer;
 
@@ -68,19 +68,19 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 		}
 		final String emailAddressLowerCase = emailAddressMixedCase.toLowerCase();
 
-		final PersonaIdAndPersonIdPasswordProjection personaIdAndPersonIdPasswordProjection;
+		final PersonaProjectionIdAndPersonIdPassword personaProjectionIdAndPersonIdPassword;
 		try (Timer x = Timer.go("personaLookupService.findPersonIdAndPasswordByEmailAddress")) {
-			personaIdAndPersonIdPasswordProjection = this.personaService.findPersonaIdAndPersonIdPasswordByEmailAddress(emailAddressLowerCase);
+			personaProjectionIdAndPersonIdPassword = this.personaService.findPersonaIdAndPersonIdPasswordByEmailAddress(emailAddressLowerCase);
 		}
 
 		final boolean doesPasswordMatch;
 		try (Timer x = Timer.go("passwordEncoder.matches")) {
-			doesPasswordMatch = this.passwordEncoder.matches(password, personaIdAndPersonIdPasswordProjection.getPersonPassword());
+			doesPasswordMatch = this.passwordEncoder.matches(password, personaProjectionIdAndPersonIdPassword.getPersonPassword());
 		}
 		if (doesPasswordMatch) {
-			if (this.passwordEncoder.upgradeEncoding(personaIdAndPersonIdPasswordProjection.getPersonPassword())) {
+			if (this.passwordEncoder.upgradeEncoding(personaProjectionIdAndPersonIdPassword.getPersonPassword())) {
 				log.debug("Person password matched for persona email address [{}]; upgrade encoding is required", emailAddressMixedCase);
-				this.upgradeEncodingService.asyncUpdatePasswordByPersonId(personaIdAndPersonIdPasswordProjection.getPersonId(), password);
+				this.upgradeEncodingService.asyncUpdatePasswordByPersonId(personaProjectionIdAndPersonIdPassword.getPersonId(), password);
 			} else {
 				log.trace("Person password matched for persona email address [{}]; upgrade encoding isn't required", emailAddressMixedCase);
 			}

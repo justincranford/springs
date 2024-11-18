@@ -1,8 +1,10 @@
-package com.github.justincranford.springs.persistenceorm.users.properties;
+package com.github.justincranford.springs.persistenceorm.users.properties.service;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
+import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,8 +43,8 @@ public class LoadPeoplePropertiesIntoDatabase {
     @PostConstruct
     public void loadUsers() {
         final List<SpringsPersistenceOrmUsersPeopleProperties.Person> users = this.personProperties.getPeople();
-        final List<String> encodedPasswords = EncodeUtil.encode(this.passwordEncoder, users.stream().map(user -> user.getPassword()).toList());
-        
+        final List<String> encodedPasswords = EncodeUtil.encode(this.passwordEncoder, users.stream().map(Person::getPassword).toList());
+
         int userOffset = 0;
         for (final SpringsPersistenceOrmUsersPeopleProperties.Person user : users) {
             final PersonOrm createPersonOrm = new PersonOrm();

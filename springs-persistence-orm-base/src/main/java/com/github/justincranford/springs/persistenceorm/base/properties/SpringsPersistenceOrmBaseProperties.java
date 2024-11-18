@@ -36,7 +36,7 @@ import lombok.ToString;
 @Validated
 @Getter
 @Setter
-@ToString(callSuper=false)
+@ToString
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.github.justincranford.springs.persistenceorm.sessions.service.exception.PersonUsernameNotFoundException;
 import com.github.justincranford.springs.persistenceorm.sessions.service.exception.PersonaEmailNotFoundException;
 import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonDetails;
-import com.github.justincranford.springs.persistenceorm.users.config.projection.PersonIdPasswordProjection;
+import com.github.justincranford.springs.persistenceorm.users.person.PersonProjectionIdPassword;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
@@ -33,7 +33,7 @@ public class PersonService implements UserDetailsService {
     	final String usernameLowerCase = usernameMixedCase.toLowerCase();
 		final PersonOrm personOrm = this.personOrmRepository.findByUsername(usernameLowerCase).orElseThrow(() -> {
 			log.debug("Person not found by username [{}]", usernameMixedCase);
-			throw new PersonUsernameNotFoundException("Username not found");
+            return new PersonUsernameNotFoundException("Username not found");
 		});
 		log.trace("Person found by username, person: {}", personOrm);
 
@@ -50,16 +50,16 @@ public class PersonService implements UserDetailsService {
 	}
 
     @Transactional
-    public PersonIdPasswordProjection findPersonIdPasswordByUsername(final String usernameMixedCase) throws UsernameNotFoundException {
+    public PersonProjectionIdPassword findPersonIdPasswordByUsername(final String usernameMixedCase) throws UsernameNotFoundException {
     	final String usernameLowerCase = usernameMixedCase.toLowerCase();
-		final PersonIdPasswordProjection personIdPasswordProjection = this.personOrmRepository.findPersonIdPasswordProjectionByUsername(usernameLowerCase).orElseThrow(() -> {
+		final PersonProjectionIdPassword personProjectionIdPassword = this.personOrmRepository.findPersonProjectionIdPasswordByUsername(usernameLowerCase).orElseThrow(() -> {
         	log.debug("Person id+password not found by username [{}]", usernameMixedCase);
-        	throw new PersonaEmailNotFoundException("Username not found");
+            return new PersonaEmailNotFoundException("Username not found");
 		});
-		assert personIdPasswordProjection.getPersonId()       != null : "Person ID must be non-null";
-		assert personIdPasswordProjection.getPersonPassword() != null : "Person password must be non-null";
+		assert personProjectionIdPassword.getId() != null : "Person ID must be non-null";
+		assert personProjectionIdPassword.getPassword() != null : "Person password must be non-null";
     	log.trace("Person id+password found by username: {}", usernameMixedCase);
-		return personIdPasswordProjection;
+		return personProjectionIdPassword;
     }
 
     @Transactional // TODO Retries?
