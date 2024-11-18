@@ -49,15 +49,12 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 
     @Override
     public Authentication authenticate(final Authentication unauthenticatedToken) throws AuthenticationException {
-    	if (unauthenticatedToken instanceof PersonaEmailPasswordUnauthenticatedToken) {
-        	log.trace("Token class PersonaEmailPasswordUnauthenticatedToken supported by PersonaEmailPasswordAuthenticationProvider");
-    	} else if (unauthenticatedToken instanceof UsernamePasswordAuthenticationToken) {
-        	log.trace("Token class UsernamePasswordAuthenticationToken supported by PersonaEmailPasswordAuthenticationProvider");
-    	} else if (unauthenticatedToken == null) {
-    		throw logAndCreate(PersonaTokenNullNotAllowedException.class, DEBUG, "Token null not supported by PersonaEmailPasswordAuthenticationProvider");
-    	} else {
-			throw logAndCreate(PersonaTokenClassNotSupportedException.class, TRACE, "Token class " + unauthenticatedToken.getClass().getSimpleName() + " not supported by PersonaEmailPasswordAuthenticationProvider");
-		}
+        switch (unauthenticatedToken) {
+            case PersonaEmailPasswordUnauthenticatedToken ignored -> log.trace("Token class PersonaEmailPasswordUnauthenticatedToken supported by PersonaEmailPasswordAuthenticationProvider");
+            case UsernamePasswordAuthenticationToken ignored -> log.trace("Token class UsernamePasswordAuthenticationToken supported by PersonaEmailPasswordAuthenticationProvider");
+            case null -> throw logAndCreate(PersonaTokenNullNotAllowedException.class, DEBUG, "Token null not supported by PersonaEmailPasswordAuthenticationProvider");
+            default -> throw logAndCreate(PersonaTokenClassNotSupportedException.class, TRACE, "Token class " + unauthenticatedToken.getClass().getSimpleName() + " not supported by PersonaEmailPasswordAuthenticationProvider");
+        }
 		final String emailAddressMixedCase = unauthenticatedToken.getName();
 		final String password              = unauthenticatedToken.getCredentials().toString();
 
@@ -69,12 +66,12 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 		final String emailAddressLowerCase = emailAddressMixedCase.toLowerCase();
 
 		final PersonaProjectionIdAndPersonIdPassword personaProjectionIdAndPersonIdPassword;
-		try (Timer x = Timer.go("personaLookupService.findPersonIdAndPasswordByEmailAddress")) {
+		try (Timer ignored = Timer.go("personaLookupService.findPersonIdAndPasswordByEmailAddress")) {
 			personaProjectionIdAndPersonIdPassword = this.personaService.findPersonaIdAndPersonIdPasswordByEmailAddress(emailAddressLowerCase);
 		}
 
 		final boolean doesPasswordMatch;
-		try (Timer x = Timer.go("passwordEncoder.matches")) {
+		try (Timer ignored = Timer.go("passwordEncoder.matches")) {
 			doesPasswordMatch = this.passwordEncoder.matches(password, personaProjectionIdAndPersonIdPassword.getPersonPassword());
 		}
 		if (doesPasswordMatch) {
@@ -85,7 +82,7 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 				log.trace("Person password matched for persona email address [{}]; upgrade encoding isn't required", emailAddressMixedCase);
 			}
 			final PersonaDetails personaDetails;
-			try (Timer x = Timer.go("personaService.findPersonaByEmailAddress")) {
+			try (Timer ignored = Timer.go("personaService.findPersonaByEmailAddress")) {
 				personaDetails = this.personaService.loadUserByUsername(emailAddressLowerCase);
 			}
 			return new PersonaEmailPasswordAuthenticatedToken(personaDetails);

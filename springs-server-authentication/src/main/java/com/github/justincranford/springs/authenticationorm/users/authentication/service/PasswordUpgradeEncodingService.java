@@ -51,14 +51,14 @@ public class PasswordUpgradeEncodingService {
 
 	@Observed
 	private String encode(final String personEncodedPassword) {
-		try (Timer x = Timer.go("PasswordUpgradeEncodingService.encode")) {
+		try (Timer ignored = Timer.go("PasswordUpgradeEncodingService.encode")) {
 			return this.passwordEncoder.encode(personEncodedPassword); // design intent is slow
 		}
 	}
 
 	@Observed
 	private void updatePassword(final Long personId, final String newEncodedPassword) {
-		try (Timer x = Timer.go("PasswordUpgradeEncodingService.updatePassword")) {
+		try (Timer ignored = Timer.go("PasswordUpgradeEncodingService.updatePassword")) {
 			this.personLookupService.updatePasswordById(personId, newEncodedPassword);
 		}
 	}
