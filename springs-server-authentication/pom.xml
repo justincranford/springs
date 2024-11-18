@@ -65,42 +65,42 @@
 		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-persistence-orm-session</artifactId>
-			<version>${parent.version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
         <dependency>
             <groupId>com.github.justincranford.springs</groupId>
             <artifactId>springs-persistence-orm-users</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.justincranford.springs</groupId>
             <artifactId>springs-persistence-orm-base</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.justincranford.springs</groupId>
             <artifactId>springs-util-security-hashes</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.justincranford.springs</groupId>
             <artifactId>springs-util-https</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
 		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-util-basic</artifactId>
-			<version>${parent.version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-util-json</artifactId>
-			<version>${parent.version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-util-observability</artifactId>
-			<version>${parent.version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 
 		<dependency>
@@ -112,7 +112,7 @@
 		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-util-testcontainers</artifactId>
-			<version>${parent.version}</version>
+			<version>${project.parent.version}</version>
 		    <scope>test</scope>
 		</dependency>
 		<dependency>
