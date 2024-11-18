@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.github.justincranford.springs.persistenceorm.sessions.database.entity.SessionOrm;
 import com.github.justincranford.springs.persistenceorm.sessions.database.repository.SessionOrmRepository;
-import com.github.justincranford.springs.persistenceorm.sessions.service.repository.SessionPojoRepository;
+import com.github.justincranford.springs.persistenceorm.users.repository.SessionPojoRepository;
 
 @Configuration
 @EntityScan(

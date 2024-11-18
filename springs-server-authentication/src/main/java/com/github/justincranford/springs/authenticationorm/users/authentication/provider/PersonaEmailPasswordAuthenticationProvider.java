@@ -17,12 +17,12 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaPasswordNoMatchException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaTokenClassNotSupportedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonaTokenNullNotAllowedException;
-import com.github.justincranford.springs.authenticationorm.users.authentication.service.PasswordUpgradeEncodingService;
+import com.github.justincranford.springs.persistenceorm.users.person.service.PersonPasswordUpgradeEncodingService;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonaEmailPasswordAuthenticatedToken;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonaEmailPasswordUnauthenticatedToken;
-import com.github.justincranford.springs.persistenceorm.sessions.service.PersonaService;
-import com.github.justincranford.springs.persistenceorm.sessions.service.exception.PersonaEmailNotFoundException;
-import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonaDetails;
+import com.github.justincranford.springs.persistenceorm.users.persona.service.PersonaService;
+import com.github.justincranford.springs.persistenceorm.users.persona.exception.PersonaEmailNotFoundException;
+import com.github.justincranford.springs.persistenceorm.users.persona.model.PersonaDetails;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaProjectionIdAndPersonIdPassword;
 import com.github.justincranford.springs.persistenceorm.users.persona.email.EmailRfc5321Validator;
 import com.github.justincranford.springs.util.basic.Timer;
@@ -39,7 +39,7 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
-    private PasswordUpgradeEncodingService upgradeEncodingService;
+    private PersonPasswordUpgradeEncodingService upgradeEncodingService;
 
     @Override
     public boolean supports(final Class<?> clazz) {

@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Import;
 
 import com.github.justincranford.springs.authenticationorm.users.authentication.config.SpringsAuthenticationOrmUsersSecurityFilterChainConfiguration;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.config.SpringsAuthenticationOrmUsersAuthenticationProvidersConfiguration;
-import com.github.justincranford.springs.authenticationorm.users.authentication.service.config.SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration;
+import com.github.justincranford.springs.persistenceorm.users.config.SpringsAuthenticationOrmUsersAuthenticationUserDetailsConfiguration;
 import com.github.justincranford.springs.persistenceorm.sessions.config.SpringsPersistenceOrmSessionsConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.util.https.config.SpringsUtilHttpsConfiguration;

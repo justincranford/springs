@@ -1,23 +1,30 @@
 package com.github.justincranford.springs.authenticationorm.users.authentication.token;
 
+import java.io.Serial;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonaDetails;
+import com.github.justincranford.springs.persistenceorm.users.persona.model.PersonaDetails;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@SuppressWarnings({"unused"})
 public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticationToken {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private PersonaDetails personaDetails;
+	@Getter
+    private final PersonaDetails personaDetails;
 
-	private List<SimpleGrantedAuthority> authorities;
+	@Setter
+    private List<SimpleGrantedAuthority> authorities;
 
 	public PersonaEmailPasswordAuthenticatedToken() {
 		this(null);
@@ -46,11 +53,7 @@ public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticati
 		return (List) this.authorities;
 	}
 
-	public void setAuthorities(final List<SimpleGrantedAuthority> _authorities) {
-		this.authorities = _authorities;
-	}
-
-	@Override
+    @Override
 	public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
 		if (!isAuthenticated) {
 			throw new UnsupportedOperationException("Set false is not supported in " + this.getClass().getSimpleName());
@@ -58,7 +61,4 @@ public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticati
 		super.setAuthenticated(true);
 	}
 
-	public PersonaDetails getPersonaDetails() {
-		return this.personaDetails;
-	}
 }

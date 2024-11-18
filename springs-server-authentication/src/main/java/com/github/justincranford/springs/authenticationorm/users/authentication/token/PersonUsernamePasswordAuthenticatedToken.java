@@ -1,23 +1,30 @@
 package com.github.justincranford.springs.authenticationorm.users.authentication.token;
 
+import java.io.Serial;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonDetails;
+import com.github.justincranford.springs.persistenceorm.users.person.model.PersonDetails;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@SuppressWarnings({"unused"})
 public class PersonUsernamePasswordAuthenticatedToken extends AbstractAuthenticationToken {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private PersonDetails personDetails;
+	@Getter
+    private final PersonDetails personDetails;
 
-	private List<SimpleGrantedAuthority> authorities;
+	@Setter
+    private List<SimpleGrantedAuthority> authorities;
 
 	public PersonUsernamePasswordAuthenticatedToken() {
 		this(null);
@@ -46,11 +53,7 @@ public class PersonUsernamePasswordAuthenticatedToken extends AbstractAuthentica
 		return (List) this.authorities;
 	}
 
-	public void setAuthorities(final List<SimpleGrantedAuthority> _authorities) {
-		this.authorities = _authorities;
-	}
-
-	@Override
+    @Override
 	public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
 		if (!isAuthenticated) {
 			throw new UnsupportedOperationException("Set false is not supported in " + this.getClass().getSimpleName());
@@ -58,7 +61,4 @@ public class PersonUsernamePasswordAuthenticatedToken extends AbstractAuthentica
 		super.setAuthenticated(true);
 	}
 
-	public PersonDetails getPersonDetails() {
-		return this.personDetails;
-	}
 }

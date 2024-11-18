@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.sessions.service.util;
+package com.github.justincranford.springs.persistenceorm.users.util;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -10,6 +10,7 @@ import com.github.justincranford.springs.util.basic.Timer;
 
 import lombok.extern.slf4j.Slf4j;
 
+// TODO Move to basic utils
 @Component
 @Slf4j
 public class LockUtil<KEY, VALUE> {

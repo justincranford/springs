@@ -29,7 +29,7 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.config.SpringsAuthenticationOrmUsersConfiguration;
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
 import com.github.justincranford.springs.persistenceorm.sessions.database.repository.SessionOrmRepository;
-import com.github.justincranford.springs.persistenceorm.sessions.service.repository.SessionPojoRepository;
+import com.github.justincranford.springs.persistenceorm.users.repository.SessionPojoRepository;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
@@ -134,20 +134,19 @@ public class AbstractIT {
 	private String httpsPskBaseUrl;
 
 	@BeforeAll
-    private static void beforeAll() {
+    public static void beforeAll() {
         SpringsUtilTestContainers.startContainers(List.of(SpringsUtilTestContainers.POSTGRESQL));
     }
 
-    @SuppressWarnings("resource")
 	@DynamicPropertySource
     public static void postgresqlContainerProperties(final DynamicPropertyRegistry registry) {
 		final PostgreSQLContainer<?> instance = SpringsUtilTestContainers.POSTGRESQL.getInstance();
 		if (instance.isRunning()) {
 			log.info("Setting dynamic properties from SpringsUtilTestContainers.POSTGRESQL");
-	        registry.add("spring.jpa.properties.hibernate.dialect", () -> PostgreSQLDialect.class.getCanonicalName());
-	        registry.add("spring.datasource.url",                   () -> instance.getJdbcUrl());
-	        registry.add("spring.datasource.username",              () -> instance.getUsername());
-	        registry.add("spring.datasource.password",              () -> instance.getPassword());
+	        registry.add("spring.jpa.properties.hibernate.dialect", PostgreSQLDialect.class::getCanonicalName);
+	        registry.add("spring.datasource.url", instance::getJdbcUrl);
+	        registry.add("spring.datasource.username", instance::getUsername);
+	        registry.add("spring.datasource.password", instance::getPassword);
 		} else {
 			log.info("Using static properties");
 		}

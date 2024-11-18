@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.sessions.service;
+package com.github.justincranford.springs.persistenceorm.users.person.service;
 
 import java.util.List;
 
@@ -7,9 +7,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.github.justincranford.springs.persistenceorm.sessions.service.exception.PersonUsernameNotFoundException;
-import com.github.justincranford.springs.persistenceorm.sessions.service.exception.PersonaEmailNotFoundException;
-import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonDetails;
+import com.github.justincranford.springs.persistenceorm.users.person.exception.PersonUsernameNotFoundException;
+import com.github.justincranford.springs.persistenceorm.users.persona.exception.PersonaEmailNotFoundException;
+import com.github.justincranford.springs.persistenceorm.users.person.model.PersonDetails;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonProjectionIdPassword;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
@@ -20,7 +20,6 @@ import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
-// TODO Move to springs-persistence-orm-users
 @Service
 @Slf4j
 public class PersonService implements UserDetailsService {

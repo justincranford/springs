@@ -1,7 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.sessions;
 
-import static com.github.justincranford.springs.persistenceorm.sessions.service.util.RandomPersonUtil.generatePerson;
-import static com.github.justincranford.springs.persistenceorm.sessions.service.util.RandomPersonaUtil.generatePersona;
+import static com.github.justincranford.springs.persistenceorm.users.person.util.RandomPersonUtil.generatePerson;
+import static com.github.justincranford.springs.persistenceorm.users.person.util.RandomPersonaUtil.generatePersona;
 import static com.github.justincranford.springs.util.basic.SecureRandomUtil.SECURE_RANDOM;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,7 +26,7 @@ import org.springframework.session.MapSession;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.justincranford.springs.persistenceorm.sessions.service.model.SessionPojo;
+import com.github.justincranford.springs.persistenceorm.users.model.SessionPojo;
 
 import lombok.extern.slf4j.Slf4j;
 

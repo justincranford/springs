@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.sessions.service.repository;
+package com.github.justincranford.springs.persistenceorm.users.repository;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.justincranford.springs.persistenceorm.sessions.database.entity.AttributeOrm;
 import com.github.justincranford.springs.persistenceorm.sessions.database.entity.SessionOrm;
 import com.github.justincranford.springs.persistenceorm.sessions.database.repository.SessionOrmRepository;
-import com.github.justincranford.springs.persistenceorm.sessions.service.model.SessionPojo;
+import com.github.justincranford.springs.persistenceorm.users.model.SessionPojo;
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
@@ -134,7 +134,7 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
 //		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllIncludingDeleted());
 //		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllByExternalIdIncludingDeleted(externalIdBytes));
 
-		if (sessionPojo.getReplacedIds().size() > 0) {
+		if (!sessionPojo.getReplacedIds().isEmpty()) {
 			log.info("Deleting replaced IDs");
 			for (final String oldId : sessionPojo.getReplacedIds()) {
 				log.info("Finding ID {}", oldId);
@@ -207,7 +207,7 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
         final SessionOrm sessionOrm = SessionOrm.builder()
             .person(sessionPojo.getPerson())
             .persona(sessionPojo.getPersona())
-            .lastAccessedAt(sessionPojo.getLastAccessedTime().atOffset(ZoneOffset.UTC)) 
+            .lastAccessedAt(sessionPojo.getLastAccessedTime().atOffset(ZoneOffset.UTC))
             .maxInactiveInterval(sessionPojo.getMaxInactiveInterval())
             .expiresAt(sessionPojo.getExpiresTime().atOffset(ZoneOffset.UTC))
             .attributes(this.pojoToOrm(sessionPojo.getAttributes()))

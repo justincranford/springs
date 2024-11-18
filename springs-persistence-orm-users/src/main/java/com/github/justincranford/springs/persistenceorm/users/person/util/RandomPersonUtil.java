@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.sessions.service.util;
+package com.github.justincranford.springs.persistenceorm.users.person.util;
 
 import static com.github.justincranford.springs.util.basic.SecureRandomUtil.SECURE_RANDOM;
 import static com.github.justincranford.springs.util.basic.SecureRandomUtil.randomString;
@@ -34,4 +34,3 @@ public class RandomPersonUtil {
 			.build();
 	}
 }
-

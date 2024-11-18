@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,8 +28,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
 import com.github.justincranford.springs.persistenceorm.sessions.config.SpringsPersistenceOrmSessionsConfiguration;
 import com.github.justincranford.springs.persistenceorm.sessions.database.repository.SessionOrmRepository;
-import com.github.justincranford.springs.persistenceorm.sessions.service.PersonService;
-import com.github.justincranford.springs.persistenceorm.sessions.service.repository.SessionPojoRepository;
+import com.github.justincranford.springs.persistenceorm.users.person.service.PersonService;
+import com.github.justincranford.springs.persistenceorm.users.repository.SessionPojoRepository;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
@@ -153,7 +155,7 @@ public class AbstractIT {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                     .requestMatchers("/**").permitAll()
                 )
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults())
     			.sessionManagement(session -> session
     				.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
@@ -164,8 +166,7 @@ public class AbstractIT {
 					.logoutSuccessUrl("/helloworld?logout=true")
 					.invalidateHttpSession(true)
 	            )
-    			.requestCache(cache -> cache
-					.disable() // skip serdes DefaultSavedRequest to SessionRepository Session.attributes
+    			.requestCache(RequestCacheConfigurer::disable // skip serdes DefaultSavedRequest to SessionRepository Session.attributes
 				)
                 ;
             return http.build();

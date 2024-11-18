@@ -1,5 +1,6 @@
-package com.github.justincranford.springs.persistenceorm.sessions.service.model;
+package com.github.justincranford.springs.persistenceorm.users.person.model;
 
+import java.io.Serial;
 import java.util.List;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,6 +29,7 @@ import lombok.experimental.Accessors;
 @JsonIgnoreProperties({"personOrm", "personaOrm"})
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class PersonDetails implements UserDetails {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private String username; // personaOrm username
@@ -50,7 +52,7 @@ public class PersonDetails implements UserDetails {
 	private boolean credentialsNonExpired = true;
 
 	@Builder.Default
-	private boolean enabled = true; 
+	private boolean enabled = true;
 
 	@Override
 	public String getUsername() {
@@ -68,7 +70,8 @@ public class PersonDetails implements UserDetails {
 			return List.of();
 		}
 		final PersonaType personaType = this.personaOrm.personaType();
-		return List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
+        assert personaType != null;
+        return List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
 	}
 
 	@SuppressWarnings("unused")

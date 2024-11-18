@@ -17,11 +17,11 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonPasswordNoMatchException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonTokenClassNotSupportedException;
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.exception.PersonTokenNullNotAllowedException;
-import com.github.justincranford.springs.authenticationorm.users.authentication.service.PasswordUpgradeEncodingService;
+import com.github.justincranford.springs.persistenceorm.users.person.service.PersonPasswordUpgradeEncodingService;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonUsernamePasswordAuthenticatedToken;
 import com.github.justincranford.springs.authenticationorm.users.authentication.token.PersonUsernamePasswordUnauthenticatedToken;
-import com.github.justincranford.springs.persistenceorm.sessions.service.PersonService;
-import com.github.justincranford.springs.persistenceorm.sessions.service.model.PersonDetails;
+import com.github.justincranford.springs.persistenceorm.users.person.service.PersonService;
+import com.github.justincranford.springs.persistenceorm.users.person.model.PersonDetails;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonProjectionIdPassword;
 import com.github.justincranford.springs.persistenceorm.users.persona.email.EmailRfc5321Validator;
 import com.github.justincranford.springs.util.basic.Timer;
@@ -38,7 +38,7 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
-    private PasswordUpgradeEncodingService upgradeEncodingService;
+    private PersonPasswordUpgradeEncodingService upgradeEncodingService;
 
     @Override
     public boolean supports(final Class<?> clazz) {

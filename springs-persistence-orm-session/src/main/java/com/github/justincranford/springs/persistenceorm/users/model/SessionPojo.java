@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.sessions.service.model;
+package com.github.justincranford.springs.persistenceorm.users.model;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -25,6 +25,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @ToString
+@SuppressWarnings({"unused"})
 public class SessionPojo implements Session {
 	@Getter
 	@Setter
@@ -34,7 +35,8 @@ public class SessionPojo implements Session {
 	@Setter
 	private PersonaOrm persona;
 
-	@Builder.Default
+	@Getter
+    @Builder.Default
 	private List<String> replacedIds = new ArrayList<>(0);
 
 	@Builder.Default
@@ -49,16 +51,16 @@ public class SessionPojo implements Session {
 	@Builder.Default
 	private Duration maxInactiveInterval = Constants.MAX_INACTIVE_INTERNAL;
 
-	private Instant expiresTime;
+    //		this.lastAccessedTime = nowInstant();
+    //		this.lastAccessedTime = nowInstant();
+    @Getter
+    @Setter
+    private Instant expiresTime;
 
 	@Builder.Default
 	private LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
 
-	public List<String> getReplacedIds() {
-		return this.replacedIds;
-	}
-
-	@Override
+    @Override
 	public String getId() {
 //		this.lastAccessedTime = nowInstant();
 		return this.id;
@@ -103,17 +105,7 @@ public class SessionPojo implements Session {
 		return this.maxInactiveInterval;
 	}
 
-	public void setExpiresTime(Instant _expiresTime) {
-//		this.lastAccessedTime = nowInstant();
-		this.expiresTime = _expiresTime;
-	}
-
-	public Instant getExpiresTime() {
-//		this.lastAccessedTime = nowInstant();
-		return this.expiresTime;
-	}
-
-	public synchronized LinkedHashMap<String, Object> getAttributes() {
+    public synchronized LinkedHashMap<String, Object> getAttributes() {
 //		this.lastAccessedTime = nowInstant();
 		return new LinkedHashMap<>(this.attributes);
 	}

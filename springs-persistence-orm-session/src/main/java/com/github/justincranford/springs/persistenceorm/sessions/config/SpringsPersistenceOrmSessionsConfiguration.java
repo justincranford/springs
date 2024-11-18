@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Import;
 
 import com.github.justincranford.springs.persistenceorm.sessions.database.config.SpringsPersistenceOrmSessionsDatabaseConfiguration;
 import com.github.justincranford.springs.persistenceorm.sessions.json.config.SpringsPersistenceOrmSessionsCustomObjectMapperConfiguration;
-import com.github.justincranford.springs.persistenceorm.sessions.service.config.SpringsPersistenceOrmSessionsServiceConfiguration;
+import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmSessionsServiceConfiguration;
 import com.github.justincranford.springs.persistenceorm.clients.config.SpringsPersistenceOrmClientsConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.util.https.config.SpringsUtilHttpsConfiguration;
