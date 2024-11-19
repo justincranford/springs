@@ -36,19 +36,27 @@ public class SpringsPersistenceOrmClientsClientProperties {
     @Builder.Default
     private List<SpringsPersistenceOrmClientsClientProperties.Client> clients = new ArrayList<>();
 
+    public List<SpringsPersistenceOrmClientsClientProperties.Client> getClients() {
+        return this.clients;
+    }
+
+    public void setClient(List<SpringsPersistenceOrmClientsClientProperties.Client> _clients) {
+        this.clients = _clients;
+    }
+
     @Validated
     @Getter
     @Setter
     @ToString
     public static class Client {
     	@NotEmpty
-        private String clientId;
+        private String clientName;
     	@Nullable
         private String secret;
     	@NotNull
         private ClientStatusType status;
     	@NotNull
-        private ClientType type;
+        private ClientType clientType;
         @NotNull
         private List<String> timezones = new ArrayList<>();
     }

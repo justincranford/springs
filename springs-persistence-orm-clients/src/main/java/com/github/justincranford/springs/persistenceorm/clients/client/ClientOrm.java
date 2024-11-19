@@ -54,7 +54,7 @@ public class ClientOrm extends AbstractEntity {
 	@Size(min=10,max=64)
 	@NotNull
 	@NotBlank
-    private String clientId;
+    private String clientName;
 
     @Embedded
     private ClientSecretOrm secret;
@@ -67,12 +67,12 @@ public class ClientOrm extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable=false,length=3)
     @NotNull
-    private ClientType type;
+    private ClientType clientType;
 
     @ElementCollection
     @CollectionTable(
 		name="timezones",
-    	joinColumns=@JoinColumn(name="clientId",referencedColumnName="id"),
+    	joinColumns=@JoinColumn(name="clientName",referencedColumnName="id"),
     	foreignKey=@ForeignKey(name = "fk_timezones_client_id"),
     	indexes= {@Index(name="idx_timezones_client_id_rank",columnList="client_id,rank")}
     )
@@ -80,5 +80,5 @@ public class ClientOrm extends AbstractEntity {
     @NotNull
     @Size(max=4)
     @Builder.Default
-    private List<@NotNull String> timezones = new ArrayList<>();
+    private List<@NotNull String> timezones = new ArrayList<>(1);
 }

@@ -74,8 +74,8 @@ public class PersonOrm extends AbstractEntity {
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false,length=6)
-//    @Size(min=2,max=6)
+    @Column(nullable=false,length=3)
+    @Size(min=3,max=3)
     @NotNull
     private PersonStatusType status;
 
@@ -110,7 +110,7 @@ public class PersonOrm extends AbstractEntity {
     @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
     @OrderBy("id,rank")
     @NotNull
-    @Size(min=0,max=4)
+    @Size(max=4)
 	@Builder.Default
     private List<PersonaOrm> personas = new ArrayList<>(1);
 }

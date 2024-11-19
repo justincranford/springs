@@ -3,8 +3,12 @@ package com.github.justincranford.springs.persistenceorm.sessions.json.util;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-public class ObjectMapperModuleUtil {
+@NoArgsConstructor(access=AccessLevel.PRIVATE)
+@SuppressWarnings({"unused"})
+public final class ObjectMapperModuleUtil {
 	public static <TYPE> SimpleModule serializer(final Class<TYPE> type, final JsonSerializer<TYPE> des) {
 		final SimpleModule module = new SimpleModule();
 		module.addSerializer(type, des);

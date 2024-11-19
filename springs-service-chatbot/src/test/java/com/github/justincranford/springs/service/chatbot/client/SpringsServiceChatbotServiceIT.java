@@ -64,7 +64,7 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
 //	private static final String MODEL = "mistral-7b";
 
 	@BeforeAll
-	private static void beforeAll() {
+	public static void beforeAll() {
 		if (USE_TEST_CONTAINER) {
 			SpringsUtilTestContainers.startContainer(SpringsUtilTestContainers.OLLAMA);
 		}

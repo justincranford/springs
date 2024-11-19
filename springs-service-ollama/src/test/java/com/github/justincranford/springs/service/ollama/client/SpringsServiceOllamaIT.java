@@ -33,7 +33,7 @@ public class SpringsServiceOllamaIT extends AbstractIT {
 	);
 
 	@BeforeAll
-	private static void beforeAll() {
+	public static void beforeAll() {
 		if (USE_TEST_CONTAINER) {
 			SpringsUtilTestContainers.startContainer(SpringsUtilTestContainers.OLLAMA);
 		}

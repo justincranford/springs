@@ -34,10 +34,10 @@ public class LoadClientsPropertiesIntoDatabase {
         int userOffset = 0;
         for (final SpringsPersistenceOrmClientsClientProperties.Client client : clients) {
             final ClientOrm createClientOrm = new ClientOrm();
-            createClientOrm.clientId(client.getClientId());
+            createClientOrm.clientName(client.getClientName());
             createClientOrm.secret(new ClientSecretOrm(encodedSecrets.get(userOffset++)));
             createClientOrm.status(client.getStatus());
-            createClientOrm.type(client.getType());
+            createClientOrm.clientType(client.getClientType());
             createClientOrm.timezones(client.getTimezones());
             this.clientOrmRepository.save(createClientOrm);
         }

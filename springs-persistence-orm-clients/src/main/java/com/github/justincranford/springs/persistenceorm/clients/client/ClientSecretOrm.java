@@ -25,9 +25,9 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(fluent=true)
 public class ClientSecretOrm {
-    @PasswordConstraints(minLength=43)
-    @Column(length=86)
-    @Size(min=43,max=86)
+    @PasswordConstraints(minLength=43,maxLength=256)
+    @Column(length=256)
+    @Size(min=43,max=256)
     @Nullable
     private String secret;
 }
