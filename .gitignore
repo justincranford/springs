@@ -1,4 +1,8 @@
+# IntelliJ
 .idea/
+*.iml
+
+# Eclipse
 .settings/
 target/
 .project
