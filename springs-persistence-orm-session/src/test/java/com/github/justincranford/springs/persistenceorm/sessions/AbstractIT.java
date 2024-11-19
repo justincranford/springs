@@ -2,6 +2,7 @@ package com.github.justincranford.springs.persistenceorm.sessions;
 
 import javax.net.ssl.SSLContext;
 
+import com.github.justincranford.springs.persistenceorm.config.SpringsPersistenceOrmSessionsConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,10 +27,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
-import com.github.justincranford.springs.persistenceorm.sessions.config.SpringsPersistenceOrmSessionsConfiguration;
 import com.github.justincranford.springs.persistenceorm.sessions.database.repository.SessionOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.person.service.PersonService;
-import com.github.justincranford.springs.persistenceorm.users.repository.SessionPojoRepository;
+import com.github.justincranford.springs.persistenceorm.users.repository.UserSessionPojoRepository;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
@@ -101,7 +101,7 @@ public class AbstractIT {
     @Autowired
     private HttpSecurity http;
 	@Autowired
-	private SessionPojoRepository repository;
+	private UserSessionPojoRepository repository;
 
 	@Autowired
 	private WebServerApplicationContext webServerApplicationContext;

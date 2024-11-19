@@ -57,10 +57,10 @@ public class PersonaOrm extends AbstractEntity {
 
     @ElementCollection
     @CollectionTable(
-		name="email_address",
+		name="persona_email_address",
     	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name="fk_email_address_persona_id"),
-		uniqueConstraints={@UniqueConstraint(name="idx_email_address_persona_id_rank",columnNames={"persona_id","rank"})}
+    	foreignKey=@ForeignKey(name="fk_persona_email_address_persona_id"),
+		uniqueConstraints={@UniqueConstraint(name="idx_persona_email_address_persona_id_rank",columnNames={"persona_id","rank"})}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
     @OrderBy("persona_id,rank")
@@ -71,10 +71,10 @@ public class PersonaOrm extends AbstractEntity {
 
     @ElementCollection
     @CollectionTable(
-		name="phone_number",
+		name="persona_phone_number",
     	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name="fk_phone_number_persona_id"),
-		uniqueConstraints={@UniqueConstraint(name="idx_phone_number_persona_id_rank",columnNames={"persona_id","rank"})}
+    	foreignKey=@ForeignKey(name="fk_persona_phone_number_persona_id"),
+		uniqueConstraints={@UniqueConstraint(name="idx_persona_phone_number_persona_id_rank",columnNames={"persona_id","rank"})}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
     @OrderBy("persona_id,rank")
@@ -85,10 +85,10 @@ public class PersonaOrm extends AbstractEntity {
 
     @ElementCollection
     @CollectionTable(
-		name="location_address",
+		name="persona_location_address",
     	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name="fk_location_address_persona_id"),
-		uniqueConstraints={@UniqueConstraint(name="idx_location_address_persona_id_rank",columnNames={"persona_id","rank"})}
+    	foreignKey=@ForeignKey(name="fk_persona_location_address_persona_id"),
+		uniqueConstraints={@UniqueConstraint(name="idx_persona_location_address_persona_id_rank",columnNames={"persona_id","rank"})}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
     @OrderBy("persona_id,rank")
@@ -99,15 +99,15 @@ public class PersonaOrm extends AbstractEntity {
 
     @ElementCollection
     @CollectionTable(
-		name="url",
+		name="persona_url",
     	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name = "fk_url_persona_id"),
-		uniqueConstraints={@UniqueConstraint(name="idx_url_persona_id_rank",columnNames={"persona_id","rank"})}
+    	foreignKey=@ForeignKey(name = "fk_persona_url_persona_id"),
+		uniqueConstraints={@UniqueConstraint(name="idx_persona_url_persona_id_rank",columnNames={"persona_id","rank"})}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
     @OrderBy("persona_id,rank")
     @NotNull
-    @Size(min=0,max=5)
+    @Size(max=5)
     @Builder.Default
     private List<com.github.justincranford.springs.persistenceorm.users.persona.UrlOrm> urls = new ArrayList<>(0);
 

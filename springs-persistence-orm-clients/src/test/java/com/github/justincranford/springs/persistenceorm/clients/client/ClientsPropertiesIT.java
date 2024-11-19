@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ClientsPropertiesIT extends AbstractIT {
 	@Test
 	public void verifyClientsPropertiesLoaded() {
-		final List<Client> clientsProperties = clientsProperties().getClients();
+		final List<Client> clientsProperties = clientsProperties().getClient();
 		Assertions.assertThat(clientsProperties).isNotNull();
 		Assertions.assertThat(clientsProperties).isNotEmpty();
 		Assertions.assertThat(clientsProperties).hasSize(3);

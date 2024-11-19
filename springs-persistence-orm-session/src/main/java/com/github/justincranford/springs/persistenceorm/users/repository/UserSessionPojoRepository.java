@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -28,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.justincranford.springs.persistenceorm.sessions.database.entity.AttributeOrm;
 import com.github.justincranford.springs.persistenceorm.sessions.database.entity.SessionOrm;
 import com.github.justincranford.springs.persistenceorm.sessions.database.repository.SessionOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.model.SessionPojo;
+import com.github.justincranford.springs.persistenceorm.users.model.UserSessionPojo;
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
@@ -37,9 +38,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Repository
+@Primary
 @RequiredArgsConstructor
 @Slf4j
-public class SessionPojoRepository implements FindByIndexNameSessionRepository<SessionPojo> {
+public class UserSessionPojoRepository implements FindByIndexNameSessionRepository<UserSessionPojo> {
 	private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 
 	@Autowired
@@ -72,32 +74,32 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
 	}
 
 	@Override
-	public Map<String, SessionPojo> findByIndexNameAndIndexValue(final String name, final String value) {
+	public Map<String,UserSessionPojo> findByIndexNameAndIndexValue(final String name, final String value) {
 		log.info("Finding by index name [{}] and index value [{}]", name, value);
 		if (!PRINCIPAL_NAME_INDEX_NAME.equals(name)) {
 			return Collections.emptyMap();
 		}
 		final List<SessionOrm> sessionOrms = this.sessionOrmRepository.findAll();
-		final Map<String, SessionPojo> sessionMap = new HashMap<>();
+		final Map<String,UserSessionPojo> sessionMap = new HashMap<>();
 		for (SessionOrm sessionOrm : sessionOrms) {
-			final SessionPojo sessionPojo = ormToPojo(sessionOrm);
-			final Object principalNameAttribute = sessionPojo.getAttribute(PRINCIPAL_NAME_INDEX_NAME);
+			final UserSessionPojo userSessionPojo = ormToPojo(sessionOrm);
+			final Object principalNameAttribute = userSessionPojo.getAttribute(PRINCIPAL_NAME_INDEX_NAME);
 			if ((principalNameAttribute instanceof String principalName) && (principalName.equals(value))) {
-				sessionMap.put(sessionPojo.getId(), sessionPojo);
+				sessionMap.put(userSessionPojo.getId(), userSessionPojo);
 			}
-			final Object springSecurityContextAttribute = sessionPojo.getAttribute(SPRING_SECURITY_CONTEXT);
+			final Object springSecurityContextAttribute = userSessionPojo.getAttribute(SPRING_SECURITY_CONTEXT);
 			if (springSecurityContextAttribute instanceof SecurityContext springSecurityContext) {
 				final Authentication authentication = springSecurityContext.getAuthentication();
 				final String name2 = authentication.getName();
 				if (name2.equals(value)) {
-					sessionMap.put(sessionPojo.getId(), sessionPojo);
+					sessionMap.put(userSessionPojo.getId(), userSessionPojo);
 				}
 			}
 			if (springSecurityContextAttribute instanceof SecurityContext springSecurityContext) {
 				final Authentication authentication = springSecurityContext.getAuthentication();
 				final String name2 = authentication.getName();
 				if (name2.equals(value)) {
-					sessionMap.put(sessionPojo.getId(), sessionPojo);
+					sessionMap.put(userSessionPojo.getId(), userSessionPojo);
 				}
 			}
 			if (springSecurityContextAttribute instanceof LinkedHashMap springSecurityContext) {
@@ -106,7 +108,7 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
 					final Object nameAttribute = authenticationAttributes.get("name");
 					if (nameAttribute instanceof String) {
 						if (nameAttribute.equals(value)) {
-							sessionMap.put(sessionPojo.getId(), sessionPojo);
+							sessionMap.put(userSessionPojo.getId(), userSessionPojo);
 						}
 					}
 				}
@@ -116,27 +118,27 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
 	}
 
 	@Override
-    public SessionPojo createSession() {
+    public UserSessionPojo createSession() {
 		log.info("Create session");
-        final SessionPojo sessionPojo = SessionPojo.builder().build();
-        if (sessionPojo.getMaxInactiveInterval().isPositive()) {
-            sessionPojo.setExpiresTime(sessionPojo.getCreationTime().plus(sessionPojo.getMaxInactiveInterval()));
+        final UserSessionPojo userSessionPojo = UserSessionPojo.builder().build();
+        if (userSessionPojo.getMaxInactiveInterval().isPositive()) {
+            userSessionPojo.setExpiresTime(userSessionPojo.getCreationTime().plus(userSessionPojo.getMaxInactiveInterval()));
         } else {
-            sessionPojo.setExpiresTime(DateTimeUtil.nowUtcTruncatedToMicroseconds().plusYears(100).toInstant());
+            userSessionPojo.setExpiresTime(DateTimeUtil.nowUtcTruncatedToMicroseconds().plusYears(100).toInstant());
         }
-		return sessionPojo;
+		return userSessionPojo;
     }
 
     @Override
-    public void save(SessionPojo sessionPojo) {
-		log.info("Save session, pojo:\n{}", this.prettyJson.pretty(sessionPojo));
-        final byte[] externalIdBytes = Base64Util.URL.decodeFromString(sessionPojo.getId());
+    public void save(UserSessionPojo userSessionPojo) {
+		log.info("Save session, pojo:\n{}", this.prettyJson.pretty(userSessionPojo));
+        final byte[] externalIdBytes = Base64Util.URL.decodeFromString(userSessionPojo.getId());
 //		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllIncludingDeleted());
 //		this.prettyJson.logAndSave(this.sessionOrmRepository.findAllByExternalIdIncludingDeleted(externalIdBytes));
 
-		if (!sessionPojo.getReplacedIds().isEmpty()) {
+		if (!userSessionPojo.getReplacedIds().isEmpty()) {
 			log.info("Deleting replaced IDs");
-			for (final String oldId : sessionPojo.getReplacedIds()) {
+			for (final String oldId : userSessionPojo.getReplacedIds()) {
 				log.info("Finding ID {}", oldId);
 		        final byte[] oldExternalIdBytes = Base64Util.URL.decodeFromString(oldId);
 				final Optional<SessionOrm> optionalSessionOrm = this.sessionOrmRepository.findByExternalIdIncludingDeleted(oldExternalIdBytes);
@@ -151,14 +153,14 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
 		this.prettyJson.logAndSave(optionalSessionOrm);
 		final SessionOrm sessionOrm;
 		if (optionalSessionOrm.isEmpty()) { // INSERT
-			sessionOrm = this.pojoToOrm(sessionPojo);
+			sessionOrm = this.pojoToOrm(userSessionPojo);
 			log.info("Inserting session, orm:\n{}", this.prettyJson.pretty(sessionOrm));
 		} else { // UPDATE
 			sessionOrm = optionalSessionOrm.get();
-			sessionOrm.lastAccessedAt(sessionPojo.getLastAccessedTime().atOffset(ZoneOffset.UTC));
-			sessionOrm.maxInactiveInterval(sessionPojo.getMaxInactiveInterval());
-			sessionOrm.expiresAt(sessionPojo.getExpiresTime().atOffset(ZoneOffset.UTC));
-			sessionOrm.attributes(pojoToOrm(sessionPojo.getAttributes()));
+			sessionOrm.lastAccessedAt(userSessionPojo.getLastAccessedTime().atOffset(ZoneOffset.UTC));
+			sessionOrm.maxInactiveInterval(userSessionPojo.getMaxInactiveInterval());
+			sessionOrm.expiresAt(userSessionPojo.getExpiresTime().atOffset(ZoneOffset.UTC));
+			sessionOrm.attributes(pojoToOrm(userSessionPojo.getAttributes()));
 			log.info("Updating session, orm:\n{}", this.prettyJson.pretty(sessionOrm));
 		}
 		this.sessionOrmRepository.save(sessionOrm);
@@ -166,15 +168,15 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
     }
 
     @Override
-    public SessionPojo findById(String externalIdBase64Url) {
+    public UserSessionPojo findById(String externalIdBase64Url) {
 		log.info("Finding by ID: {}", externalIdBase64Url);
     	// TODO Cleanup expired sessions
         final byte[] externalIdBytes = Base64Util.URL.decodeFromString(externalIdBase64Url);
-		final SessionPojo sessionPojo = this.sessionOrmRepository.findByExternalId(externalIdBytes)
-            .map(this::ormToPojo)
-			.orElse(null);
-		log.info("Found by ID: {}", this.prettyJson.pretty(sessionPojo));
-		return sessionPojo;
+		final UserSessionPojo userSessionPojo = this.sessionOrmRepository.findByExternalId(externalIdBytes)
+																		 .map(this::ormToPojo)
+																		 .orElse(null);
+		log.info("Found by ID: {}", this.prettyJson.pretty(userSessionPojo));
+		return userSessionPojo;
     }
 
     @Override
@@ -197,36 +199,36 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
 //		this.prettyJson.logAndSave(this.sessionOrmRepository.findAll());
     }
 
-    public List<SessionPojo> findAll() {
+    public List<UserSessionPojo> findAll() {
         final List<SessionOrm> findAll = this.sessionOrmRepository.findAll();
 //        this.prettyJson.log(findAll);
 		return findAll.stream().map(this::ormToPojo).toList();
     }
 
-    private SessionOrm pojoToOrm(SessionPojo sessionPojo) {
+    private SessionOrm pojoToOrm(UserSessionPojo userSessionPojo) {
         final SessionOrm sessionOrm = SessionOrm.builder()
-            .person(sessionPojo.getPerson())
-            .persona(sessionPojo.getPersona())
-            .lastAccessedAt(sessionPojo.getLastAccessedTime().atOffset(ZoneOffset.UTC))
-            .maxInactiveInterval(sessionPojo.getMaxInactiveInterval())
-            .expiresAt(sessionPojo.getExpiresTime().atOffset(ZoneOffset.UTC))
-            .attributes(this.pojoToOrm(sessionPojo.getAttributes()))
+            .person(userSessionPojo.getPerson())
+            .persona(userSessionPojo.getPersona())
+            .lastAccessedAt(userSessionPojo.getLastAccessedTime().atOffset(ZoneOffset.UTC))
+            .maxInactiveInterval(userSessionPojo.getMaxInactiveInterval())
+            .expiresAt(userSessionPojo.getExpiresTime().atOffset(ZoneOffset.UTC))
+            .attributes(this.pojoToOrm(userSessionPojo.getAttributes()))
             .build();
-        sessionOrm.externalId(Base64Util.URL.decodeFromString(sessionPojo.getId()));
+        sessionOrm.externalId(Base64Util.URL.decodeFromString(userSessionPojo.getId()));
         return sessionOrm;
     }
 
-    private SessionPojo ormToPojo(SessionOrm sessionOrm) {
-		return SessionPojo.builder()
-            .persona(sessionOrm.persona())
-            .person(sessionOrm.person())
-            .id(Base64Util.URL.encodeToString(sessionOrm.externalId()))
-            .creationTime(sessionOrm.prePersistDateTime().toInstant())
-            .lastAccessedTime(sessionOrm.lastAccessedAt().toInstant())
-            .expiresTime(sessionOrm.expiresAt().toInstant())
-            .maxInactiveInterval(sessionOrm.maxInactiveInterval())
-            .attributes(this.ormToPojo(sessionOrm.attributes()))
-        .build();
+    private UserSessionPojo ormToPojo(SessionOrm sessionOrm) {
+		return UserSessionPojo.builder()
+							  .persona(sessionOrm.persona())
+							  .person(sessionOrm.person())
+							  .id(Base64Util.URL.encodeToString(sessionOrm.externalId()))
+							  .creationTime(sessionOrm.prePersistDateTime().toInstant())
+							  .lastAccessedTime(sessionOrm.lastAccessedAt().toInstant())
+							  .expiresTime(sessionOrm.expiresAt().toInstant())
+							  .maxInactiveInterval(sessionOrm.maxInactiveInterval())
+							  .attributes(this.ormToPojo(sessionOrm.attributes()))
+							  .build();
     }
 
 	private LinkedHashMap<String, AttributeOrm> pojoToOrm(LinkedHashMap<String, Object> attributes) {
@@ -245,10 +247,9 @@ public class SessionPojoRepository implements FindByIndexNameSessionRepository<S
             entry -> {
         		try {
         			final AttributeOrm value = entry.getValue();
-        			if (value == null) {
-        				return null;
-        			}
+					assert value != null;
 					final String encoded = value.encoded();
+					assert encoded != null;
 	                return switch (entry.getKey()) {
 	                    case "SPRING_SECURITY_CONTEXT"            -> this.objectMapper.readValue(encoded, SecurityContextImpl.class);
 	                    case "SPRING_SECURITY_SAVED_REQUEST"      -> this.objectMapper.readValue(encoded, SavedRequest.class);

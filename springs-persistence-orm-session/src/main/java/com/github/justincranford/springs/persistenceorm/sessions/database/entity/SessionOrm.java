@@ -5,6 +5,7 @@ import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.github.justincranford.springs.persistenceorm.clients.client.ClientOrm;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.Audited;
@@ -59,6 +60,10 @@ public class SessionOrm extends AbstractEntity {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="persona_id",updatable=false)
     private PersonaOrm persona;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="client_id",updatable=false)
+    private ClientOrm client;
 
     @Column(nullable=false)
     @NotNull

@@ -75,36 +75,35 @@ public class PersonOrm extends AbstractEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false,length=3)
-    @Size(min=3,max=3)
     @NotNull
-    private PersonStatusType status;
+    private PersonStatusType personStatus;
 
     @ElementCollection
     @CollectionTable(
-		name="languages",
-    	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name = "fk_languages_persona_id"),
-    	indexes= {@Index(name="idx_languages_persona_id_rank",columnList="persona_id,rank")}
+		name="person_languages",
+    	joinColumns=@JoinColumn(name="personId",referencedColumnName="id"),
+    	foreignKey=@ForeignKey(name = "fk_languages_person_id"),
+    	indexes= {@Index(name="idx_languages_person_id_rank",columnList="person_id,rank")}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
     @OrderBy("persona_id,rank")
     @NotNull
     @Size(min=1,max=4)
     @Builder.Default
-    private List<@NotNull LanguageOrm> languages = new ArrayList<>();
+    private List<@NotNull LanguageOrm> personLanguages = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(
-		name="timezones",
-    	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name = "fk_timezones_persona_id"),
-    	indexes= {@Index(name="idx_timezones_persona_id_rank",columnList="persona_id,rank")}
+		name="person_timezones",
+    	joinColumns=@JoinColumn(name="personId",referencedColumnName="id"),
+    	foreignKey=@ForeignKey(name = "fk_person_timezones_person_id"),
+    	indexes= {@Index(name="idx_person_timezones_person_id_rank",columnList="person_id,rank")}
     )
     @OrderColumn(name="rank")
     @NotNull
     @Size(min=1,max=4)
     @Builder.Default
-    private List<@NotNull String> timezones = new ArrayList<>();
+    private List<@NotNull String> personTimeZones = new ArrayList<>();
 
     @JsonManagedReference
     @OneToMany(mappedBy="person",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)

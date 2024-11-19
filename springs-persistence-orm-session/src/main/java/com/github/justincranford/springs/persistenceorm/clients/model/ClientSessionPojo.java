@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.users.model;
+package com.github.justincranford.springs.persistenceorm.clients.model;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -7,12 +7,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import com.github.justincranford.springs.persistenceorm.clients.client.ClientOrm;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.session.MapSession;
 import org.springframework.session.Session;
 
 import com.github.justincranford.springs.persistenceorm.base.entity.ExternalIdGenerator;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
-import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
 
@@ -26,14 +27,10 @@ import lombok.ToString;
 @Builder
 @ToString
 @SuppressWarnings({"unused"})
-public class SessionPojo implements Session {
+public class ClientSessionPojo implements Session {
 	@Getter
 	@Setter
-	private PersonOrm person;
-
-	@Getter
-	@Setter
-	private PersonaOrm persona;
+	private ClientOrm client;
 
 	@Getter
     @Builder.Default
@@ -162,7 +159,8 @@ public class SessionPojo implements Session {
 		return DateTimeUtil.nowUtcTruncatedToMicroseconds().toInstant();
 	}
 
-    public static class Constants {
+	@NoArgsConstructor(access=AccessLevel.PRIVATE)
+    public final static class Constants {
 		public static final Duration MAX_INACTIVE_INTERNAL = MapSession.DEFAULT_MAX_INACTIVE_INTERVAL;
 	}
 }

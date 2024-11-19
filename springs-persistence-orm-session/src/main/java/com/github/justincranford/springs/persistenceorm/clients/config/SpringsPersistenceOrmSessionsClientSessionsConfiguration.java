@@ -1,14 +1,13 @@
-package com.github.justincranford.springs.persistenceorm.users.config;
+package com.github.justincranford.springs.persistenceorm.clients.config;
 
+import com.github.justincranford.springs.persistenceorm.clients.service.ClientService;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
 
 import com.github.justincranford.springs.persistenceorm.sessions.database.config.SpringsPersistenceOrmSessionsDatabaseConfiguration;
-import com.github.justincranford.springs.persistenceorm.users.person.service.PersonService;
-import com.github.justincranford.springs.persistenceorm.users.persona.service.PersonaService;
-import com.github.justincranford.springs.persistenceorm.users.repository.SessionPojoRepository;
+import com.github.justincranford.springs.persistenceorm.clients.repository.ClientSessionPojoRepository;
 
 @Configuration
 @EnableSpringHttpSession
@@ -16,8 +15,8 @@ import com.github.justincranford.springs.persistenceorm.users.repository.Session
 	SpringsPersistenceOrmSessionsDatabaseConfiguration.class
 })
 @ComponentScan(
-	basePackageClasses={PersonService.class, PersonaService.class, SessionPojoRepository.class}
+	basePackageClasses={ ClientService.class, ClientSessionPojoRepository.class}
 )
-public class SpringsPersistenceOrmSessionsServiceConfiguration {
+public class SpringsPersistenceOrmSessionsClientSessionsConfiguration {
 	// do nothing
 }

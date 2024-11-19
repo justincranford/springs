@@ -20,6 +20,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+//Caused by: org.springframework.boot.context.properties.bind.BindException: Failed to bind properties under
+// 'springs.persistenceorm.clients' to com.github.justincranford.springs.persistenceorm.clients.properties.SpringsPersistenceOrmClientsClientProperties
+//Caused by: org.springframework.boot.context.properties.bind.validation.BindValidationException:
+// Binding validation errors on springs.persistenceorm.clients.client[0]
+
 @Component
 @ConfigurationProperties(prefix="springs.persistenceorm.clients", ignoreUnknownFields=false, ignoreInvalidFields=false)
 @PropertySource("classpath:springs-persistence-orm-clients.properties")
@@ -34,14 +39,14 @@ public class SpringsPersistenceOrmClientsClientProperties {
     @NotNull
     @NotEmpty
     @Builder.Default
-    private List<SpringsPersistenceOrmClientsClientProperties.Client> clients = new ArrayList<>();
+    private List<SpringsPersistenceOrmClientsClientProperties.Client> client = new ArrayList<>();
 
-    public List<SpringsPersistenceOrmClientsClientProperties.Client> getClients() {
-        return this.clients;
+    public List<SpringsPersistenceOrmClientsClientProperties.Client> getClient() {
+        return this.client;
     }
 
     public void setClient(List<SpringsPersistenceOrmClientsClientProperties.Client> _clients) {
-        this.clients = _clients;
+        this.client = _clients;
     }
 
     @Validated
@@ -54,10 +59,10 @@ public class SpringsPersistenceOrmClientsClientProperties {
     	@Nullable
         private String secret;
     	@NotNull
-        private ClientStatusType status;
+        private ClientStatusType clientStatus;
     	@NotNull
         private ClientType clientType;
         @NotNull
-        private List<String> timezones = new ArrayList<>();
+        private List<String> clientTimeZones = new ArrayList<>(1);
     }
 }

@@ -62,7 +62,7 @@ public class ClientOrm extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable=false,length=3)
     @NotNull
-    private ClientStatusType status;
+    private ClientStatusType clientStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false,length=3)
@@ -71,14 +71,14 @@ public class ClientOrm extends AbstractEntity {
 
     @ElementCollection
     @CollectionTable(
-		name="timezones",
-    	joinColumns=@JoinColumn(name="clientName",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name = "fk_timezones_client_id"),
-    	indexes= {@Index(name="idx_timezones_client_id_rank",columnList="client_id,rank")}
+		name="client_timezones",
+    	joinColumns=@JoinColumn(name="clientId",referencedColumnName="id"),
+    	foreignKey=@ForeignKey(name = "fk_client_timezones_client_id"),
+    	indexes= {@Index(name="idx_client_timezones_client_id_rank",columnList="client_id,rank")}
     )
     @OrderColumn(name="rank")
     @NotNull
     @Size(max=4)
     @Builder.Default
-    private List<@NotNull String> timezones = new ArrayList<>(1);
+    private List<@NotNull String> clientTimeZones = new ArrayList<>(1);
 }

@@ -29,7 +29,7 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.config.SpringsAuthenticationOrmUsersConfiguration;
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
 import com.github.justincranford.springs.persistenceorm.sessions.database.repository.SessionOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.repository.SessionPojoRepository;
+import com.github.justincranford.springs.persistenceorm.users.repository.UserSessionPojoRepository;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
@@ -72,7 +72,7 @@ public class AbstractIT {
     @Autowired
     private SessionOrmRepository sessionOrmRepository;
 	@Autowired
-	private SessionPojoRepository repository;
+	private UserSessionPojoRepository repository;
     @Autowired
     private SpringsPersistenceOrmBaseProperties springsPersistenceOrmBaseProperties;
     @Autowired

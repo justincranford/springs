@@ -28,7 +28,7 @@ public class LoadClientsPropertiesIntoDatabase {
     @Transactional
     @PostConstruct
     public void loadUsers() {
-        final List<SpringsPersistenceOrmClientsClientProperties.Client> clients = this.clientProperties.getClients();
+        final List<SpringsPersistenceOrmClientsClientProperties.Client> clients = this.clientProperties.getClient();
         final List<String> encodedSecrets = EncodeUtil.encode(this.passwordEncoder, clients.stream().map(Client::getSecret).toList());
 
         int userOffset = 0;
@@ -36,9 +36,9 @@ public class LoadClientsPropertiesIntoDatabase {
             final ClientOrm createClientOrm = new ClientOrm();
             createClientOrm.clientName(client.getClientName());
             createClientOrm.secret(new ClientSecretOrm(encodedSecrets.get(userOffset++)));
-            createClientOrm.status(client.getStatus());
+            createClientOrm.clientStatus(client.getClientStatus());
             createClientOrm.clientType(client.getClientType());
-            createClientOrm.timezones(client.getTimezones());
+            createClientOrm.clientTimeZones(client.getClientTimeZones());
             this.clientOrmRepository.save(createClientOrm);
         }
     }

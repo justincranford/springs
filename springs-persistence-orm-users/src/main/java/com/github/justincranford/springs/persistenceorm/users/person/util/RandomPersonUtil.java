@@ -28,9 +28,9 @@ public class RandomPersonUtil {
 				.last("Last "     + randomString(Base64Util.URL, 32))
 				.build())
 			.dateOfBirth(LocalDate.ofYearDay(SECURE_RANDOM.nextInt(100) + 1923, SECURE_RANDOM.nextInt(365) + 1))
-			.status(SecureRandomUtil.randomEnumElement(PersonStatusType.class))
-			.languages(List.of(LanguageOrm.builder().i18n(SecureRandomUtil.randomEnumElement(I18nLanguageType.class)).l10n(SecureRandomUtil.randomEnumElement(L10nRegionType.class)).build()))
-			.timezones(List.of(TimeZone.getTimeZone("Americas/Toronto").toString()))
+			.personStatus(SecureRandomUtil.randomEnumElement(PersonStatusType.class))
+			.personLanguages(List.of(LanguageOrm.builder().i18n(SecureRandomUtil.randomEnumElement(I18nLanguageType.class)).l10n(SecureRandomUtil.randomEnumElement(L10nRegionType.class)).build()))
+			.personTimeZones(List.of(TimeZone.getTimeZone("Americas/Toronto").toString()))
 			.build();
 	}
 }

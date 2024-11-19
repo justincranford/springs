@@ -52,9 +52,9 @@ public class LoadPeoplePropertiesIntoDatabase {
 			createPersonOrm.password(new PasswordOrm(encodedPasswords.get(userOffset++)));
             createPersonOrm.name(namePropertiesToOrm(user.getName()));
             createPersonOrm.dateOfBirth(user.getDateOfBirth());
-            createPersonOrm.status(user.getStatus());
-            createPersonOrm.languages(languagesPropertiesToOrm(user.getLanguages()));
-            createPersonOrm.timezones(user.getTimezones());
+            createPersonOrm.personStatus(user.getStatus());
+            createPersonOrm.personLanguages(languagesPropertiesToOrm(user.getLanguages()));
+            createPersonOrm.personTimeZones(user.getTimezones());
             final PersonOrm createdPersonOrm = this.personOrmRepository.save(createPersonOrm);
 
             int rank = 0;
