@@ -1,7 +1,8 @@
 package com.github.justincranford.springs.authenticationorm.users.config;
 
 import com.github.justincranford.springs.persistenceorm.clients.config.SpringsPersistenceOrmClientsConfiguration;
-import com.github.justincranford.springs.persistenceorm.config.SpringsPersistenceOrmSessionsConfiguration;
+//import com.github.justincranford.springs.persistenceorm.config.SpringsPersistenceOrmSessionsConfiguration;
+import com.github.justincranford.springs.persistenceredis.config.SpringsPersistenceRedisSessionsConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -16,7 +17,8 @@ import com.github.justincranford.springs.util.security.hashes.config.SpringsUtil
 @Import({
 	SpringsPersistenceOrmUsersConfiguration.class,
 	SpringsPersistenceOrmClientsConfiguration.class,
-	SpringsPersistenceOrmSessionsConfiguration.class,
+//	SpringsPersistenceOrmSessionsConfiguration.class,
+	SpringsPersistenceRedisSessionsConfiguration.class,
 	SpringsUtilHttpsConfiguration.class,
     SpringsUtilSecurityHashesConfiguration.class,
 	SpringsAuthenticationOrmUsersAuthenticationProvidersConfiguration.class,

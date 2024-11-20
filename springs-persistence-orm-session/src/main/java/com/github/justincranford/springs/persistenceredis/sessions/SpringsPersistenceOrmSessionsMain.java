@@ -7,7 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
-import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
+import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultApplicationContextInitializer;
 
 @SpringBootApplication
 @Import({ SpringsPersistenceOrmSessionsConfiguration.class})
@@ -15,7 +15,7 @@ import com.github.justincranford.springs.util.https.server.initializer.TlsEnable
 public final class SpringsPersistenceOrmSessionsMain {
 	public static void main(final String[] args) {
 		final SpringApplication springApplication = new SpringApplication(SpringsPersistenceOrmSessionsMain.class);
-		springApplication.addInitializers(new TlsEnabledByDefaultInitializer());
+		springApplication.addInitializers(new TlsEnabledByDefaultApplicationContextInitializer());
 		springApplication.run(args);
 	}
 }

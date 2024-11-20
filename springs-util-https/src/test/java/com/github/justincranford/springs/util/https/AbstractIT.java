@@ -1,7 +1,15 @@
 package com.github.justincranford.springs.util.https;
 
-import javax.net.ssl.SSLContext;
-
+import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
+import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
+import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
+import com.github.justincranford.springs.util.https.config.SpringsUtilHttpsConfiguration;
+import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefault;
+import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultApplicationContextInitializer;
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
+import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,31 +19,23 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.RestTemplate;
 
-import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
-import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
-import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
-import com.github.justincranford.springs.util.https.config.SpringsUtilHttpsConfiguration;
-import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
-
-import jakarta.annotation.PostConstruct;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
+import javax.net.ssl.SSLContext;
 
 @SpringBootTest(
 	webEnvironment = WebEnvironment.RANDOM_PORT,
 	classes={
 		SpringsUtilHttpsConfiguration.class,
 		AbstractIT.AbstractITConfiguration.class
-	}	
+	}
 )
 @ContextConfiguration(
-	initializers={TlsEnabledByDefaultInitializer.class}
+	initializers={ TlsEnabledByDefaultApplicationContextInitializer.class}
 )
 @Getter
 @Accessors(fluent = true)
@@ -66,7 +66,7 @@ public class AbstractIT {
     @Autowired
     private String httpsPskBaseUrl;
 
-	@Value("${" + TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED + ":false}")
+	@Value("${" + TlsEnabledByDefault.SslAutoConfigPropertyNames.ENABLED + ":false}")
 	private boolean sslAutoConfigEnabled;
 
 	@Autowired
@@ -101,7 +101,7 @@ public class AbstractIT {
     static class AbstractITConfiguration {
 	    @Bean
 	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-	        return http.authorizeHttpRequests(authz -> authz.anyRequest().permitAll()).csrf(csrf -> csrf.disable()).build();
+	        return http.authorizeHttpRequests(authz -> authz.anyRequest().permitAll()).csrf(AbstractHttpConfigurer::disable).build();
 	    }
     }
 }

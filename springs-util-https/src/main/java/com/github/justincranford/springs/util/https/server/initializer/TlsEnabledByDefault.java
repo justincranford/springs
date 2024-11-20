@@ -1,5 +1,27 @@
 package com.github.justincranford.springs.util.https.server.initializer;
 
+import com.github.justincranford.springs.util.basic.ThreadUtil;
+import com.github.justincranford.springs.util.https.util.CertUtil;
+import com.github.justincranford.springs.util.https.util.KeyGenUtil;
+import com.github.justincranford.springs.util.https.util.PemUtil;
+import com.github.justincranford.springs.util.https.util.SignUtil;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
+import com.google.common.net.InetAddresses;
+import com.google.common.net.InternetDomainName;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
+import org.springframework.boot.env.OriginTrackedMapPropertySource;
+import org.springframework.boot.web.server.Ssl.ClientAuth;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
@@ -21,39 +43,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
-import org.springframework.boot.env.OriginTrackedMapPropertySource;
-import org.springframework.boot.web.server.Ssl.ClientAuth;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySource;
-
-import com.github.justincranford.springs.util.basic.ThreadUtil;
-import com.github.justincranford.springs.util.https.util.CertUtil;
-import com.github.justincranford.springs.util.https.util.KeyGenUtil;
-import com.github.justincranford.springs.util.https.util.PemUtil;
-import com.github.justincranford.springs.util.https.util.SignUtil;
-import com.google.common.collect.Lists;
-import com.google.common.net.InetAddresses;
-import com.google.common.net.InternetDomainName;
-
-import lombok.extern.slf4j.Slf4j;
-
+@NoArgsConstructor(access=AccessLevel.PRIVATE)
 @Slf4j
 @SuppressWarnings({"static-method"})
-public class TlsEnabledByDefaultInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-    @Override
-    public void initialize(final ConfigurableApplicationContext configurableApplicationContext) {
-    	Security.addProvider(new BouncyCastleProvider());
-    	Security.addProvider(new BouncyCastleJsseProvider());
+public final class TlsEnabledByDefault {
+	static void generateTlsKeyMaterialAndPrependAsNewPropertySources(final ConfigurableEnvironment configurableEnvironment) {
+		Security.addProvider(new BouncyCastleProvider()); // HTTP/TLS-Certs
+		Security.addProvider(new BouncyCastleJsseProvider()); // HTTP/TLS-PSK (but SunJSSE & BC-JSSE don't fully support PSK yet so YMMV)
 		try {
 			// Used for auto-configuration properties lookup, and prepending a new property source containing 3 dynamically created SSL bundles
-	        final MutablePropertySources readWritePropertySources = configurableApplicationContext.getEnvironment().getPropertySources();
+			final MutablePropertySources readWritePropertySources = configurableEnvironment.getPropertySources();
 
 	        // ConfigurationProperties is not autowired yet, so walk through PropertySources and get SslAutoConfigProperties
 	        final Collection<PropertySource<?>> readOnlyPropertySources    = Lists.newArrayList(readWritePropertySources.iterator());
@@ -62,7 +61,7 @@ public class TlsEnabledByDefaultInitializer implements ApplicationContextInitial
 			final String                        sslAutoConfigAlgorithm     = sslAutoConfigProperties.algorithm();
 			final String                        sslAutoConfigServerAddress = sslAutoConfigProperties.serverAddress();
 			final String                        sslAutoConfigClientEmail   = sslAutoConfigProperties.clientEmail();
-			if (!sslAutoConfigEnabled.booleanValue()) {
+			if (!sslAutoConfigEnabled) {
 				log.info("SSL Auto Config disabled");
 				return;
 			}
@@ -124,9 +123,9 @@ public class TlsEnabledByDefaultInitializer implements ApplicationContextInitial
 		} catch(Exception e) {
 			throw new RuntimeException(e);
 		}
-    }
+	}
 
-	private String writePskKeyStore(
+	private static String writePskKeyStore(
 		final String httpsClientServerPreSharedKeyStoreType, final String keyStorePassword,
 		final String alias, final String keyPassword, final SecretKey secretKey
 	) throws Exception {
@@ -140,7 +139,8 @@ public class TlsEnabledByDefaultInitializer implements ApplicationContextInitial
 		return path.toAbsolutePath().toString();
 	}
 
-    public void prependPropertySource(
+	@VisibleForTesting
+	public static void prependPropertySource(
 		final MutablePropertySources mutablePropertySources,
 		final String httpsServerRootCaCertPem, final String httpsServerCertPem, final String httpsServerPrivateKeyPem,
 		final String httpsClientRootCaCertPem, final String httpsClientCertPem, final String httpsClientPrivateKeyPem,
@@ -157,34 +157,34 @@ public class TlsEnabledByDefaultInitializer implements ApplicationContextInitial
 		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_STLS_CERT + ".truststore.certificate", httpsServerRootCaCertPem);
 
 		// Client Bundle for performing HTTP/TLS Mutual Authentication
-		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_MTLS_CERT + ".keystore.certificate",   httpsClientCertPem);
-		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_MTLS_CERT + ".keystore.privateKey",    httpsClientPrivateKeyPem);
+		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_MTLS_CERT + ".keystore.certificate", httpsClientCertPem);
+		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_MTLS_CERT + ".keystore.privateKey", httpsClientPrivateKeyPem);
 		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.CLIENT_MTLS_CERT + ".truststore.certificate", httpsServerRootCaCertPem);
 
 		// Server Bundle for listening to HTTP/TLS client requests
-		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS_CERT + ".keystore.certificate",    httpsServerCertPem);
-		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS_CERT + ".keystore.privateKey",     httpsServerPrivateKeyPem);
-		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS_CERT + ".truststore.certificate",  httpsClientRootCaCertPem);
+		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS_CERT + ".keystore.certificate", httpsServerCertPem);
+		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS_CERT + ".keystore.privateKey", httpsServerPrivateKeyPem);
+		tlsProperties.put("spring.ssl.bundle.pem." + SslBundleNames.SERVER_TLS_CERT + ".truststore.certificate", httpsClientRootCaCertPem);
 
     	// Client Bundle for performing HTTP/TLS PSK Authentication
-		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK  + ".key.alias",               pskKeyAlias);
-		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK  + ".key.password",            pskKeyPassword);
-		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK  + ".keystore.location",       httpsClientServerPskKeyStoreTypeFilePath);
-		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK  + ".keystore.password",       pskKeyStorePassword);
-		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK  + ".keystore.type",           httpsClientServerPskKeyStoreType);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK + ".key.alias", pskKeyAlias);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK + ".key.password", pskKeyPassword);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK + ".keystore.location", httpsClientServerPskKeyStoreTypeFilePath);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK + ".keystore.password", pskKeyStorePassword);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK + ".keystore.type", httpsClientServerPskKeyStoreType);
 
 		// Server Bundle for listening to HTTP/TLS PSK requests
-		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK  + ".key.alias",               pskKeyAlias);
-		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK  + ".key.password",            pskKeyPassword);
-		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK  + ".keystore.location",       httpsClientServerPskKeyStoreTypeFilePath);
-		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK  + ".keystore.password",       pskKeyStorePassword);
-		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK  + ".keystore.type",           httpsClientServerPskKeyStoreType);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK + ".key.alias", pskKeyAlias);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK + ".key.password", pskKeyPassword);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK + ".keystore.location", httpsClientServerPskKeyStoreTypeFilePath);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK + ".keystore.password", pskKeyStorePassword);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK + ".keystore.type", httpsClientServerPskKeyStoreType);
 
 		// Server HTTP/TLS configuration to enable TLS, use the server bundle, and accept clients performing sTLS or mTLS
 		tlsProperties.put("server.ssl.enabled",          Boolean.TRUE);
 		tlsProperties.put("server.ssl.protocol",         "TLSv1.3");
 		tlsProperties.put("server.ssl.enabledProtocols", "TLSv1.3,TLSv1.2");
-		tlsProperties.put("server.ssl.bundle",           SslBundleNames.SERVER_TLS_CERT);
+		tlsProperties.put("server.ssl.bundle", SslBundleNames.SERVER_TLS_CERT);
 		tlsProperties.put("server.ssl.clientAuth",       ClientAuth.WANT.name());
 
 		mutablePropertySources.addFirst(new OriginTrackedMapPropertySource("auto-config-tls", tlsProperties));
@@ -251,7 +251,8 @@ public class TlsEnabledByDefaultInitializer implements ApplicationContextInitial
     	}
     }
 
-    public static class SslAutoConfigPropertyNames {
+	@SuppressWarnings({"checkstyle:UtilityClass"})
+    public final static class SslAutoConfigPropertyNames {
 		public static final String ENABLED        = "server.ssl.auto-config.enabled";
 		public static final String ALGORITHM      = "server.ssl.auto-config.algorithm";
 		public static final String SERVER_ADDRESS = "server.address";
@@ -261,7 +262,8 @@ public class TlsEnabledByDefaultInitializer implements ApplicationContextInitial
 		public static final List<String> NAMES = List.of(ENABLED, ALGORITHM, SERVER_ADDRESS, CLIENT_EMAIL, CLIENT_PSK, SERVER_PSK);
 	}
 
-    public static class SslBundleNames {
+	@SuppressWarnings({"checkstyle:UtilityClass"})
+    public final static class SslBundleNames {
 	    public static final String CLIENT_STLS_CERT = "myclient-server-authentication-tls-cert";
 	    public static final String CLIENT_MTLS_CERT = "myclient-mutual-authentication-tls-cert";
 	    public static final String SERVER_TLS_CERT  = "myserver-tls-cert";

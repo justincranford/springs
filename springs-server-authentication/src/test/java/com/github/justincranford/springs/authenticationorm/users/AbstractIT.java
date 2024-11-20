@@ -28,15 +28,15 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonaEmailPasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.config.SpringsAuthenticationOrmUsersConfiguration;
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
-import com.github.justincranford.springs.persistenceredis.sessions.database.repository.SessionOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.repository.UserSessionPojoRepository;
+//import com.github.justincranford.springs.persistenceredis.sessions.database.repository.SessionOrmRepository;
+//import com.github.justincranford.springs.persistenceorm.users.repository.UserSessionPojoRepository;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
 import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
-import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
+import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultApplicationContextInitializer;
 import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -52,7 +52,7 @@ import lombok.extern.slf4j.Slf4j;
     }
 )
 @ContextConfiguration(
-	initializers={TlsEnabledByDefaultInitializer.class}
+	initializers={ TlsEnabledByDefaultApplicationContextInitializer.class}
 )
 @Getter
 @Accessors(fluent = true)
@@ -69,10 +69,10 @@ public class AbstractIT {
     private PersonOrmRepository personOrmRepository;
     @Autowired
     private PersonaOrmRepository personaOrmRepository;
-    @Autowired
-    private SessionOrmRepository sessionOrmRepository;
-	@Autowired
-	private UserSessionPojoRepository repository;
+//    @Autowired
+//    private SessionOrmRepository sessionOrmRepository;
+//	@Autowired
+//	private UserSessionPojoRepository repository;
     @Autowired
     private SpringsPersistenceOrmBaseProperties springsPersistenceOrmBaseProperties;
     @Autowired
@@ -139,6 +139,7 @@ public class AbstractIT {
     }
 
 	@DynamicPropertySource
+	@SuppressWarnings({"unused"})
     public static void postgresqlContainerProperties(final DynamicPropertyRegistry registry) {
 		final PostgreSQLContainer<?> instance = SpringsUtilTestContainers.POSTGRESQL.getInstance();
 		if (instance.isRunning()) {

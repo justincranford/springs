@@ -16,13 +16,13 @@ public class SmokeIT extends AbstractIT {
 		assertThat(super.applicationContext()).isNotNull();
 		assertThat(super.personOrmRepository()).isNotNull();
 		assertThat(super.personaOrmRepository()).isNotNull();
-		assertThat(super.sessionOrmRepository()).isNotNull();
+//		assertThat(super.sessionOrmRepository()).isNotNull();
+//		assertThat(super.repository()).isNotNull();
 		assertThat(super.springsPersistenceOrmBaseProperties()).isNotNull();
 		assertThat(super.springsPersistenceOrmUsersPeopleProperties()).isNotNull();
 		assertThat(super.personaEmailPasswordAuthenticationProvider()).isNotNull();
 		assertThat(super.personUsernamePasswordAuthenticationProvider()).isNotNull();
 		assertThat(super.http()).isNotNull();
-		assertThat(super.repository()).isNotNull();
 		assertThat(super.serverAddress()).isNotNull();
 		assertThat(super.webServerApplicationContext()).isNotNull();
 		assertThat(super.sslBundles()).isNotNull();

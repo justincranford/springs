@@ -31,7 +31,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
-public final class SpringsUtilTestContainers {
+@SuppressWarnings({"unused", "checkstyle:UtilityClass"})
+public class SpringsUtilTestContainers { // do not make final
 	public static final TestContainerElasticsearch  ELASTICSEARCH  = new TestContainerElasticsearch();
 	public static final TestContainerKeycloak       KEYCLOCK       = new TestContainerKeycloak();
 	public static final TestContainerGrafana        GRAFANA        = new TestContainerGrafana();

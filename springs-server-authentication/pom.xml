@@ -62,9 +62,14 @@
             <scope>runtime</scope>
         </dependency>
 
+<!--		<dependency>-->
+<!--			<groupId>com.github.justincranford.springs</groupId>-->
+<!--			<artifactId>springs-persistence-orm-session</artifactId>-->
+<!--			<version>${project.parent.version}</version>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
-			<artifactId>springs-persistence-orm-session</artifactId>
+			<artifactId>springs-persistence-redis-session</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
         <dependency>

@@ -1,5 +1,6 @@
 package com.github.justincranford.springs.util.https.server.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -7,15 +8,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultInitializer;
-
-import lombok.extern.slf4j.Slf4j;
-
 @Configuration
 @EnableAutoConfiguration
 @EnableConfigurationProperties
 @Import(value={
-	TlsEnabledByDefaultInitializer.class,
 	SpringsUtilHttpsServerPskConfiguration.class
 })
 @Slf4j
