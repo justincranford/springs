@@ -86,7 +86,7 @@ public class TlsEnabledByDefaultInitializer implements ApplicationContextInitial
 
 			httpsServerRootCaCert.verify(httpsServerRootCaKeyPair.getPublic());
 			httpsServerCert.verify(httpsServerRootCaKeyPair.getPublic());
-			httpsClientRootCaCert.verify(httpsClientRootCaKeyPair.getPublic());	
+			httpsClientRootCaCert.verify(httpsClientRootCaKeyPair.getPublic());
 			httpsClientCert.verify(httpsClientRootCaKeyPair.getPublic());
 
 			final String httpsServerRootCaCertPem       = PemUtil.toPem(httpsServerRootCaCert);
@@ -140,7 +140,7 @@ public class TlsEnabledByDefaultInitializer implements ApplicationContextInitial
 		return path.toAbsolutePath().toString();
 	}
 
-    private void prependPropertySource(
+    public void prependPropertySource(
 		final MutablePropertySources mutablePropertySources,
 		final String httpsServerRootCaCertPem, final String httpsServerCertPem, final String httpsServerPrivateKeyPem,
 		final String httpsClientRootCaCertPem, final String httpsClientCertPem, final String httpsClientPrivateKeyPem,
