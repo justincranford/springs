@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.testcontainers.containers.GenericContainer;
 
 import com.github.justincranford.springs.util.testcontainers.containers.AbstractTestContainer;
@@ -28,8 +30,8 @@ import lombok.extern.slf4j.Slf4j;
  * Container.start() is blocking, so start multiple containers concurrently. Same for stop.
  */
 @Slf4j
-@SuppressWarnings({"resource"})
-public class SpringsUtilTestContainers {
+@NoArgsConstructor(access=AccessLevel.PRIVATE)
+public final class SpringsUtilTestContainers {
 	public static final TestContainerElasticsearch  ELASTICSEARCH  = new TestContainerElasticsearch();
 	public static final TestContainerKeycloak       KEYCLOCK       = new TestContainerKeycloak();
 	public static final TestContainerGrafana        GRAFANA        = new TestContainerGrafana();
@@ -75,7 +77,7 @@ public class SpringsUtilTestContainers {
         final long startNanos = System.nanoTime();
         try {
             log.debug("Starting containers, count: {}", testContainerInstances.size());
-            testContainerInstances.parallelStream().forEach(testContainerInstance -> startContainer(testContainerInstance));
+            testContainerInstances.parallelStream().forEach(SpringsUtilTestContainers::startContainer);
         } finally {
             log.debug("Started containers, count: {}, duration: {}", testContainerInstances.size(), format(startNanos));
         }
@@ -86,7 +88,7 @@ public class SpringsUtilTestContainers {
         final long startNanos = System.nanoTime();
         try {
             log.debug("Stopping containers, count: {}", testContainerInstances.size());
-            testContainerInstances.parallelStream().forEach(testContainerInstance -> stopContainer(testContainerInstance));
+            testContainerInstances.parallelStream().forEach(SpringsUtilTestContainers::stopContainer);
         } finally {
             log.debug("Stopped containers, count: {}, duration: {}", testContainerInstances.size(), format(startNanos));
         }

@@ -26,9 +26,9 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.persistenceorm.sessions.database.entity.AttributeOrm;
-import com.github.justincranford.springs.persistenceorm.sessions.database.entity.SessionOrm;
-import com.github.justincranford.springs.persistenceorm.sessions.database.repository.SessionOrmRepository;
+import com.github.justincranford.springs.persistenceredis.sessions.database.entity.AttributeOrm;
+import com.github.justincranford.springs.persistenceredis.sessions.database.entity.SessionOrm;
+import com.github.justincranford.springs.persistenceredis.sessions.database.repository.SessionOrmRepository;
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
 import com.github.justincranford.springs.util.json.config.PrettyJson;

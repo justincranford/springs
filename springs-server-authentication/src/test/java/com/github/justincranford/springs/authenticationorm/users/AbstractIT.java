@@ -28,7 +28,7 @@ import com.github.justincranford.springs.authenticationorm.users.authentication.
 import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonaEmailPasswordAuthenticationProvider;
 import com.github.justincranford.springs.authenticationorm.users.config.SpringsAuthenticationOrmUsersConfiguration;
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
-import com.github.justincranford.springs.persistenceorm.sessions.database.repository.SessionOrmRepository;
+import com.github.justincranford.springs.persistenceredis.sessions.database.repository.SessionOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.repository.UserSessionPojoRepository;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;

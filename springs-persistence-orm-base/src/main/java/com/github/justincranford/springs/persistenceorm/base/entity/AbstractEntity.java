@@ -56,17 +56,6 @@ public class AbstractEntity {
 	public static final int SEQUENCE_ID_ALLOCATION_SIZE_EXTRA_LARGE = 10000;
 	public static final String SEQUENCE_ID = "ABSTRACT_ENTITY_SEQUENCE_ID";
 
-	/**
-	 * SpotBugs: Be wary of letting constructors throw exceptions. Classes that throw exceptions in their constructors are vulnerable to Finalizer attacks.
-	 * A finalizer attack can be prevented, by declaring the class final, using an empty finalizer declared a s final, or by a clever use of a private constructor.
-	 * See SEI CERT Rule OBJ-11 for more information.
-	 * @see <a href="https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#ct-be-wary-of-letting-constructors-throw-exceptions-ct-constructor-throw">CT_CONSTRUCTOR_THROW</a>
-	 */
-	@Override
-	protected final void finalize() {
-		// Do nothing
-	}
-
 	@Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE,generator=AbstractEntity.SEQUENCE_ID)
     private Long id;
@@ -106,7 +95,7 @@ public class AbstractEntity {
 	@CreatedDate
 	@Column(nullable=false,updatable=false)
     private OffsetDateTime createdDate;
-    
+
     @CreatedBy
 	@Column(updatable=false)
     private String createdBy;
@@ -114,7 +103,7 @@ public class AbstractEntity {
 	@Column(insertable=false)
     @LastModifiedDate
     private OffsetDateTime lastModifiedDate;
-    
+
 	@Column(insertable=false)
     @LastModifiedBy
     private String lastModifiedBy;
@@ -153,6 +142,7 @@ public class AbstractEntity {
 
 	@Override
     public final boolean equals(Object o) {
+		// TODO Change id comparison to Object.equals
 		return (this == o) || ( (o != null) && (this.getClass().equals(o.getClass())) && (this.id == ((AbstractEntity)o).id) );
     }
 

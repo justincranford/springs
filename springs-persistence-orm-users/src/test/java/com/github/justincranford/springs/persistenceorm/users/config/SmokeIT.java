@@ -1,12 +1,10 @@
 package com.github.justincranford.springs.persistenceorm.users.config;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import com.github.justincranford.springs.persistenceorm.users.AbstractIT;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import com.github.justincranford.springs.persistenceorm.users.AbstractIT;
-
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 public class SmokeIT extends AbstractIT {
@@ -18,5 +16,8 @@ public class SmokeIT extends AbstractIT {
 		assertThat(super.personaOrmRepository()).isNotNull();
 		assertThat(super.peopleProperties()).isNotNull();
 		assertThat(super.springsPersistenceOrmBaseProperties()).isNotNull();
+		assertThat(super.personPasswordUpgradeEncodingService()).isNotNull();
+		assertThat(super.personService()).isNotNull();
+		assertThat(super.personaService()).isNotNull();
 	}
 }

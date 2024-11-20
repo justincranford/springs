@@ -12,14 +12,13 @@ import org.testcontainers.utility.DockerImageName;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"resource"})
 public class TestContainerElasticsearch extends AbstractTestContainer<ElasticsearchContainer> {
 	public static final String DOCKER_IMAGE_NAME = "elasticsearch:8.14.3"; // Last checked on 2024-08-01
 //	public static final String DOCKER_IMAGE_NAME = "elasticsearch:7.17.23"; // 2019-04-10
 
 	private static final String NETWORK_ALIAS = "elastic";
-    private static final Integer ELASTICSEARCH_HTTP_PORT = Integer.valueOf(9200);
-    private static final Integer ELASTICSEARCH_TRANSPORT_PORT = Integer.valueOf(9300);
+    private static final Integer ELASTICSEARCH_HTTP_PORT = 9200;
+    private static final Integer ELASTICSEARCH_TRANSPORT_PORT = 9300;
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(60);
 
 	@Override

@@ -11,12 +11,11 @@ import org.testcontainers.utility.DockerImageName;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"resource"})
 public class TestContainerOllama extends AbstractTestContainer<OllamaContainer> {
 	public static final String DOCKER_IMAGE_NAME = "ollama/ollama:0.3.12"; // Last checked on 2024-09-25
 //	public static final String LOCAL_DOCKER_IMAGE_NAME = "ollama-custom";
 	private static final String NETWORK_ALIAS = "ollama";
-	private static final Integer OLLAMA_PORT = Integer.valueOf(11434);
+	private static final Integer OLLAMA_PORT = 11434;
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(15);
 
 	@Override
@@ -53,8 +52,8 @@ public class TestContainerOllama extends AbstractTestContainer<OllamaContainer> 
 		}
 	}
 
-	public void pullModel() {
+//	public void pullModel() {
 //        ollamaContainer.execInContainer("ollama", "pull", "all-minilm");
 //        ollamaContainer.commitToImage("ollama-all-minilm");
-	}
+//	}
 }

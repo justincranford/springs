@@ -11,14 +11,13 @@ import org.testcontainers.utility.DockerImageName;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"resource"})
 public class TestContainerGrafana extends AbstractTestContainer<LgtmStackContainer> {
 	public static final String DOCKER_IMAGE_NAME = "grafana/otel-lgtm:0.6.0"; // Last checked on 2024-08-01
 	private static final String NETWORK_ALIAS = "grafana";
-	private static final Integer GRAFANA_PORT = Integer.valueOf(3000);
-	private static final Integer OTLP_GRPC_PORT = Integer.valueOf(4317);
-	private static final Integer OTLP_HTTP_PORT = Integer.valueOf(4318);
-	private static final Integer PROMETHEUS_PORT = Integer.valueOf(9090);
+	private static final Integer GRAFANA_PORT = 3000;
+	private static final Integer OTLP_GRPC_PORT = 4317;
+	private static final Integer OTLP_HTTP_PORT = 4318;
+	private static final Integer PROMETHEUS_PORT = 9090;
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(30);
 
 	@Override

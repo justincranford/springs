@@ -11,12 +11,11 @@ import org.testcontainers.utility.DockerImageName;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"resource"})
 public class TestContainerKafka extends AbstractTestContainer<KafkaContainer> {
 	public static final String DOCKER_IMAGE_NAME = "confluentinc/cp-kafka:7.7.0"; // Last checked on 2024-08-01
 	private static final String NETWORK_ALIAS = "kafka";
-	private static final Integer KAFKA_PORT = Integer.valueOf(9093);
-	private static final Integer ZOOKEEPER_PORT = Integer.valueOf(2181);
+	private static final Integer KAFKA_PORT = 9093;
+	private static final Integer ZOOKEEPER_PORT = 2181;
    	private static final Duration START_TIMEOUT = Duration.ofSeconds(30);
 
 	@Override

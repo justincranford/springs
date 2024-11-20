@@ -23,18 +23,13 @@ public class SpringsUtilHttpsServerPskConfiguration {
     public JettyServletWebServerFactory jettyServletWebServerFactory(final SslBundles sslBundles) {
 		final JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
 		if (ADD_TLS_PSK_CONNECTOR) {
-	        factory.addServerCustomizers(new JettyServerCustomizer() {
-				@Override
-	            public void customize(Server server) {
-					final SslBundle                serverTlsPskBundle = sslBundles.getBundle(TlsEnabledByDefaultInitializer.SslBundleNames.SERVER_TLS_PSK);
-					final SslContextFactory.Server sslContextFactory  = TlsPskUtil.createServerSslContextFactory(serverTlsPskBundle);
-
-					@SuppressWarnings({"resource"})
-					final ServerConnector serverConnector = new ServerConnector(server, sslContextFactory);
-					serverConnector.setPort(PORT);
-	                server.addConnector(serverConnector);
-	            }
-	        });
+	        factory.addServerCustomizers(server -> {
+                final SslBundle                serverTlsPskBundle = sslBundles.getBundle(TlsEnabledByDefaultInitializer.SslBundleNames.SERVER_TLS_PSK);
+                final SslContextFactory.Server sslContextFactory  = TlsPskUtil.createServerSslContextFactory(serverTlsPskBundle);
+ 				final ServerConnector serverConnector = new ServerConnector(server, sslContextFactory);
+                serverConnector.setPort(PORT);
+				server.addConnector(serverConnector);
+			});
 		}
         return factory;
     }

@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.persistenceorm.users.config;
 
-import com.github.justincranford.springs.persistenceorm.sessions.database.config.SpringsPersistenceOrmSessionsDatabaseConfiguration;
+import com.github.justincranford.springs.persistenceredis.sessions.database.config.SpringsPersistenceOrmSessionsDatabaseConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.person.service.PersonService;
 import com.github.justincranford.springs.persistenceorm.users.persona.service.PersonaService;
 import com.github.justincranford.springs.persistenceorm.users.repository.UserSessionPojoRepository;

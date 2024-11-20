@@ -11,11 +11,10 @@ import org.testcontainers.utility.DockerImageName;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"resource"})
 public class TestContainerDynamoDb extends AbstractTestContainer<GenericContainer<?>> {
 	public static final String DOCKER_IMAGE_NAME = "amazon/dynamodb-local:2.5.2"; // Last checked on 2024-08-01
 	private static final String NETWORK_ALIAS = "dynamodb";
-	private static final Integer DYNAMODB_PORT = Integer.valueOf(8000);
+	private static final Integer DYNAMODB_PORT = 8000;
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(30);
 
 	@Override

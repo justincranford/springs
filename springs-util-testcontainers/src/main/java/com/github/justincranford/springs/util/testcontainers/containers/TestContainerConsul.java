@@ -11,12 +11,11 @@ import org.testcontainers.utility.DockerImageName;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"resource"})
 public class TestContainerConsul extends AbstractTestContainer<ConsulContainer>  {
 	public static final String DOCKER_IMAGE_NAME = "hashicorp/consul:1.19.1"; // Last checked on 2024-08-01
 	private static final String NETWORK_ALIAS = "hashicorp";
-	private static final Integer CONSUL_HTTP_PORT = Integer.valueOf(8500);
-	private static final Integer CONSUL_GRPC_PORT = Integer.valueOf(8502);
+	private static final Integer CONSUL_HTTP_PORT = 8500;
+	private static final Integer CONSUL_GRPC_PORT = 8502;
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(15);
 
 	@Override

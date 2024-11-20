@@ -2,6 +2,9 @@ package com.github.justincranford.springs.persistenceorm.users;
 
 import java.util.List;
 
+import com.github.justincranford.springs.persistenceorm.users.person.service.PersonPasswordUpgradeEncodingService;
+import com.github.justincranford.springs.persistenceorm.users.person.service.PersonService;
+import com.github.justincranford.springs.persistenceorm.users.persona.service.PersonaService;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +64,12 @@ public class AbstractIT {
     private SpringsPersistenceOrmBaseProperties springsPersistenceOrmBaseProperties;
     @Autowired
     private SpringsPersistenceOrmUsersPeopleProperties peopleProperties;
+    @Autowired
+    private PersonPasswordUpgradeEncodingService personPasswordUpgradeEncodingService;
+    @Autowired
+    private PersonService personService;
+    @Autowired
+    private PersonaService personaService;
 
     @BeforeAll
     public static void beforeAll() {

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
-public class Argon2Encoder {
+public final class Argon2Encoder {
 	private static final DigestAlgorithm MESSAGE_DIGEST = DigestAlgorithm.SHA256; // 512b/64B
 	private static final int ARGON2_ALGORITHM_TYPE = Argon2Parameters.ARGON2_id;
 	private static final int ARGON2_VERSION = Argon2Parameters.ARGON2_VERSION_13;
@@ -84,17 +84,6 @@ public class Argon2Encoder {
 					throw new RuntimeException("Unsupported class " + clazz.getCanonicalName());
 				}
 			}
-		}
-
-		/**
-		 * SpotBugs: Be wary of letting constructors throw exceptions. Classes that throw exceptions in their constructors are vulnerable to Finalizer attacks.
-		 * A finalizer attack can be prevented, by declaring the class final, using an empty finalizer declared a s final, or by a clever use of a private constructor.
-		 * See SEI CERT Rule OBJ-11 for more information.
-		 * @see <a href="https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#ct-be-wary-of-letting-constructors-throw-exceptions-ct-constructor-throw">CT_CONSTRUCTOR_THROW</a>
-		 */
-		@Override
-		protected final void finalize() {
-			// Do nothing
 		}
 
 		@Override

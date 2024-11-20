@@ -11,11 +11,10 @@ import org.testcontainers.utility.DockerImageName;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings({"resource"})
 public class TestContainerMongoDb extends AbstractTestContainer<MongoDBContainer> {
 	public static final String DOCKER_IMAGE_NAME = "mongo:7.0.12"; // Last checked on 2024-08-01
 	private static final String NETWORK_ALIAS = "mongo";
-	private static final Integer MONGODB_PORT = Integer.valueOf(27017);
+	private static final Integer MONGODB_PORT = 27017;
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(15);
 
 	@Override

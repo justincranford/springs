@@ -64,8 +64,7 @@ public class SpringsUtilHttpsClientsConfiguration {
 	@ConditionalOnProperty(name=TlsEnabledByDefaultInitializer.SslAutoConfigPropertyNames.ENABLED, matchIfMissing = false)
 	@Qualifier("ptlsRestTemplate")
 	@Bean
-	@SuppressWarnings({"resource"})
-	public RestTemplate ptlsRestTemplate(final WebServerApplicationContext webServerApplicationContext) {
+		public RestTemplate ptlsRestTemplate(final WebServerApplicationContext webServerApplicationContext) {
 		final SslBundle serverTlsPskBundle = this.sslBundles.getBundle(TlsEnabledByDefaultInitializer.SslBundleNames.SERVER_TLS_PSK);
 		final String webServerClassName = webServerApplicationContext.getWebServer().getClass().getName();
 		if (webServerClassName.contains("Tomcat")) { // Use Apache HTTP Client
