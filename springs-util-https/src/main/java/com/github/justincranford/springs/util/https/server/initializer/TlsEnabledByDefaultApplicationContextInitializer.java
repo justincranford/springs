@@ -1,6 +1,5 @@
 package com.github.justincranford.springs.util.https.server.initializer;
 
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;

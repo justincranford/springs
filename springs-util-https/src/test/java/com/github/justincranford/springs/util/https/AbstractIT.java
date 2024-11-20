@@ -35,7 +35,7 @@ import javax.net.ssl.SSLContext;
 	}
 )
 @ContextConfiguration(
-	initializers={ TlsEnabledByDefaultApplicationContextInitializer.class}
+	initializers={TlsEnabledByDefaultApplicationContextInitializer.class}
 )
 @Getter
 @Accessors(fluent = true)

@@ -47,13 +47,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
-    classes = {
+    classes={
 		SpringsPersistenceOrmSessionsConfiguration.class,
 		AbstractIT.AbstractITConfiguration.class
     }
 )
 @ContextConfiguration(
-	initializers={ TlsEnabledByDefaultApplicationContextInitializer.class}
+	initializers={TlsEnabledByDefaultApplicationContextInitializer.class}
 )
 @Getter
 @Accessors(fluent = true)
