@@ -7,7 +7,7 @@ import com.github.justincranford.springs.persistenceredis.properties.RedisProper
 import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
-import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultApplicationContextInitializer;
+import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefaultApplicationContextInitializer;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
 import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
 import io.micrometer.core.instrument.MeterRegistry;

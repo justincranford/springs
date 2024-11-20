@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.util.https.server.config;
 
-import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefault;
+import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefault;
 import com.github.justincranford.springs.util.https.util.TlsPskUtil;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;

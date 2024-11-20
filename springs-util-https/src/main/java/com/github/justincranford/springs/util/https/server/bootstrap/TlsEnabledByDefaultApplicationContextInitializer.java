@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.https.server.initializer;
+package com.github.justincranford.springs.util.https.server.bootstrap;
 
 import lombok.NoArgsConstructor;
 import org.springframework.context.ApplicationContextInitializer;

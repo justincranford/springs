@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.util.https.client.config;
 
-import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefault;
+import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefault;
 import com.github.justincranford.springs.util.https.util.TlsPskUtil;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;

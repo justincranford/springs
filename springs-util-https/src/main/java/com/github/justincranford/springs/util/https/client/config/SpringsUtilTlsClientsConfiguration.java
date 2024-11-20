@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.util.https.client.config;
 
-import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefault;
+import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefault;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

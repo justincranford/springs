@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.util.https.server.initializer;
+package com.github.justincranford.springs.util.https.server.bootstrap;
 
 import com.github.justincranford.springs.util.basic.ThreadUtil;
 import com.github.justincranford.springs.util.https.util.CertUtil;

@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 import com.github.justincranford.springs.authenticationorm.users.config.SpringsAuthenticationOrmUsersConfiguration;
-import com.github.justincranford.springs.util.https.server.initializer.TlsEnabledByDefaultApplicationContextInitializer;
+import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefaultApplicationContextInitializer;
 
 @SpringBootApplication
 @Import({SpringsAuthenticationOrmUsersConfiguration.class})
