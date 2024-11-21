@@ -1,0 +1,225 @@
+package com.github.justincranford.springs.util.testcontainers.bootstrap;
+
+import com.github.justincranford.springs.util.basic.EnumUtils;
+import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers.Properties.ENABLE;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.env.OriginTrackedMapPropertySource;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.PropertySources;
+import org.testcontainers.containers.GenericContainer;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@NoArgsConstructor(access=AccessLevel.PRIVATE)
+@Slf4j
+@SuppressWarnings({"static-method", "checkstyle:UtilityClass", "unchecked"})
+public final class BootstrapTestContainers {
+	public static List<ContainerDescriptor> cleanup(final ConfigurableEnvironment environment1) {
+		final List<ContainerDescriptor> containerDescriptors = environment1.getProperty(BootstrapTestContainers.Properties.CONTAINERS, List.class);
+		if (containerDescriptors != null) {
+			for (final ContainerDescriptor containerDescriptor : containerDescriptors) {
+				containerDescriptor.containerInstance().stop();
+			}
+		}
+		return containerDescriptors;
+	}
+
+	static void bootstrap(final ConfigurableEnvironment configurableEnvironment) {
+		ENABLE enabled = Properties.ENABLED_DEFAULT;
+		try {
+			final MutablePropertySources readWritePropertySources = configurableEnvironment.getPropertySources();
+
+            final Properties         properties = Properties.read(readWritePropertySources);
+			                         enabled    = properties.enabled();
+			final Map<String,String> containers = properties.containers();
+			log.info("Bootstrap TestContainers Config, {}: {}, {}*: {}", Properties.ENABLED, enabled,  Properties.CONTAINERS_PREFIX, containers);
+			if (ENABLE.FALSE.equals(enabled)) {
+				return;
+			}
+
+			final List<ContainerDescriptor> containerDescriptors = new ArrayList<>();
+			for (final Entry<String,String> containerDescriptorEntry : containers.entrySet()) {
+				try {
+					final String                               alias               = containerDescriptorEntry.getKey().replace(Properties.CONTAINERS_PREFIX, "");
+					final String[]                             imageAndOptionalTag = containerDescriptorEntry.getValue().split(":", 2);
+					final String                               image               = imageAndOptionalTag[0];
+					final ImageDescriptor                      imageDescriptor     = ImageDescriptor.MAP.get(image);
+					final String                               tag                 = (imageAndOptionalTag.length == 2) ? imageAndOptionalTag[1] : imageDescriptor.defaultImageTag();
+					final Class<? extends GenericContainer<?>> containerClass      = imageDescriptor.containerClass();
+					final Map<String,String>                   containerProperties = imageDescriptor.clientProperties();
+					final GenericContainer<?>                  containerInstance   = containerClass.getConstructor(String.class).newInstance(image + ":" + tag);
+					containerDescriptors.add(new ContainerDescriptor(alias, image, tag, containerProperties, containerInstance));
+				} catch (Exception e) {
+					throw new RuntimeException("Error creating container for: " + containerDescriptorEntry.getKey(), e);
+				}
+			}
+
+			final List<CompletableFuture<ContainerDescriptor>> futures = new ArrayList<>();
+			for (final ContainerDescriptor containerDescriptor : containerDescriptors) {
+				futures.add(CompletableFuture.supplyAsync(() -> {
+					final Map<String, Integer> exposedPorts = containerDescriptor.exposedPorts();
+					final GenericContainer<?> containerInstance = containerDescriptor.containerInstance();
+//					containerInstance.withReuse(true);
+					containerInstance.withExposedPorts(exposedPorts.values().toArray(new Integer[0]));
+					containerInstance.start();
+					final Map<String, Integer> mappedPorts = containerDescriptor.mappedPorts();
+					log.info("alias: {}, image: {}, isRunning: {}, properties: {}, exposedPorts: {}. mappedPorts: {}, id: {}, name: {}", containerDescriptor.alias(), containerDescriptor.image(), containerInstance.isRunning(), containerDescriptor.containerProperties(), exposedPorts, mappedPorts, containerInstance.getContainerId(), containerInstance.getContainerName());
+					Runtime.getRuntime().addShutdownHook(new Thread(containerInstance::stop));
+					return containerDescriptor;
+				}));
+			}
+			final List<MapPropertySource> propertySources = new ArrayList<>();
+			for (final CompletableFuture<ContainerDescriptor> future : futures) {
+				final ContainerDescriptor containerDescriptor = future.get();
+				final String containerAlias = containerDescriptor.image();
+				final Map<String, Object> containerProperties = new LinkedHashMap<>((Map) containerDescriptor.containerProperties());
+				containerProperties.putAll(containerDescriptor.mappedPorts()); // overwrite properties to change them from exposedPorts to mappedPorts
+				log.info("Prepending containerProperties: {}", containerProperties);
+				propertySources.add(new MapPropertySource(Properties.CONTAINERS + "-" + containerAlias, containerProperties));
+			}
+			for (final MapPropertySource propertySource : propertySources.reversed()) {
+				readWritePropertySources.addFirst(propertySource);
+			}
+			readWritePropertySources.addFirst(new MapPropertySource(Properties.CONTAINERS, Map.of(Properties.CONTAINERS, containerDescriptors)));
+		} catch(ExecutionException e) {
+			if (ENABLE.PREFERRED.equals(enabled)) {
+				log.warn("Failed to start container", e);
+				return;
+			}
+			log.error("Failed to start container", e);
+			if (e.getCause() instanceof RuntimeException re) {
+				if (re.getMessage().startsWith("Could not find a valid Docker environment.") ||
+					re.getMessage().startsWith("Previous attempts to find a Docker environment failed. Will not retry.")) {
+					throw re;
+				}
+
+			}
+			throw new RuntimeException(e);
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@SuppressWarnings({"unused"})
+	public record Properties(ENABLE enabled, Map<String,String> containers) {
+		public enum                ENABLE { TRUE, PREFERRED, FALSE }
+		public static final String ENABLED            = "bootstrap.testcontainers.enabled";
+		public static final ENABLE ENABLED_DEFAULT    = ENABLE.FALSE;
+		public static final String CONTAINERS         = "bootstrap.testcontainers.containers";
+		public static final String CONTAINERS_PREFIX  = CONTAINERS + ".";
+
+		private static Properties read(final PropertySources propertySources) {
+			final Map<String, String> found = new HashMap<>();
+			for (final PropertySource<?> propertySource : Lists.newArrayList(propertySources.iterator())) {
+				if (propertySource.containsProperty(ENABLED)) {
+					found.putIfAbsent(ENABLED, Objects.requireNonNull(propertySource.getProperty(ENABLED)).toString());
+				}
+				if (propertySource instanceof org.springframework.core.env.MapPropertySource mapPropertySource) {
+					for (final String key : mapPropertySource.getPropertyNames()) {
+						if (key.startsWith(CONTAINERS_PREFIX)) {
+							found.putIfAbsent(key, Objects.requireNonNull(propertySource.getProperty(key)).toString());
+						}
+					}
+				}
+			}
+			final ENABLE enabled = EnumUtils.valueOfCaseInsensitive(ENABLE.class, found.getOrDefault(ENABLED, ENABLED_DEFAULT.name())) ;
+			found.remove(ENABLED);
+			return new Properties(enabled, found);
+		}
+	}
+
+	public record ContainerDescriptor(String alias, String image, String tag, Map<String, String> containerProperties, GenericContainer<?> containerInstance) {
+		private Map<String,Integer> exposedPorts() {
+			final Map<String,Integer> exposedPorts = new LinkedHashMap<>();
+			this.containerProperties.forEach((key, value) -> {
+				if (key.endsWith(".port")) {
+					final int originalPort = Integer.parseInt(value);
+					exposedPorts.put(key, originalPort);
+				}
+			});
+			return exposedPorts;
+		}
+
+		private Map<String,Integer> mappedPorts() {
+			final Map<String,Integer> mappedPorts = new LinkedHashMap<>();
+			exposedPorts().forEach((key, value) -> {
+				final int mappedPort = this.containerInstance().getMappedPort(value);
+				mappedPorts.put(key, mappedPort);
+			});
+			return mappedPorts;
+		}
+	}
+
+	@VisibleForTesting
+	public static void insert(final MutablePropertySources mutablePropertySources) {
+		final Map<String, Object> properties = new LinkedHashMap<>();
+		mutablePropertySources.addFirst(new OriginTrackedMapPropertySource("auto-config-testcontainers", properties));
+	}
+
+	public record ImageDescriptor(
+		Class<? extends GenericContainer<?>> containerClass, String dockerRegister, String image, String defaultImageTag, Map<String,String> clientProperties) {
+//		public static final ImageDescriptor ELASTICSEARCH = new ImageDescriptor(ElasticsearchContainer.class,
+//			"docker.elastic.co", "elasticsearch/elasticsearch", "elasticsearch", "8.14.3",
+//			new LinkedHashMap<>() {{
+//				put("elasticsearch.host", "localhost");
+//				put("elasticsearch.port", "9200");
+//				put("elasticsearch.transport.host", "localhost");
+//				put("elasticsearch.transport.port", "9300");
+//			}}
+//		);
+//		public static final ImageDescriptor KEYCLOAK = new ImageDescriptor(KeycloakContainer.class,
+//			"quay.io", "keycloak/keycloak", "keycloak", "25.0.2",
+//			new LinkedHashMap<>() {{
+//				put("keycloak.host", "localhost");
+//				put("keycloak.port", "8080");
+//			}}
+//		);
+//		public static final ImageDescriptor POSTGRESQL = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
+//			"docker.io", "postgres", "postgres", "16.3",
+//			new LinkedHashMap<>() {{
+//				put("postgres.host", "localhost");
+//				put("postgres.port", "5432");
+//			}}
+//		);
+		public static final ImageDescriptor REDIS = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
+				"docker.io", "redis", "7.4.0",
+				new LinkedHashMap<>() {{
+				    put("redis.host", "localhost");
+				    put("redis.port", "6379");
+			   }}
+		);
+
+		public static final List<ImageDescriptor> LIST = List.of(
+//			ELASTICSEARCH,
+//			KEYCLOAK,
+//			POSTGRESQL,
+			REDIS
+		);
+
+		public static final Map<String,ImageDescriptor> MAP = LIST.stream()
+																						  .flatMap(descriptor -> Stream.of(
+																							  new AbstractMap.SimpleEntry<>(descriptor.image(), descriptor),
+																							  new AbstractMap.SimpleEntry<>(descriptor.dockerRegister() + "/" + descriptor.image(), descriptor)
+																						  ))
+																						  .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+	}
+}

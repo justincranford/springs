@@ -1,44 +1,99 @@
 package com.github.justincranford.springs.util.testcontainers.containers;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
 import com.github.justincranford.springs.util.testcontainers.AbstractIT;
-import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
-
+import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers;
+import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers.ContainerDescriptor;
+import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+
+import java.util.List;
 
 @Slf4j
 public class TestContainersIT extends AbstractIT {
-	@ParameterizedTest
-	@MethodSource("containersStream")
-	void testStopStartContainer(final AbstractTestContainer<?> testContainer) {
-		SpringsUtilTestContainers.startContainer(testContainer);
-		super.verifyStarted(testContainer);
+	public abstract static class AbstractOneTestIT extends AbstractIT {
+		@Autowired
+		private ConfigurableEnvironment environment;
 
-		SpringsUtilTestContainers.stopContainer(testContainer);
-		super.verifyStopped(testContainer);
-
-		SpringsUtilTestContainers.startContainer(testContainer);
-		super.verifyStarted(testContainer);
+		@Test
+		void shutdown() {
+			final List<ContainerDescriptor> containerDescriptors = BootstrapTestContainers.cleanup(this.environment);
+			log.info("containerDescriptors: {}", containerDescriptors);
+		}
 	}
 
-	@Test
-	void testStopStartContainers() {
-		SpringsUtilTestContainers.startContainers(containersList());
-		for (final AbstractTestContainer<?> testContainer : containersList()) {
-			super.verifyStarted(testContainer);
+	@Nested
+	class EnabledTrue extends AbstractOneTestIT {
+		@DynamicPropertySource
+		static void properties(final DynamicPropertyRegistry registry) {
+			registry.add("bootstrap.testcontainers.enabled", () -> "true");
 		}
-
-		SpringsUtilTestContainers.stopContainers(containersList());
-		for (final AbstractTestContainer<?> testContainer : containersList()) {
-			super.verifyStopped(testContainer);
+		@Nested
+		@ContextConfiguration(initializers={BootstrapTestContainersApplicationContextInitializer.class})
+		class None extends AbstractOneTestIT {
+			@DynamicPropertySource
+			static void properties(final DynamicPropertyRegistry registry) { /* empty */ }
 		}
+		@Nested
+		@ContextConfiguration(initializers={BootstrapTestContainersApplicationContextInitializer.class})
+		class Two extends AbstractOneTestIT {
+			@DynamicPropertySource
+			static void properties(final DynamicPropertyRegistry registry) {
+				registry.add("bootstrap.testcontainers.containers.redis1", () -> "redis:7.4.0");
+				registry.add("bootstrap.testcontainers.containers.redis2", () -> "redis:7.4.0");
+			}
+		}
+	}
 
-		SpringsUtilTestContainers.startContainers(containersList());
-		for (final AbstractTestContainer<?> testContainer : containersList()) {
-			super.verifyStarted(testContainer);
+	@Nested
+	class EnabledPreferred extends AbstractOneTestIT {
+		@DynamicPropertySource
+		static void properties(final DynamicPropertyRegistry registry) {
+			registry.add("bootstrap.testcontainers.enabled", () -> "preferred");
+		}
+		@Nested
+		@ContextConfiguration(initializers={BootstrapTestContainersApplicationContextInitializer.class})
+		class None extends AbstractOneTestIT {
+			@DynamicPropertySource
+			static void properties(final DynamicPropertyRegistry registry) { /* empty */ }
+		}
+		@Nested
+		@ContextConfiguration(initializers={BootstrapTestContainersApplicationContextInitializer.class})
+		class Two extends AbstractOneTestIT {
+			@DynamicPropertySource
+			static void properties(final DynamicPropertyRegistry registry) {
+				registry.add("bootstrap.testcontainers.containers.redis1", () -> "redis:7.4.0");
+				registry.add("bootstrap.testcontainers.containers.redis2", () -> "redis:7.4.0");
+			}
+		}
+	}
+
+	@Nested
+	class EnabledFalse extends AbstractOneTestIT {
+		@DynamicPropertySource
+		static void properties(final DynamicPropertyRegistry registry) {
+			registry.add("bootstrap.testcontainers.enabled", () -> "false");
+		}
+		@Nested
+		@ContextConfiguration(initializers={BootstrapTestContainersApplicationContextInitializer.class})
+		class None extends AbstractOneTestIT {
+			@DynamicPropertySource
+			static void properties(final DynamicPropertyRegistry registry) { /* empty */ }
+		}
+		@Nested
+		@ContextConfiguration(initializers={BootstrapTestContainersApplicationContextInitializer.class})
+		class Two extends AbstractOneTestIT {
+			@DynamicPropertySource
+			static void properties(final DynamicPropertyRegistry registry) {
+				registry.add("bootstrap.testcontainers.containers.redis1", () -> "redis:7.4.0");
+				registry.add("bootstrap.testcontainers.containers.redis2", () -> "redis:7.4.0");
+			}
 		}
 	}
 }

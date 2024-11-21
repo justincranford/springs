@@ -2,7 +2,11 @@ package com.github.justincranford.springs.util.testcontainers.config;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -47,34 +51,37 @@ public class SpringsUtilTestContainers { // do not make final
 	public static final TestContainerRedis          REDIS          = new TestContainerRedis();
 	public static final TestContainerOllama         OLLAMA         = new TestContainerOllama();
 
-	public static final List<AbstractTestContainer<?>> ALL = List.of(
-	    ELASTICSEARCH,  // Example: 23.152 seconds 47.656 seconds
-	    KEYCLOCK,       // Example: 18.809 seconds 40.408 seconds
-	    GRAFANA,        // Example: 10.437 seconds 17.041 seconds
-	    KAFKA,          // Example:  8.321 seconds 15.380 seconds
-	    ZIPKIN,         // Example:  6.794 seconds 17.291 seconds
-	    DYNAMODB,       // Example:  6.300 seconds 11.433 seconds
-	    POSTGRESQL,     // Example:  6.204 seconds  4.056 seconds
-	    SELENIUMCHROME, // Example:  5.468 seconds  7.835 seconds
-	    MONGODB,        // Example:  5.060 seconds  7.026 seconds
-	    VAULT,          // Example:  3.640 seconds  2.909 seconds
-	    CONSUL,         // Example:  2.602 seconds  2.933 seconds
-	    REDIS,          // Example:  2.334 seconds  2.647 seconds
-	    OLLAMA          // Example:  1.318 seconds  1.936 seconds
-	);
+    public static final Map<String, AbstractTestContainer<?>> ALL;
+    static {
+        final Map<String, AbstractTestContainer<?>> map = new LinkedHashMap<>();
+        map.put("elasticsearch",  ELASTICSEARCH);  // Example: 23.152 seconds 47.656 seconds
+        map.put("keyclock",       KEYCLOCK);       // Example: 18.809 seconds 40.408 seconds
+        map.put("grafana",        GRAFANA);        // Example: 10.437 seconds 17.041 seconds
+        map.put("kafka",          KAFKA);          // Example:  8.321 seconds 15.380 seconds
+        map.put("zipkin",         ZIPKIN);         // Example:  6.794 seconds 17.291 seconds
+        map.put("dynamodb",       DYNAMODB);       // Example:  6.300 seconds 11.433 seconds
+        map.put("postgresql",     POSTGRESQL);     // Example:  6.204 seconds  4.056 seconds
+        map.put("seleniumchrome", SELENIUMCHROME); // Example:  5.468 seconds  7.835 seconds
+        map.put("mongodb",        MONGODB);        // Example:  5.060 seconds  7.026 seconds
+        map.put("vault",          VAULT);          // Example:  3.640 seconds  2.909 seconds
+        map.put("consul",         CONSUL);         // Example:  2.602 seconds  2.933 seconds
+        map.put("redis",          REDIS);          // Example:  2.334 seconds  2.647 seconds
+        map.put("ollama",         OLLAMA);         // Example:  1.318 seconds  1.936 seconds
+        ALL = Collections.unmodifiableMap(map);
+    }
 
     @Observed
     public static synchronized void startAllContainers() {
-        startContainers(ALL);
+        startContainers(ALL.values());
     }
 
     @Observed
     public static synchronized void stopAllContainers() {
-        stopContainers(ALL);
+        stopContainers(ALL.values());
     }
 
     @Observed
-    public static void startContainers(final List<AbstractTestContainer<?>> testContainerInstances) {
+    public static void startContainers(final Collection<AbstractTestContainer<?>> testContainerInstances) {
         final long startNanos = System.nanoTime();
         try {
             log.debug("Starting containers, count: {}", testContainerInstances.size());
@@ -85,7 +92,7 @@ public class SpringsUtilTestContainers { // do not make final
     }
 
     @Observed
-    public static void stopContainers(final List<AbstractTestContainer<?>> testContainerInstances) {
+    public static void stopContainers(final Collection<AbstractTestContainer<?>> testContainerInstances) {
         final long startNanos = System.nanoTime();
         try {
             log.debug("Stopping containers, count: {}", testContainerInstances.size());

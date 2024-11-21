@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,30 +21,33 @@ import io.micrometer.observation.annotation.Observed;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.test.context.ContextConfiguration;
 
 @EnableAutoConfiguration
 @SpringBootTest(classes={SpringsUtilTestContainers.class})
-@Getter
+@ContextConfiguration(
+	initializers={ BootstrapTestContainersApplicationContextInitializer.class}
+)@Getter
 @Accessors(fluent = true)
 @ActiveProfiles({"test"})
 @Slf4j
 @Observed
-@SuppressWarnings({"static-method", "resource"})
+@SuppressWarnings({"static-method"})
 public class AbstractIT {
-	@BeforeEach
-	private void beforeEach() {
-		for (final AbstractTestContainer<?> testContainer : containersList()) {
-			verifyStopped(testContainer);
-		}
-	}
-
-	@AfterEach
-	private void afterEach() {
-		SpringsUtilTestContainers.stopContainers(containersList());
-		for (final AbstractTestContainer<?> testContainer : containersList()) {
-			verifyStopped(testContainer);
-		}
-	}
+//	@BeforeEach
+//    public void beforeEach() {
+//		for (final AbstractTestContainer<?> testContainer : containersList()) {
+//			verifyStopped(testContainer);
+//		}
+//	}
+//
+//	@AfterEach
+//	public void afterEach() {
+//		SpringsUtilTestContainers.stopContainers(containersList());
+//		for (final AbstractTestContainer<?> testContainer : containersList()) {
+//			verifyStopped(testContainer);
+//		}
+//	}
 
 	@Autowired
     private ApplicationContext applicationContext;
