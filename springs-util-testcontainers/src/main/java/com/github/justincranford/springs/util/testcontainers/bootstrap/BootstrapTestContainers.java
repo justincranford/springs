@@ -14,6 +14,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,9 +66,10 @@ public final class BootstrapTestContainers {
 					final ImageDescriptor                      imageDescriptor     = ImageDescriptor.MAP.get(image);
 					final String                               tag                 = (imageAndOptionalTag.length == 2) ? imageAndOptionalTag[1] : imageDescriptor.defaultImageTag();
 					final Class<? extends GenericContainer<?>> containerClass      = imageDescriptor.containerClass();
-					final Map<String,String>                   containerProperties = imageDescriptor.clientProperties();
+					final Map<String,String>                   containerProperties = imageDescriptor.containerProperties();
+					final Consumer<ContainerDescriptor>        updateProperties    = imageDescriptor.updateProperties();
 					final GenericContainer<?>                  containerInstance   = containerClass.getConstructor(String.class).newInstance(image + ":" + tag);
-					containerDescriptors.add(new ContainerDescriptor(alias, image, tag, containerProperties, containerInstance));
+					containerDescriptors.add(new ContainerDescriptor(alias, image, tag, containerProperties, containerInstance, updateProperties));
 				} catch (Exception e) {
 					throw new RuntimeException("Error creating container for: " + containerDescriptorEntry.getKey(), e);
 				}
@@ -80,6 +83,7 @@ public final class BootstrapTestContainers {
 //					containerInstance.withReuse(true);
 					containerInstance.withExposedPorts(exposedPorts.values().toArray(new Integer[0]));
 					containerInstance.start();
+					containerDescriptor.updateProperties().accept(containerDescriptor);
 					final Map<String, Integer> mappedPorts = containerDescriptor.mappedPorts();
 					log.info("alias: {}, image: {}, isRunning: {}, properties: {}, exposedPorts: {}. mappedPorts: {}, id: {}, name: {}", containerDescriptor.alias(), containerDescriptor.image(), containerInstance.isRunning(), containerDescriptor.containerProperties(), exposedPorts, mappedPorts, containerInstance.getContainerId(), containerInstance.getContainerName());
 					Runtime.getRuntime().addShutdownHook(new Thread(containerInstance::stop));
@@ -146,7 +150,7 @@ public final class BootstrapTestContainers {
 		}
 	}
 
-	public record ContainerDescriptor(String alias, String image, String tag, Map<String, String> containerProperties, GenericContainer<?> containerInstance) {
+	public record ContainerDescriptor(String alias, String image, String tag, Map<String, String> containerProperties, GenericContainer<?> containerInstance, Consumer<ContainerDescriptor> updateProperties) {
 		private Map<String,Integer> exposedPorts() {
 			final Map<String,Integer> exposedPorts = new LinkedHashMap<>();
 			this.containerProperties.forEach((key, value) -> {
@@ -175,9 +179,11 @@ public final class BootstrapTestContainers {
 	}
 
 	public record ImageDescriptor(
-		Class<? extends GenericContainer<?>> containerClass, String dockerRegister, String image, String defaultImageTag, Map<String,String> clientProperties) {
-//		public static final ImageDescriptor ELASTICSEARCH = new ImageDescriptor(ElasticsearchContainer.class,
-//			"docker.elastic.co", "elasticsearch/elasticsearch", "elasticsearch", "8.14.3",
+		Class<? extends GenericContainer<?>> containerClass, String dockerRegister, String image, String defaultImageTag, Map<String,String> containerProperties, Consumer<ContainerDescriptor> updateProperties
+	) {
+//		public static final ImageDescriptor ELASTICSEARCH = new ImageDescriptor(
+//			ElasticsearchContainer.class,
+//			"docker.elastic.co", "elasticsearch/elasticsearch", "8.14.3",
 //			new LinkedHashMap<>() {{
 //				put("elasticsearch.host", "localhost");
 //				put("elasticsearch.port", "9200");
@@ -185,41 +191,54 @@ public final class BootstrapTestContainers {
 //				put("elasticsearch.transport.port", "9300");
 //			}}
 //		);
-//		public static final ImageDescriptor KEYCLOAK = new ImageDescriptor(KeycloakContainer.class,
-//			"quay.io", "keycloak/keycloak", "keycloak", "25.0.2",
+//		public static final ImageDescriptor KEYCLOAK = new ImageDescriptor(
+//			KeycloakContainer.class,
+//			"quay.io", "keycloak/keycloak", "25.0.2",
 //			new LinkedHashMap<>() {{
 //				put("keycloak.host", "localhost");
 //				put("keycloak.port", "8080");
 //			}}
 //		);
-//		public static final ImageDescriptor POSTGRESQL = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
-//			"docker.io", "postgres", "postgres", "16.3",
-//			new LinkedHashMap<>() {{
-//				put("postgres.host", "localhost");
-//				put("postgres.port", "5432");
-//			}}
-//		);
+		public static final ImageDescriptor POSTGRESQL = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) PostgreSQLContainer.class,
+		    "docker.io", "postgres", "16.3",
+		    new LinkedHashMap<>() {{
+				put("postgres.host",                           "localhost");
+				put("postgres.port",                           "5432");
+				put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+				put("spring.datasource.url",                   "");
+				put("spring.datasource.username",              "");
+				put("spring.datasource.password",              "");
+			}},
+		    (containerDescriptor) -> {
+				final PostgreSQLContainer<?> containerInstance = (PostgreSQLContainer<?>) containerDescriptor.containerInstance();
+				containerDescriptor.containerProperties().put("spring.datasource.url",      containerInstance.getJdbcUrl());
+				containerDescriptor.containerProperties().put("spring.datasource.username", containerInstance.getUsername());
+				containerDescriptor.containerProperties().put("spring.datasource.password", containerInstance.getPassword());
+
+			}
+		);
 		public static final ImageDescriptor REDIS = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
-				"docker.io", "redis", "7.4.0",
+			"docker.io", "redis", "7.4.0",
 				new LinkedHashMap<>() {{
 				    put("redis.host", "localhost");
 				    put("redis.port", "6379");
-			   }}
+			    }},
+				(containerDescriptor) -> {}
 		);
 
 		public static final List<ImageDescriptor> LIST = List.of(
 //			ELASTICSEARCH,
 //			KEYCLOAK,
-//			POSTGRESQL,
+			POSTGRESQL,
 			REDIS
 		);
 
 		public static final Map<String,ImageDescriptor> MAP = LIST.stream()
-																						  .flatMap(descriptor -> Stream.of(
-																							  new AbstractMap.SimpleEntry<>(descriptor.image(), descriptor),
-																							  new AbstractMap.SimpleEntry<>(descriptor.dockerRegister() + "/" + descriptor.image(), descriptor)
-																						  ))
-																						  .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+		    .flatMap(descriptor -> Stream.of(
+			    new AbstractMap.SimpleEntry<>(descriptor.image(), descriptor),
+			    new AbstractMap.SimpleEntry<>(descriptor.dockerRegister() + "/" + descriptor.image(), descriptor)
+		    ))
+		    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
 	}
 }
