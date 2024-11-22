@@ -28,7 +28,7 @@ import org.springframework.test.context.DynamicPropertySource;
         SpringsPersistenceOrmExampleConfiguration.class
     }
 )
-@ContextConfiguration(initializers={ BootstrapTestContainersApplicationContextInitializer.class})
+@ContextConfiguration(initializers={BootstrapTestContainersApplicationContextInitializer.class})
 @EnableAutoConfiguration
 //@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @AutoConfigureObservability
