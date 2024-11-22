@@ -14,10 +14,12 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
+import org.testcontainers.consul.ConsulContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.ollama.OllamaContainer;
+import org.testcontainers.vault.VaultContainer;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -259,6 +261,26 @@ public final class BootstrapTestContainers {
 				 // TODO
 			 }
 		);
+		public static final ImageDescriptor VAULT = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) VaultContainer.class,
+			"docker.io", "hashicorp/vault",
+			new LinkedHashMap<>() {{
+				 put("vault.host", "localhost");
+				 put("vault.port", "8200"); // 8500, 8502
+			 }},
+			(containerDescriptor) -> {
+				// TODO
+			}
+		);
+		public static final ImageDescriptor CONSUL = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) ConsulContainer.class,
+			"docker.io", "hashicorp/consul",
+			new LinkedHashMap<>() {{
+				put("consul.host", "localhost");
+				put("consul.port", "8500"); // 8500, 8502
+			}},
+			(containerDescriptor) -> {
+				// TODO
+			}
+		);
 
 		public static final List<ImageDescriptor> LIST = List.of(
 			ELASTICSEARCH,
@@ -266,7 +288,9 @@ public final class BootstrapTestContainers {
 			POSTGRESQL,
 			REDIS,
 			OLLAMA,
-			ZIPKIN
+			ZIPKIN,
+			VAULT,
+			CONSUL
 		);
 
 		public static final Map<String,ImageDescriptor> MAP = LIST.stream()
