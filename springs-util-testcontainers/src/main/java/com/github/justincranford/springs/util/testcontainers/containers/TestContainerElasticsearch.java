@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class TestContainerElasticsearch extends AbstractTestContainer<ElasticsearchContainer> {
-	public static final String DOCKER_IMAGE_NAME = "elasticsearch:8.14.3"; // Last checked on 2024-08-01
+	public static final String DOCKER_IMAGE_NAME = "elasticsearch:8.16.0"; // Last checked on 2024-11-21
 //	public static final String DOCKER_IMAGE_NAME = "elasticsearch:7.17.23"; // 2019-04-10
 
 	private static final String NETWORK_ALIAS = "elastic";

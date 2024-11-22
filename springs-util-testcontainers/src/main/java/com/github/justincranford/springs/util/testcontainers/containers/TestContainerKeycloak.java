@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public final class TestContainerKeycloak extends AbstractTestContainer<KeycloakContainer> {
-	public static final String DOCKER_IMAGE_NAME = "keycloak/keycloak:25.0.2"; // Last checked on 2024-08-01
+	public static final String DOCKER_IMAGE_NAME = "keycloak/keycloak:26.0.5"; // Last checked on 2024-11-21
 	private static final String NETWORK_ALIAS = "keycloak";
 //    private static final Integer KEYCLOAK_PORT_HTTP = Integer.valueOf(8080);
 //    private static final Integer KEYCLOAK_PORT_HTTPS = Integer.valueOf(8443);
