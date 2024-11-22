@@ -1,40 +1,33 @@
 package com.github.justincranford.springs.persistenceorm.clients;
 
-import java.util.List;
-
-import org.hibernate.dialect.PostgreSQLDialect;
-import org.junit.jupiter.api.BeforeAll;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
 import com.github.justincranford.springs.persistenceorm.clients.client.ClientOrmRepository;
 import com.github.justincranford.springs.persistenceorm.clients.config.SpringsPersistenceOrmClientsConfiguration;
 import com.github.justincranford.springs.persistenceorm.clients.properties.SpringsPersistenceOrmClientsClientProperties;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
-import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
-
+import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.annotation.Observed;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = {
-        SpringsPersistenceOrmClientsConfiguration.class,
-        SpringsUtilTestContainers.class
+        SpringsPersistenceOrmClientsConfiguration.class
     }
 )
+@ContextConfiguration(initializers={BootstrapTestContainersApplicationContextInitializer.class})
 @EnableAutoConfiguration
 //@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @AutoConfigureObservability
@@ -44,8 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Observed
 public class AbstractIT {
-	@LocalServerPort
-	private long localServerPort;
 	@Autowired
     private MeterRegistry meterRegistry;
     @Autowired
@@ -59,22 +50,9 @@ public class AbstractIT {
     @Autowired
     private SpringsPersistenceOrmClientsClientProperties clientsProperties;
 
-    @BeforeAll
-    public static void beforeAll() {
-        SpringsUtilTestContainers.startContainers(List.of(SpringsUtilTestContainers.POSTGRESQL));
-    }
-
-	@DynamicPropertySource
-    public static void postgresqlContainerProperties(final DynamicPropertyRegistry registry) {
-		final PostgreSQLContainer<?> instance = SpringsUtilTestContainers.POSTGRESQL.getInstance();
-		if (instance.isRunning()) {
-			log.info("Setting dynamic properties from SpringsUtilTestContainers.POSTGRESQL");
-	        registry.add("spring.jpa.properties.hibernate.dialect", PostgreSQLDialect.class::getCanonicalName);
-	        registry.add("spring.datasource.url", instance::getJdbcUrl);
-	        registry.add("spring.datasource.username", instance::getUsername);
-	        registry.add("spring.datasource.password", instance::getPassword);
-		} else {
-			log.info("Using static properties");
-		}
+    @DynamicPropertySource
+    static void properties(final DynamicPropertyRegistry registry) {
+        registry.add("bootstrap.testcontainers.enabled",              () -> "preferred");
+        registry.add("bootstrap.testcontainers.containers.postgres1", () -> "postgres:16.3");
     }
 }
