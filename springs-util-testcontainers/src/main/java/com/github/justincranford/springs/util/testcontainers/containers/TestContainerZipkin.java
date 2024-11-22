@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @SuppressWarnings({"resource"})
 public class TestContainerZipkin extends AbstractTestContainer<GenericContainer<?>> {
-	public static final String DOCKER_IMAGE_NAME = "openzipkin/zipkin:3.4"; // Last checked on 2024-08-01
+	public static final String DOCKER_IMAGE_NAME = "openzipkin/zipkin:3.4.2"; // Last checked on 2024-11-21
 	private static final String NETWORK_ALIAS = "zipkin";
 	private static final Integer ZIPKIN_PORT = Integer.valueOf(9411);
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(30);

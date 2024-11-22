@@ -47,9 +47,11 @@ public class TestContainersIT extends AbstractIT {
 			static void properties(final DynamicPropertyRegistry registry) {
 				registry.add("bootstrap.testcontainers.containers.elasticsearch1", () -> "docker.elastic.co/elasticsearch/elasticsearch:8.16.0");
 				registry.add("bootstrap.testcontainers.containers.keycloak1",      () -> "keycloak/keycloak:26.0.5");
+				registry.add("bootstrap.testcontainers.containers.postgres1",      () -> "postgres:16.3");
 				registry.add("bootstrap.testcontainers.containers.redis1",         () -> "redis:7.4.0");
 				registry.add("bootstrap.testcontainers.containers.redis2",         () -> "redis:7.4.0");
-				registry.add("bootstrap.testcontainers.containers.postgres1",      () -> "postgres:16.3");
+				registry.add("bootstrap.testcontainers.containers.zipkin1",        () -> "openzipkin/zipkin:3.4.2");
+				registry.add("bootstrap.testcontainers.containers.ollama1",        () -> "ollama/ollama:0.4.3");
 			}
 		}
 	}

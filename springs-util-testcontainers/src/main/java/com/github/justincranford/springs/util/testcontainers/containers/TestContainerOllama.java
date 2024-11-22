@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class TestContainerOllama extends AbstractTestContainer<OllamaContainer> {
-	public static final String DOCKER_IMAGE_NAME = "ollama/ollama:0.3.12"; // Last checked on 2024-09-25
+	public static final String DOCKER_IMAGE_NAME = "ollama/ollama:0.4.3"; // Last checked on 2024-11-21
 //	public static final String LOCAL_DOCKER_IMAGE_NAME = "ollama-custom";
 	private static final String NETWORK_ALIAS = "ollama";
 	private static final Integer OLLAMA_PORT = 11434;

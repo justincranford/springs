@@ -17,6 +17,7 @@ import org.springframework.core.env.PropertySources;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.ollama.OllamaContainer;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -190,8 +191,7 @@ public final class BootstrapTestContainers {
 	public record ImageDescriptor(
 		Class<? extends GenericContainer<?>> containerClass, String dockerRegistry, String image, Map<String,String> containerProperties, Consumer<ContainerDescriptor> updateProperties
 	) {
-		public static final ImageDescriptor ELASTICSEARCH = new ImageDescriptor(
-			ElasticsearchContainer.class,
+		public static final ImageDescriptor ELASTICSEARCH = new ImageDescriptor(ElasticsearchContainer.class,
 			"docker.elastic.co", "elasticsearch/elasticsearch",
 			new LinkedHashMap<>() {{
 				put("elasticsearch.host", "localhost");
@@ -239,12 +239,34 @@ public final class BootstrapTestContainers {
 					// TODO
 				}
 		);
+		public static final ImageDescriptor OLLAMA = new ImageDescriptor(OllamaContainer.class,
+			"docker.io", "ollama/ollama",
+			new LinkedHashMap<>() {{
+				put("ollama.host", "localhost");
+				put("ollama.port", "11434");
+			}},
+			(containerDescriptor) -> {
+				// TODO
+			}
+		);
+		public static final ImageDescriptor ZIPKIN = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
+			 "docker.io", "openzipkin/zipkin",
+			 new LinkedHashMap<>() {{
+				 put("zipkin.host", "localhost");
+				 put("zipkin.port", "9411");
+			 }},
+			 (containerDescriptor) -> {
+				 // TODO
+			 }
+		);
 
 		public static final List<ImageDescriptor> LIST = List.of(
 			ELASTICSEARCH,
 			KEYCLOAK,
 			POSTGRESQL,
-			REDIS
+			REDIS,
+			OLLAMA,
+			ZIPKIN
 		);
 
 		public static final Map<String,ImageDescriptor> MAP = LIST.stream()

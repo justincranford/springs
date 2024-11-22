@@ -52,7 +52,7 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
 	 * True => Automatically start and use an ephemeral ollama container
 	 * 
 	 * False => Reuse external, manually started, container
-	 *  - Example start:  docker run --rm -d -v .:/here -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama:0.3.12
+	 *  - Example start:  docker run --rm -d -v .:/here -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama:0.4.3
 	 *  = Example shell:  docker exec -it ollama bash
 	 */
 	private static final boolean USE_TEST_CONTAINER = false;
