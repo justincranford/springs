@@ -56,6 +56,8 @@
 		<module>springs-util-testcontainers</module>
 		<module>springs-util-security-hashes</module>
 		<module>springs-util-security-passwords</module>
+<!--		<module>springs-service-ollama</module>-->
+<!--		<module>springs-service-chatbot</module>-->
 		<module>springs-persistence-orm-base</module>
 		<module>springs-persistence-orm-example</module>
 		<module>springs-persistence-orm-users</module>

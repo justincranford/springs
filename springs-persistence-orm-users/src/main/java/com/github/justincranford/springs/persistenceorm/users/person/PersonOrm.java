@@ -86,7 +86,7 @@ public class PersonOrm extends AbstractEntity {
     	indexes= {@Index(name="idx_languages_person_id_rank",columnList="person_id,rank")}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @OrderBy("persona_id,rank")
+    @OrderBy("person_id,rank")
     @NotNull
     @Size(min=1,max=4)
     @Builder.Default

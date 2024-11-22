@@ -66,6 +66,16 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jetty</artifactId>
 		</dependency>
 		<dependency>
@@ -89,6 +99,11 @@
 		<dependency>
 			<groupId>com.github.justincranford.springs</groupId>
 			<artifactId>springs-util-json</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.justincranford.springs</groupId>
+			<artifactId>springs-util-http</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 

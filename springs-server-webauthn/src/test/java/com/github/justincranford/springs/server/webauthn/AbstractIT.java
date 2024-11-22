@@ -35,7 +35,10 @@ import lombok.extern.slf4j.Slf4j;
 	}
 )
 @ContextConfiguration(
-	initializers={TlsEnabledByDefaultInitializer.class}
+	initializers={
+		TlsEnabledByDefaultInitializer.class,
+	    BootstrapTestContainersApplicationContextInitializer.class
+	}
 )
 @Import({HelloWorldController.class})
 @Getter
@@ -98,4 +101,10 @@ public class AbstractIT {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@DynamicPropertySource
+	static void properties(final DynamicPropertyRegistry registry) {
+		registry.add("bootstrap.testcontainers.enabled",              () -> "true");
+		registry.add("bootstrap.testcontainers.containers.postgres1", () -> "redis:7.4.0");
+	}
 }

@@ -1,11 +1,22 @@
 package com.github.justincranford.springs.authenticationorm.users;
 
-import java.util.List;
-
-import javax.net.ssl.SSLContext;
-
-import org.hibernate.dialect.PostgreSQLDialect;
-import org.junit.jupiter.api.BeforeAll;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonUsernamePasswordAuthenticationProvider;
+import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonaEmailPasswordAuthenticationProvider;
+import com.github.justincranford.springs.authenticationorm.users.config.SpringsAuthenticationOrmUsersConfiguration;
+import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
+import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
+import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
+import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
+import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
+import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
+import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefaultApplicationContextInitializer;
+import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.Getter;
+import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,38 +32,20 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.client.RestTemplate;
-import org.testcontainers.containers.PostgreSQLContainer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonUsernamePasswordAuthenticationProvider;
-import com.github.justincranford.springs.authenticationorm.users.authentication.provider.PersonaEmailPasswordAuthenticationProvider;
-import com.github.justincranford.springs.authenticationorm.users.config.SpringsAuthenticationOrmUsersConfiguration;
-import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
-//import com.github.justincranford.springs.persistenceredis.sessions.database.repository.SessionOrmRepository;
-//import com.github.justincranford.springs.persistenceorm.users.repository.UserSessionPojoRepository;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
-import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
-import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
-import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
-import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefaultApplicationContextInitializer;
-import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
-
-import io.micrometer.core.instrument.MeterRegistry;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
+import javax.net.ssl.SSLContext;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
     classes = {
-		SpringsAuthenticationOrmUsersConfiguration.class,
-        SpringsUtilTestContainers.class
+		SpringsAuthenticationOrmUsersConfiguration.class
     }
 )
 @ContextConfiguration(
-	initializers={ TlsEnabledByDefaultApplicationContextInitializer.class}
+	initializers={
+		TlsEnabledByDefaultApplicationContextInitializer.class,
+		BootstrapTestContainersApplicationContextInitializer.class
+	}
 )
 @Getter
 @Accessors(fluent = true)
@@ -133,23 +126,9 @@ public class AbstractIT {
 	@Autowired
 	private String httpsPskBaseUrl;
 
-	@BeforeAll
-    public static void beforeAll() {
-        SpringsUtilTestContainers.startContainers(List.of(SpringsUtilTestContainers.POSTGRESQL));
-    }
-
 	@DynamicPropertySource
-	@SuppressWarnings({"unused"})
-    public static void postgresqlContainerProperties(final DynamicPropertyRegistry registry) {
-		final PostgreSQLContainer<?> instance = SpringsUtilTestContainers.POSTGRESQL.getInstance();
-		if (instance.isRunning()) {
-			log.info("Setting dynamic properties from SpringsUtilTestContainers.POSTGRESQL");
-	        registry.add("spring.jpa.properties.hibernate.dialect", PostgreSQLDialect.class::getCanonicalName);
-	        registry.add("spring.datasource.url", instance::getJdbcUrl);
-	        registry.add("spring.datasource.username", instance::getUsername);
-	        registry.add("spring.datasource.password", instance::getPassword);
-		} else {
-			log.info("Using static properties");
-		}
-    }
+	static void properties(final DynamicPropertyRegistry registry) {
+		registry.add("bootstrap.testcontainers.enabled",              () -> "preferred");
+		registry.add("bootstrap.testcontainers.containers.postgres1", () -> "postgres:16.3");
+	}
 }

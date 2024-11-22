@@ -30,7 +30,6 @@ import com.github.justincranford.springs.service.chatbot.model.Ps;
 import com.github.justincranford.springs.service.chatbot.model.Pull;
 import com.github.justincranford.springs.service.chatbot.model.Tags;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,32 +49,17 @@ import lombok.extern.slf4j.Slf4j;
 public class SpringsServiceChatbotServiceIT extends AbstractIT {
 	/**
 	 * True => Automatically start and use an ephemeral ollama container
-	 * 
+	 *
 	 * False => Reuse external, manually started, container
 	 *  - Example start:  docker run --rm -d -v .:/here -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama:0.4.3
 	 *  = Example shell:  docker exec -it ollama bash
 	 */
-	private static final boolean USE_TEST_CONTAINER = false;
 	private static final long TIMEOUT_MILLIS = 30000L;
 	private static final String MODEL = "llama3.2";
 //	private static final String MODEL = "llama3.2:1b";
 //	private static final String MODEL = "llama3.2:3b";
 //	private static final String MODEL = "llama3.2:latest";
 //	private static final String MODEL = "mistral-7b";
-
-	@BeforeAll
-	public static void beforeAll() {
-		if (USE_TEST_CONTAINER) {
-			SpringsUtilTestContainers.startContainer(SpringsUtilTestContainers.OLLAMA);
-		}
-	}
-
-	@AfterAll
-	private static void afterAll() {
-		if (USE_TEST_CONTAINER) {
-			SpringsUtilTestContainers.stopContainer(SpringsUtilTestContainers.OLLAMA);
-		}
-	}
 
 	@Order(1)
 	@Nested
@@ -85,31 +69,6 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
 		/**
 		 * @see OllamaContainer#getEndpoint
 		 */
-		@DynamicPropertySource
-		public static void ollamaContainerProperties(final DynamicPropertyRegistry registry) {
-			final OllamaContainer instance = SpringsUtilTestContainers.OLLAMA.getInstance();
-			if (instance.isRunning()) {
-				log.info("Setting dynamic properties from SpringsUtilTestContainers.OLLAMA");
-				registry.add("springs.service.chatbot.protocol", () -> "http");
-				registry.add("springs.service.chatbot.host",     () -> instance.getHost());
-				registry.add("springs.service.chatbot.port",     () -> instance.getMappedPort(11434));
-			} else {
-				log.info("Will use static properties from springs-service-chatbot.properties");
-			}
-		}
-
-		@Order(1)
-		@Test
-		void testProperties() {
-			final String  protocol = springsServiceChatbotProperties().getProtocol();
-			final String  host     = springsServiceChatbotProperties().getHost();
-			final Integer port     = springsServiceChatbotProperties().getPort();
-			log.info("springs.service.chatbot.protocol: {}", protocol);
-			log.info("springs.service.chatbot.host:     {}", host);
-			log.info("springs.service.chatbot.port:     {}", port);
-			assertThat(host).isNotEmpty();
-			assertThat(port).isNotNull();
-		}
 	}
 
 	@Order(2)
@@ -121,7 +80,6 @@ public class SpringsServiceChatbotServiceIT extends AbstractIT {
 		@Test
 		void testEndpoint() {
 			assumeThat(USE_TEST_CONTAINER).isTrue();
-			log.info("url: {}", SpringsUtilTestContainers.OLLAMA.getInstance().getEndpoint());
 		}
 	}
 

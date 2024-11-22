@@ -251,8 +251,8 @@ public final class BootstrapTestContainers {
 		public static final ImageDescriptor REDIS = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
 			"docker.io", "redis",
 				new LinkedHashMap<>() {{
-				    put("redis.host", "localhost");
-				    put("redis.port", "6379");
+				    put("spring.redis.host", "localhost");
+				    put("spring.redis.port", "6379");
 			    }},
 				(containerDescriptor) -> {
 					// TODO
@@ -260,9 +260,11 @@ public final class BootstrapTestContainers {
 		);
 		public static final ImageDescriptor OLLAMA = new ImageDescriptor(OllamaContainer.class,
 			"docker.io", "ollama/ollama",
-			new LinkedHashMap<>() {{
-				put("ollama.host", "localhost");
-				put("ollama.port", "11434");
+			new LinkedHashMap<>() {
+				{
+					put("springs.service.chatbot.protocol", "http");
+					put("springs.service.chatbot.host", "localhost");
+					put("springs.service.chatbot.port", "11434");
 			}},
 			(containerDescriptor) -> {
 				// TODO

@@ -9,12 +9,11 @@ import com.github.justincranford.springs.util.https.client.config.SpringsUtilHtt
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
 import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefaultApplicationContextInitializer;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
-import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
+import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ssl.SslBundles;
@@ -36,12 +35,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.client.RestTemplate;
-import org.testcontainers.containers.GenericContainer;
 import redis.embedded.RedisServer;
 
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
-import java.util.List;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
@@ -52,7 +49,10 @@ import java.util.List;
     }
 )
 @ContextConfiguration(
-	initializers={ TlsEnabledByDefaultApplicationContextInitializer.class}
+	initializers={
+		TlsEnabledByDefaultApplicationContextInitializer.class,
+		BootstrapTestContainersApplicationContextInitializer.class
+	}
 )
 @Getter
 @Accessors(fluent = true)
@@ -119,24 +119,6 @@ public class AbstractIT {
 	@Autowired
 	private RedisProperties redisProperties;
 
-	@BeforeAll
-	public static void beforeAll() {
-		SpringsUtilTestContainers.startContainers(List.of(SpringsUtilTestContainers.REDIS));
-	}
-
-	@DynamicPropertySource
-	public static void redisContainerProperties(final DynamicPropertyRegistry registry) {
-		final GenericContainer<?> instance = SpringsUtilTestContainers.REDIS.getInstance();
-		if (instance.isRunning()) {
-			final String host = instance.getHost();
-			final String port = instance.getMappedPort(6379).toString();
-			log.info("Setting dynamic properties from SpringsUtilTestContainers.REDIS, host: {}, port: {}", host, port);
-			registry.add("spring.redis.host", instance::getHost);
-			registry.add("spring.redis.port", () -> port);
-		} else {
-			log.info("Using static properties");
-		}
-	}
 
 	@TestConfiguration
 	@Slf4j
@@ -178,5 +160,11 @@ public class AbstractIT {
 		public RedisServer redisServer(final RedisProperties redisProperties) throws IOException {
 			return new RedisServer(redisProperties.getPort());
 		}
+	}
+
+	@DynamicPropertySource
+	static void properties(final DynamicPropertyRegistry registry) {
+		registry.add("bootstrap.testcontainers.enabled",           () -> "true");
+		registry.add("bootstrap.testcontainers.containers.redis1", () -> "redis:7.4.0");
 	}
 }

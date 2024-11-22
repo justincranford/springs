@@ -3,6 +3,7 @@ package com.github.justincranford.springs.persistenceredis.sessions;
 import javax.net.ssl.SSLContext;
 
 import com.github.justincranford.springs.persistenceorm.config.SpringsPersistenceOrmSessionsConfiguration;
+import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,7 +56,10 @@ import lombok.extern.slf4j.Slf4j;
     }
 )
 @ContextConfiguration(
-	initializers={TlsEnabledByDefaultApplicationContextInitializer.class}
+	initializers={
+		TlsEnabledByDefaultApplicationContextInitializer.class,
+		BootstrapTestContainersApplicationContextInitializer.class
+	}
 )
 @Getter
 @Accessors(fluent = true)
@@ -179,4 +185,10 @@ public class AbstractIT {
     		return personService;
 		}
     }
+
+	@DynamicPropertySource
+	static void properties(final DynamicPropertyRegistry registry) {
+		registry.add("bootstrap.testcontainers.enabled",              () -> "false");
+		registry.add("bootstrap.testcontainers.containers.postgres1", () -> "postgres:16.3");
+	}
 }

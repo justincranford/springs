@@ -12,7 +12,7 @@ public interface PersonOrmRepository extends ListCrudRepository<PersonOrm, Long>
 	Optional<PersonOrm> findByUsername(String username);
 
 	// N.B. Include column aliases to match the method names inside PersonIdPasswordProjection
-    @Query("SELECT p.id AS id,p.password.password AS personPassword FROM PersonOrm p WHERE p.username=:username")
+    @Query("SELECT p.id AS id,p.password.password AS password FROM PersonOrm p WHERE p.username=:username")
     Optional<PersonProjectionIdPassword> findPersonProjectionIdPasswordByUsername(String username);
 
     @Modifying

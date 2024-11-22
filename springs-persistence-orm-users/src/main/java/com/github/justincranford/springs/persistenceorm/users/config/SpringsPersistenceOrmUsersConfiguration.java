@@ -1,5 +1,6 @@
 package com.github.justincranford.springs.persistenceorm.users.config;
 
+import com.github.justincranford.springs.util.security.hashes.config.SpringsUtilSecurityHashesConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -17,6 +18,7 @@ import com.github.justincranford.springs.util.security.passwords.config.SpringsU
 	SpringsUtilJsonConfiguration.class,
 	SpringsUtilObservabilityConfiguration.class,
 	SpringsUtilSecurityPasswordsConfiguration.class,
+	SpringsUtilSecurityHashesConfiguration.class,
 	SpringsPersistenceOrmUsersPersonConfiguration.class,
 	SpringsPersistenceOrmUsersPersonaConfiguration.class,
 	SpringsPersistenceOrmUsersPeoplePropertiesConfiguration.class

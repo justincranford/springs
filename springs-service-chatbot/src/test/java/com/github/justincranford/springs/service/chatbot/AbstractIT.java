@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 		SpringsServiceChatbotConfiguration.class
 	}
 )
+@ContextConfiguration(initializers={BootstrapTestContainersApplicationContextInitializer.class})
 @EnableAutoConfiguration
 @AutoConfigureObservability
 @Import(SpringsServiceChatbotConfiguration.class)
@@ -44,4 +45,10 @@ public abstract class AbstractIT {
 	private SpringsServiceChatbotProperties springsServiceChatbotProperties;
 	@Autowired
 	private SpringsServiceChatbotClient springsServiceChatbotClient;
+
+	@DynamicPropertySource
+	static void properties(final DynamicPropertyRegistry registry) {
+		registry.add("bootstrap.testcontainers.enabled",            () -> "true");
+		registry.add("bootstrap.testcontainers.containers.ollama1", () -> "ollama/ollama:0.4.3");
+	}
 }

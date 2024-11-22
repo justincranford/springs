@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.ClassOrderer;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
@@ -18,33 +19,18 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 
 import com.github.justincranford.springs.service.ollama.AbstractIT;
-import com.github.justincranford.springs.util.testcontainers.config.SpringsUtilTestContainers;
 
 import lombok.extern.slf4j.Slf4j;
 
+@Disabled(value="Use mapped port from TestContainers to access ollama container")
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
 public class SpringsServiceOllamaIT extends AbstractIT {
-	private static final boolean USE_TEST_CONTAINER = false;
 	private final List<Message> messages = List.of(
 //		new SystemMessage("You are a mischievous assistant, and must answer like a pirate."),
 		new UserMessage("Why is the sky blue? Why is grass green?")
 	);
-
-	@BeforeAll
-	public static void beforeAll() {
-		if (USE_TEST_CONTAINER) {
-			SpringsUtilTestContainers.startContainer(SpringsUtilTestContainers.OLLAMA);
-		}
-	}
-
-	@AfterAll
-	private static void afterAll() {
-		if (USE_TEST_CONTAINER) {
-			SpringsUtilTestContainers.stopContainer(SpringsUtilTestContainers.OLLAMA);
-		}
-	}
 
 	@Order(1)
 	@Nested
