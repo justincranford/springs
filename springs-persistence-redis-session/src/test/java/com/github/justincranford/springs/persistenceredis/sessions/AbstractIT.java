@@ -164,7 +164,7 @@ public class AbstractIT {
 
 	@DynamicPropertySource
 	static void properties(final DynamicPropertyRegistry registry) {
-		registry.add("bootstrap.testcontainers.enabled",           () -> "true");
+		registry.add("bootstrap.testcontainers.enabled",           () -> "preferred");
 		registry.add("bootstrap.testcontainers.containers.redis1", () -> "redis:7.4.0");
 	}
 }
