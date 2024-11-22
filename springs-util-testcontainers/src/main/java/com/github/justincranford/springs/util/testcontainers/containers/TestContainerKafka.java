@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class TestContainerKafka extends AbstractTestContainer<KafkaContainer> {
-	public static final String DOCKER_IMAGE_NAME = "confluentinc/cp-kafka:7.7.0"; // Last checked on 2024-08-01
+	public static final String DOCKER_IMAGE_NAME = "confluentinc/cp-kafka:7.7.1"; // Last checked on 2024-11-21
 	private static final String NETWORK_ALIAS = "kafka";
 	private static final Integer KAFKA_PORT = 9093;
 	private static final Integer ZOOKEEPER_PORT = 2181;

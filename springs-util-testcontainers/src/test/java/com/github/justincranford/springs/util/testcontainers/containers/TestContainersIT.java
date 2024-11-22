@@ -53,7 +53,8 @@ public class TestContainersIT extends AbstractIT {
 //				registry.add("bootstrap.testcontainers.containers.zipkin1",        () -> "openzipkin/zipkin:3.4.2");
 //				registry.add("bootstrap.testcontainers.containers.ollama1",        () -> "ollama/ollama:0.4.3");
 //				registry.add("bootstrap.testcontainers.containers.vault1",         () -> "hashicorp/vault:1.18.2");
-				registry.add("bootstrap.testcontainers.containers.consul1",        () -> "hashicorp/consul:1.19.2");
+//				registry.add("bootstrap.testcontainers.containers.consul1",        () -> "hashicorp/consul:1.19.2");
+				registry.add("bootstrap.testcontainers.containers.kafka1",         () -> "confluentinc/cp-kafka:7.7.1");
 			}
 		}
 	}

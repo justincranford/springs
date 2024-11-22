@@ -5,6 +5,7 @@ import com.github.justincranford.springs.util.testcontainers.bootstrap.Bootstrap
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
+import jakarta.validation.metadata.ContainerDescriptor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +17,11 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.testcontainers.consul.ConsulContainer;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.ollama.OllamaContainer;
+import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.vault.VaultContainer;
 
 import java.util.AbstractMap;
@@ -75,8 +78,19 @@ public final class BootstrapTestContainers {
 					final Class<? extends GenericContainer<?>> containerClass      = imageDescriptor.containerClass();
 					final Map<String,String>                   containerProperties = imageDescriptor.containerProperties();
 					final Consumer<ContainerDescriptor>        updateProperties    = imageDescriptor.updateProperties();
-//					final DockerImageName                      dockerImageName     = DockerImageName.parse(image);
-					final GenericContainer<?>                  containerInstance   = containerClass.getConstructor(String.class).newInstance(image);
+					GenericContainer<?> containerInstance;
+					try {
+						final DockerImageName dockerImageName = DockerImageName.parse(image);
+						containerInstance = containerClass.getConstructor(DockerImageName.class).newInstance(dockerImageName); // KafkaContainer(String) incorrectly expects version
+					} catch(Exception e1) {
+						throw e1;
+//						try {
+//							containerInstance = containerClass.getConstructor(String.class).newInstance(image);
+//						} catch(Exception e2) {
+//							e1.addSuppressed(e2);
+//							throw e1;
+//						}
+					}
 					containerDescriptors.add(new ContainerDescriptor(alias, image, containerProperties, containerInstance, updateProperties));
 				} catch(RuntimeException rte) {
 					throw rte;
@@ -219,7 +233,7 @@ public final class BootstrapTestContainers {
 		);
 		public static final ImageDescriptor POSTGRESQL = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) PostgreSQLContainer.class,
 		    "docker.io", "postgres",
-																			 new LinkedHashMap<>() {{
+			 new LinkedHashMap<>() {{
 				put("postgres.host",                           "localhost");
 				put("postgres.port",                           "5432");
 				put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
@@ -265,7 +279,7 @@ public final class BootstrapTestContainers {
 			"docker.io", "hashicorp/vault",
 			new LinkedHashMap<>() {{
 				 put("vault.host", "localhost");
-				 put("vault.port", "8200"); // 8500, 8502
+				 put("vault.port", "8200");
 			 }},
 			(containerDescriptor) -> {
 				// TODO
@@ -275,11 +289,26 @@ public final class BootstrapTestContainers {
 			"docker.io", "hashicorp/consul",
 			new LinkedHashMap<>() {{
 				put("consul.host", "localhost");
-				put("consul.port", "8500"); // 8500, 8502
+				put("consul.port", "8500");
+				put("consul2.host", "localhost");
+				put("consul2.port", "8502");
 			}},
 			(containerDescriptor) -> {
 				// TODO
 			}
+		);
+		@SuppressWarnings({"deprecation"})
+		public static final ImageDescriptor KAFKA = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) KafkaContainer.class,
+			 "docker.io", "confluentinc/cp-kafka",
+			 new LinkedHashMap<>() {{
+				 put("kafka.host", "localhost");
+				 put("kafka.port", "9093");
+				 put("zookeeper.host", "localhost");
+				 put("zookeeper.port", "2181");
+			 }},
+			 (containerDescriptor) -> {
+				 // TODO
+			 }
 		);
 
 		public static final List<ImageDescriptor> LIST = List.of(
@@ -290,7 +319,8 @@ public final class BootstrapTestContainers {
 			OLLAMA,
 			ZIPKIN,
 			VAULT,
-			CONSUL
+			CONSUL,
+			KAFKA
 		);
 
 		public static final Map<String,ImageDescriptor> MAP = LIST.stream()
