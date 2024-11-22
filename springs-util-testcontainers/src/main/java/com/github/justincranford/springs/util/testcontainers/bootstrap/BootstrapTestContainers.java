@@ -16,8 +16,10 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.testcontainers.consul.ConsulContainer;
+import org.testcontainers.containers.BrowserWebDriverContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.ollama.OllamaContainer;
@@ -310,6 +312,54 @@ public final class BootstrapTestContainers {
 				 // TODO
 			 }
 		);
+		public static final ImageDescriptor DYNAMODB = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
+			"docker.io", "amazon/dynamodb-local",
+			new LinkedHashMap<>() {{
+				put("dynamodb.host", "localhost");
+				put("dynamodb.port", "8000");
+			}},
+			(containerDescriptor) -> {
+				// TODO
+			}
+		);
+		public static final ImageDescriptor MONGODB = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) MongoDBContainer.class,
+		   "docker.io", "mongo",
+		   new LinkedHashMap<>() {{
+			   put("mongo.host", "localhost");
+			   put("mongo.port", "27017");
+		   }},
+		   (containerDescriptor) -> {
+			   // TODO
+		   }
+		);
+		public static final ImageDescriptor GRAFANA = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
+		   "docker.io", "grafana/otel-lgtm",
+		   new LinkedHashMap<>() {{
+			   put("grafana.host", "localhost");
+			   put("grafana.port", "3000");
+			   put("otlp.grpc.host", "localhost");
+			   put("otlp.grpc.port", "4317");
+			   put("otlp.http.host", "localhost");
+			   put("otlp.http.port", "4318");
+			   put("prometheus.host", "localhost");
+			   put("prometheus.port", "9090");
+		   }},
+		   (containerDescriptor) -> {
+			   // TODO
+		   }
+		);
+		public static final ImageDescriptor SELENIUMCHROME = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) BrowserWebDriverContainer.class,
+		   "docker.io", "selenium/standalone-chrome",
+		    new LinkedHashMap<>() {{
+			   put("selenium.host", "localhost");
+			   put("selenium.port", "4444");
+			   put("vnc.host",      "localhost");
+			   put("vnc.port",      "5900");
+		   }},
+		   (containerDescriptor) -> {
+			   // TODO
+		   }
+		);
 
 		public static final List<ImageDescriptor> LIST = List.of(
 			ELASTICSEARCH,
@@ -320,7 +370,11 @@ public final class BootstrapTestContainers {
 			ZIPKIN,
 			VAULT,
 			CONSUL,
-			KAFKA
+			KAFKA,
+			DYNAMODB,
+			MONGODB,
+			GRAFANA,
+			SELENIUMCHROME
 		);
 
 		public static final Map<String,ImageDescriptor> MAP = LIST.stream()
