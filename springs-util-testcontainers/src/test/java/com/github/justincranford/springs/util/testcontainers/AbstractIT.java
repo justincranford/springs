@@ -25,9 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @EnableAutoConfiguration
 @SpringBootTest(classes={SpringsUtilTestContainers.class})
-@ContextConfiguration(
-	initializers={ BootstrapTestContainersApplicationContextInitializer.class}
-)@Getter
+@ContextConfiguration(initializers={ BootstrapTestContainersApplicationContextInitializer.class})@Getter
 @Accessors(fluent = true)
 @ActiveProfiles({"test"})
 @Slf4j
