@@ -85,13 +85,14 @@ public final class BootstrapTestContainers {
 						final DockerImageName dockerImageName = DockerImageName.parse(image);
 						containerInstance = containerClass.getConstructor(DockerImageName.class).newInstance(dockerImageName); // KafkaContainer(String) incorrectly expects version
 					} catch(Exception e1) {
-						throw e1;
-//						try {
-//							containerInstance = containerClass.getConstructor(String.class).newInstance(image);
-//						} catch(Exception e2) {
-//							e1.addSuppressed(e2);
-//							throw e1;
-//						}
+						try {
+							containerInstance = containerClass.getConstructor(String.class).newInstance(image); // Keycloak(DockerImageName) is missing, fall back to KafkaContainer(String)
+						} catch(Exception e2) {
+							final RuntimeException rte = new RuntimeException("Error creating container for: " + containerDescriptorEntry.getKey());
+							rte.addSuppressed(e1);
+							rte.addSuppressed(e2);
+							throw rte;
+						}
 					}
 					containerDescriptors.add(new ContainerDescriptor(alias, image, containerProperties, containerInstance, updateProperties));
 				} catch(RuntimeException rte) {
