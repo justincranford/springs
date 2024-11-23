@@ -1,14 +1,22 @@
 package com.github.justincranford.springs.persistenceredis.sessions.config;
 
 import com.github.justincranford.springs.persistenceredis.properties.RedisProperties;
+import com.github.justincranford.springs.util.basic.StringUtil;
+import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import redis.embedded.RedisServer;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * @see org.springframework.session.config.annotation.web.http.EnableSpringHttpSession
@@ -54,10 +62,37 @@ public class SpringsPersistenceRedisSessionsPersistenceConfiguration {
     @Autowired
     private RedisProperties redisProperties;
 
+    @Value(value= "${" + BootstrapTestContainers.Properties.CONTAINERS + ":}")
+    private String containerImagesString;
+
+    @ConditionalOnProperty(value=BootstrapTestContainers.Properties.CONTAINERS, matchIfMissing=true)
+    @Bean(initMethod="start",destroyMethod="stop")
+    public RedisServer redisServerEmbedded() throws IOException {
+        final String host = this.redisProperties.getHost();
+        final Integer port = this.redisProperties.getPort();
+
+        final List<String> containerImages = StringUtil.split(this.containerImagesString, ",");
+        log.info("containerImages: {}", containerImages); // EXAMPLE: [redis:7.4.0]
+        if (containerImages.stream().anyMatch(containerImage -> containerImage.contains("redis"))) {
+            log.info("Detected container redis server, host: {}, port: {}", host, port);
+            return null;
+        }
+        log.trace("Creating embedded redis server, host: {}, port: {}", host, port);
+        final RedisServer redisServer = new RedisServer(port);
+        log.info("Created embedded redis server, host: {}, port: {}", host, port);
+        if (!redisServer.isActive()) {
+            redisServer.start();
+            log.info("Started embedded redis server, host: {}, port: {}", host, port);
+        }
+        return redisServer;
+    }
+
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
-        log.info("Creating bean LettuceConnectionFactory for connecting to Redis at {}:{}", this.redisProperties.getHost(), this.redisProperties.getPort());
-        return new LettuceConnectionFactory(this.redisProperties.getHost(), this.redisProperties.getPort());
+        final String host = this.redisProperties.getHost();
+        final Integer port = this.redisProperties.getPort();
+        log.info("Creating redis client, host: {}, port: {}", host, port);
+        return new LettuceConnectionFactory(host, port);
     }
 
     @Bean

@@ -1,6 +1,7 @@
 package com.github.justincranford.springs.util.testcontainers.bootstrap;
 
 import com.github.justincranford.springs.util.basic.EnumUtils;
+import com.github.justincranford.springs.util.basic.StringUtil;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers.Properties.ENABLE;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
@@ -129,7 +130,8 @@ public final class BootstrapTestContainers {
 			for (final MapPropertySource propertySource : propertySources.reversed()) {
 				readWritePropertySources.addFirst(propertySource);
 			}
-			readWritePropertySources.addFirst(new MapPropertySource(Properties.CONTAINERS, Map.of(Properties.CONTAINERS, containerDescriptors)));
+			final String containerImages = StringUtil.toString("", ",", "", containerDescriptors.stream().map(ContainerDescriptor::image).toList());
+			readWritePropertySources.addFirst(new MapPropertySource(Properties.CONTAINERS, Map.of(Properties.CONTAINERS, containerImages)));
 		} catch(RuntimeException rte) {
 			throw rte;
 		} catch(ExecutionException e) {

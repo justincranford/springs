@@ -9,6 +9,7 @@ import com.github.justincranford.springs.util.https.client.config.SpringsUtilHtt
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
 import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefaultApplicationContextInitializer;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
+import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.Getter;
@@ -35,17 +36,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.client.RestTemplate;
-import redis.embedded.RedisServer;
 
 import javax.net.ssl.SSLContext;
-import java.io.IOException;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
     classes = {
 		SpringsPersistenceRedisSessionsConfiguration.class,
-		AbstractIT.AbstractITConfiguration.class,
-//		AbstractIT.RedisITConfiguration.class
+		AbstractIT.AbstractITConfiguration.class
     }
 )
 @ContextConfiguration(
@@ -155,16 +153,11 @@ public class AbstractIT {
 		public UserDetailsService userDetailsService(final PersonService personService) {
     		return personService;
 		}
-
-		@Bean(initMethod = "start", destroyMethod = "stop")
-		public RedisServer redisServer(final RedisProperties redisProperties) throws IOException {
-			return new RedisServer(redisProperties.getPort());
-		}
 	}
 
 	@DynamicPropertySource
-	static void properties(final DynamicPropertyRegistry registry) {
-		registry.add("bootstrap.testcontainers.enabled",           () -> "preferred");
-		registry.add("bootstrap.testcontainers.containers.redis1", () -> "redis:7.4.0");
+	static void redisServerContainer(final DynamicPropertyRegistry registry) {
+		registry.add(BootstrapTestContainers.Properties.ENABLED,                             () -> BootstrapTestContainers.Properties.ENABLE.PREFERRED);
+		registry.add(BootstrapTestContainers.Properties.CONTAINERS_PREFIX + "redis1", () -> "redis:7.4.0");
 	}
 }

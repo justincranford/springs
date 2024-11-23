@@ -1,24 +1,20 @@
 package com.github.justincranford.springs.persistenceorm.users.persona.model;
 
-import java.io.Serial;
-import java.util.List;
-
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
-import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
-import com.github.justincranford.springs.persistenceorm.users.persona.enums.PersonaType;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,11 +31,10 @@ public class PersonaDetails implements UserDetails {
 
 	private Long personId;
 
-	private PersonOrm personOrm;
-
 	private Long personaId;
 
-	private PersonaOrm personaOrm;
+	@Builder.Default
+	private List<SimpleGrantedAuthority> authorities = new ArrayList<>(1);
 
 	@Builder.Default
 	private boolean accountNonExpired = true;
@@ -65,16 +60,6 @@ public class PersonaDetails implements UserDetails {
 
 	@Override
 	public List<SimpleGrantedAuthority> getAuthorities() {
-		if (this.personaOrm == null) {
-			return List.of();
-		}
-		final PersonaType personaType = this.personaOrm.personaType();
-        assert personaType != null;
-        return List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
-	}
-
-	@SuppressWarnings("unused")
-	public void setAuthorities(final List<SimpleGrantedAuthority> _authorities) {
-		// do nothing
+		return this.authorities;
 	}
 }

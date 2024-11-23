@@ -16,6 +16,6 @@ public interface PersonaOrmRepository extends ListCrudRepository<PersonaOrm, Lon
     Optional<PersonOrm> findPersonByEmailAddress(String emailAddress);
 
 	// N.B. Include column aliases to match the method names inside PersonaIdAndPersonIdPasswordProjection
-    @Query("SELECT po.id AS personaId,p.id AS personId,p.password.password AS personPassword FROM PersonaOrm po JOIN po.emailAddresses ea JOIN po.person p WHERE ea.emailAddress.emailAddress=:emailAddress")
+    @Query("SELECT po.id AS id,p.id AS personId,p.password.password AS personPassword FROM PersonaOrm po JOIN po.emailAddresses ea JOIN po.person p WHERE ea.emailAddress.emailAddress=:emailAddress")
     Optional<PersonaProjectionIdAndPersonIdPassword> findPersonaIdAndPersonIdAndPasswordByEmailAddress(String emailAddress);
 }

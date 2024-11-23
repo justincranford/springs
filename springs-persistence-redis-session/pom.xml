@@ -70,6 +70,11 @@
 			<groupId>org.springframework.session</groupId>
 			<artifactId>spring-session-core</artifactId>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.github.codemonstur/embedded-redis -->
+		<dependency>
+			<groupId>com.github.codemonstur</groupId>
+			<artifactId>embedded-redis</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -126,6 +131,11 @@
 			<artifactId>springs-util-observability</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.justincranford.springs</groupId>
+			<artifactId>springs-util-testcontainers</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -134,20 +144,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.github.justincranford.springs</groupId>
-			<artifactId>springs-util-testcontainers</artifactId>
-			<version>${project.parent.version}</version>
-		    <scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.htmlunit</groupId>
 			<artifactId>htmlunit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.github.codemonstur/embedded-redis -->
-		<dependency>
-			<groupId>com.github.codemonstur</groupId>
-			<artifactId>embedded-redis</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

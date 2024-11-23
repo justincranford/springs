@@ -1,5 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.users.persona.service;
 
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.PersonaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,8 @@ import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -36,20 +40,23 @@ public class PersonaService implements UserDetailsService {
     	final PersonOrm personOrm = personaOrm.person();
     	log.trace("Person found by persona, person: {}", personOrm);
 
-		return new PersonaDetails(emailAddressMixedCase, personOrm.id(), personOrm, personaOrm.id(), personaOrm, true, true, true, true);
+		final PersonaType personaType = personaOrm.personaType();
+		assert personaType != null;
+		final List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
+		return new PersonaDetails(emailAddressMixedCase, personOrm.id(), personaOrm.id(), authorities, true, true, true, true);
     }
 
     @Transactional
     public PersonaProjectionIdAndPersonIdPassword findPersonaIdAndPersonIdPasswordByEmailAddress(final String emailAddressMixedCase) throws UsernameNotFoundException {
     	final String lowerCaseEmailAddress = emailAddressMixedCase.toLowerCase();
 		final PersonaProjectionIdAndPersonIdPassword personaProjectionIdAndPersonIdPassword = this.personaOrmRepository.findPersonaIdAndPersonIdAndPasswordByEmailAddress(lowerCaseEmailAddress).orElseThrow(() -> {
-        	log.debug("Persona ID and Person ID+password not found by email address [{}]", emailAddressMixedCase);
+        	log.warn("Persona ID and Person ID+password not found by email address [{}]", emailAddressMixedCase);
         	return new PersonaEmailNotFoundException("Email address not found");
 		});
+		log.info("Persona ID and Person ID+password found by email address [{}]", emailAddressMixedCase);
 		assert personaProjectionIdAndPersonIdPassword.getId() != null : "Persona ID must be non-null";
 		assert personaProjectionIdAndPersonIdPassword.getPersonId() != null : "Person ID must be non-null";
 		assert personaProjectionIdAndPersonIdPassword.getPersonPassword() != null : "Person password must be non-null";
-    	log.trace("Persona ID and Person ID+password found by email address [{}]", emailAddressMixedCase);
 		return personaProjectionIdAndPersonIdPassword;
     }
 }

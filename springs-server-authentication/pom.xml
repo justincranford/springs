@@ -107,6 +107,11 @@
 			<artifactId>springs-util-observability</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.justincranford.springs</groupId>
+			<artifactId>springs-util-testcontainers</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -114,12 +119,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.github.justincranford.springs</groupId>
-			<artifactId>springs-util-testcontainers</artifactId>
-			<version>${project.parent.version}</version>
-		    <scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.htmlunit</groupId>
 			<artifactId>htmlunit</artifactId>

@@ -4,4 +4,5 @@ public interface PersonaProjectionIdAndPersonIdPassword {
     Long getId();
     Long getPersonId();
     String getPersonPassword();
+
 }

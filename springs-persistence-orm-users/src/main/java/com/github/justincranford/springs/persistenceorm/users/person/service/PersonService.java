@@ -2,7 +2,9 @@ package com.github.justincranford.springs.persistenceorm.users.person.service;
 
 import java.util.List;
 
+import com.github.justincranford.springs.persistenceorm.users.persona.enums.PersonaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -39,13 +41,16 @@ public class PersonService implements UserDetailsService {
 		final List<PersonaOrm> personaOrms = personOrm.personas();
 		if (personaOrms.isEmpty()) {
 			log.trace("Personas not found by person: {}", personOrm);
-			return new PersonDetails(usernameMixedCase, personOrm.id(), personOrm, null, null, true, true, true, true);
+			return new PersonDetails(usernameMixedCase, personOrm.id(), null, List.of(), true, true, true, true);
 		}
 
 		final PersonaOrm personaOrm = personaOrms.getFirst();
 		log.trace("Persona found by person, persona: {}", personaOrm);
 
-		return new PersonDetails(usernameMixedCase, personOrm.id(), personOrm, personaOrm.id(), personaOrm, true, true, true, true);
+		final PersonaType personaType = personaOrm.personaType();
+		assert personaType != null;
+		final List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
+		return new PersonDetails(usernameMixedCase, personOrm.id(), personaOrm.id(), authorities, true, true, true, true);
 	}
 
     @Transactional
