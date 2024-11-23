@@ -6,12 +6,13 @@ import com.github.justincranford.springs.util.testcontainers.bootstrap.Bootstrap
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
-import jakarta.validation.metadata.ContainerDescriptor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -45,6 +46,36 @@ import java.util.stream.Stream;
 @Slf4j
 @SuppressWarnings({"static-method", "checkstyle:UtilityClass", "unchecked"})
 public final class BootstrapTestContainers {
+	public static List<ContainerDescriptor> running(final Environment environment, final String image) {
+		final List<ContainerDescriptor> foundContainerDescriptors = find(environment, image);
+		if (foundContainerDescriptors == null) {
+			return null;
+		}
+		final List<ContainerDescriptor> runningContainerDescriptors = foundContainerDescriptors.stream().filter(containerDescriptor -> containerDescriptor.containerInstance().isRunning()).toList();
+		if (runningContainerDescriptors.isEmpty()) {
+			log.info("List of found ContainerDescriptors does not have any running");
+			return null;
+		}
+		log.info("Running ContainerDescriptors: {}", runningContainerDescriptors);
+		return runningContainerDescriptors;
+	}
+
+	public static @Nullable List<ContainerDescriptor> find(final Environment environment, final String image) {
+		@SuppressWarnings({"unchecked"})
+		final List<ContainerDescriptor> containerDescriptors = environment.getProperty(Properties.CONTAINERS, List.class);
+		if (containerDescriptors == null) {
+			log.info("List of ContainerDescriptors is null");
+			return null;
+		}
+		final List<ContainerDescriptor> foundContainerDescriptors = containerDescriptors.stream().filter(containerDescriptor -> containerDescriptor.image().contains(image)).toList();
+		if (foundContainerDescriptors.isEmpty()) {
+			log.info("List of ContainerDescriptors does not have any matches");
+			return null;
+		}
+		log.info("Found ContainerDescriptors: {}", foundContainerDescriptors);
+		return foundContainerDescriptors;
+	}
+
 	public static List<ContainerDescriptor> cleanup(final ConfigurableEnvironment environment1) {
 		final List<ContainerDescriptor> containerDescriptors = environment1.getProperty(BootstrapTestContainers.Properties.CONTAINERS, List.class);
 		if (containerDescriptors != null) {
@@ -130,8 +161,9 @@ public final class BootstrapTestContainers {
 			for (final MapPropertySource propertySource : propertySources.reversed()) {
 				readWritePropertySources.addFirst(propertySource);
 			}
-			final String containerImages = StringUtil.toString("", ",", "", containerDescriptors.stream().map(ContainerDescriptor::image).toList());
-			readWritePropertySources.addFirst(new MapPropertySource(Properties.CONTAINERS, Map.of(Properties.CONTAINERS, containerImages)));
+//			final String containerImages = StringUtil.toString("", ",", "", containerDescriptors.stream().map(ContainerDescriptor::image).toList());
+//			readWritePropertySources.addFirst(new MapPropertySource(Properties.CONTAINERS, Map.of(Properties.CONTAINERS, containerImages)));
+			readWritePropertySources.addFirst(new MapPropertySource(Properties.CONTAINERS, Map.of(Properties.CONTAINERS, containerDescriptors)));
 		} catch(RuntimeException rte) {
 			throw rte;
 		} catch(ExecutionException e) {
