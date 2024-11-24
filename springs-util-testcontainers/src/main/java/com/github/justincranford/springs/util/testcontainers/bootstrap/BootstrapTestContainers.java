@@ -1,16 +1,13 @@
 package com.github.justincranford.springs.util.testcontainers.bootstrap;
 
 import com.github.justincranford.springs.util.basic.EnumUtils;
-import com.github.justincranford.springs.util.basic.StringUtil;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers.Properties.ENABLE;
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -38,7 +35,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,7 +64,7 @@ public final class BootstrapTestContainers {
 			log.info("List of ContainerDescriptors is null");
 			return null;
 		}
-		final List<ContainerDescriptor> foundContainerDescriptors = containerDescriptors.stream().filter(containerDescriptor -> containerDescriptor.image().contains(image)).toList();
+		final List<ContainerDescriptor> foundContainerDescriptors = containerDescriptors.stream().filter(containerDescriptor -> containerDescriptor.imageDescriptor().image().contains(image)).toList();
 		if (foundContainerDescriptors.isEmpty()) {
 			log.info("List of ContainerDescriptors does not have any matches");
 			return null;
@@ -102,23 +99,20 @@ public final class BootstrapTestContainers {
 			final List<ContainerDescriptor> containerDescriptors = new ArrayList<>();
 			for (final Entry<String,String> containerDescriptorEntry : containers.entrySet()) {
 				try {
-					final String                               alias               = containerDescriptorEntry.getKey().replace(Properties.CONTAINERS_PREFIX, "");
-					final String                               image               = containerDescriptorEntry.getValue();
-					final String                               imageWithoutTag     = image.contains(":") ? image.substring(0, image.lastIndexOf(':')) : image;
-					final ImageDescriptor                      imageDescriptor     = ImageDescriptor.MAP.get(imageWithoutTag);
+					final String          alias           = containerDescriptorEntry.getKey().replace(Properties.CONTAINERS_PREFIX, "");
+					final String          imageWithTag    = containerDescriptorEntry.getValue();
+					final String          imageWithoutTag = imageWithTag.contains(":") ? imageWithTag.substring(0, imageWithTag.lastIndexOf(':')) : imageWithTag;
+					final ImageDescriptor imageDescriptor = ImageDescriptor.MAP.get(imageWithoutTag);
 					if (imageDescriptor == null) {
 						throw new RuntimeException("ImageDescription not found for: " + containerDescriptorEntry.getKey() + ". Valid: " + ImageDescriptor.MAP.keySet());
 					}
-					final Class<? extends GenericContainer<?>> containerClass      = imageDescriptor.containerClass();
-					final Map<String,String>                   containerProperties = imageDescriptor.containerProperties();
-					final Consumer<ContainerDescriptor>        updateProperties    = imageDescriptor.updateProperties();
 					GenericContainer<?> containerInstance;
 					try {
-						final DockerImageName dockerImageName = DockerImageName.parse(image);
-						containerInstance = containerClass.getConstructor(DockerImageName.class).newInstance(dockerImageName); // KafkaContainer(String) incorrectly expects version
+						final DockerImageName dockerImageName = DockerImageName.parse(imageWithTag);
+						containerInstance = imageDescriptor.containerClass().getConstructor(DockerImageName.class).newInstance(dockerImageName); // KafkaContainer(String) incorrectly expects version
 					} catch(Exception e1) {
 						try {
-							containerInstance = containerClass.getConstructor(String.class).newInstance(image); // Keycloak(DockerImageName) is missing, fall back to KafkaContainer(String)
+							containerInstance = imageDescriptor.containerClass().getConstructor(String.class).newInstance(imageWithTag); // Keycloak(DockerImageName) is missing, fall back to KafkaContainer(String)
 						} catch(Exception e2) {
 							final RuntimeException rte = new RuntimeException("Error creating container for: " + containerDescriptorEntry.getKey());
 							rte.addSuppressed(e1);
@@ -126,7 +120,7 @@ public final class BootstrapTestContainers {
 							throw rte;
 						}
 					}
-					containerDescriptors.add(new ContainerDescriptor(alias, image, containerProperties, containerInstance, updateProperties));
+					containerDescriptors.add(new ContainerDescriptor(alias, imageDescriptor, containerInstance));
 				} catch(RuntimeException rte) {
 					throw rte;
 				} catch (Exception e) {
@@ -137,14 +131,13 @@ public final class BootstrapTestContainers {
 			final List<CompletableFuture<ContainerDescriptor>> futures = new ArrayList<>();
 			for (final ContainerDescriptor containerDescriptor : containerDescriptors) {
 				futures.add(CompletableFuture.supplyAsync(() -> {
-					final Map<String, Integer> exposedPorts = containerDescriptor.exposedPorts();
-					final GenericContainer<?> containerInstance = containerDescriptor.containerInstance();
-//					containerInstance.withReuse(true);
-					containerInstance.withExposedPorts(exposedPorts.values().toArray(new Integer[0]));
+					final String              alias               = containerDescriptor.alias();
+					final ImageDescriptor     imageDescriptor     = containerDescriptor.imageDescriptor();
+					final GenericContainer<?> containerInstance   = containerDescriptor.containerInstance();
+					containerInstance.withExposedPorts(imageDescriptor.exposedPorts().toArray(new Integer[0]));
 					containerInstance.start();
-					containerDescriptor.updateProperties().accept(containerDescriptor);
-					final Map<String, Integer> mappedPorts = containerDescriptor.mappedPorts();
-					log.info("alias: {}, image: {}, isRunning: {}, properties: {}, exposedPorts: {}. mappedPorts: {}, id: {}, name: {}", containerDescriptor.alias(), containerDescriptor.image(), containerInstance.isRunning(), containerDescriptor.containerProperties(), exposedPorts, mappedPorts, containerInstance.getContainerId(), containerInstance.getContainerName());
+					final Map<String,Object> clientProperties = containerDescriptor.clientProperties(); // apply container mapped ports and additional settings to client properties
+					log.info("alias: {}, isRunning: {}, properties: {}, imageDescriptor: {}, id: {}, name: {}", alias, containerInstance.isRunning(), clientProperties, imageDescriptor, containerInstance.getContainerId(), containerInstance.getContainerName());
 					Runtime.getRuntime().addShutdownHook(new Thread(containerInstance::stop));
 					return containerDescriptor;
 				}));
@@ -152,17 +145,11 @@ public final class BootstrapTestContainers {
 			final List<MapPropertySource> propertySources = new ArrayList<>();
 			for (final CompletableFuture<ContainerDescriptor> future : futures) {
 				final ContainerDescriptor containerDescriptor = future.get();
-				final String containerAlias = containerDescriptor.image();
-				final Map<String, Object> containerProperties = new LinkedHashMap<>((Map) containerDescriptor.containerProperties());
-				containerProperties.putAll(containerDescriptor.mappedPorts()); // overwrite properties to change them from exposedPorts to mappedPorts
-				log.info("Prepending containerProperties: {}", containerProperties);
-				propertySources.add(new MapPropertySource(Properties.CONTAINERS + "-" + containerAlias, containerProperties));
+				propertySources.add(new MapPropertySource(Properties.CONTAINERS + "-" + containerDescriptor.alias(), containerDescriptor.clientProperties()));
 			}
 			for (final MapPropertySource propertySource : propertySources.reversed()) {
 				readWritePropertySources.addFirst(propertySource);
 			}
-//			final String containerImages = StringUtil.toString("", ",", "", containerDescriptors.stream().map(ContainerDescriptor::image).toList());
-//			readWritePropertySources.addFirst(new MapPropertySource(Properties.CONTAINERS, Map.of(Properties.CONTAINERS, containerImages)));
 			readWritePropertySources.addFirst(new MapPropertySource(Properties.CONTAINERS, Map.of(Properties.CONTAINERS, containerDescriptors)));
 		} catch(RuntimeException rte) {
 			throw rte;
@@ -213,189 +200,145 @@ public final class BootstrapTestContainers {
 		}
 	}
 
-	public record ContainerDescriptor(String alias, String image, Map<String, String> containerProperties, GenericContainer<?> containerInstance, Consumer<ContainerDescriptor> updateProperties) {
-		private Map<String,Integer> exposedPorts() {
-			final Map<String,Integer> exposedPorts = new LinkedHashMap<>();
-			this.containerProperties.forEach((key, value) -> {
-				if (key.endsWith(".port")) {
-					final int originalPort = Integer.parseInt(value);
-					exposedPorts.put(key, originalPort);
+	public record ContainerDescriptor(String alias, ImageDescriptor imageDescriptor, GenericContainer<?> containerInstance) {
+		private Map<String,Object> clientProperties() {
+			final Map<String,Object> clientProperties = new LinkedHashMap<>(this.imageDescriptor.clientProperties());
+			this.imageDescriptor.clientProperties().forEach((key, value) -> {
+				if ((value instanceof Integer exposedPort) && (this.imageDescriptor.exposedPorts().contains(exposedPort))) {
+					clientProperties.put(key, this.containerInstance().getMappedPort(exposedPort));
 				}
 			});
-			return exposedPorts;
+			this.imageDescriptor.appendExtraClientProperties().accept(this, clientProperties);
+			return clientProperties;
 		}
-
-		private Map<String,Integer> mappedPorts() {
-			final Map<String,Integer> mappedPorts = new LinkedHashMap<>();
-			exposedPorts().forEach((key, value) -> {
-				final int mappedPort = this.containerInstance().getMappedPort(value);
-				mappedPorts.put(key, mappedPort);
-			});
-			return mappedPorts;
-		}
-	}
-
-	@VisibleForTesting
-	public static void insert(final MutablePropertySources mutablePropertySources) {
-		final Map<String, Object> properties = new LinkedHashMap<>();
-		mutablePropertySources.addFirst(new OriginTrackedMapPropertySource("auto-config-testcontainers", properties));
 	}
 
 	public record ImageDescriptor(
-		Class<? extends GenericContainer<?>> containerClass, String dockerRegistry, String image, Map<String,String> containerProperties, Consumer<ContainerDescriptor> updateProperties
+		Class<? extends GenericContainer<?>> containerClass, String dockerRegistry, String image, List<Integer> exposedPorts, Map<String,Object> clientProperties, BiConsumer<ContainerDescriptor, Map<String,Object>> appendExtraClientProperties
 	) {
+		public static final ImageDescriptor REDIS = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
+			"docker.io", "redis", List.of(6379),
+			new LinkedHashMap<>() {{
+				put("spring.redis.host", "localhost");
+				put("spring.redis.port", 6379);
+			}},
+			(containerDescriptor, clientProperties) -> {}
+		);
 		public static final ImageDescriptor ELASTICSEARCH = new ImageDescriptor(ElasticsearchContainer.class,
-			"docker.elastic.co", "elasticsearch/elasticsearch",
+			"docker.elastic.co", "elasticsearch/elasticsearch", List.of(9200, 9300),
 			new LinkedHashMap<>() {{
 				put("elasticsearch.host", "localhost");
-				put("elasticsearch.port", "9200");
+				put("elasticsearch.port", 9200);
 				put("elasticsearch.transport.host", "localhost");
-				put("elasticsearch.transport.port", "9300");
+				put("elasticsearch.transport.port", 9300);
 			}},
-			(containerDescriptor) -> {}
+			(containerDescriptor, clientProperties) -> {}
 		);
-		public static final ImageDescriptor KEYCLOAK = new ImageDescriptor(
-			KeycloakContainer.class,
-			"quay.io", "keycloak/keycloak",
-			new LinkedHashMap<>() {{
+		public static final ImageDescriptor KEYCLOAK = new ImageDescriptor(KeycloakContainer.class,
+			"quay.io", "keycloak/keycloak", List.of(8080, 8443, 8787, 9000), new LinkedHashMap<>() {{
 				put("keycloak.host",       "localhost");
-				put("keycloak.http.port",  "8080");
-				put("keycloak.https.port", "8443");
-				put("keycloak.debug.port", "8787");
-				put("keycloak.mgmt.port",  "9000");
+				put("keycloak.http.port",  8080);
+				put("keycloak.https.port", 8443);
+				put("keycloak.debug.port", 8787);
+				put("keycloak.mgmt.port",  9000);
 			}},
-			(containerDescriptor) -> {
-				// TODO
-			}
+		   (containerDescriptor, clientProperties) -> {}
 		);
 		public static final ImageDescriptor POSTGRESQL = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) PostgreSQLContainer.class,
-		    "docker.io", "postgres",
+			 "docker.io", "postgres", List.of(5432),
 			 new LinkedHashMap<>() {{
 				put("postgres.host",                           "localhost");
-				put("postgres.port",                           "5432");
+				put("postgres.port",                           5432);
 				put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-			}},
-		    (containerDescriptor) -> {
+			 }},
+			(containerDescriptor, clientProperties) -> {
 				final PostgreSQLContainer<?> containerInstance = (PostgreSQLContainer<?>) containerDescriptor.containerInstance();
-				containerDescriptor.containerProperties().put("spring.datasource.url",      containerInstance.getJdbcUrl());
-				containerDescriptor.containerProperties().put("spring.datasource.username", containerInstance.getUsername());
-				containerDescriptor.containerProperties().put("spring.datasource.password", containerInstance.getPassword());
+				clientProperties.put("spring.datasource.url",      containerInstance.getJdbcUrl());
+				clientProperties.put("spring.datasource.username", containerInstance.getUsername());
+				clientProperties.put("spring.datasource.password", containerInstance.getPassword());
 			}
-		);
-		public static final ImageDescriptor REDIS = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
-			"docker.io", "redis",
-				new LinkedHashMap<>() {{
-				    put("spring.redis.host", "localhost");
-				    put("spring.redis.port", "6379");
-			    }},
-				(containerDescriptor) -> {
-					// TODO
-				}
 		);
 		public static final ImageDescriptor OLLAMA = new ImageDescriptor(OllamaContainer.class,
-			"docker.io", "ollama/ollama",
-			new LinkedHashMap<>() {
-				{
-					put("springs.service.chatbot.protocol", "http");
-					put("springs.service.chatbot.host", "localhost");
-					put("springs.service.chatbot.port", "11434");
+	        "docker.io", "ollama/ollama", List.of(11434), new LinkedHashMap<>() {{
+				put("springs.service.chatbot.protocol", "http");
+				put("springs.service.chatbot.host", "localhost");
+				put("springs.service.chatbot.port", 11434);
 			}},
-			(containerDescriptor) -> {
-				// TODO
-			}
+			(containerDescriptor, clientProperties) -> {}
 		);
 		public static final ImageDescriptor ZIPKIN = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
-			 "docker.io", "openzipkin/zipkin",
-			 new LinkedHashMap<>() {{
+    	    "docker.io", "openzipkin/zipkin", List.of(9411), new LinkedHashMap<>() {{
 				 put("zipkin.host", "localhost");
-				 put("zipkin.port", "9411");
+				 put("zipkin.port", 9411);
 			 }},
-			 (containerDescriptor) -> {
-				 // TODO
-			 }
+			(containerDescriptor, clientProperties) -> {}
 		);
 		public static final ImageDescriptor VAULT = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) VaultContainer.class,
-			"docker.io", "hashicorp/vault",
-			new LinkedHashMap<>() {{
+        	"docker.io", "hashicorp/vault", List.of(8200), new LinkedHashMap<>() {{
 				 put("vault.host", "localhost");
-				 put("vault.port", "8200");
-			 }},
-			(containerDescriptor) -> {
-				// TODO
-			}
-		);
-		public static final ImageDescriptor CONSUL = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) ConsulContainer.class,
-			"docker.io", "hashicorp/consul",
-			new LinkedHashMap<>() {{
-				put("consul.host", "localhost");
-				put("consul.port", "8500");
-				put("consul2.host", "localhost");
-				put("consul2.port", "8502");
+				 put("vault.port", 8200);
 			}},
-			(containerDescriptor) -> {
-				// TODO
-			}
+			(containerDescriptor, clientProperties) -> {}
+		);
+		public static final ImageDescriptor CONSUL = new ImageDescriptor((Class<? extends GenericContainer<?>>) ConsulContainer.class,
+	        "docker.io", "hashicorp/consul", List.of(8500, 8502), new LinkedHashMap<>() {{
+				put("consul.http.host", "localhost");
+				put("consul.http.port", 8500);
+				put("consul.https.host", "localhost");
+				put("consul.https.port", 8502);
+			}},
+			(containerDescriptor, clientProperties) -> {}
 		);
 		@SuppressWarnings({"deprecation"})
-		public static final ImageDescriptor KAFKA = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) KafkaContainer.class,
-			 "docker.io", "confluentinc/cp-kafka",
-			 new LinkedHashMap<>() {{
+		public static final ImageDescriptor KAFKA = new ImageDescriptor((Class<? extends GenericContainer<?>>) KafkaContainer.class,
+    	    "docker.io", "confluentinc/cp-kafka", List.of(9093, 2181),
+			new LinkedHashMap<>() {{
 				 put("kafka.host", "localhost");
-				 put("kafka.port", "9093");
+				 put("kafka.port", 9093);
 				 put("zookeeper.host", "localhost");
-				 put("zookeeper.port", "2181");
+				 put("zookeeper.port", 2181);
 			 }},
-			 (containerDescriptor) -> {
-				 // TODO
-			 }
+			(containerDescriptor, clientProperties) -> {}
 		);
 		public static final ImageDescriptor DYNAMODB = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
-			"docker.io", "amazon/dynamodb-local",
-			new LinkedHashMap<>() {{
-				put("dynamodb.host", "localhost");
-				put("dynamodb.port", "8000");
-			}},
-			(containerDescriptor) -> {
-				// TODO
-			}
-		);
-		public static final ImageDescriptor MONGODB = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) MongoDBContainer.class,
-		   "docker.io", "mongo",
+	 	  "docker.io", "amazon/dynamodb-local", List.of(8000),
 		   new LinkedHashMap<>() {{
+				put("dynamodb.host", "localhost");
+				put("dynamodb.port", 8000);
+			}},
+			(containerDescriptor, clientProperties) -> {}
+		);
+		public static final ImageDescriptor MONGODB = new ImageDescriptor((Class<? extends GenericContainer<?>>) MongoDBContainer.class,
+			"docker.io", "mongo", List.of(27017),
+			new LinkedHashMap<>() {{
 			   put("mongo.host", "localhost");
-			   put("mongo.port", "27017");
+			   put("mongo.port", 27017);
 		   }},
-		   (containerDescriptor) -> {
-			   // TODO
-		   }
+			(containerDescriptor, clientProperties) -> {}
 		);
 		public static final ImageDescriptor GRAFANA = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
-		   "docker.io", "grafana/otel-lgtm",
-		   new LinkedHashMap<>() {{
+		  "docker.io", "grafana/otel-lgtm", List.of(3000, 4317, 4318, 9090),
+		  new LinkedHashMap<>() {{
 			   put("grafana.host", "localhost");
-			   put("grafana.port", "3000");
+			   put("grafana.port", 3000);
 			   put("otlp.grpc.host", "localhost");
-			   put("otlp.grpc.port", "4317");
+			   put("otlp.grpc.port", 4317);
 			   put("otlp.http.host", "localhost");
-			   put("otlp.http.port", "4318");
+			   put("otlp.http.port", 4318);
 			   put("prometheus.host", "localhost");
-			   put("prometheus.port", "9090");
+			   put("prometheus.port", 9090);
 		   }},
-		   (containerDescriptor) -> {
-			   // TODO
-		   }
+			(containerDescriptor, clientProperties) -> {}
 		);
 		public static final ImageDescriptor SELENIUMCHROME = new ImageDescriptor((Class<? extends GenericContainer<?>>) (Class<?>) BrowserWebDriverContainer.class,
-		   "docker.io", "selenium/standalone-chrome",
-		    new LinkedHashMap<>() {{
+			"docker.io", "selenium/standalone-chrome", List.of(4444, 5900),
+			 new LinkedHashMap<>() {{
 			   put("selenium.host", "localhost");
-			   put("selenium.port", "4444");
+			   put("selenium.port", 4444);
 			   put("vnc.host",      "localhost");
-			   put("vnc.port",      "5900");
-		   }},
-		   (containerDescriptor) -> {
-			   // TODO
-		   }
+			   put("vnc.port",      5900);
+			}},
+			(containerDescriptor, clientProperties) -> {}
 		);
 
 		public static final List<ImageDescriptor> LIST = List.of(
