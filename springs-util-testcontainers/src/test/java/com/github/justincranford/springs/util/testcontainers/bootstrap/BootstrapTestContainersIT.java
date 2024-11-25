@@ -1,9 +1,7 @@
-package com.github.justincranford.springs.util.testcontainers.containers;
+package com.github.justincranford.springs.util.testcontainers.bootstrap;
 
 import com.github.justincranford.springs.util.testcontainers.AbstractIT;
-import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers.ContainerDescriptor;
-import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
@@ -17,7 +15,8 @@ import org.springframework.test.context.DynamicPropertySource;
 import java.util.List;
 
 @Slf4j
-public class TestContainersIT extends AbstractIT {
+@SuppressWarnings({"unused"})
+public class BootstrapTestContainersIT extends AbstractIT {
 	public abstract static class AbstractOneTestIT extends AbstractIT {
 		@Autowired
 		private ConfigurableEnvironment environment;

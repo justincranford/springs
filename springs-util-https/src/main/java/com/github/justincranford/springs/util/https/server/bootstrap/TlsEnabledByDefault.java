@@ -3,7 +3,7 @@ package com.github.justincranford.springs.util.https.server.bootstrap;
 import com.github.justincranford.springs.util.basic.ThreadUtil;
 import com.github.justincranford.springs.util.https.util.CertUtil;
 import com.github.justincranford.springs.util.https.util.KeyGenUtil;
-import com.github.justincranford.springs.util.https.util.PemUtil;
+import com.github.justincranford.springs.util.https.util.CertPemUtil;
 import com.github.justincranford.springs.util.https.util.SignUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
@@ -88,14 +88,14 @@ public final class TlsEnabledByDefault {
 			httpsClientRootCaCert.verify(httpsClientRootCaKeyPair.getPublic());
 			httpsClientCert.verify(httpsClientRootCaKeyPair.getPublic());
 
-			final String httpsServerRootCaCertPem       = PemUtil.toPem(httpsServerRootCaCert);
-			final String httpsServerRootCaPrivateKeyPem = PemUtil.toPem(httpsServerRootCaKeyPair.getPrivate());
-			final String httpsServerCertPem             = PemUtil.toPem(httpsServerCert);
-			final String httpsServerPrivateKeyPem       = PemUtil.toPem(httpsServerKeyPair.getPrivate());
-			final String httpsClientRootCaCertPem       = PemUtil.toPem(httpsClientRootCaCert);
-			final String httpsClientRootCaPrivateKeyPem = PemUtil.toPem(httpsClientRootCaKeyPair.getPrivate());
-			final String httpsClientCertPem             = PemUtil.toPem(httpsClientCert);
-			final String httpsClientPrivateKeyPem       = PemUtil.toPem(httpsClientKeyPair.getPrivate());
+			final String httpsServerRootCaCertPem       = CertPemUtil.toPem(httpsServerRootCaCert);
+			final String httpsServerRootCaPrivateKeyPem = CertPemUtil.toPem(httpsServerRootCaKeyPair.getPrivate());
+			final String httpsServerCertPem             = CertPemUtil.toPem(httpsServerCert);
+			final String httpsServerPrivateKeyPem       = CertPemUtil.toPem(httpsServerKeyPair.getPrivate());
+			final String httpsClientRootCaCertPem       = CertPemUtil.toPem(httpsClientRootCaCert);
+			final String httpsClientRootCaPrivateKeyPem = CertPemUtil.toPem(httpsClientRootCaKeyPair.getPrivate());
+			final String httpsClientCertPem             = CertPemUtil.toPem(httpsClientCert);
+			final String httpsClientPrivateKeyPem       = CertPemUtil.toPem(httpsClientKeyPair.getPrivate());
 
 			final String    httpsClientServerPreSharedKeyStoreType     = "PKCS12";
 			final String    httpsClientServerPreSharedKeyStorePassword = "pskKeyStorePwd";
@@ -106,7 +106,7 @@ public final class TlsEnabledByDefault {
 				httpsClientServerPreSharedKeyStoreType, httpsClientServerPreSharedKeyStorePassword,
 				httpsClientServerPreSharedKeyAlias, httpsClientServerPreSharedKeyPassword, httpsClientServerPreSharedKey
 			);
-			final String    httpsClientServerPreSharedKeyPem           = PemUtil.toPem(httpsClientServerPreSharedKey);
+			final String    httpsClientServerPreSharedKeyPem           = CertPemUtil.toPem(httpsClientServerPreSharedKey);
 
 			log.info("HTTPS Server Root CA:\n{}{}", httpsServerRootCaCertPem, log.isTraceEnabled() ? httpsServerRootCaPrivateKeyPem   : "REDACTED");
 			log.info("HTTPS Server:\n{}{}",         httpsServerCertPem,       log.isTraceEnabled() ? httpsServerPrivateKeyPem         : "REDACTED");
