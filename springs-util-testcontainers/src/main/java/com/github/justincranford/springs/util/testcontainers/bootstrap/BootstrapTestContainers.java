@@ -186,9 +186,10 @@ public final class BootstrapTestContainers {
 			"docker.io", "postgres", List.of(5432),
 			(containerDescriptor) -> new LinkedHashMap<>() {{
 				final PostgreSQLContainer<?> containerInstance = (PostgreSQLContainer<?>) containerDescriptor.containerInstance();
-				put("spring.datasource.url",      containerInstance.getJdbcUrl());
-				put("spring.datasource.username", containerInstance.getUsername());
-				put("spring.datasource.password", containerInstance.getPassword());
+				put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+				put("spring.datasource.url",                    containerInstance.getJdbcUrl());
+				put("spring.datasource.username",               containerInstance.getUsername());
+				put("spring.datasource.password",               containerInstance.getPassword());
 			}}
 		);
 		public static final SupportedImage OLLAMA = new SupportedImage(OllamaContainer.class,
