@@ -1,13 +1,13 @@
 package com.github.justincranford.springs.persistenceorm.users;
 
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
-import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.person.service.PersonPasswordUpgradeEncodingService;
 import com.github.justincranford.springs.persistenceorm.users.person.service.PersonService;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.service.PersonaService;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
+import com.github.justincranford.springs.server.authentication.encoding.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -42,8 +41,6 @@ import org.springframework.test.context.DynamicPropertySource;
 @Slf4j
 @Observed
 public class AbstractIT {
-	@LocalServerPort
-	private long localServerPort;
 	@Autowired
     private MeterRegistry meterRegistry;
     @Autowired
