@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.server.authentication.users.exception;
+package com.github.justincranford.springs.server.authentication.user.exception;
 
 import org.springframework.security.authentication.BadCredentialsException;
 

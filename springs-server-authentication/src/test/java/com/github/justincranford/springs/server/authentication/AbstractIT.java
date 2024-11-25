@@ -6,8 +6,8 @@ import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRe
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
 import com.github.justincranford.springs.server.authentication.config.SpringsServerAuthenticationConfiguration;
-import com.github.justincranford.springs.server.authentication.users.provider.PersonUsernamePasswordAuthenticationProvider;
-import com.github.justincranford.springs.server.authentication.users.provider.PersonaEmailPasswordAuthenticationProvider;
+import com.github.justincranford.springs.server.authentication.user.provider.PersonUsernamePasswordAuthenticationProvider;
+import com.github.justincranford.springs.server.authentication.user.provider.PersonaEmailPasswordAuthenticationProvider;
 import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;

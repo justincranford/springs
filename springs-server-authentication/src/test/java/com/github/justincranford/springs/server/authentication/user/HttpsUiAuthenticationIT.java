@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.server.authentication.users;
+package com.github.justincranford.springs.server.authentication.user;
 
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties.Person.Persona;

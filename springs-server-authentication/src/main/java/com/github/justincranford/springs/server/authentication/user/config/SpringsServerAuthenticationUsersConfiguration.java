@@ -1,7 +1,7 @@
-package com.github.justincranford.springs.server.authentication.users.config;
+package com.github.justincranford.springs.server.authentication.user.config;
 
-import com.github.justincranford.springs.server.authentication.users.provider.PersonUsernamePasswordAuthenticationProvider;
-import com.github.justincranford.springs.server.authentication.users.provider.PersonaEmailPasswordAuthenticationProvider;
+import com.github.justincranford.springs.server.authentication.user.provider.PersonUsernamePasswordAuthenticationProvider;
+import com.github.justincranford.springs.server.authentication.user.provider.PersonaEmailPasswordAuthenticationProvider;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 

@@ -1,26 +1,26 @@
-package com.github.justincranford.springs.server.authentication.users.token;
+package com.github.justincranford.springs.server.authentication.user.token;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.util.Assert;
 
 import java.io.Serial;
 
-public class PersonUsernamePasswordUnauthenticatedToken extends AbstractAuthenticationToken {
+public class PersonaEmailPasswordUnauthenticatedToken extends AbstractAuthenticationToken {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private final String username;
+	private final String emailAddress;
 	private String password;
-	public PersonUsernamePasswordUnauthenticatedToken(final String _username, final String _password) {
+	public PersonaEmailPasswordUnauthenticatedToken(final String _emailAddress, final String _password) {
 		super(null);
-		this.username = _username;
+		this.emailAddress = _emailAddress;
 		this.password = _password;
 		super.setAuthenticated(false);
 	}
 
 	@Override
 	public Object getPrincipal() {
-		return this.username;
+		return this.emailAddress;
 	}
 
 	@Override

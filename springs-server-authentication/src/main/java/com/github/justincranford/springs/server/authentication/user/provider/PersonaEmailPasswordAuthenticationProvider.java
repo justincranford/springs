@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.server.authentication.users.provider;
+package com.github.justincranford.springs.server.authentication.user.provider;
 
 import com.github.justincranford.springs.persistenceorm.users.person.service.PersonPasswordUpgradeEncodingService;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaProjectionIdAndPersonIdPassword;
@@ -6,12 +6,12 @@ import com.github.justincranford.springs.persistenceorm.users.persona.email.Emai
 import com.github.justincranford.springs.persistenceorm.users.persona.exception.PersonaEmailNotFoundException;
 import com.github.justincranford.springs.persistenceorm.users.persona.model.PersonaDetails;
 import com.github.justincranford.springs.persistenceorm.users.persona.service.PersonaService;
-import com.github.justincranford.springs.server.authentication.users.exception.PersonaPasswordBlankNotAllowedException;
-import com.github.justincranford.springs.server.authentication.users.exception.PersonaPasswordNoMatchException;
-import com.github.justincranford.springs.server.authentication.users.exception.PersonaTokenClassNotSupportedException;
-import com.github.justincranford.springs.server.authentication.users.exception.PersonaTokenNullNotAllowedException;
-import com.github.justincranford.springs.server.authentication.users.token.PersonaEmailPasswordAuthenticatedToken;
-import com.github.justincranford.springs.server.authentication.users.token.PersonaEmailPasswordUnauthenticatedToken;
+import com.github.justincranford.springs.server.authentication.user.exception.PersonaPasswordBlankNotAllowedException;
+import com.github.justincranford.springs.server.authentication.user.exception.PersonaPasswordNoMatchException;
+import com.github.justincranford.springs.server.authentication.user.exception.PersonaTokenClassNotSupportedException;
+import com.github.justincranford.springs.server.authentication.user.exception.PersonaTokenNullNotAllowedException;
+import com.github.justincranford.springs.server.authentication.user.token.PersonaEmailPasswordAuthenticatedToken;
+import com.github.justincranford.springs.server.authentication.user.token.PersonaEmailPasswordUnauthenticatedToken;
 import com.github.justincranford.springs.util.basic.Timer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;

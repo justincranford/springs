@@ -1,8 +1,8 @@
 package com.github.justincranford.springs.server.authentication.filterchain.config;
 
 import com.github.justincranford.springs.server.authentication.redirect.controller.RedirectController;
-import com.github.justincranford.springs.server.authentication.users.provider.PersonUsernamePasswordAuthenticationProvider;
-import com.github.justincranford.springs.server.authentication.users.provider.PersonaEmailPasswordAuthenticationProvider;
+import com.github.justincranford.springs.server.authentication.user.provider.PersonUsernamePasswordAuthenticationProvider;
+import com.github.justincranford.springs.server.authentication.user.provider.PersonaEmailPasswordAuthenticationProvider;
 import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
 import com.github.justincranford.springs.util.http.server.logging.filter.RequestLogFilter;
 import com.github.justincranford.springs.util.http.server.ratelimit.filter.RateLimitFilter;

@@ -4,7 +4,7 @@ import com.github.justincranford.springs.persistenceorm.clients.config.SpringsPe
 import com.github.justincranford.springs.persistenceredis.config.SpringsPersistenceRedisSessionsConfiguration;
 import com.github.justincranford.springs.server.authentication.encoding.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.server.authentication.filterchain.config.SpringsServerAuthenticationSecurityFilterChainConfiguration;
-import com.github.justincranford.springs.server.authentication.users.config.SpringsServerAuthenticationUsersConfiguration;
+import com.github.justincranford.springs.server.authentication.user.config.SpringsServerAuthenticationUsersConfiguration;
 import com.github.justincranford.springs.util.https.config.SpringsUtilHttpsConfiguration;
 import com.github.justincranford.springs.util.security.hashes.config.SpringsUtilSecurityHashesConfiguration;
 import org.springframework.context.annotation.Configuration;

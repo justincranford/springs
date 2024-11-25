@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.server.authentication.users.token;
+package com.github.justincranford.springs.server.authentication.user.token;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

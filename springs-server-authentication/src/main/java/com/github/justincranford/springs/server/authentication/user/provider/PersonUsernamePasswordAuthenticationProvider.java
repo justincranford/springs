@@ -1,16 +1,16 @@
-package com.github.justincranford.springs.server.authentication.users.provider;
+package com.github.justincranford.springs.server.authentication.user.provider;
 
 import com.github.justincranford.springs.persistenceorm.users.person.PersonProjectionIdPassword;
 import com.github.justincranford.springs.persistenceorm.users.person.model.PersonDetails;
 import com.github.justincranford.springs.persistenceorm.users.person.service.PersonPasswordUpgradeEncodingService;
 import com.github.justincranford.springs.persistenceorm.users.person.service.PersonService;
 import com.github.justincranford.springs.persistenceorm.users.persona.email.EmailRfc5321Validator;
-import com.github.justincranford.springs.server.authentication.users.exception.PersonPasswordBlankNotAllowedException;
-import com.github.justincranford.springs.server.authentication.users.exception.PersonPasswordNoMatchException;
-import com.github.justincranford.springs.server.authentication.users.exception.PersonTokenClassNotSupportedException;
-import com.github.justincranford.springs.server.authentication.users.exception.PersonTokenNullNotAllowedException;
-import com.github.justincranford.springs.server.authentication.users.token.PersonUsernamePasswordAuthenticatedToken;
-import com.github.justincranford.springs.server.authentication.users.token.PersonUsernamePasswordUnauthenticatedToken;
+import com.github.justincranford.springs.server.authentication.user.exception.PersonPasswordBlankNotAllowedException;
+import com.github.justincranford.springs.server.authentication.user.exception.PersonPasswordNoMatchException;
+import com.github.justincranford.springs.server.authentication.user.exception.PersonTokenClassNotSupportedException;
+import com.github.justincranford.springs.server.authentication.user.exception.PersonTokenNullNotAllowedException;
+import com.github.justincranford.springs.server.authentication.user.token.PersonUsernamePasswordAuthenticatedToken;
+import com.github.justincranford.springs.server.authentication.user.token.PersonUsernamePasswordUnauthenticatedToken;
 import com.github.justincranford.springs.util.basic.Timer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
