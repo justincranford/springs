@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.server.authentication.users.exception;
+package com.github.justincranford.springs.server.authentication.exception;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

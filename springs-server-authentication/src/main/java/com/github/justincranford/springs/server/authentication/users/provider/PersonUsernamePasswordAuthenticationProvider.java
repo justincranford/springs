@@ -22,7 +22,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import static com.github.justincranford.springs.server.authentication.users.exception.AuthenticationExceptionUtil.logAndCreate;
+import static com.github.justincranford.springs.server.authentication.exception.AuthenticationExceptionUtil.logAndCreate;
 import static org.slf4j.event.Level.DEBUG;
 import static org.slf4j.event.Level.TRACE;
 
