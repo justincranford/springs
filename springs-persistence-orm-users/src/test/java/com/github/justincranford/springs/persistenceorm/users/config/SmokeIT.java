@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.server.authentication.encoding.config;
+package com.github.justincranford.springs.persistenceorm.users.config;
 
 import com.github.justincranford.springs.persistenceorm.users.AbstractIT;
 import lombok.extern.slf4j.Slf4j;

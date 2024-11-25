@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceorm.clients.service;
+package com.github.justincranford.springs.persistenceorm.clients.client.service;
 
 import com.github.justincranford.springs.persistenceorm.users.util.LockUtil;
 import com.github.justincranford.springs.util.basic.ThreadUtil;
@@ -26,7 +26,7 @@ public class ClientSecretUpgradeEncodingService {
     private PasswordEncoder passwordEncoder;
 
 	@Observed
-    public Future<Void> asyncUpdateSecretByClientName(final Long clientName, final String clientEncodedSecret) {
+    public Future<Void> asyncUpdateSecretByName(final Long clientName, final String clientEncodedSecret) {
 		// do encode and updateSecret asynchronously
     	final ThrowingSupplier<Void> innerSupplier = () -> encodeAndUpdateById(clientName, clientEncodedSecret);
 		final Future<Void>           innerAsync    = ThreadUtil.supplyAsync(innerSupplier);

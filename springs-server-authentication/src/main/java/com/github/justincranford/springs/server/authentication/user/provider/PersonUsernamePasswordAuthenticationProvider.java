@@ -58,8 +58,7 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
 		if (EMAIL_VALIDATOR.isValid(usernameMixedCase, false)) {
         	log.trace("Ignoring name [{}] because it is a valid email address.", usernameMixedCase);
     		return null; // ASSUME: Handled by PersonaEmailPasswordAuthenticationProvider
-		} else
-		if (Strings.isBlank(password)) {
+		} else if (Strings.isBlank(password)) {
     		throw logAndCreate(PersonPasswordBlankNotAllowedException.class, TRACE, "Password must not be blank");
 		}
 		final String usernameLowerCase = usernameMixedCase.toLowerCase();
@@ -70,7 +69,7 @@ public class PersonUsernamePasswordAuthenticationProvider implements Authenticat
 		}
 
 		final boolean doesPasswordMatch;
-		try (Timer ignored = Timer.go("passwordEncoder.matches")) {
+		try (Timer ignored = Timer.go("Person.passwordEncoder.matches", "passwordEncoder.matches")) {
 			doesPasswordMatch = this.passwordEncoder.matches(password, personProjectionIdPassword.getPassword());
 		}
 		if (doesPasswordMatch) {

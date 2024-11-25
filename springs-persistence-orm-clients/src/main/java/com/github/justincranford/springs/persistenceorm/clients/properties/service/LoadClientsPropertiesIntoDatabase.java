@@ -1,20 +1,18 @@
 package com.github.justincranford.springs.persistenceorm.clients.properties.service;
 
-import java.util.List;
-
+import com.github.justincranford.springs.persistenceorm.clients.client.ClientOrm;
+import com.github.justincranford.springs.persistenceorm.clients.client.ClientOrmRepository;
+import com.github.justincranford.springs.persistenceorm.clients.client.ClientSecretOrm;
 import com.github.justincranford.springs.persistenceorm.clients.properties.SpringsPersistenceOrmClientsClientProperties;
 import com.github.justincranford.springs.persistenceorm.clients.properties.SpringsPersistenceOrmClientsClientProperties.Client;
+import com.github.justincranford.springs.util.security.hashes.encoder.EncodeUtil;
+import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.github.justincranford.springs.persistenceorm.clients.client.ClientOrm;
-import com.github.justincranford.springs.persistenceorm.clients.client.ClientOrmRepository;
-import com.github.justincranford.springs.persistenceorm.clients.client.ClientSecretOrm;
-import com.github.justincranford.springs.util.security.hashes.encoder.EncodeUtil;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
+import java.util.List;
 
 @Service
 public class LoadClientsPropertiesIntoDatabase {
@@ -27,16 +25,16 @@ public class LoadClientsPropertiesIntoDatabase {
 
     @Transactional
     @PostConstruct
-    public void loadUsers() {
+    public void loadClients() {
         final List<SpringsPersistenceOrmClientsClientProperties.Client> clients = this.clientProperties.getClient();
         final List<String> encodedSecrets = EncodeUtil.encode(this.passwordEncoder, clients.stream().map(Client::getSecret).toList());
 
-        int userOffset = 0;
+        int clientOffset = 0;
         for (final SpringsPersistenceOrmClientsClientProperties.Client client : clients) {
             final ClientOrm createClientOrm = new ClientOrm();
-            createClientOrm.clientName(client.getClientName());
-            createClientOrm.secret(new ClientSecretOrm(encodedSecrets.get(userOffset++)));
-            createClientOrm.clientStatus(client.getClientStatus());
+            createClientOrm.name(client.getClientName());
+            createClientOrm.secret(new ClientSecretOrm(encodedSecrets.get(clientOffset++)));
+            createClientOrm.status(client.getClientStatus());
             createClientOrm.clientType(client.getClientType());
             createClientOrm.clientTimeZones(client.getClientTimeZones());
             this.clientOrmRepository.save(createClientOrm);

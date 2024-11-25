@@ -77,6 +77,11 @@
             <artifactId>springs-persistence-orm-users</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+		<dependency>
+			<groupId>com.github.justincranford.springs</groupId>
+			<artifactId>springs-persistence-orm-clients</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
         <dependency>
             <groupId>com.github.justincranford.springs</groupId>
             <artifactId>springs-persistence-orm-base</artifactId>

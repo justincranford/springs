@@ -1,9 +1,9 @@
-package com.github.justincranford.springs.persistenceorm.clients.service;
+package com.github.justincranford.springs.persistenceorm.clients.client.service;
 
 import com.github.justincranford.springs.persistenceorm.clients.client.ClientOrm;
 import com.github.justincranford.springs.persistenceorm.clients.client.ClientOrmRepository;
 import com.github.justincranford.springs.persistenceorm.clients.client.ClientProjectionIdSecret;
-import com.github.justincranford.springs.persistenceorm.clients.client.exception.ClientClientNameNotFoundException;
+import com.github.justincranford.springs.persistenceorm.clients.client.exception.ClientNameNotFoundException;
 import com.github.justincranford.springs.persistenceorm.clients.client.model.ClientDetails;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
 import jakarta.persistence.OptimisticLockException;
@@ -22,27 +22,27 @@ public class ClientService implements UserDetailsService {
 
     @Transactional
 	@Override
-	public ClientDetails loadUserByUsername(final String ClientNameMixedCase) throws UsernameNotFoundException {
-    	final String ClientNameLowerCase = ClientNameMixedCase.toLowerCase();
-		final ClientOrm clientOrm = this.clientOrmRepository.findByClientName(ClientNameLowerCase).orElseThrow(() -> {
-			log.debug("Client not found by clientName [{}]", ClientNameMixedCase);
-            return new ClientClientNameNotFoundException("clientName not found");
+	public ClientDetails loadUserByUsername(final String nameMixedCase) throws UsernameNotFoundException {
+    	final String nameLowerCase = nameMixedCase.toLowerCase();
+		final ClientOrm clientOrm = this.clientOrmRepository.findByName(nameLowerCase).orElseThrow(() -> {
+			log.debug("Client not found by name [{}]", nameMixedCase);
+            return new ClientNameNotFoundException("name not found");
 		});
-		log.trace("Client found by clientName, client: {}", clientOrm);
+		log.trace("Client found by name, client: {}", clientOrm);
 
-		return new ClientDetails(ClientNameMixedCase, clientOrm.id(), clientOrm, true, true, true, true);
+		return new ClientDetails(nameMixedCase, clientOrm.id(), clientOrm, true, true, true, true);
 	}
 
     @Transactional
-    public ClientProjectionIdSecret findClientNameSecretByClientName(final String ClientNameMixedCase) throws ClientClientNameNotFoundException {
-    	final String ClientNameLowerCase = ClientNameMixedCase.toLowerCase();
-		final ClientProjectionIdSecret clientProjectionIdSecret = this.clientOrmRepository.findClientProjectionIdSecretByClientName(ClientNameLowerCase).orElseThrow(() -> {
-        	log.debug("Client id+secret not found by clientName [{}]", ClientNameMixedCase);
-            return new ClientClientNameNotFoundException("clientName not found");
+    public ClientProjectionIdSecret findIdSecretByName(final String nameMixedCase) throws ClientNameNotFoundException {
+    	final String nameLowerCase = nameMixedCase.toLowerCase();
+		final ClientProjectionIdSecret clientProjectionIdSecret = this.clientOrmRepository.findClientProjectionIdSecretByName(nameLowerCase).orElseThrow(() -> {
+        	log.debug("Client id+secret not found by name [{}]", nameMixedCase);
+            return new ClientNameNotFoundException("name not found");
 		});
 		assert clientProjectionIdSecret.getId() != null : "Client ID must be non-null";
 		assert clientProjectionIdSecret.getSecret() != null : "Client secret must be non-null";
-    	log.trace("Client id+secret found by clientName: {}", ClientNameMixedCase);
+    	log.trace("Client id+secret found by name: {}", nameMixedCase);
 		return clientProjectionIdSecret;
     }
 

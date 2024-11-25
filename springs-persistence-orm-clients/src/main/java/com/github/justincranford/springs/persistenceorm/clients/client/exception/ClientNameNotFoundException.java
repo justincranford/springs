@@ -5,13 +5,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.io.Serial;
 
 @SuppressWarnings({"unused"})
-public class ClientClientNameNotFoundException extends UsernameNotFoundException {
+public class ClientNameNotFoundException extends UsernameNotFoundException {
 	@Serial
 	private static final long serialVersionUID = 1L;
-	public ClientClientNameNotFoundException(String msg) {
+	public ClientNameNotFoundException(String msg) {
 		super(msg);
 	}
-	public ClientClientNameNotFoundException(String msg, Throwable cause) {
+	public ClientNameNotFoundException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
 }

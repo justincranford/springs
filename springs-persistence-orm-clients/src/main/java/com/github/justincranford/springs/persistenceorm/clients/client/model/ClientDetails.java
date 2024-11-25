@@ -29,9 +29,9 @@ public class ClientDetails implements UserDetails {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private String clientClientName;
+	private String name;
 
-	private Long clientName;
+	private Long id;
 
 	private ClientOrm clientOrm;
 
@@ -49,7 +49,7 @@ public class ClientDetails implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return this.clientClientName;
+		return this.name;
 	}
 
 	@Override

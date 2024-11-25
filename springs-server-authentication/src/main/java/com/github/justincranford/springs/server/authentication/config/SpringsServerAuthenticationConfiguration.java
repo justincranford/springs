@@ -1,10 +1,11 @@
 package com.github.justincranford.springs.server.authentication.config;
 
 import com.github.justincranford.springs.persistenceorm.clients.config.SpringsPersistenceOrmClientsConfiguration;
+import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.persistenceredis.config.SpringsPersistenceRedisSessionsConfiguration;
-import com.github.justincranford.springs.server.authentication.encoding.config.SpringsPersistenceOrmUsersConfiguration;
+import com.github.justincranford.springs.server.authentication.client.config.SpringsServerAuthenticationClientConfiguration;
 import com.github.justincranford.springs.server.authentication.filterchain.config.SpringsServerAuthenticationSecurityFilterChainConfiguration;
-import com.github.justincranford.springs.server.authentication.user.config.SpringsServerAuthenticationUsersConfiguration;
+import com.github.justincranford.springs.server.authentication.user.config.SpringsServerAuthenticationUserConfiguration;
 import com.github.justincranford.springs.util.https.config.SpringsUtilHttpsConfiguration;
 import com.github.justincranford.springs.util.security.hashes.config.SpringsUtilSecurityHashesConfiguration;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +19,8 @@ import org.springframework.context.annotation.Import;
 	SpringsPersistenceRedisSessionsConfiguration.class, // HTTP Session storage in Redis
 	SpringsUtilHttpsConfiguration.class,
     SpringsUtilSecurityHashesConfiguration.class,
-	SpringsServerAuthenticationUsersConfiguration.class,
+	SpringsServerAuthenticationUserConfiguration.class,
+	SpringsServerAuthenticationClientConfiguration.class,
 	SpringsServerAuthenticationSecurityFilterChainConfiguration.class
 })
 public class SpringsServerAuthenticationConfiguration {

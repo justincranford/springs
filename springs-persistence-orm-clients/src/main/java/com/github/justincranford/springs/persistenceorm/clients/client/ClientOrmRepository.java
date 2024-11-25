@@ -9,12 +9,12 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 public interface ClientOrmRepository extends ListCrudRepository<ClientOrm, Long>, RevisionRepository<ClientOrm, Long, Long> {
-    @Query("SELECT c FROM ClientOrm c WHERE c.clientName=:clientName")
-    Optional<ClientOrm> findByClientName(String clientName);
+    @Query("SELECT c FROM ClientOrm c WHERE c.name=:name")
+    Optional<ClientOrm> findByName(String name);
 
     // N.B. Include column aliases to match the method names inside IdClientSecretProjection
-    @Query("SELECT c.id AS id,c.secret.secret AS secret FROM ClientOrm c WHERE c.clientName=:clientName")
-    Optional<ClientProjectionIdSecret> findClientProjectionIdSecretByClientName(String clientName);
+    @Query("SELECT c.id AS id,c.secret.secret AS secret FROM ClientOrm c WHERE c.name=:name")
+    Optional<ClientProjectionIdSecret> findClientProjectionIdSecretByName(String name);
 
     @Modifying
     @Query("UPDATE ClientOrm c SET c.secret.secret=:secret, c.lastModifiedDate=:now, c.preUpdateDateTime=:now, c.postUpdateDateTime=:now, c.version=c.version+1 WHERE c.id=:id")

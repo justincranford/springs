@@ -69,7 +69,7 @@ public class PersonaEmailPasswordAuthenticationProvider implements Authenticatio
 		}
 
 		final boolean doesPasswordMatch;
-		try (Timer ignored = Timer.go("passwordEncoder.matches")) {
+		try (Timer ignored = Timer.go("Persona.passwordEncoder.matches", "passwordEncoder.matches")) {
 			doesPasswordMatch = this.passwordEncoder.matches(password, personaProjectionIdAndPersonIdPassword.getPersonPassword());
 		}
 		if (doesPasswordMatch) {

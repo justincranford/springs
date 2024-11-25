@@ -1,5 +1,6 @@
 package com.github.justincranford.springs.server.authentication.filterchain.config;
 
+import com.github.justincranford.springs.server.authentication.client.provider.ClientNameSecretAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.redirect.controller.RedirectController;
 import com.github.justincranford.springs.server.authentication.user.provider.PersonUsernamePasswordAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.user.provider.PersonaEmailPasswordAuthenticationProvider;
@@ -47,6 +48,8 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 	@Autowired
 	private final PersonUsernamePasswordAuthenticationProvider personUsernamePasswordAuthenticationProvider;
 	@Autowired
+	private final ClientNameSecretAuthenticationProvider clientNameSecretAuthenticationProvider;
+	@Autowired
 	private final RateLimitFilter rateLimitingFilter;
 	@Autowired
 	private final RequestLogFilter requestLoggingFilter;
@@ -58,6 +61,7 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 		return authenticationManagerBuilder
 			.authenticationProvider(this.personaEmailPasswordAuthenticationProvider)
 			.authenticationProvider(this.personUsernamePasswordAuthenticationProvider)
+			.authenticationProvider(this.clientNameSecretAuthenticationProvider)
 			.parentAuthenticationManager(null) // Prevent ProviderManager recursively calling `this.parent.authenticate(authentication)`
 			.build();
 	}

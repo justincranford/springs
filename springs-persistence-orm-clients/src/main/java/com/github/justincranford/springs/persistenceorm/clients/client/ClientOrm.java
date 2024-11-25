@@ -1,17 +1,9 @@
 package com.github.justincranford.springs.persistenceorm.clients.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.envers.Audited;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.clients.client.enums.ClientStatusType;
 import com.github.justincranford.springs.persistenceorm.clients.client.enums.ClientType;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -35,6 +27,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.envers.Audited;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Audited
@@ -54,7 +52,7 @@ public class ClientOrm extends AbstractEntity {
 	@Size(min=10,max=64)
 	@NotNull
 	@NotBlank
-    private String clientName;
+    private String name;
 
     @Embedded
     private ClientSecretOrm secret;
@@ -62,7 +60,7 @@ public class ClientOrm extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable=false,length=3)
     @NotNull
-    private ClientStatusType clientStatus;
+    private ClientStatusType status;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false,length=3)

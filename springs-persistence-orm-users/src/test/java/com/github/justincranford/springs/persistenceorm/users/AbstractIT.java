@@ -1,13 +1,13 @@
 package com.github.justincranford.springs.persistenceorm.users;
 
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
+import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.person.service.PersonPasswordUpgradeEncodingService;
 import com.github.justincranford.springs.persistenceorm.users.person.service.PersonService;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.service.PersonaService;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
-import com.github.justincranford.springs.server.authentication.encoding.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.util.json.config.PrettyJson;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -64,7 +64,7 @@ public class AbstractIT {
 
     @DynamicPropertySource
     static void properties(final DynamicPropertyRegistry registry) {
-        registry.add("bootstrap.testcontainers.enabled",              () -> "false");
+        registry.add("bootstrap.testcontainers.enabled",              () -> "preferred");
         registry.add("bootstrap.testcontainers.containers.postgres1", () -> "postgres:16.3");
     }
 }

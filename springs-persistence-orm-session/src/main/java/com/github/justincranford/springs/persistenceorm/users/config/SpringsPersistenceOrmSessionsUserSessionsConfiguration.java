@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.server.authentication.encoding.config;
+package com.github.justincranford.springs.persistenceorm.users.config;
 
 import com.github.justincranford.springs.persistenceorm.users.person.service.PersonService;
 import com.github.justincranford.springs.persistenceorm.users.persona.service.PersonaService;
