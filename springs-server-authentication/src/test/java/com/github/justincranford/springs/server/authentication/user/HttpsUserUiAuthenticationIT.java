@@ -26,7 +26,7 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-public class HttpsUiAuthenticationIT extends AbstractIT {
+public class HttpsUserUiAuthenticationIT extends AbstractIT {
 	private static final int REPEATS = 1;
 
 	@Nested
