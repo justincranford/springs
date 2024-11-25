@@ -85,17 +85,12 @@ public final class BootstrapTestContainers {
                 try {
                     return startingContainerDescriptor.get();
                 } catch (InterruptedException|ExecutionException e) {
+					final Exception e1 = dockerRteOrOriginal(e);
 					if (ENABLE.PREFERRED.equals(containersEnabled)) {
-						log.warn("Failed to start container, but not fatal", e);
+						log.warn("Failed to start container, but not fatal", e1);
 						return null;
 					}
-					log.error("Failed to start container", e);
-					if (e.getCause() instanceof RuntimeException rte) {
-						if (rte.getMessage().startsWith("Could not find a valid Docker environment.") ||
-							rte.getMessage().startsWith("Previous attempts to find a Docker environment failed. Will not retry.")) {
-							throw rte;
-						}
-					}
+					log.error("Failed to start container", e1);
 					throw new RuntimeException(e);
                 }
             }).toList();
@@ -113,6 +108,16 @@ public final class BootstrapTestContainers {
 		} catch(Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private static Exception dockerRteOrOriginal(final Exception e) {
+		if (e.getCause() instanceof RuntimeException rte) {
+			if (rte.getMessage().startsWith("Could not find a valid Docker environment.") ||
+				rte.getMessage().startsWith("Previous attempts to find a Docker environment failed. Will not retry.")) {
+				return rte;
+			}
+		}
+		return e;
 	}
 
 	@SuppressWarnings({"unused"})
