@@ -147,19 +147,28 @@ public final class BootstrapTestContainers {
 	public record SupportedImage(
 		Class<? extends GenericContainer<?>> containerClass, String dockerRegistry, String image, List<Integer> exposedPorts, Function<ContainerDescriptor, Map<String,Object>> clientProperties
 	) {
+		public static final SupportedImage POSTGRESQL = new BootstrapTestContainers.SupportedImage((Class<? extends GenericContainer<?>>) (Class<?>) PostgreSQLContainer.class,
+			"docker.io", "postgres", List.of(5432),
+			(containerDescriptor) -> new LinkedHashMap<>() {{
+				final PostgreSQLContainer<?> containerInstance = (PostgreSQLContainer<?>) containerDescriptor.containerInstance();
+				put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+				put("spring.datasource.url",                    containerInstance.getJdbcUrl());
+				put("spring.datasource.username",               containerInstance.getUsername());
+				put("spring.datasource.password",               containerInstance.getPassword());
+			}}
+		);
 		public static final SupportedImage REDIS = new SupportedImage((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
 		   "docker.io", "redis", List.of(6379),
 			(containerDescriptor) -> new LinkedHashMap<>() {{
-				final GenericContainer<?> containerInstance = containerDescriptor.containerInstance();
-				put("spring.redis.host", containerInstance.getHost());
-				put("spring.redis.port", containerInstance.getMappedPort(6379));
+				put("spring.redis.host", containerDescriptor.containerInstance().getHost());
+				put("spring.redis.port", containerDescriptor.containerInstance().getMappedPort(6379));
 			}}
 		);
 		@SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
-		public static final SupportedImage ELASTICSEARCH = new SupportedImage(ElasticsearchContainer.class,
+		public static final SupportedImage ELASTICSEARCH = new SupportedImage(ElasticsearchContainer.class, // TODO Test properties with Spring Data Elasticsearch latest client
 			"docker.elastic.co", "elasticsearch/elasticsearch", List.of(9200, 9300),
 			(containerDescriptor) -> new LinkedHashMap<>() {{
-				final ElasticsearchContainer containerInstance = (ElasticsearchContainer) containerDescriptor.containerInstance(); // TODO Test properties with Spring Data Elasticsearch latest client
+				final ElasticsearchContainer containerInstance = (ElasticsearchContainer) containerDescriptor.containerInstance();
 				final byte[] caCertPemBytes = containerInstance.caCertAsBytes().orElseThrow(() -> new RuntimeException("Failed to read CA Cert PEM file bytes from Elasticsearch containers"));
 				final String caCertPem      = new String(caCertPemBytes, StandardCharsets.UTF_8);
 				put("spring.data.elasticsearch.username",                                                "elastic"); // Elasticsearch 8.0+ Security-On-By-Default username
@@ -180,16 +189,6 @@ public final class BootstrapTestContainers {
 				put("keycloak.https.port", containerDescriptor.containerInstance().getMappedPort(8443));
 				put("keycloak.debug.port", containerDescriptor.containerInstance().getMappedPort(8787));
 				put("keycloak.mgmt.port",  containerDescriptor.containerInstance().getMappedPort(9000));
-			}}
-		);
-		public static final SupportedImage POSTGRESQL = new BootstrapTestContainers.SupportedImage((Class<? extends GenericContainer<?>>) (Class<?>) PostgreSQLContainer.class,
-			"docker.io", "postgres", List.of(5432),
-			(containerDescriptor) -> new LinkedHashMap<>() {{
-				final PostgreSQLContainer<?> containerInstance = (PostgreSQLContainer<?>) containerDescriptor.containerInstance();
-				put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-				put("spring.datasource.url",                    containerInstance.getJdbcUrl());
-				put("spring.datasource.username",               containerInstance.getUsername());
-				put("spring.datasource.password",               containerInstance.getPassword());
 			}}
 		);
 		public static final SupportedImage OLLAMA = new SupportedImage(OllamaContainer.class,
