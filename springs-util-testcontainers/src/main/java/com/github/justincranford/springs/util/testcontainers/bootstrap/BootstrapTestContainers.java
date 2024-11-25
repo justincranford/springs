@@ -95,18 +95,19 @@ public final class BootstrapTestContainers {
 							rte.getMessage().startsWith("Previous attempts to find a Docker environment failed. Will not retry.")) {
 							throw rte;
 						}
-
 					}
 					throw new RuntimeException(e);
                 }
             }).toList();
 
-			final List<MapPropertySource> propertySources = started.stream().map(containerDescriptor ->
+			final List<MapPropertySource> propertySources = started.stream().filter(Objects::nonNull).map(containerDescriptor ->
 				 new MapPropertySource(Properties.CONTAINERS + "-" + containerDescriptor.alias(), containerDescriptor.supportedImage().clientProperties().apply(containerDescriptor))
 			).toList();
 
-			propertySources.reversed().forEach(readWritePropertySources::addFirst);
-			readWritePropertySources.addFirst(new MapPropertySource(Properties.CONTAINERS, Map.of(Properties.CONTAINERS, containerDescriptors)));
+			if (!propertySources.isEmpty()) {
+				propertySources.reversed().forEach(readWritePropertySources::addFirst);
+				readWritePropertySources.addFirst(new MapPropertySource(Properties.CONTAINERS, Map.of(Properties.CONTAINERS, containerDescriptors)));
+			}
 		} catch(RuntimeException rte) {
 			throw rte;
 		} catch(Exception e) {
