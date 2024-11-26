@@ -1,9 +1,8 @@
 package com.github.justincranford.springs.persistenceredis.sessions.config;
 
 import com.github.justincranford.springs.persistenceredis.properties.RedisProperties;
-import com.github.justincranford.springs.persistenceredis.sessions.config.SpringsPersistenceRedisSessionsPersistenceConfiguration.ExtraConfiguration;
 import com.github.justincranford.springs.persistenceredis.sessions.generator.CustomSessionIdGenerator;
-import com.github.justincranford.springs.persistenceredis.sessions.listener.SessionEventListener;
+import com.github.justincranford.springs.persistenceredis.sessions.listener.SessionEventListeners;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers.ContainerDescriptor;
 import jakarta.annotation.PostConstruct;
@@ -20,7 +19,6 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
-import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
 import redis.embedded.RedisServer;
 
 import java.io.IOException;
@@ -62,21 +60,13 @@ import java.util.List;
 // * @see org.springframework.session.data.redis.SortedSetReactiveRedisSessionExpirationStore
  */
 @Configuration
-@Import(ExtraConfiguration.class)
+@Import(SpringsPersistenceRedisSessionsPersistenceConfiguration.ExtraConfiguration.class)
 @EnableRedisHttpSession
-@ComponentScan(basePackageClasses={SessionEventListener.class})
+@ComponentScan(basePackageClasses={SessionEventListeners.class})
 @Slf4j
 public class SpringsPersistenceRedisSessionsPersistenceConfiguration {
     @Autowired
     private RedisProperties redisProperties;
-
-    @Bean
-    public RedisHttpSessionConfiguration redisHttpSessionConfiguration() {
-        final RedisHttpSessionConfiguration redisHttpSessionConfiguration = new RedisHttpSessionConfiguration();
-        redisHttpSessionConfiguration.setRedisNamespace("myapp:sessions");
-        redisHttpSessionConfiguration.setSessionIdGenerator(new CustomSessionIdGenerator());
-        return redisHttpSessionConfiguration;
-    }
 
     @Bean(initMethod="start",destroyMethod="stop")
     public RedisServer redisServerEmbedded(final Environment environment) throws IOException {
@@ -127,5 +117,14 @@ public class SpringsPersistenceRedisSessionsPersistenceConfiguration {
             log.info("Add CustomSessionIdGenerator to sessionRepository: {}", this.redisSessionRepository.getClass().getCanonicalName());
             this.redisSessionRepository.setSessionIdGenerator(new CustomSessionIdGenerator());
         }
+
+//        @Bean
+//        public SessionRepositoryCustomizer<RedisIndexedSessionRepository> redisSessionRepositoryCustomizer() {
+//            return redisSessionRepositoryCustomizer -> {
+//                redisSessionRepositoryCustomizer.setSessionIdGenerator(new CustomSessionIdGenerator());
+//                redisSessionRepositoryCustomizer.setDefaultMaxInactiveInterval(Duration.ofMinutes(60)); // 1 hour
+//                redisSessionRepositoryCustomizer.setRedisKeyNamespace("myapp:sessions");
+//            };
+//        }
     }
 }
