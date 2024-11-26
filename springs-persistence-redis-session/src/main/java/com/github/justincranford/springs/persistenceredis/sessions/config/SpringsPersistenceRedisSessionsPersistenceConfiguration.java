@@ -20,6 +20,7 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
 import redis.embedded.RedisServer;
 
 import java.io.IOException;
@@ -50,7 +51,6 @@ import java.util.List;
  * @see org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration
  * <p/>
  * @see org.springframework.session.web.http.SessionRepositoryFilter
-// * @see org.springframework.session.data.redis.RedisIndexedSessionRepository.RedisSession;
  * @see org.springframework.session.data.redis.RedisSessionRepository
  * @see org.springframework.session.data.redis.RedisIndexedSessionRepository
  * @see org.springframework.data.redis.connection.RedisConnectionFactory
@@ -63,14 +63,20 @@ import java.util.List;
  */
 @Configuration
 @Import(ExtraConfiguration.class)
-//@EnableSpringHttpSession
-@EnableRedisHttpSession//(redisNamespace=RedisSessionRepository.DEFAULT_KEY_NAMESPACE)
-//@EnableRedisIndexedWebSession
+@EnableRedisHttpSession
 @ComponentScan(basePackageClasses={SessionEventListener.class})
 @Slf4j
 public class SpringsPersistenceRedisSessionsPersistenceConfiguration {
     @Autowired
     private RedisProperties redisProperties;
+
+    @Bean
+    public RedisHttpSessionConfiguration redisHttpSessionConfiguration() {
+        final RedisHttpSessionConfiguration redisHttpSessionConfiguration = new RedisHttpSessionConfiguration();
+        redisHttpSessionConfiguration.setRedisNamespace("myapp:sessions");
+        redisHttpSessionConfiguration.setSessionIdGenerator(new CustomSessionIdGenerator());
+        return redisHttpSessionConfiguration;
+    }
 
     @Bean(initMethod="start",destroyMethod="stop")
     public RedisServer redisServerEmbedded(final Environment environment) throws IOException {

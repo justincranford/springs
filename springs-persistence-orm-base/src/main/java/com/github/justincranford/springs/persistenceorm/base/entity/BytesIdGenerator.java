@@ -20,7 +20,7 @@ public class BytesIdGenerator {
 	public @NotNull byte[] generate() {
 		if (Constants.USE_TIMESTAMP_AND_RANDOM_BYTES) {
 			final byte[] bytes = SecureRandomUtil.timeStampBytesAndRandomBytes(Constants.TIMESTAMP_BYTES, Constants.RANDOM_BYTES);
-			log.info("Generated {}, hex: 0x{}, base64url: {}, b64std: {}", this.name, TextCodec.HEX_UC_STRICT.encodeToString(bytes), TextCodec.B64_URL.encodeToString(bytes), TextCodec.B64_STD.encodeToString(bytes));
+			log.info("Generated {}, hex: 0x{}, b64url: {}, b64std: {}", this.name, TextCodec.HEX_UC_STRICT.encodeToString(bytes), TextCodec.B64_URL.encodeToString(bytes), TextCodec.B64_STD.encodeToString(bytes));
 			return bytes;
 		}
 
