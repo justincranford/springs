@@ -1,10 +1,8 @@
 package com.github.justincranford.springs.persistenceredis.sessions;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.util.List;
-
+import com.github.justincranford.springs.util.http.client.util.RestTemplateUtil;
+import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.NoHttpResponseException;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.Fail;
@@ -12,19 +10,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.github.justincranford.springs.util.http.client.util.RestTemplateUtil;
-import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
+import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
 public class HttpsHelloWorldIT extends AbstractIT {
-	private static final String AUTHORIZE = null;
+	private static final String NO_AUTHORIZATION = null;
 
 	@Test
 	void testHttpFailure() {
 		final AbstractThrowableAssert<?, ? extends Throwable> assertThatThrownBy = assertThatThrownBy(
-			() -> RestTemplateUtil.plainGet(httpRestTemplate(), httpBaseUrl() + HelloWorldController.Constants.PATH, AUTHORIZE, String.class)
+			() -> RestTemplateUtil.plainGet(httpRestTemplate(), httpBaseUrl() + HelloWorldController.Constants.PATH, NO_AUTHORIZATION, String.class)
 		);
 		final String webServerClassName = webServerApplicationContext().getWebServer().getClass().getName();
 		if (webServerClassName.contains("Tomcat")) {
@@ -62,7 +60,7 @@ public class HttpsHelloWorldIT extends AbstractIT {
 		try {
 			// CREATE SESSION
 
-			final String helloWorld = RestTemplateUtil.plainGet(restTemplate, httpsBaseUrl() + HelloWorldController.Constants.PATH, AUTHORIZE, String.class);
+			final String helloWorld = RestTemplateUtil.plainGet(restTemplate, httpsBaseUrl() + HelloWorldController.Constants.PATH, NO_AUTHORIZATION, String.class);
 			assertThat(helloWorld).isEqualTo(HelloWorldController.Constants.RESPONSE_BODY);
 
 		    final List<String> helloWorldSessionIdCookies = sessionIdCookieInterceptor.getSessionIdCookies();
@@ -74,7 +72,7 @@ public class HttpsHelloWorldIT extends AbstractIT {
 
 			// DELETE SESSION
 
-			final String logout = RestTemplateUtil.plainGet(restTemplate, httpsBaseUrl() + "/logout", AUTHORIZE, String.class);
+			final String logout = RestTemplateUtil.plainGet(restTemplate, httpsBaseUrl() + "/logout", NO_AUTHORIZATION, String.class);
 			assertThat(logout).isEqualTo(HelloWorldController.Constants.RESPONSE_BODY);
 
 		    final List<String> logoutSessionIdCookies = sessionIdCookieInterceptor.getSessionIdCookies();

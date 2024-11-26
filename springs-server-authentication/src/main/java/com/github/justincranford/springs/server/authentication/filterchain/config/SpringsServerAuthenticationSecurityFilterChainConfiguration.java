@@ -38,6 +38,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 @Import(value = {
 	HelloWorldController.class,
 	RedirectController.class,
+//	LoginController.class,
 	RedirectToLoginConfigurer.class
 })
 @RequiredArgsConstructor
@@ -73,16 +74,28 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 	 */
     @Bean
     public SecurityFilterChain securityFilterChainUserUi(HttpSecurity http) throws Exception {
-		http.securityMatcher("/login", "/logout", "/login**", "/logout**", "/login/**", "/logout/**", "/secure/**")
+		http.securityMatcher("/login", "/logout", "/secure/**")
 			.authorizeHttpRequests(authz -> authz
-				.requestMatchers("/login", "/logout", "/login**", "/logout**", "/login/**", "/logout/**").permitAll()
+				.requestMatchers("/login", "/logout").permitAll()
 				.requestMatchers("/secure/**").authenticated()
 			)
 			.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
 			.httpBasic(AbstractHttpConfigurer::disable)
-			.formLogin(form -> form.permitAll().defaultSuccessUrl("/secure/home", true))
-			.logout(logout -> logout.permitAll().logoutSuccessUrl("/login?logout=true").invalidateHttpSession(true))
-			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).maximumSessions(3).expiredUrl("/login?expired=true")).requestCache(RequestCacheConfigurer::disable) // skip serdes DefaultSavedRequest to SessionRepository Session.attributes
+			.formLogin(form -> form
+			    .permitAll()
+				.defaultSuccessUrl("/secure/home", true)
+			)
+			.logout(logout -> logout
+				.permitAll()
+				.logoutSuccessUrl("/login?logout")
+				.invalidateHttpSession(true)
+			)
+			.sessionManagement(session -> session
+				  .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+				  .maximumSessions(3)
+				  .expiredUrl("/login?expired")
+			)
+			.requestCache(RequestCacheConfigurer::disable) // skip serdes DefaultSavedRequest to SessionRepository Session.attributes
 			.addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class);
 

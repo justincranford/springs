@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
 @Import({SpringsServerAuthenticationConfiguration.class})
-@NoArgsConstructor(access=AccessLevel.PRIVATE)
-public final class SpringsServerAuthenticationMain {
+@NoArgsConstructor(access=AccessLevel.PUBLIC)
+public class SpringsServerAuthenticationMain {
 	public static void main(final String[] args) {
 		final SpringApplication springApplication = new SpringApplication(SpringsServerAuthenticationMain.class);
 		springApplication.addInitializers(new TlsEnabledByDefaultApplicationContextInitializer());
