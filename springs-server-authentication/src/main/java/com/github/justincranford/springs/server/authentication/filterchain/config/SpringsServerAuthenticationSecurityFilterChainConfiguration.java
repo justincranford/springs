@@ -1,7 +1,7 @@
 package com.github.justincranford.springs.server.authentication.filterchain.config;
 
 import com.github.justincranford.springs.server.authentication.client.provider.ClientNameSecretAuthenticationProvider;
-import com.github.justincranford.springs.server.authentication.filterchain.redirect.CustomRedirectEntryPoint;
+import com.github.justincranford.springs.server.authentication.filterchain.redirect.CustomAuthenticationEntryPoint;
 import com.github.justincranford.springs.server.authentication.redirect.controller.RedirectController;
 import com.github.justincranford.springs.server.authentication.user.provider.PersonUsernamePasswordAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.user.provider.PersonaEmailPasswordAuthenticationProvider;
@@ -80,7 +80,9 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 				.requestMatchers("/login", "/logout").permitAll()
 				.requestMatchers("/secure/**").authenticated()
 			)
-			.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+			.csrf(csrf -> csrf
+				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+			)
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.formLogin(form -> form
 			    .permitAll()
@@ -110,7 +112,9 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 				 .requestMatchers("/helloworld", "/static/**", "/public/**", "/templates/**", "/META-INF/resources/**").permitAll()
 			)
 			.csrf(AbstractHttpConfigurer::disable) // Typically disabled for stateless APIs
-			.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.sessionManagement(management -> management
+				 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			)
 			.addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(this.rateLimitingFilter,   UsernamePasswordAuthenticationFilter.class);
 
@@ -126,8 +130,12 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 			)
 			.csrf(AbstractHttpConfigurer::disable) // Typically disabled for stateless APIs
             .httpBasic(Customizer.withDefaults())
-			.exceptionHandling(exception -> exception.authenticationEntryPoint(new CustomRedirectEntryPoint("/v1/api/authentication/status")))
-            .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.exceptionHandling(exception -> exception
+				.authenticationEntryPoint(new CustomAuthenticationEntryPoint("/v1/api/authentication/status"))
+			)
+            .sessionManagement(management -> management
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			)
 			.addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(this.rateLimitingFilter,   UsernamePasswordAuthenticationFilter.class);
 
