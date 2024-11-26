@@ -3,6 +3,8 @@ package com.github.justincranford.springs.util.http.client.util;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,10 +25,10 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-// TODO RestTemplateUtil input headers (e.g. Authorization, for making authenticated calls)
+@NoArgsConstructor(access=AccessLevel.PRIVATE)
 @Slf4j
 @SuppressWarnings({"unused"})
-public class RestTemplateUtil {
+public final class RestTemplateUtil {
 	private static final JsonFactory  JSON_FACTORY                  = new JsonFactory();
 	private static final ObjectMapper OBJECT_MAPPER                 = new ObjectMapper();
 	private static final List<String> USER_AGENT                    = listOrNull("JustinCranford/1.0");
@@ -37,22 +39,22 @@ public class RestTemplateUtil {
 	private static final List<String> ACCEPT_ALL                    = listOrNull("*/*");
 	private static final List<String> ACCEPT_LANGUAGE               = listOrNull("en-US,en;q=0.9");
 
-	public static <RESPONSE> RESPONSE anyGet(final RestTemplate restTemplate, final String url, final String authorize, final Class<RESPONSE> clazz) {
-		return http(restTemplate, url, HttpMethod.GET, new HttpEntity<>(getHeaders(url, listOrNull(authorize), ACCEPT_ALL, ACCEPT_LANGUAGE)), clazz);
+	public static <RESPONSE> RESPONSE anyGet(final RestTemplate restTemplate, final String url, final String authorization, final Class<RESPONSE> clazz) {
+		return http(restTemplate, url, HttpMethod.GET, new HttpEntity<>(getHeaders(url, listOrNull(authorization), ACCEPT_ALL, ACCEPT_LANGUAGE)), clazz);
 	}
 
-	public static <RESPONSE> RESPONSE plainGet(final RestTemplate restTemplate, final String url, final String authorize, final Class<RESPONSE> clazz) {
-		return http(restTemplate, url, HttpMethod.GET, new HttpEntity<>(getHeaders(url, listOrNull(authorize), ACCEPT_PLAIN_TEXT, ACCEPT_LANGUAGE)), clazz);
+	public static <RESPONSE> RESPONSE plainGet(final RestTemplate restTemplate, final String url, final String authorization, final Class<RESPONSE> clazz) {
+		return http(restTemplate, url, HttpMethod.GET, new HttpEntity<>(getHeaders(url, listOrNull(authorization), ACCEPT_PLAIN_TEXT, ACCEPT_LANGUAGE)), clazz);
 	}
-	public static <REQUEST, RESPONSE> RESPONSE plainPost(final RestTemplate restTemplate, final REQUEST postRequest, final String url, final String authorize, final Class<RESPONSE> clazz) {
-		return http(restTemplate, url, HttpMethod.POST, new HttpEntity<>(postRequest, postHeaders(url, listOrNull(authorize), ACCEPT_PLAIN_TEXT, ACCEPT_LANGUAGE, CONTENT_TYPE_PLAIN_TEXT)), clazz);
+	public static <REQUEST, RESPONSE> RESPONSE plainPost(final RestTemplate restTemplate, final REQUEST postRequest, final String url, final String authorization, final Class<RESPONSE> clazz) {
+		return http(restTemplate, url, HttpMethod.POST, new HttpEntity<>(postRequest, postHeaders(url, listOrNull(authorization), ACCEPT_PLAIN_TEXT, ACCEPT_LANGUAGE, CONTENT_TYPE_PLAIN_TEXT)), clazz);
 	}
 
-	public static <RESPONSE> RESPONSE jsonGet(final RestTemplate restTemplate, final String url, final String authorize, final Class<RESPONSE> clazz) {
-		return http(restTemplate, url, HttpMethod.GET, new HttpEntity<>(getHeaders(url, listOrNull(authorize), ACCEPT_APPLICATION_JSON, ACCEPT_LANGUAGE)), clazz);
+	public static <RESPONSE> RESPONSE jsonGet(final RestTemplate restTemplate, final String url, final String authorization, final Class<RESPONSE> clazz) {
+		return http(restTemplate, url, HttpMethod.GET, new HttpEntity<>(getHeaders(url, listOrNull(authorization), ACCEPT_APPLICATION_JSON, ACCEPT_LANGUAGE)), clazz);
 	}
-	public static <REQUEST, RESPONSE> RESPONSE jsonPost(final RestTemplate restTemplate, final REQUEST postRequest, final String url, final String authorize, final Class<RESPONSE> clazz) {
-		return http(restTemplate, url, HttpMethod.POST, new HttpEntity<>(postRequest, postHeaders(url, listOrNull(authorize), ACCEPT_APPLICATION_JSON, ACCEPT_LANGUAGE, CONTENT_TYPE_APPLICATION_JSON)), clazz);
+	public static <REQUEST, RESPONSE> RESPONSE jsonPost(final RestTemplate restTemplate, final REQUEST postRequest, final String url, final String authorization, final Class<RESPONSE> clazz) {
+		return http(restTemplate, url, HttpMethod.POST, new HttpEntity<>(postRequest, postHeaders(url, listOrNull(authorization), ACCEPT_APPLICATION_JSON, ACCEPT_LANGUAGE, CONTENT_TYPE_APPLICATION_JSON)), clazz);
 	}
 	private static <REQUEST, RESPONSE> RESPONSE http(final RestTemplate restTemplate, final String url, final HttpMethod method, final HttpEntity<REQUEST> entity, final Class<RESPONSE> clazz) {
 		try {
@@ -67,11 +69,11 @@ public class RestTemplateUtil {
 		}
 	}
 
-	public static <RESPONSE> BlockingQueue<RESPONSE> jsonGetStream(final RestTemplate restTemplate, final String url, final String authorize, final Class<RESPONSE> clazz) {
-		return httpStream(restTemplate, url, HttpMethod.GET, new HttpEntity<>(getHeaders(url, listOrNull(authorize), ACCEPT_APPLICATION_JSON, ACCEPT_LANGUAGE)), clazz);
+	public static <RESPONSE> BlockingQueue<RESPONSE> jsonGetStream(final RestTemplate restTemplate, final String url, final String authorization, final Class<RESPONSE> clazz) {
+		return httpStream(restTemplate, url, HttpMethod.GET, new HttpEntity<>(getHeaders(url, listOrNull(authorization), ACCEPT_APPLICATION_JSON, ACCEPT_LANGUAGE)), clazz);
 	}
-	public static <REQUEST, RESPONSE> BlockingQueue<RESPONSE> jsonPostStream(final RestTemplate restTemplate, final REQUEST postRequest, final String url, final String authorize, final Class<RESPONSE> clazz) {
-		return httpStream(restTemplate, url, HttpMethod.POST, new HttpEntity<>(postRequest, postHeaders(url, listOrNull(authorize), ACCEPT_APPLICATION_JSON, ACCEPT_LANGUAGE, CONTENT_TYPE_APPLICATION_JSON)), clazz);
+	public static <REQUEST, RESPONSE> BlockingQueue<RESPONSE> jsonPostStream(final RestTemplate restTemplate, final REQUEST postRequest, final String url, final String authorization, final Class<RESPONSE> clazz) {
+		return httpStream(restTemplate, url, HttpMethod.POST, new HttpEntity<>(postRequest, postHeaders(url, listOrNull(authorization), ACCEPT_APPLICATION_JSON, ACCEPT_LANGUAGE, CONTENT_TYPE_APPLICATION_JSON)), clazz);
 	}
 
 	private static <REQUEST, RESPONSE> BlockingQueue<RESPONSE> httpStream(final RestTemplate restTemplate, final String url, final HttpMethod method, final HttpEntity<REQUEST> entity, final Class<RESPONSE> clazz) {
@@ -111,11 +113,11 @@ public class RestTemplateUtil {
 		}
 	}
 
-	private static HttpHeaders getHeaders(final String url, final List<String> authorize, final List<String> accept, final List<String> acceptLanguage) {
-		return postHeaders(url, authorize, accept, acceptLanguage, null);
+	private static HttpHeaders getHeaders(final String url, final List<String> authorization, final List<String> accept, final List<String> acceptLanguage) {
+		return postHeaders(url, authorization, accept, acceptLanguage, null);
 	}
 
-	private static HttpHeaders postHeaders(final String url, final List<String> authorize, final List<String> accept, final List<String> acceptLanguage, final List<String> contentType) {
+	private static HttpHeaders postHeaders(final String url, final List<String> authorization, final List<String> accept, final List<String> acceptLanguage, final List<String> contentType) {
 		final Map<String,List<String>> multiValueMap = new LinkedHashMap<>();
 		multiValueMap.put("User-Agent", USER_AGENT);
 
@@ -123,7 +125,7 @@ public class RestTemplateUtil {
 		multiValueMap.put("Host",   List.of(urlObj.getAuthority()));
 		multiValueMap.put("Origin", List.of(urlObj.getProtocol() + "://" + urlObj.getAuthority()));
 
-		putNotNull(multiValueMap, "Authorize",       authorize);
+		putNotNull(multiValueMap, "Authorization",   authorization);
 		putNotNull(multiValueMap, "Content-Type",    contentType);
 		putNotNull(multiValueMap, "Accept",          accept);
 		putNotNull(multiValueMap, "Accept-Language", acceptLanguage);

@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 /**
  * Example of static methods to start/stop timers.
- * 
+ * <P/>
  * Timer.setLogTimeUnit(TimeUnit.MICROSECONDS);
  * Timer.start("timer1");
  *   // do something, "timer1" will accumulate time for it
@@ -30,16 +30,16 @@ import java.util.logging.Logger;
  * Timer.stop("timer3");	// Triggers print "timer3" details (if currentAutoPrintInternal matches)
  *   // do something, "timer2" will accumulate time for it
  * Timer.stop("timer2");	// Triggers print "timer2" details (if currentAutoPrintInternal matches)
- * 
+ * <P/>
  * Example of objects to start/stop timers.
- * 
+ * <P/>
  * Timer.setLogTimeUnit(TimeUnit.MICROSECONDS);
  * Timer timer1 = new Timer("timer1");
  *   // do something, "timer1" will accumulate time for it
  * timer1.close();
- * 
+ * <P/>
  * Example of objects to start/stop timers via auto-close (Java 7+).
- * 
+ * <P/>
  * Timer.setLogTimeUnit(TimeUnit.SECONDS);
  * try (Timer timer2 = new Timer("timer2")) {
  *   // do something, "timer2" will accumulate time for it
@@ -48,10 +48,11 @@ import java.util.logging.Logger;
  *   } // Triggers print "timer3" details (if currentAutoPrintInternal matches)
  * } // Triggers print "timer2" details (if currentAutoPrintInternal matches)
  */
+@SuppressWarnings({"unused", "boxing"})
 public class Timer implements AutoCloseable {
 	private static final Logger LOG = Logger.getLogger(Timer.class.getCanonicalName());
 
-	private static final Long LONG_ZERO = Long.valueOf(0);
+	private static final Long LONG_ZERO = Long.valueOf(0L);
 
 	private static final Map<String,Long> TOTAL_NANO_TIMES = new LinkedHashMap<>();	// insertion ordered by start(String)
 	private static final Map<String,Long> TOTAL_ITERATIONS = new LinkedHashMap<>();	// insertion ordered by start(String)
@@ -69,7 +70,7 @@ public class Timer implements AutoCloseable {
 	private static int		currentAutoLogInternal		= Timer.DEFAULT_AUTO_LOG_INTERNAL;
 	private static int		currentAutoResetInterval	= Timer.DEFAULT_AUTO_RESET_INTERVAL;
 
-	private String[] reverseTimers;
+	private final String[] reverseTimers;
 
 	public static Timer go(final String... timers) {
 		return new Timer(timers);
@@ -299,11 +300,11 @@ public class Timer implements AutoCloseable {
 		return sb.append("Timer[").append(timer).append("] Iterations=").append(iterations).append(", Avg=").append(averageTimeFloat).append(" ").append(averageTimeUnit).append(", Total=").append(totalTimeFloat).append(" ").append(totalTimeUnit);
 	}
 
-	/*package*/ static float normalizeNanoTimeToTimeUnits(final Long nanoTime, final TimeUnit timeUnit) {	// NOSONAR The Cyclomatic Complexity of this method "convertTimeToTimeUnits" is 11 which is greater than 10 authorized.
+	/*package*/ static float normalizeNanoTimeToTimeUnits(final Long nanoTime, final TimeUnit timeUnit) {
 		return (null==nanoTime) ?  Float.MIN_VALUE : Timer.normalizeNanoTimeToTimeUnits(nanoTime.longValue(), timeUnit);
 	}
 
-	private static float normalizeNanoTimeToTimeUnits(final float nanoTime, final TimeUnit timeUnit) {	// NOSONAR The Cyclomatic Complexity of this method "convertTimeToTimeUnits" is 11 which is greater than 10 authorized.
+	private static float normalizeNanoTimeToTimeUnits(final float nanoTime, final TimeUnit timeUnit) {
 		switch(timeUnit) {
 			case NANOSECONDS:	return nanoTime;
 			case MICROSECONDS:	return nanoTime/1000F;

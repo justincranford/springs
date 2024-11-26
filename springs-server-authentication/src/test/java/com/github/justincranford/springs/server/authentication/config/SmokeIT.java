@@ -18,6 +18,7 @@ public class SmokeIT extends AbstractIT {
 		assertThat(super.springsPersistenceOrmUsersPeopleProperties()).isNotNull();
 		assertThat(super.personaEmailPasswordAuthenticationProvider()).isNotNull();
 		assertThat(super.personUsernamePasswordAuthenticationProvider()).isNotNull();
+		assertThat(super.clientNameSecretAuthenticationProvider()).isNotNull();
 		assertThat(super.http()).isNotNull();
 		assertThat(super.webServerApplicationContext()).isNotNull();
 		assertThat(super.sslBundles()).isNotNull();

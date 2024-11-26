@@ -2,9 +2,11 @@ package com.github.justincranford.springs.server.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
+import com.github.justincranford.springs.persistenceorm.clients.properties.SpringsPersistenceOrmClientsClientProperties;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
+import com.github.justincranford.springs.server.authentication.client.provider.ClientNameSecretAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.config.SpringsServerAuthenticationConfiguration;
 import com.github.justincranford.springs.server.authentication.user.provider.PersonUsernamePasswordAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.user.provider.PersonaEmailPasswordAuthenticationProvider;
@@ -62,10 +64,14 @@ public class AbstractIT {
     private SpringsPersistenceOrmBaseProperties springsPersistenceOrmBaseProperties;
     @Autowired
     private SpringsPersistenceOrmUsersPeopleProperties springsPersistenceOrmUsersPeopleProperties;
+	@Autowired
+	private SpringsPersistenceOrmClientsClientProperties springsPersistenceOrmClientsClientProperties;
     @SpyBean
     private PersonaEmailPasswordAuthenticationProvider personaEmailPasswordAuthenticationProvider;
     @SpyBean
     private PersonUsernamePasswordAuthenticationProvider personUsernamePasswordAuthenticationProvider;
+	@SpyBean
+	private ClientNameSecretAuthenticationProvider clientNameSecretAuthenticationProvider;
     @Autowired
     private HttpSecurity http;
 

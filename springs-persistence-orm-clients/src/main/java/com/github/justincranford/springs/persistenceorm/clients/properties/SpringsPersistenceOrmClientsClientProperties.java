@@ -1,16 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.clients.properties;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
 
 import com.github.justincranford.springs.persistenceorm.clients.client.enums.ClientStatusType;
 import com.github.justincranford.springs.persistenceorm.clients.client.enums.ClientType;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,6 +10,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
+
+import java.util.ArrayList;
+import java.util.List;
 
 //Caused by: org.springframework.boot.context.properties.bind.BindException: Failed to bind properties under
 // 'springs.persistenceorm.clients' to com.github.justincranford.springs.persistenceorm.clients.properties.SpringsPersistenceOrmClientsClientProperties
@@ -26,7 +25,7 @@ import lombok.ToString;
 // Binding validation errors on springs.persistenceorm.clients.client[0]
 
 @Component
-@ConfigurationProperties(prefix="springs.persistenceorm.clients", ignoreUnknownFields=false, ignoreInvalidFields=false)
+@ConfigurationProperties(prefix="springs.persistenceorm.clients", ignoreUnknownFields=false)
 @PropertySource("classpath:springs-persistence-orm-clients.properties")
 @Validated
 @Getter
@@ -55,14 +54,14 @@ public class SpringsPersistenceOrmClientsClientProperties {
     @ToString
     public static class Client {
     	@NotEmpty
-        private String clientName;
+        private String name;
     	@Nullable
         private String secret;
     	@NotNull
-        private ClientStatusType clientStatus;
+        private ClientStatusType status;
     	@NotNull
         private ClientType clientType;
         @NotNull
-        private List<String> clientTimeZones = new ArrayList<>(1);
+        private List<String> timeZones = new ArrayList<>(1);
     }
 }

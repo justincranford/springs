@@ -68,58 +68,54 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 
 	/**
 //	 * @see org.springframework.security.config.annotation.web.configuration.HttpSecurityConfiguration#httpSecurity
+	 //              .loginPage("/login").failureUrl("/login?error=true")
+	 //				.logoutUrl("/logout").deleteCookies("JSESSIONID")
 	 */
-	@Primary
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    	// STATELESS API AUTHENTICATION WITHOUT SESSIONS
-        http.securityMatcher("/static/**", "/public/**", "/templates/**", "/META-INF/resources/**", "/helloworld", "/v1/api/authenticate/**", "/v1/api/register/**", "/v1/api/**")
-            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("/static/**", "/public/**", "/templates/**", "/META-INF/resources/**", "/helloworld", "/v1/api/authenticate/**", "/v1/api/register/**").permitAll()
-                .requestMatchers("/v1/api/**").authenticated()
-            )
-            .csrf(AbstractHttpConfigurer::disable) // Typically disabled for stateless APIs
-            .httpBasic(Customizer.withDefaults())
-            .sessionManagement(management -> management
-        		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-    		)
-            .addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
-            ;
-
-        // STATEFUL HTML AUTHENTICATION AND SESSIONS
-        http.securityMatcher("/login", "/logout", "/secure/**")
-        	.csrf(csrf -> csrf
-				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+    public SecurityFilterChain securityFilterChainUserUi(HttpSecurity http) throws Exception {
+		http.securityMatcher("/login", "/logout", "/login**", "/logout**", "/login/**", "/logout/**", "/secure/**")
+			.authorizeHttpRequests(authz -> authz
+				.requestMatchers("/login", "/logout", "/login**", "/logout**", "/login/**", "/logout/**").permitAll()
+				.requestMatchers("/secure/**").authenticated()
 			)
-            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("/login", "/logout").permitAll()
-                .requestMatchers("/secure/**").authenticated()
-            )
+			.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
 			.httpBasic(AbstractHttpConfigurer::disable)
-            .formLogin(form -> form
-//                .loginPage("/login")
-                .permitAll()
-				.defaultSuccessUrl("/secure/home", true)
-//				.failureUrl("/login?error=true")
-            )
-			.logout(logout -> logout
-//				.logoutUrl("/logout")
-                .permitAll()
-				.logoutSuccessUrl("/login?logout=true")
-				.invalidateHttpSession(true)
-//				.deleteCookies("JSESSIONID")
-            )
-			.sessionManagement(session -> session
-				.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-				.maximumSessions(3)
-				.expiredUrl("/login?expired=true")
-			)
-			.requestCache(RequestCacheConfigurer::disable) // skip serdes DefaultSavedRequest to SessionRepository Session.attributes
+			.formLogin(form -> form.permitAll().defaultSuccessUrl("/secure/home", true))
+			.logout(logout -> logout.permitAll().logoutSuccessUrl("/login?logout=true").invalidateHttpSession(true))
+			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).maximumSessions(3).expiredUrl("/login?expired=true")).requestCache(RequestCacheConfigurer::disable) // skip serdes DefaultSavedRequest to SessionRepository Session.attributes
 			.addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
-			.addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
-//			.addFilterBefore(new BasicAuthenticationFilter(htmlAuthenticationManager(http)), UsernamePasswordAuthenticationFilter.class)
-			;
+			.addFilterBefore(this.rateLimitingFilter, UsernamePasswordAuthenticationFilter.class);
+
+		return http.build();
+	}
+
+	@Bean
+	public SecurityFilterChain securityFilterChainResources(HttpSecurity http) throws Exception {
+		http.securityMatcher("/helloworld", "/static/**", "/public/**", "/templates/**", "/META-INF/resources/**")
+			.authorizeHttpRequests(authz -> authz
+				 .requestMatchers("/helloworld", "/static/**", "/public/**", "/templates/**", "/META-INF/resources/**").permitAll()
+			)
+			.csrf(AbstractHttpConfigurer::disable) // Typically disabled for stateless APIs
+			.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(this.rateLimitingFilter,   UsernamePasswordAuthenticationFilter.class);
+
+		return http.build();
+	}
+
+	@Bean
+	public SecurityFilterChain securityFilterChainApi(HttpSecurity http) throws Exception {
+        http.securityMatcher("/v1/api/**")
+            .authorizeHttpRequests(authz -> authz
+				.requestMatchers("/v1/api/authenticate/**", "/v1/api/register/**").permitAll()
+				.requestMatchers("/v1/api/**").authenticated()
+			)
+			.csrf(AbstractHttpConfigurer::disable) // Typically disabled for stateless APIs
+            .httpBasic(Customizer.withDefaults())
+			.exceptionHandling(exception -> exception.authenticationEntryPoint(new CustomRedirectEntryPoint("/v1/api/authentication/status")))
+            .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(this.rateLimitingFilter,   UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
