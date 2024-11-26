@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.server.authentication.filterchain.config;
+package com.github.justincranford.springs.server.authentication.filterchain.redirect;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

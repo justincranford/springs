@@ -1,5 +1,18 @@
 package com.github.justincranford.springs.persistenceorm.users.model;
 
+import com.github.justincranford.springs.persistenceorm.base.entity.BytesIdGenerator;
+import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
+import com.github.justincranford.springs.util.basic.Base64Util;
+import com.github.justincranford.springs.util.basic.DateTimeUtil;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.springframework.session.MapSession;
+import org.springframework.session.Session;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -7,26 +20,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.session.MapSession;
-import org.springframework.session.Session;
-
-import com.github.justincranford.springs.persistenceorm.base.entity.ExternalIdGenerator;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
-import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
-import com.github.justincranford.springs.util.basic.Base64Util;
-import com.github.justincranford.springs.util.basic.DateTimeUtil;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
 @AllArgsConstructor
 @Builder
 @ToString
 @SuppressWarnings({"unused"})
 public class UserSessionPojo implements Session {
+	private static final BytesIdGenerator SESSION_ID_GENERATOR = new BytesIdGenerator("sessionId");
+
 	@Getter
 	@Setter
 	private PersonOrm person;
@@ -40,7 +40,7 @@ public class UserSessionPojo implements Session {
 	private List<String> replacedIds = new ArrayList<>(0);
 
 	@Builder.Default
-	private String id = Base64Util.URL.encodeToString(ExternalIdGenerator.generate());
+	private String id = Base64Util.URL.encodeToString(SESSION_ID_GENERATOR.generate());
 
 	@Builder.Default
 	private Instant creationTime = nowInstant();
@@ -148,7 +148,7 @@ public class UserSessionPojo implements Session {
 	public String changeSessionId() {
 //		this.lastAccessedTime = nowInstant();
 		this.replacedIds.add(this.id);
-		this.id = Base64Util.URL.encodeToString(ExternalIdGenerator.generate());
+		this.id = Base64Util.URL.encodeToString(SESSION_ID_GENERATOR.generate());
 		return this.id;
 	}
 

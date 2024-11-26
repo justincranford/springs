@@ -1,6 +1,7 @@
 package com.github.justincranford.springs.server.authentication.filterchain.config;
 
 import com.github.justincranford.springs.server.authentication.client.provider.ClientNameSecretAuthenticationProvider;
+import com.github.justincranford.springs.server.authentication.filterchain.redirect.CustomRedirectEntryPoint;
 import com.github.justincranford.springs.server.authentication.redirect.controller.RedirectController;
 import com.github.justincranford.springs.server.authentication.user.provider.PersonUsernamePasswordAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.user.provider.PersonaEmailPasswordAuthenticationProvider;

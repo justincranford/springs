@@ -1,16 +1,7 @@
 package com.github.justincranford.springs.persistenceorm.base.entity;
 
-import java.time.OffsetDateTime;
-
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
-
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -36,6 +27,13 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.OffsetDateTime;
 
 @MappedSuperclass
 @Getter(onMethod = @__(@JsonProperty)) // Jackson JSON
@@ -48,6 +46,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @SuppressWarnings({"unused"})
 public class AbstractEntity {
+	private static final BytesIdGenerator EXTERNAL_ID_GENERATOR = new BytesIdGenerator("externalId");
+
 	public static final String SQL_WHERE_CLAUSE = "(pre_delete_date_time IS NULL OR pre_delete_date_time < CURRENT_TIMESTAMP)";
 	public static final int SEQUENCE_ID_INITIAL_VALUE = 1000;
 	public static final int SEQUENCE_ID_ALLOCATION_SIZE_SMALL = 10;
@@ -67,8 +67,8 @@ public class AbstractEntity {
     @Nonnull
 	@NotNull
 	@NotEmpty
-	@Size(min=ExternalIdGenerator.TOTAL_BYTES_LENGTH,max=ExternalIdGenerator.TOTAL_BYTES_LENGTH)
-    @Column(length=ExternalIdGenerator.TOTAL_BYTES_LENGTH,nullable=false)
+	@Size(min=BytesIdGenerator.TOTAL_BYTES_LENGTH, max=BytesIdGenerator.TOTAL_BYTES_LENGTH)
+    @Column(length=BytesIdGenerator.TOTAL_BYTES_LENGTH, nullable=false)
     private byte[] externalId;
 
 	@Column(updatable=false,nullable=false)
@@ -112,7 +112,7 @@ public class AbstractEntity {
 	public void prePersist() {
 		this.prePersistDateTime = DateTimeUtil.nowUtcTruncatedToMicroseconds();
 		if (this.externalId == null) {
-			this.externalId = ExternalIdGenerator.generate();
+			this.externalId = EXTERNAL_ID_GENERATOR.generate();
 		}
 	}
 	@PostPersist

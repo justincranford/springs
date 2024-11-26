@@ -1,16 +1,22 @@
 package com.github.justincranford.springs.persistenceredis.sessions.config;
 
 import com.github.justincranford.springs.persistenceredis.properties.RedisProperties;
+import com.github.justincranford.springs.persistenceredis.sessions.generator.CustomSessionIdGenerator;
+import com.github.justincranford.springs.persistenceredis.sessions.listener.SessionEventListener;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers.ContainerDescriptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.session.SessionIdGenerator;
+import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import redis.embedded.RedisServer;
 
@@ -53,40 +59,48 @@ import java.util.List;
  * @see org.springframework.session.data.redis.RedisSessionMapper
 // * @see org.springframework.session.data.redis.SortedSetReactiveRedisSessionExpirationStore
  */
-@Configuration(proxyBeanMethods = false)
-@EnableSpringHttpSession
-@EnableRedisHttpSession
+@Configuration
+//@EnableSpringHttpSession
+@EnableRedisHttpSession//(redisNamespace=RedisSessionRepository.DEFAULT_KEY_NAMESPACE)
+@ComponentScan(basePackageClasses={SessionEventListener.class})
 @Slf4j
 public class SpringsPersistenceRedisSessionsPersistenceConfiguration {
     @Autowired
     private RedisProperties redisProperties;
 
-//    @ConditionalOnProperty(value=BootstrapTestContainers.Properties.CONTAINERS, matchIfMissing=true)
+    @Bean
+    public CustomSessionIdGenerator customSessionIdGenerator() {
+        return new CustomSessionIdGenerator();
+    }
+
+    @Bean
+    public RedisIndexedSessionRepository redisIndexedSessionRepository(final RedisTemplate<String, Object> redisTemplate, final SessionIdGenerator sessionIdGenerator) {
+        final RedisIndexedSessionRepository repository = new RedisIndexedSessionRepository(redisTemplate);
+        repository.setSessionIdGenerator(sessionIdGenerator);
+        repository.createSession();
+        return repository;
+    }
+
     @Bean(initMethod="start",destroyMethod="stop")
     public RedisServer redisServerEmbedded(final Environment environment) throws IOException {
-        try {
-            List<ContainerDescriptor> running = BootstrapTestContainers.running(environment, "redis");
-            if ((running != null) && (!running.isEmpty())) {
-                log.info("Skipping embedded redis server. Will use running redis container(s): {}", running);
-                return null;
-            }
-            final String host = this.redisProperties.getHost();
-            final Integer port = this.redisProperties.getPort();
-            if ((!(host.equals("localhost"))) && (!(host.equals("127.0.0.1"))) && (!(host.equals("::1")))) {
-                throw new RuntimeException("Wrong host for creating embedded redis server, host: " + host + ", port: " + port);
-            }
-            log.trace("Creating embedded redis server, host: {}, port: {}", host, port);
-            final RedisServer redisServer = new RedisServer(port);
-            log.info("Created embedded redis server, host: {}, port: {}", host, port);
-            if (!redisServer.isActive()) {
-                redisServer.start();
-                log.info("Started embedded redis server, host: {}, port: {}", host, port);
-            }
-            return redisServer;
-        } catch(Throwable t) {
-            log.info("Unexpected exception", t);
-            throw t;
+        List<ContainerDescriptor> running = BootstrapTestContainers.running(environment, "redis");
+        if ((running != null) && (!running.isEmpty())) {
+            log.info("Skipping embedded redis server. Will use running redis container(s): {}", running);
+            return null;
         }
+        final String host = this.redisProperties.getHost();
+        final Integer port = this.redisProperties.getPort();
+        if ((!(host.equals("localhost"))) && (!(host.equals("127.0.0.1"))) && (!(host.equals("::1")))) {
+            throw new RuntimeException("Wrong host for creating embedded redis server, host: " + host + ", port: " + port);
+        }
+        log.trace("Creating embedded redis server, host: {}, port: {}", host, port);
+        final RedisServer redisServer = new RedisServer(port);
+        log.info("Created embedded redis server, host: {}, port: {}", host, port);
+        if (!redisServer.isActive()) {
+            redisServer.start();
+            log.info("Started embedded redis server, host: {}, port: {}", host, port);
+        }
+        return redisServer;
     }
 
     @Bean
@@ -101,6 +115,8 @@ public class SpringsPersistenceRedisSessionsPersistenceConfiguration {
     public RedisTemplate<String, Object> redisTemplate(final LettuceConnectionFactory redisConnectionFactory) {
         final RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         return template;
     }
 }
