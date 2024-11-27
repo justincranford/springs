@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.server.authentication.event.config;
 
-import com.github.justincranford.springs.server.authentication.event.exception.UnmappedAuthenticationFailureEvent;
+import com.github.justincranford.springs.server.authentication.event.exception.SpringsUnmappedAuthenticationFailureEvent;
 import com.github.justincranford.springs.server.authentication.event.listener.AuthenticationListener;
 import com.github.justincranford.springs.server.authentication.event.listener.LoginAttemptsLogger;
 import com.github.justincranford.springs.server.authentication.event.listener.SessionEventListeners;
@@ -21,7 +21,7 @@ public class SpringsServerAuthenticationEventsConfiguration {
     @Bean
     public AuthenticationEventPublisher authenticationEventPublisher(final ApplicationEventPublisher applicationEventPublisher) {
         final DefaultAuthenticationEventPublisher authenticationEventPublisher = new DefaultAuthenticationEventPublisher(applicationEventPublisher);
-        authenticationEventPublisher.setDefaultAuthenticationFailureEvent(UnmappedAuthenticationFailureEvent.class);
+        authenticationEventPublisher.setDefaultAuthenticationFailureEvent(SpringsUnmappedAuthenticationFailureEvent.class);
         return authenticationEventPublisher;
     }
 }
