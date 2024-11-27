@@ -8,6 +8,9 @@ import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
 import com.github.justincranford.springs.server.authentication.client.provider.ClientNameSecretAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.config.SpringsServerAuthenticationConfiguration;
+import com.github.justincranford.springs.server.authentication.event.listener.AuthenticationListener;
+import com.github.justincranford.springs.server.authentication.event.listener.LoginAttemptsLogger;
+import com.github.justincranford.springs.server.authentication.event.listener.SessionEventListeners;
 import com.github.justincranford.springs.server.authentication.user.provider.PersonUsernamePasswordAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.user.provider.PersonaEmailPasswordAuthenticationProvider;
 import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
@@ -26,6 +29,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -56,7 +61,11 @@ public class AbstractIT {
     private MeterRegistry meterRegistry;
     @Autowired
     private ApplicationContext applicationContext;
-    @Autowired
+	@Autowired
+	private ApplicationEventPublisher applicationEventPublisher;
+	@Autowired
+	private AuthenticationEventPublisher authenticationEventPublisher;
+	@Autowired
     private PersonOrmRepository personOrmRepository;
     @Autowired
     private PersonaOrmRepository personaOrmRepository;
@@ -72,12 +81,17 @@ public class AbstractIT {
     private PersonUsernamePasswordAuthenticationProvider personUsernamePasswordAuthenticationProvider;
 	@SpyBean
 	private ClientNameSecretAuthenticationProvider clientNameSecretAuthenticationProvider;
+	@SpyBean
+	private AuthenticationListener authenticationListener;
+	@SpyBean
+	private LoginAttemptsLogger loginAttemptsLogger;
+	@SpyBean
+	private SessionEventListeners sessionEventListeners;
+
     @Autowired
     private HttpSecurity http;
-
 	@Autowired
 	private WebServerApplicationContext webServerApplicationContext;
-
 	@Autowired
 	private SslBundles sslBundles;
 

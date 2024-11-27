@@ -12,6 +12,8 @@ public class SmokeIT extends AbstractIT {
 	void testBeans() {
 		assertThat(super.meterRegistry()).isNotNull();
 		assertThat(super.applicationContext()).isNotNull();
+		assertThat(super.applicationEventPublisher()).isNotNull();
+		assertThat(super.authenticationEventPublisher()).isNotNull();
 		assertThat(super.personOrmRepository()).isNotNull();
 		assertThat(super.personaOrmRepository()).isNotNull();
 		assertThat(super.springsPersistenceOrmBaseProperties()).isNotNull();
@@ -19,6 +21,9 @@ public class SmokeIT extends AbstractIT {
 		assertThat(super.personaEmailPasswordAuthenticationProvider()).isNotNull();
 		assertThat(super.personUsernamePasswordAuthenticationProvider()).isNotNull();
 		assertThat(super.clientNameSecretAuthenticationProvider()).isNotNull();
+		assertThat(super.authenticationListener()).isNotNull();
+		assertThat(super.loginAttemptsLogger()).isNotNull();
+		assertThat(super.sessionEventListeners()).isNotNull();
 		assertThat(super.http()).isNotNull();
 		assertThat(super.webServerApplicationContext()).isNotNull();
 		assertThat(super.sslBundles()).isNotNull();

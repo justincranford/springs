@@ -4,6 +4,7 @@ import com.github.justincranford.springs.persistenceorm.clients.config.SpringsPe
 import com.github.justincranford.springs.persistenceorm.users.config.SpringsPersistenceOrmUsersConfiguration;
 import com.github.justincranford.springs.persistenceredis.config.SpringsPersistenceRedisSessionsConfiguration;
 import com.github.justincranford.springs.server.authentication.client.config.SpringsServerAuthenticationClientConfiguration;
+import com.github.justincranford.springs.server.authentication.event.config.SpringsServerAuthenticationEventsConfiguration;
 import com.github.justincranford.springs.server.authentication.filterchain.config.SpringsServerAuthenticationSecurityFilterChainConfiguration;
 import com.github.justincranford.springs.server.authentication.user.config.SpringsServerAuthenticationUserConfiguration;
 import com.github.justincranford.springs.util.https.config.SpringsUtilHttpsConfiguration;
@@ -21,7 +22,8 @@ import org.springframework.context.annotation.Import;
     SpringsUtilSecurityHashesConfiguration.class,
 	SpringsServerAuthenticationUserConfiguration.class,
 	SpringsServerAuthenticationClientConfiguration.class,
-	SpringsServerAuthenticationSecurityFilterChainConfiguration.class
+	SpringsServerAuthenticationSecurityFilterChainConfiguration.class,
+	SpringsServerAuthenticationEventsConfiguration.class
 })
 public class SpringsServerAuthenticationConfiguration {
 	// do nothing

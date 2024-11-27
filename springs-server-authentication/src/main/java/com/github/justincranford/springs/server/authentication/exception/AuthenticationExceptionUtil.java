@@ -17,5 +17,4 @@ public final class AuthenticationExceptionUtil {
 	        throw new RuntimeException("Failed to throw the exception of type: " + exceptionClass.getName(), e);
 	    }
 	}
-
 }

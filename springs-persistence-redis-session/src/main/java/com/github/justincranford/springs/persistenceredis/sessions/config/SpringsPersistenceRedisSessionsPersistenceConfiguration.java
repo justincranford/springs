@@ -2,14 +2,12 @@ package com.github.justincranford.springs.persistenceredis.sessions.config;
 
 import com.github.justincranford.springs.persistenceredis.properties.RedisProperties;
 import com.github.justincranford.springs.persistenceredis.sessions.generator.CustomSessionIdGenerator;
-import com.github.justincranford.springs.persistenceredis.sessions.listener.SessionEventListeners;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers.ContainerDescriptor;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
@@ -62,7 +60,6 @@ import java.util.List;
 @Configuration
 @Import(SpringsPersistenceRedisSessionsPersistenceConfiguration.ExtraConfiguration.class)
 @EnableRedisHttpSession
-@ComponentScan(basePackageClasses={SessionEventListeners.class})
 @Slf4j
 public class SpringsPersistenceRedisSessionsPersistenceConfiguration {
     @Autowired
