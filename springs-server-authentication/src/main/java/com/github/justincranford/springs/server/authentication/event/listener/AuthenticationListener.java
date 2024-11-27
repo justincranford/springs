@@ -14,6 +14,19 @@ public class AuthenticationListener {
         log.info("AuthenticationListener.onSuccess: {}", success);
     }
 
+    // AuthenticationListener.onFailure:
+    // com.github.justincranford.springs.server.authentication.event.exception.UnmappedAuthenticationFailureEvent[
+    //   source=UsernamePasswordAuthenticationToken [
+    //     Principal=adminclient1,
+    //     Credentials=[PROTECTED],
+    //     Authenticated=false,
+    //     Details=WebAuthenticationDetails [
+    //       RemoteIpAddress=127.0.0.1,
+    //       SessionId=null
+    //     ],
+    //     Granted Authorities=[]
+    //   ]
+    // ]
     @EventListener
     public void onFailure(final AbstractAuthenticationFailureEvent failure) {
         log.info("AuthenticationListener.onFailure: {}", failure);
