@@ -49,7 +49,7 @@ public final class JwkUtil {
     private static final Set<KeyOperation> KEY_OPS_SIG_VER = new LinkedHashSet<>(List.of(KeyOperation.SIGN,    KeyOperation.VERIFY));
     private static final Set<KeyOperation> KEY_OPS_ENC_DEC = new LinkedHashSet<>(List.of(KeyOperation.ENCRYPT, KeyOperation.DECRYPT));
 
-    public static OctetKeyPair ed(final Algorithm alg, final Curve curve, final Duration duration) throws JOSEException {
+    public static OctetKeyPair ed(final Curve curve, final Duration duration, final Algorithm alg) throws JOSEException {
         return generate(new OctetKeyPairGenerator(curve), alg, ED_KEY_PAIR_GENERATOR_PROVIDER, duration, KeyUse.SIGNATURE, KEY_OPS_SIG_VER);
     }
     public static ECKey ec(final Curve curve, final Duration duration, final Algorithm alg) throws JOSEException {

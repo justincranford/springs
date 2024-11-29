@@ -179,6 +179,12 @@
 				<artifactId>nimbus-jose-jwt</artifactId>
 				<version>9.47</version>
 			</dependency>
+			<!-- https://mvnrepository.com/artifact/com.google.crypto.tink/tink -->
+			<dependency>
+				<groupId>com.google.crypto.tink</groupId>
+				<artifactId>tink</artifactId>
+				<version>1.15.0</version>
+			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
 			<dependency>
 				<groupId>com.google.guava</groupId>

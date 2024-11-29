@@ -50,10 +50,10 @@ public final class JwtEncryptUtil {
         return new AESEncrypter(octetSequenceKey);
     }
     public static ECDHEncrypter ecEncryptor(final ECKey ecKey, final JWEAlgorithm alg, final Provider provider) throws JOSEException {
-        return new ECDHEncrypter(ecKey);
+        return new ECDHEncrypter(ecKey.toECPublicKey());
     }
     public static RSAEncrypter rsaEncryptor(final RSAKey rsaKey, final JWEAlgorithm alg, final Provider provider) throws JOSEException {
-        return new RSAEncrypter(rsaKey);
+        return new RSAEncrypter(rsaKey.toRSAPublicKey());
     }
 
     public static EncryptedJWT encrypt(final JWK jwk, final JWEAlgorithm alg, final EncryptionMethod enc, final String iss, final List<String> aud, final String sub, final Set<String> scopes, final Duration duration) throws Exception {

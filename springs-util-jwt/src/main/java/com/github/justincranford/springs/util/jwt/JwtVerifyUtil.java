@@ -38,7 +38,7 @@ public final class JwtVerifyUtil {
     }
 
     public static Ed25519Verifier edVerifier(final OctetKeyPair edKey, final Provider provider) throws JOSEException {
-        return new Ed25519Verifier(edKey.toOctetKeyPair());
+        return new Ed25519Verifier(edKey.toOctetKeyPair().toPublicJWK());
     }
     public static ECDSAVerifier ecVerifier(final ECKey ecKey, final Provider provider) throws JOSEException {
         return new ECDSAVerifier(ecKey.toECPublicKey());
