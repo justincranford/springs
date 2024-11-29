@@ -44,6 +44,7 @@ import static com.github.justincranford.springs.util.jwt.JwkUtil.ec;
 import static com.github.justincranford.springs.util.jwt.JwkUtil.ed;
 import static com.github.justincranford.springs.util.jwt.JwkUtil.hmac;
 import static com.github.justincranford.springs.util.jwt.JwkUtil.rsa;
+import static com.github.justincranford.springs.util.jwt.JwtClaimSetUtil.validateSemantics;
 import static com.github.justincranford.springs.util.jwt.JwtClaimSetUtil.validateSyntax;
 import static com.github.justincranford.springs.util.jwt.JwtContentUtil.jweHeader;
 import static com.github.justincranford.springs.util.jwt.JwtContentUtil.jwsHeader;
@@ -130,17 +131,20 @@ class JwtUtilEndToEndTest {
     void testJwtSignAndVerifySuccess(final SigningTestCase signingTestCase) throws Exception {
         final JWSHeader jwsHeader             = jwsHeader(signingTestCase.jwk.get(), signingTestCase.alg);
         final JWSSigner jwsSigner             = jwsSigner(signingTestCase.jwk.get());
-        final SignedJWT signedJWT             = sign(jwsHeader, signingTestCase.jwtClaimsSet, jwsSigner);
-        final String    serializedSignedJWT   = signedJWT.serialize();
-        final SignedJWT deserializedSignedJwt = SignedJWT.parse(serializedSignedJWT);
+        final SignedJWT signedJwt             = sign(jwsHeader, signingTestCase.jwtClaimsSet, jwsSigner);
+        final String    serializedSignedJwt   = signedJwt.serialize();
+        final SignedJWT deserializedSignedJwt = SignedJWT.parse(serializedSignedJwt);
 
-        assertEqualsSignedJwts(signedJWT, deserializedSignedJwt); // JWTClaimsSet is cleartext after deserialize, no need to wait for verify
+        assertEqualsSignedJwts(signedJwt, deserializedSignedJwt); // JWTClaimsSet is cleartext after deserialize, no need to wait for verify
 
         final JWSVerifier verifier         = jwsVerifier(signingTestCase.jwk.get());
         final boolean     isValidSignature = verify(deserializedSignedJwt, verifier); // verify signature only
         assertEquals(isValidSignature, signingTestCase.expectValidSignature);
 
-        final boolean isValidSyntax = validateSyntax(signedJWT.getJWTClaimsSet()); // verify JWTClaimsSet contents
+        final boolean isValidSyntax = validateSyntax(signedJwt.getJWTClaimsSet()); // verify JWTClaimsSet contents
+        assertEquals(isValidSyntax, signingTestCase.expectValidSyntax);
+
+        final boolean isValidSemantics = validateSemantics(signedJwt.getJWTClaimsSet(), signedJwt.getJWTClaimsSet().getIssuer(), signedJwt.getJWTClaimsSet().getAudience().getFirst()); // verify JWTClaimsSet contents
         assertEquals(isValidSyntax, signingTestCase.expectValidSyntax);
     }
 
@@ -149,17 +153,20 @@ class JwtUtilEndToEndTest {
     void testJwtEncryptAndDecryptSuccess(final EncryptionTestCase encryptionTestCase) throws Exception {
         final JWEHeader    jweHeader                = jweHeader(encryptionTestCase.jwk.get(), encryptionTestCase.alg, encryptionTestCase.enc);
         final JWEEncrypter jweEncrypter             = jweEncrypter(encryptionTestCase.jwk.get(), encryptionTestCase.alg);
-        final EncryptedJWT encryptedJWT             = encrypt(jweHeader, encryptionTestCase.jwtClaimsSet, jweEncrypter);
-        final String       serializedEncryptedJWT   = encryptedJWT.serialize();
-        final EncryptedJWT deserializedEncryptedJwt = EncryptedJWT.parse(serializedEncryptedJWT);
+        final EncryptedJWT encryptedJwt             = encrypt(jweHeader, encryptionTestCase.jwtClaimsSet, jweEncrypter);
+        final String       serializedEncryptedJwt   = encryptedJwt.serialize();
+        final EncryptedJWT deserializedEncryptedJwt = EncryptedJWT.parse(serializedEncryptedJwt);
 
         final JWEDecrypter jweDecryptor = jweDecryptor(encryptionTestCase.jwk.get(), encryptionTestCase.alg);
-        final EncryptedJWT decryptedJWT = decrypt(deserializedEncryptedJwt, jweDecryptor); // decrypt. as well as verify MAC
-        assertNotNull(decryptedJWT);
+        final EncryptedJWT decryptedJwt = decrypt(deserializedEncryptedJwt, jweDecryptor); // decrypt. as well as verify MAC
+        assertNotNull(decryptedJwt);
 
-        assertEqualsEncryptedJwts(encryptedJWT, decryptedJWT); // JWTClaimsSet is cleartext only after deserialize and decrypt, need to wait for decrypt
+        assertEqualsEncryptedJwts(encryptedJwt, decryptedJwt); // JWTClaimsSet is cleartext only after deserialize and decrypt, need to wait for decrypt
 
-        final boolean isValidSyntax = validateSyntax(encryptedJWT.getJWTClaimsSet()); // verify JWTClaimsSet contents
+        final boolean isValidSyntax = validateSyntax(encryptedJwt.getJWTClaimsSet()); // verify JWTClaimsSet contents
+        assertEquals(isValidSyntax, encryptionTestCase.expectValidSyntax);
+
+        final boolean isValidSemantics = validateSemantics(encryptedJwt.getJWTClaimsSet(), encryptedJwt.getJWTClaimsSet().getIssuer(), encryptedJwt.getJWTClaimsSet().getAudience().getFirst()); // verify JWTClaimsSet contents
         assertEquals(isValidSyntax, encryptionTestCase.expectValidSyntax);
     }
 
@@ -482,15 +489,15 @@ class JwtUtilEndToEndTest {
     }
     @NoArgsConstructor(access=AccessLevel.PRIVATE)
     public final static class Bits {
-        public static final int B_128  = 128; // strength  64-aesBitLen
-        public static final int B_192  = 192; // strength  96-aesBitLen
-        public static final int B_256  = 256; // strength 128-aesBitLen
-        public static final int B_384  = 384; // strength 192-aesBitLen
-        public static final int B_512  = 512; // strength 256-aesBitLen
-        public static final int B_2048  = 2048; // strength ~112-aesBitLen
-        public static final int B_3072  = 3072; // strength ~128-aesBitLen
-        public static final int B_4096  = 4096; // strength ~???-aesBitLen
-        public static final int B_5120  = 5120; // strength ~???-aesBitLen
-        public static final int B_6144  = 6144; // strength ~???-aesBitLen
+        public static final int B_128  = 128; // strength  64-bits
+        public static final int B_192  = 192; // strength  96-bits
+        public static final int B_256  = 256; // strength 128-bits
+        public static final int B_384  = 384; // strength 192-bits
+        public static final int B_512  = 512; // strength 256-bits
+        public static final int B_2048  = 2048; // strength ~112-bits
+        public static final int B_3072  = 3072; // strength ~128-bits
+        public static final int B_4096  = 4096; // strength ~???-bits
+        public static final int B_5120  = 5120; // strength ~???-bits
+        public static final int B_6144  = 6144; // strength ~???-bits
     }
 }

@@ -71,7 +71,7 @@ public class JwtClaimSetUtil {
         final Date         iat   = claims.getIssueTime();
         final Date         nbf   = claims.getNotBeforeTime();
         final Date         exp   = claims.getExpirationTime();
-        final List<String> scope = claims.getStringListClaim("scope");
+        final List<String> scope = scopeList(claims.getStringClaim("scope"));
         final Instant      now   = DateTimeUtil.now().toInstant();
 
         if (!expectedIss.equals(iss)) {
