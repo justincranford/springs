@@ -1,9 +1,11 @@
 package com.github.justincranford.springs.util.jwt;
 
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEDecrypter;
 import com.nimbusds.jose.KeyLengthException;
 import com.nimbusds.jose.crypto.AESDecrypter;
+import com.nimbusds.jose.crypto.DirectDecrypter;
 import com.nimbusds.jose.crypto.ECDHDecrypter;
 import com.nimbusds.jose.crypto.RSADecrypter;
 import com.nimbusds.jose.jwk.ECKey;
@@ -23,28 +25,31 @@ import static com.github.justincranford.springs.util.jwt.ProviderUtil.RSA_ENCRYP
 
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class JwtDecryptUtil {
-    public static JWEDecrypter jweDecrypter(final JWK jwk) throws JOSEException {
+    public static JWEDecrypter jweDecryptor(final JWK jwk, final JWEAlgorithm alg) throws JOSEException {
         if (jwk instanceof OctetSequenceKey) {
-            return aesDecryptor(jwk.toOctetSequenceKey(), AES_ENCRYPT_DECRYPT_PROVIDER);
+            return aesDecryptor(jwk.toOctetSequenceKey(), alg, AES_ENCRYPT_DECRYPT_PROVIDER);
         } else if (jwk instanceof ECKey) {
-            return ecDecryptor(jwk.toECKey(), EC_ENCRYPT_DECRYPT_PROVIDER);
+            return ecDecryptor(jwk.toECKey(), alg, EC_ENCRYPT_DECRYPT_PROVIDER);
         } else if (jwk instanceof RSAKey) {
-            return rsaDecryptor(jwk.toRSAKey(), RSA_ENCRYPT_DECRYPT_PROVIDER);
+            return rsaDecryptor(jwk.toRSAKey(), alg, RSA_ENCRYPT_DECRYPT_PROVIDER);
         }
         throw new JOSEException("Unsupported key type for decryption");
     }
 
-    public static AESDecrypter aesDecryptor(final OctetSequenceKey octetSequenceKey, final Provider provider) throws KeyLengthException {
+    public static JWEDecrypter aesDecryptor(final OctetSequenceKey octetSequenceKey, final JWEAlgorithm alg, final Provider provider) throws KeyLengthException {
+        if (JWEAlgorithm.DIR.equals(alg)) {
+            return new DirectDecrypter(octetSequenceKey);
+        }
         return new AESDecrypter(octetSequenceKey);
     }
-    public static ECDHDecrypter ecDecryptor(final ECKey ecKey, final Provider provider) throws JOSEException {
+    public static ECDHDecrypter ecDecryptor(final ECKey ecKey, final JWEAlgorithm alg, final Provider provider) throws JOSEException {
         return new ECDHDecrypter(ecKey);
     }
-    public static RSADecrypter rsaDecryptor(final RSAKey rsaKey, final Provider provider) throws JOSEException {
+    public static RSADecrypter rsaDecryptor(final RSAKey rsaKey, final JWEAlgorithm alg, final Provider provider) throws JOSEException {
         return new RSADecrypter(rsaKey);
     }
 
-    public static EncryptedJWT decrypt(final JWEDecrypter jweDecrypter, final EncryptedJWT toBeDecryptedJWT) throws JOSEException, ParseException {
+    public static EncryptedJWT decrypt(final EncryptedJWT toBeDecryptedJWT, final JWEDecrypter jweDecrypter) throws JOSEException, ParseException {
         toBeDecryptedJWT.decrypt(jweDecrypter);
         return toBeDecryptedJWT;
     }

@@ -69,8 +69,8 @@ public final class JwtSignUtil {
         return new MACSigner(octetSequenceKey.toByteArray());
     }
 
-    public static SignedJWT sign(final JWK jwk, final String iss, final List<String> aud, final String sub, final Duration duration, final Set<String> scopes) throws Exception {
-        final JWSHeader    jwsHeader     = jwsHeader(jwk);
+    public static SignedJWT sign(final JWK jwk, final JWSAlgorithm alg, final String iss, final List<String> aud, final String sub, final Duration duration, final Set<String> scopes) throws Exception {
+        final JWSHeader    jwsHeader     = jwsHeader(jwk, alg);
         final JWTClaimsSet jwtClaimsSet  = jwtClaimsSet(iss, aud, sub, duration, scopes);
         final JWSSigner    jwsSigner     = jwsSigner(jwk);
         return sign(jwsHeader, jwtClaimsSet, jwsSigner);

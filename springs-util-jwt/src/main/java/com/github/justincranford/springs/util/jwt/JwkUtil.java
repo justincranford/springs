@@ -50,12 +50,10 @@ public final class JwkUtil {
     private static final Set<KeyOperation> KEY_OPS_ENC_DEC = new LinkedHashSet<>(List.of(KeyOperation.ENCRYPT, KeyOperation.DECRYPT));
 
     public static OctetKeyPair ed(final Algorithm alg, final Curve curve, final Duration duration) throws JOSEException {
-        final Algorithm validAlg = ecSignVerifyAlg(curve);
-        return generate(new OctetKeyPairGenerator(curve), validAlg, ED_KEY_PAIR_GENERATOR_PROVIDER, duration, KeyUse.SIGNATURE, KEY_OPS_SIG_VER);
+        return generate(new OctetKeyPairGenerator(curve), alg, ED_KEY_PAIR_GENERATOR_PROVIDER, duration, KeyUse.SIGNATURE, KEY_OPS_SIG_VER);
     }
     public static ECKey ec(final Algorithm alg, final Curve curve, final Duration duration) throws JOSEException {
-        final Algorithm validAlg = ecSignVerifyAlg(curve);
-        return generate(new ECKeyGenerator(curve), validAlg, EC_KEY_PAIR_GENERATOR_PROVIDER, duration, KeyUse.SIGNATURE, KEY_OPS_SIG_VER);
+        return generate(new ECKeyGenerator(curve), alg, EC_KEY_PAIR_GENERATOR_PROVIDER, duration, KeyUse.SIGNATURE, KEY_OPS_SIG_VER);
     }
     public static RSAKey rsa(final Algorithm alg, final int keyLengthBits, final Duration duration) throws JOSEException {
         return generate(new RSAKeyGenerator(keyLengthBits), alg, RSA_KEY_PAIR_GENERATOR_PROVIDER, duration, KeyUse.SIGNATURE, KEY_OPS_SIG_VER);
@@ -106,6 +104,36 @@ public final class JwkUtil {
             return JWSAlgorithm.EdDSA;
         } else {
             throw new IllegalArgumentException("Unsupported curve: " + curve.getName());
+        }
+    }
+
+    public static JWEAlgorithm toEcAlg(final Curve curve) {
+        if (Curve.P_256.equals(curve)) {
+            return JWEAlgorithm.ECDH_ES_A128KW;  // ECDH_ES_A128KW, ECDH_ES_A192KW, ECDH_ES_A256KW => Suitable for P-256 is ECDH_ES_A128KW
+        } else if (Curve.P_384.equals(curve)) {
+            return JWEAlgorithm.ECDH_ES_A192KW;  // ECDH_ES_A128KW, ECDH_ES_A192KW, ECDH_ES_A256KW => Suitable for P-384 is ECDH_ES_A128KW
+        } else if (Curve.P_521.equals(curve)) {
+            return JWEAlgorithm.ECDH_ES_A256KW;  // ECDH_ES_A128KW, ECDH_ES_A192KW, ECDH_ES_A256KW => Suitable for P-521 is ECDH_ES_A128KW
+        } else if (Curve.Ed25519.equals(curve)) {
+            return JWEAlgorithm.ECDH_ES_A256KW;  // ECDH_ES_A128KW, ECDH_ES_A256KW                 => Common for Ed25519 is ECDH_ES_A128KW
+        } else if (Curve.Ed448.equals(curve)) {
+            return JWEAlgorithm.ECDH_ES_A256KW;  // ECDH_ES_A128KW, ECDH_ES_A256KW                 => Common for Ed448 is ECDH_ES_A128KW
+        } else {
+            throw new IllegalArgumentException("Unsupported curve: " + curve.getName());
+        }
+    }
+
+    public static Curve toEcCurve(final JWEAlgorithm jweAlgorithm) {
+        if (JWEAlgorithm.ECDH_ES.equals(jweAlgorithm)) {
+            return Curve.P_256;
+        } else if (JWEAlgorithm.ECDH_ES_A128KW.equals(jweAlgorithm)) {
+            return Curve.P_256;
+        } else if (JWEAlgorithm.ECDH_ES_A192KW.equals(jweAlgorithm)) {
+            return Curve.P_384;
+        } else if (JWEAlgorithm.ECDH_ES_A256KW.equals(jweAlgorithm)) {
+            return Curve.P_521;
+        } else {
+            throw new IllegalArgumentException("Unsupported JWEAlgorithm: " + jweAlgorithm.getName());
         }
     }
 }

@@ -19,7 +19,6 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
@@ -29,15 +28,15 @@ public final class JwtContentUtil {
     public static final TextCodec NONCE_RANDOM_BYTES_CODEC   = TextCodec.B64_URL;
     public static final int       NONCE_RANDOM_BYTES_LENGTH = 32;
 
-    public static JWSHeader jwsHeader(final JWK jwk) {
-        final JWSAlgorithm   alg = Objects.requireNonNull((JWSAlgorithm) jwk.getAlgorithm()); // JWK.alg optional, JWT.alg mandatory
+    public static JWSHeader jwsHeader(final JWK jwk, final JWSAlgorithm alg) {
+//        final JWSAlgorithm   alg = Objects.requireNonNull((JWSAlgorithm) jwk.getAlgorithm()); // JWK.alg optional, JWT.alg mandatory
         final JOSEObjectType typ = JOSEObjectType.JWT; // mandatory
         final String         kid = jwk.getKeyID(); // JWK.kid and JWT.kid both optional
         return new JWSHeader.Builder(alg).type(typ).keyID(kid).build();
     }
 
-    public static JWEHeader jweHeader(final JWK jwk, final EncryptionMethod enc) {
-        final JWEAlgorithm     alg = Objects.requireNonNull((JWEAlgorithm) jwk.getAlgorithm()); // JWK.alg optional, JWT.alg mandatory
+    public static JWEHeader jweHeader(final JWK jwk, final JWEAlgorithm alg, final EncryptionMethod enc) {
+//        final JWEAlgorithm     alg = Objects.requireNonNull((JWEAlgorithm) jwk.getAlgorithm()); // JWK.alg optional, JWT.alg mandatory
         final JOSEObjectType   typ = JOSEObjectType.JWT; // mandatory
         final String           kid = jwk.getKeyID(); // JWK.kid and JWT.kid both optional
         return new JWEHeader.Builder(alg, enc).type(typ).keyID(kid).build();
