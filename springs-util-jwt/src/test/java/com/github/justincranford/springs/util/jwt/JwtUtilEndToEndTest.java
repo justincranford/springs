@@ -6,7 +6,6 @@ import com.github.justincranford.springs.util.basic.ThreadUtil;
 import com.github.justincranford.springs.util.basic.Timer;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.EncryptionMethod;
-import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEDecrypter;
 import com.nimbusds.jose.JWEEncrypter;
@@ -40,7 +39,6 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
-import static com.github.justincranford.springs.util.jwt.JwkUtil.VALID_EC_CURVES;
 import static com.github.justincranford.springs.util.jwt.JwkUtil.aes;
 import static com.github.justincranford.springs.util.jwt.JwkUtil.ec;
 import static com.github.justincranford.springs.util.jwt.JwkUtil.ed;
@@ -53,11 +51,6 @@ import static com.github.justincranford.springs.util.jwt.JwtDecryptUtil.decrypt;
 import static com.github.justincranford.springs.util.jwt.JwtDecryptUtil.jweDecryptor;
 import static com.github.justincranford.springs.util.jwt.JwtEncryptUtil.encrypt;
 import static com.github.justincranford.springs.util.jwt.JwtEncryptUtil.jweEncrypter;
-import static com.github.justincranford.springs.util.jwt.JwtSignUtil.VALID_EC_ENC_DEC_ALG;
-import static com.github.justincranford.springs.util.jwt.JwtSignUtil.VALID_EC_SIG_VER_ALG;
-import static com.github.justincranford.springs.util.jwt.JwtSignUtil.VALID_HMAC_SIG_VER_ALG;
-import static com.github.justincranford.springs.util.jwt.JwtSignUtil.VALID_RSA_ENC_DEC_ALG;
-import static com.github.justincranford.springs.util.jwt.JwtSignUtil.VALID_RSA_SIG_VER_ALG;
 import static com.github.justincranford.springs.util.jwt.JwtSignUtil.jwsSigner;
 import static com.github.justincranford.springs.util.jwt.JwtSignUtil.sign;
 import static com.github.justincranford.springs.util.jwt.JwtUtilEndToEndTest.Bits.B_128;
@@ -120,7 +113,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 @Slf4j
-@SuppressWarnings({"deprecation"})
+@SuppressWarnings({"unused", "deprecation"})
 class JwtUtilEndToEndTest {
     @BeforeAll
     public static void beforeAll() {
@@ -171,7 +164,7 @@ class JwtUtilEndToEndTest {
     }
 
     record SigningTestCase(JWSAlgorithm alg, JWTClaimsSet jwtClaimsSet, boolean expectValidSignature, boolean expectValidSyntax, Future<JWK> jwk) {}
-    static Stream<SigningTestCase> jwtSignSuccessTestCases() throws JOSEException {
+    static Stream<SigningTestCase> jwtSignSuccessTestCases() {
         try (final Timer ignores = Timer.go("jwtSignSuccessTestCases")) {
             return Stream.of(
                 new SigningTestCase(EdDSA,   validJwtClaimsSet(), true, true, ThreadUtil.supplyAsync(() -> ed(Curve.Ed25519, validDuration(), EdDSA))),
@@ -212,7 +205,7 @@ class JwtUtilEndToEndTest {
     }
 
     record EncryptionTestCase(JWEAlgorithm alg, EncryptionMethod enc, JWTClaimsSet jwtClaimsSet, boolean expectValidDecrypt, boolean expectValidSyntax, Future<JWK> jwk) {}
-    static Stream<EncryptionTestCase> validJwtEncryptTestCases() throws JOSEException {
+    static Stream<EncryptionTestCase> validJwtEncryptTestCases() {
         try (final Timer ignores = Timer.go("validJwtEncryptTestCases")) {
             return Stream.of(
                 new EncryptionTestCase(RSA1_5,          A128GCM,       validJwtClaimsSet(), true, true, ThreadUtil.supplyAsync(() -> rsa(B_2048, validDuration(), RSA1_5))),
@@ -427,31 +420,6 @@ class JwtUtilEndToEndTest {
         }
         static JWTClaimsSet invalidJwtClaimsSetExp() {
             return JwtContentUtil.jwtClaimsSetBuilder(validIssuer(), validAudiences(), validSubject(), invalidDuration(), validScopes()).build();
-        }
-
-        static Curve validEcCurve() {
-            return SecureRandomUtil.randomListElement(VALID_EC_CURVES);
-        }
-        static JWSAlgorithm validEcSignVerifyAlg() {
-            return SecureRandomUtil.randomListElement(VALID_EC_SIG_VER_ALG);
-        }
-        static JWEAlgorithm validEcEncryptDecryptAlg() {
-            return SecureRandomUtil.randomListElement(VALID_EC_ENC_DEC_ALG);
-        }
-        static int validRsaLengthBits() {
-            return 2048;
-        }
-        static JWSAlgorithm validRsaSignVerifyAlg() {
-            return SecureRandomUtil.randomListElement(VALID_RSA_SIG_VER_ALG);
-        }
-        static JWEAlgorithm validRsaEncryptDecryptAlg() {
-            return SecureRandomUtil.randomListElement(VALID_RSA_ENC_DEC_ALG);
-        }
-        static int validHmacLengthBits() {
-            return 512;
-        }
-        static JWSAlgorithm validHmacSignVerifyAlg() {
-            return SecureRandomUtil.randomListElement(VALID_HMAC_SIG_VER_ALG);
         }
 
         static String validIssuer() {
