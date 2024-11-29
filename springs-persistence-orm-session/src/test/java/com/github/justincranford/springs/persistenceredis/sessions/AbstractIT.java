@@ -1,9 +1,25 @@
 package com.github.justincranford.springs.persistenceredis.sessions;
 
-import javax.net.ssl.SSLContext;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
 import com.github.justincranford.springs.persistenceorm.config.SpringsPersistenceOrmSessionsConfiguration;
+import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
+import com.github.justincranford.springs.persistenceorm.users.person.service.PersonService;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
+import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
+import com.github.justincranford.springs.persistenceorm.users.repository.UserSessionPojoRepository;
+import com.github.justincranford.springs.persistenceredis.sessions.database.repository.SessionOrmRepository;
+import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
+import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
+import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
+import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefaultApplicationContextInitializer;
+import com.github.justincranford.springs.util.json.config.PrettyJson;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
+import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
+import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,25 +44,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.persistenceorm.base.properties.SpringsPersistenceOrmBaseProperties;
-import com.github.justincranford.springs.persistenceredis.sessions.database.repository.SessionOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.person.service.PersonService;
-import com.github.justincranford.springs.persistenceorm.users.repository.UserSessionPojoRepository;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
-import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
-import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
-import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
-import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefaultApplicationContextInitializer;
-import com.github.justincranford.springs.util.json.config.PrettyJson;
-
-import io.micrometer.core.instrument.MeterRegistry;
-import jakarta.annotation.PostConstruct;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
+import javax.net.ssl.SSLContext;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
