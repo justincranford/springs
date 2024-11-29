@@ -49,6 +49,7 @@
 
 	<modules>
 		<module>springs-util-basic</module>
+		<module>springs-util-jwt</module>
 		<module>springs-util-json</module>
 		<module>springs-util-observability</module>
 		<module>springs-util-http</module>
@@ -171,6 +172,12 @@
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bctls-debug-jdk18on</artifactId>
 				<version>1.79</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt -->
+			<dependency>
+				<groupId>com.nimbusds</groupId>
+				<artifactId>nimbus-jose-jwt</artifactId>
+				<version>9.47</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
 			<dependency>

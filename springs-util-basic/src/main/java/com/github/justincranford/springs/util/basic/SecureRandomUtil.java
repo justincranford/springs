@@ -1,12 +1,12 @@
 package com.github.justincranford.springs.util.basic;
 
+import com.github.justincranford.springs.util.basic.Base64Util.EncoderDecoder;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.List;
-
-import com.github.justincranford.springs.util.basic.Base64Util.EncoderDecoder;
 
 @SuppressWarnings({"unused"})
 public class SecureRandomUtil  {
@@ -16,6 +16,10 @@ public class SecureRandomUtil  {
 		final byte[] bytes = new byte[randomBytes];
 		SECURE_RANDOM.nextBytes(bytes);
 		return bytes;
+	}
+
+	public static String randomString(final TextCodec textCodec, final int randomBytesLength) {
+		return textCodec.encodeToString(SecureRandomUtil.randomBytes(randomBytesLength));
 	}
 
 	public static String randomString(final EncoderDecoder encoderDecoder, final int randomBytesLength) {
