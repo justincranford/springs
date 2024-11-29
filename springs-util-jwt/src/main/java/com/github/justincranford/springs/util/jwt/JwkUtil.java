@@ -52,16 +52,16 @@ public final class JwkUtil {
     public static OctetKeyPair ed(final Algorithm alg, final Curve curve, final Duration duration) throws JOSEException {
         return generate(new OctetKeyPairGenerator(curve), alg, ED_KEY_PAIR_GENERATOR_PROVIDER, duration, KeyUse.SIGNATURE, KEY_OPS_SIG_VER);
     }
-    public static ECKey ec(final Algorithm alg, final Curve curve, final Duration duration) throws JOSEException {
+    public static ECKey ec(final Curve curve, final Duration duration, final Algorithm alg) throws JOSEException {
         return generate(new ECKeyGenerator(curve), alg, EC_KEY_PAIR_GENERATOR_PROVIDER, duration, KeyUse.SIGNATURE, KEY_OPS_SIG_VER);
     }
-    public static RSAKey rsa(final Algorithm alg, final int keyLengthBits, final Duration duration) throws JOSEException {
+    public static RSAKey rsa(final int keyLengthBits, final Duration duration, final Algorithm alg) throws JOSEException {
         return generate(new RSAKeyGenerator(keyLengthBits), alg, RSA_KEY_PAIR_GENERATOR_PROVIDER, duration, KeyUse.SIGNATURE, KEY_OPS_SIG_VER);
     }
-    public static OctetSequenceKey hmac(final JWSAlgorithm alg, final int keyLengthBits, final Duration duration) throws JOSEException {
+    public static OctetSequenceKey hmac(final int keyLengthBits, final Duration duration, final JWSAlgorithm alg) throws JOSEException {
         return generate(new OctetSequenceKeyGenerator(keyLengthBits), alg, HMAC_KEY_GENERATOR_PROVIDER, duration, KeyUse.SIGNATURE, KEY_OPS_SIG_VER);
     }
-    public static OctetSequenceKey aes(final JWEAlgorithm alg, final int keyLengthBits, final Duration duration) throws JOSEException {
+    public static OctetSequenceKey aes(final int keyLengthBits, final Duration duration, final JWEAlgorithm alg) throws JOSEException {
         return generate(new OctetSequenceKeyGenerator(keyLengthBits), alg, AES_KEY_GENERATOR_PROVIDER, duration, KeyUse.ENCRYPTION, KEY_OPS_ENC_DEC);
     }
 
