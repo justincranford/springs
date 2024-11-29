@@ -6,6 +6,7 @@ import com.nimbusds.jose.JWEDecrypter;
 import com.nimbusds.jose.KeyLengthException;
 import com.nimbusds.jose.crypto.AESDecrypter;
 import com.nimbusds.jose.crypto.DirectDecrypter;
+import com.nimbusds.jose.crypto.ECDH1PUDecrypter;
 import com.nimbusds.jose.crypto.ECDHDecrypter;
 import com.nimbusds.jose.crypto.RSADecrypter;
 import com.nimbusds.jose.jwk.ECKey;
@@ -42,10 +43,19 @@ public final class JwtDecryptUtil {
         }
         return new AESDecrypter(octetSequenceKey);
     }
-    public static ECDHDecrypter ecDecryptor(final ECKey ecKey, final JWEAlgorithm alg, final Provider provider) throws JOSEException {
+    public static JWEDecrypter ecDecryptor(final ECKey ecKey, final JWEAlgorithm alg, final Provider provider) throws JOSEException {
+        if (JWEAlgorithm.ECDH_1PU.equals(alg)) {
+            return new ECDH1PUDecrypter(ecKey.toECPrivateKey(), ecKey.toECPublicKey());
+        } else if (JWEAlgorithm.ECDH_1PU_A128KW.equals(alg)) {
+            return new ECDH1PUDecrypter(ecKey.toECPrivateKey(), ecKey.toECPublicKey());
+        } else if (JWEAlgorithm.ECDH_1PU_A192KW.equals(alg)) {
+            return new ECDH1PUDecrypter(ecKey.toECPrivateKey(), ecKey.toECPublicKey());
+        } else if (JWEAlgorithm.ECDH_1PU_A256KW.equals(alg)) {
+            return new ECDH1PUDecrypter(ecKey.toECPrivateKey(), ecKey.toECPublicKey());
+        }
         return new ECDHDecrypter(ecKey);
     }
-    public static RSADecrypter rsaDecryptor(final RSAKey rsaKey, final JWEAlgorithm alg, final Provider provider) throws JOSEException {
+    public static JWEDecrypter rsaDecryptor(final RSAKey rsaKey, final JWEAlgorithm alg, final Provider provider) throws JOSEException {
         return new RSADecrypter(rsaKey);
     }
 

@@ -41,6 +41,9 @@ import static com.github.justincranford.springs.util.jwt.JwkUtil.VALID_EC_CURVES
 import static com.github.justincranford.springs.util.jwt.JwtClaimSetUtil.validateSyntax;
 import static com.github.justincranford.springs.util.jwt.JwtContentUtil.jweHeader;
 import static com.github.justincranford.springs.util.jwt.JwtContentUtil.jwsHeader;
+import static com.github.justincranford.springs.util.jwt.JwtDecryptUtil.decrypt;
+import static com.github.justincranford.springs.util.jwt.JwtDecryptUtil.jweDecryptor;
+import static com.github.justincranford.springs.util.jwt.JwtEncryptUtil.encrypt;
 import static com.github.justincranford.springs.util.jwt.JwtEncryptUtil.jweEncrypter;
 import static com.github.justincranford.springs.util.jwt.JwtSignUtil.VALID_EC_ENC_DEC_ALG;
 import static com.github.justincranford.springs.util.jwt.JwtSignUtil.VALID_EC_SIG_VER_ALG;
@@ -48,8 +51,11 @@ import static com.github.justincranford.springs.util.jwt.JwtSignUtil.VALID_HMAC_
 import static com.github.justincranford.springs.util.jwt.JwtSignUtil.VALID_RSA_ENC_DEC_ALG;
 import static com.github.justincranford.springs.util.jwt.JwtSignUtil.VALID_RSA_SIG_VER_ALG;
 import static com.github.justincranford.springs.util.jwt.JwtSignUtil.jwsSigner;
+import static com.github.justincranford.springs.util.jwt.JwtSignUtil.sign;
 import static com.github.justincranford.springs.util.jwt.JwtUtilEndToEndTest.ParamsHelper.validDuration;
 import static com.github.justincranford.springs.util.jwt.JwtUtilEndToEndTest.ParamsHelper.validJwtClaimsSet;
+import static com.github.justincranford.springs.util.jwt.JwtVerifyUtil.jwsVerifier;
+import static com.github.justincranford.springs.util.jwt.JwtVerifyUtil.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -71,16 +77,18 @@ class JwtUtilEndToEndTest {
     void testJwtSignAndVerifySuccess(final SigningTestCase signingTestCase) throws Exception {
         final JWSHeader jwsHeader             = jwsHeader(signingTestCase.jwk, signingTestCase.alg);
         final JWSSigner jwsSigner             = jwsSigner(signingTestCase.jwk);
-        final SignedJWT signedJWT             = JwtSignUtil.sign(jwsHeader, signingTestCase.jwtClaimsSet, jwsSigner);
+        final SignedJWT signedJWT             = sign(jwsHeader, signingTestCase.jwtClaimsSet, jwsSigner);
         final String    serializedSignedJWT   = signedJWT.serialize();
         final SignedJWT deserializedSignedJwt = SignedJWT.parse(serializedSignedJWT);
-        assertEqualsSignedJwts(signedJWT, deserializedSignedJwt);
 
-        final JWSVerifier verifier         = JwtVerifyUtil.jwsVerifier(signingTestCase.jwk);
-        final boolean     isValidSignature = JwtVerifyUtil.verify(deserializedSignedJwt, verifier);
+        assertEqualsSignedJwts(signedJWT, deserializedSignedJwt); // JWTClaimsSet is cleartext after deserialize, no need to wait for verify
+
+        final JWSVerifier verifier         = jwsVerifier(signingTestCase.jwk);
+        final boolean     isValidSignature = verify(deserializedSignedJwt, verifier); // verify signature only
         assertEquals(isValidSignature, signingTestCase.expectValidSignature);
-        final boolean     isValidSyntax    = validateSyntax(signedJWT.getJWTClaimsSet());
-        assertEquals(isValidSyntax,    signingTestCase.expectValidSyntax);
+
+        final boolean isValidSyntax = validateSyntax(signedJWT.getJWTClaimsSet()); // verify JWTClaimsSet contents
+        assertEquals(isValidSyntax, signingTestCase.expectValidSyntax);
     }
 
     @ParameterizedTest
@@ -88,16 +96,18 @@ class JwtUtilEndToEndTest {
     void testJwtEncryptAndDecryptSuccess(final EncryptionTestCase encryptionTestCase) throws Exception {
         final JWEHeader    jweHeader                = jweHeader(encryptionTestCase.jwk, encryptionTestCase.alg, encryptionTestCase.enc);
         final JWEEncrypter jweEncrypter             = jweEncrypter(encryptionTestCase.jwk, encryptionTestCase.alg);
-        final EncryptedJWT encryptedJWT             = JwtEncryptUtil.encrypt(jweHeader, encryptionTestCase.jwtClaimsSet, jweEncrypter);
+        final EncryptedJWT encryptedJWT             = encrypt(jweHeader, encryptionTestCase.jwtClaimsSet, jweEncrypter);
         final String       serializedEncryptedJWT   = encryptedJWT.serialize();
         final EncryptedJWT deserializedEncryptedJwt = EncryptedJWT.parse(serializedEncryptedJWT);
 
-        final JWEDecrypter jweDecryptor     = JwtDecryptUtil.jweDecryptor(encryptionTestCase.jwk, encryptionTestCase.alg);
-        final EncryptedJWT decryptedJWT     = JwtDecryptUtil.decrypt(deserializedEncryptedJwt, jweDecryptor);
+        final JWEDecrypter jweDecryptor = jweDecryptor(encryptionTestCase.jwk, encryptionTestCase.alg);
+        final EncryptedJWT decryptedJWT = decrypt(deserializedEncryptedJwt, jweDecryptor); // decrypt. as well as verify MAC
         assertNotNull(decryptedJWT);
-        assertEqualsEncryptedJwts(encryptedJWT, decryptedJWT);
-        final boolean      isValidSyntax    = validateSyntax(encryptedJWT.getJWTClaimsSet());
-        assertEquals(isValidSyntax,    encryptionTestCase.expectValidSyntax);
+
+        assertEqualsEncryptedJwts(encryptedJWT, decryptedJWT); // JWTClaimsSet is cleartext only after deserialize and decrypt, need to wait for decrypt
+
+        final boolean isValidSyntax = validateSyntax(encryptedJWT.getJWTClaimsSet()); // verify JWTClaimsSet contents
+        assertEquals(isValidSyntax, encryptionTestCase.expectValidSyntax);
     }
 
     static Stream<SigningTestCase> jwtSignSuccessTestCases() throws JOSEException {
@@ -145,125 +155,149 @@ class JwtUtilEndToEndTest {
         try (final Timer ignores = Timer.go("validJwtEncryptTestCases")) {
             return Stream.of(
                 new EncryptionTestCase(JWEAlgorithm.RSA1_5,         EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA1_5)),
-                new EncryptionTestCase(JWEAlgorithm.RSA1_5,         EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA1_5)),
-                new EncryptionTestCase(JWEAlgorithm.RSA1_5,         EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA1_5)),
-                new EncryptionTestCase(JWEAlgorithm.RSA1_5,         EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA1_5)),
-                new EncryptionTestCase(JWEAlgorithm.RSA1_5,         EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA1_5)),
-                new EncryptionTestCase(JWEAlgorithm.RSA1_5,         EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA1_5)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,       EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,       EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,       EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,       EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,       EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,       EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_256,   EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP_256)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_384,   EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP_384)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_512,   EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP_512)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_256,   EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP_256)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_384,   EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP_384)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_512,   EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP_512)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,        EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,        EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,        EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,        EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,        EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,        EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW, EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES_A128KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW, EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES_A128KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW, EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES_A128KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW, EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES_A128KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW, EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES_A128KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW, EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES_A128KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW, EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES_A192KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW, EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES_A192KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW, EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES_A192KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW, EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES_A192KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW, EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES_A192KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW, EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES_A192KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW, EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES_A256KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW, EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES_A256KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW, EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES_A256KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW, EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES_A256KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW, EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES_A256KW)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW, EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES_A256KW)),
-                new EncryptionTestCase(JWEAlgorithm.A128GCMKW,      EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JWEAlgorithm.A128GCMKW)),
-                new EncryptionTestCase(JWEAlgorithm.A192GCMKW,      EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JWEAlgorithm.A192GCMKW)),
-                new EncryptionTestCase(JWEAlgorithm.A256GCMKW,      EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JWEAlgorithm.A256GCMKW)),
-                new EncryptionTestCase(JWEAlgorithm.A128GCMKW,      EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JWEAlgorithm.A128GCMKW)),
-                new EncryptionTestCase(JWEAlgorithm.A192GCMKW,      EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JWEAlgorithm.A192GCMKW)),
-                new EncryptionTestCase(JWEAlgorithm.A256GCMKW,      EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JWEAlgorithm.A256GCMKW)),
-                new EncryptionTestCase(JWEAlgorithm.A128KW,         EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JWEAlgorithm.A128KW)),
-                new EncryptionTestCase(JWEAlgorithm.A192KW,         EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JWEAlgorithm.A192KW)),
-                new EncryptionTestCase(JWEAlgorithm.A256KW,         EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JWEAlgorithm.A256KW)),
-                new EncryptionTestCase(JWEAlgorithm.A128KW,         EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JWEAlgorithm.A128KW)),
-                new EncryptionTestCase(JWEAlgorithm.A192KW,         EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JWEAlgorithm.A192KW)),
-                new EncryptionTestCase(JWEAlgorithm.A256KW,         EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JWEAlgorithm.A256KW)),
-                new EncryptionTestCase(JWEAlgorithm.DIR,            EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JWEAlgorithm.DIR)),
-                new EncryptionTestCase(JWEAlgorithm.DIR,            EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JWEAlgorithm.DIR)),
-                new EncryptionTestCase(JWEAlgorithm.DIR,            EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JWEAlgorithm.DIR)),
-//              new EncryptionTestCase(JWEAlgorithm.DIR,            EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JWEAlgorithm.DIR))
-//              new EncryptionTestCase(JWEAlgorithm.DIR,            EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JWEAlgorithm.DIR)),
-//              new EncryptionTestCase(JWEAlgorithm.DIR,            EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JWEAlgorithm.DIR)),
-                new EncryptionTestCase(JWEAlgorithm.RSA1_5,         EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA1_5,         EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA1_5,         EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA1_5,         EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA1_5,         EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA1_5,         EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,       EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,       EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,       EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,       EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,       EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,       EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_256,   EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_384,   EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_512,   EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_256,   EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_384,   EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_512,   EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,        EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,        EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,        EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,        EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,        EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,        EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW, EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW, EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW, EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW, EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW, EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW, EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW, EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW, EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW, EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW, EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW, EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW, EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW, EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW, EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW, EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW, EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW, EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW, EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.A128GCMKW,      EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.A192GCMKW,      EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.A256GCMKW,      EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.A128GCMKW,      EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.A192GCMKW,      EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.A256GCMKW,      EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.A128KW,         EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.A192KW,         EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.A256KW,         EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.A128KW,         EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.A192KW,         EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.A256KW,         EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.DIR,            EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.DIR,            EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JweAlg.NULL)),
-                new EncryptionTestCase(JWEAlgorithm.DIR,            EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JweAlg.NULL))
-//              new EncryptionTestCase(JWEAlgorithm.DIR,            EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JweAlg.NULL)),
-//              new EncryptionTestCase(JWEAlgorithm.DIR,            EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JweAlg.NULL)),
-//              new EncryptionTestCase(JWEAlgorithm.DIR,            EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JweAlg.NULL))
+                new EncryptionTestCase(JWEAlgorithm.RSA1_5,          EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA1_5)),
+                new EncryptionTestCase(JWEAlgorithm.RSA1_5,          EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA1_5)),
+                new EncryptionTestCase(JWEAlgorithm.RSA1_5,          EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA1_5)),
+                new EncryptionTestCase(JWEAlgorithm.RSA1_5,          EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA1_5)),
+                new EncryptionTestCase(JWEAlgorithm.RSA1_5,          EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA1_5)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,        EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,        EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,        EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,        EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,        EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,        EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_256,    EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP_256)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_384,    EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP_384)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_512,    EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP_512)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_256,    EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP_256)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_384,    EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP_384)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_512,    EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JWEAlgorithm.RSA_OAEP_512)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,         EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,         EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,         EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,         EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,         EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,         EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW,  EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES_A128KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW,  EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES_A128KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW,  EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES_A128KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW,  EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES_A128KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW,  EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES_A128KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW,  EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES_A128KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW,  EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES_A192KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW,  EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES_A192KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW,  EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES_A192KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW,  EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES_A192KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW,  EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES_A192KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW,  EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES_A192KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW,  EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES_A256KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW,  EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES_A256KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW,  EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES_A256KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW,  EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_ES_A256KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW,  EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_ES_A256KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW,  EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_ES_A256KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU,        EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_1PU)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU,        EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_1PU)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU,        EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_1PU)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU,        EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_1PU)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU,        EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_1PU)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU,        EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_1PU)),
+//              new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A128KW, EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_1PU_A128KW)),
+//              new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A128KW, EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_1PU_A128KW)),
+//              new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A128KW, EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_1PU_A128KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A128KW, EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_1PU_A128KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A128KW, EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_1PU_A128KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A128KW, EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_1PU_A128KW)),
+//              new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A192KW, EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_1PU_A192KW)),
+//              new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A192KW, EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_1PU_A192KW)),
+//              new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A192KW, EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_1PU_A192KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A192KW, EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_1PU_A192KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A192KW, EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_1PU_A192KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A192KW, EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_1PU_A192KW)),
+//              new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A256KW, EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_1PU_A256KW)),
+//              new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A256KW, EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_1PU_A256KW)),
+//              new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A256KW, EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_1PU_A256KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A256KW, EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JWEAlgorithm.ECDH_1PU_A256KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A256KW, EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JWEAlgorithm.ECDH_1PU_A256KW)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_1PU_A256KW, EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JWEAlgorithm.ECDH_1PU_A256KW)),
+                new EncryptionTestCase(JWEAlgorithm.A128GCMKW,       EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JWEAlgorithm.A128GCMKW)),
+                new EncryptionTestCase(JWEAlgorithm.A192GCMKW,       EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JWEAlgorithm.A192GCMKW)),
+                new EncryptionTestCase(JWEAlgorithm.A256GCMKW,       EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JWEAlgorithm.A256GCMKW)),
+                new EncryptionTestCase(JWEAlgorithm.A128GCMKW,       EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JWEAlgorithm.A128GCMKW)),
+                new EncryptionTestCase(JWEAlgorithm.A192GCMKW,       EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JWEAlgorithm.A192GCMKW)),
+                new EncryptionTestCase(JWEAlgorithm.A256GCMKW,       EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JWEAlgorithm.A256GCMKW)),
+                new EncryptionTestCase(JWEAlgorithm.A128KW,          EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JWEAlgorithm.A128KW)),
+                new EncryptionTestCase(JWEAlgorithm.A192KW,          EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JWEAlgorithm.A192KW)),
+                new EncryptionTestCase(JWEAlgorithm.A256KW,          EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JWEAlgorithm.A256KW)),
+                new EncryptionTestCase(JWEAlgorithm.A128KW,          EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JWEAlgorithm.A128KW)),
+                new EncryptionTestCase(JWEAlgorithm.A192KW,          EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JWEAlgorithm.A192KW)),
+                new EncryptionTestCase(JWEAlgorithm.A256KW,          EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JWEAlgorithm.A256KW)),
+                new EncryptionTestCase(JWEAlgorithm.DIR,             EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JWEAlgorithm.DIR)),
+                new EncryptionTestCase(JWEAlgorithm.DIR,             EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JWEAlgorithm.DIR)),
+                new EncryptionTestCase(JWEAlgorithm.DIR,             EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JWEAlgorithm.DIR)),
+//              new EncryptionTestCase(JWEAlgorithm.DIR,             EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JWEAlgorithm.DIR))
+//              new EncryptionTestCase(JWEAlgorithm.DIR,             EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JWEAlgorithm.DIR)),
+//              new EncryptionTestCase(JWEAlgorithm.DIR,             EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JWEAlgorithm.DIR)),
+                new EncryptionTestCase(JWEAlgorithm.RSA1_5,          EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA1_5,          EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA1_5,          EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA1_5,          EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA1_5,          EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA1_5,          EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,        EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,        EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,        EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,        EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,        EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP,        EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_256,    EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_384,    EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_512,    EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_256,    EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_384,    EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.RSA_OAEP_512,    EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.rsa(Rsa.BITS_2048, validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,         EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,         EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,         EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,         EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,         EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES,         EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW,  EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW,  EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW,  EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW,  EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW,  EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A128KW,  EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW,  EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW,  EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW,  EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW,  EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW,  EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A192KW,  EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW,  EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW,  EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW,  EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW,  EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_256,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW,  EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_384,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.ECDH_ES_A256KW,  EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.ec (Curve.P_521,   validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.A128GCMKW,       EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.A192GCMKW,       EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.A256GCMKW,       EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.A128GCMKW,       EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.A192GCMKW,       EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.A256GCMKW,       EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.A128KW,          EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.A192KW,          EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.A256KW,          EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.A128KW,          EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.A192KW,          EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.A256KW,          EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.DIR,             EncryptionMethod.A128GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.DIR,             EncryptionMethod.A192GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JweAlg.NULL)),
+                new EncryptionTestCase(JWEAlgorithm.DIR,             EncryptionMethod.A256GCM,       validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JweAlg.NULL))
+//              new EncryptionTestCase(JWEAlgorithm.DIR,             EncryptionMethod.A128CBC_HS256, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_128,  validDuration(), JweAlg.NULL)),
+//              new EncryptionTestCase(JWEAlgorithm.DIR,             EncryptionMethod.A192CBC_HS384, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_192,  validDuration(), JweAlg.NULL)),
+//              new EncryptionTestCase(JWEAlgorithm.DIR,             EncryptionMethod.A256CBC_HS512, validJwtClaimsSet(), true, true, JwkUtil.aes(Aes.BITS_256,  validDuration(), JweAlg.NULL))
             );
         }
     }
