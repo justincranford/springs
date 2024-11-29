@@ -58,10 +58,10 @@ public final class JwkUtil {
     public static RSAKey rsa(final int keyLengthBits, final Duration duration, final Algorithm alg) throws JOSEException {
         return generate(new RSAKeyGenerator(keyLengthBits), alg, RSA_KEY_PAIR_GENERATOR_PROVIDER, duration, KeyUse.SIGNATURE, KEY_OPS_SIG_VER);
     }
-    public static OctetSequenceKey hmac(final int keyLengthBits, final Duration duration, final JWSAlgorithm alg) throws JOSEException {
+    public static OctetSequenceKey hmac(final int keyLengthBits, final Duration duration, final Algorithm alg) throws JOSEException {
         return generate(new OctetSequenceKeyGenerator(keyLengthBits), alg, HMAC_KEY_GENERATOR_PROVIDER, duration, KeyUse.SIGNATURE, KEY_OPS_SIG_VER);
     }
-    public static OctetSequenceKey aes(final int keyLengthBits, final Duration duration, final JWEAlgorithm alg) throws JOSEException {
+    public static OctetSequenceKey aes(final int keyLengthBits, final Duration duration, final Algorithm alg) throws JOSEException {
         return generate(new OctetSequenceKeyGenerator(keyLengthBits), alg, AES_KEY_GENERATOR_PROVIDER, duration, KeyUse.ENCRYPTION, KEY_OPS_ENC_DEC);
     }
 
