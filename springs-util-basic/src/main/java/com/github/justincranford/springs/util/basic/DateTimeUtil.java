@@ -1,33 +1,41 @@
 package com.github.justincranford.springs.util.basic;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 
-public class DateTimeUtil {
+@NoArgsConstructor(access=AccessLevel.PRIVATE)
+@SuppressWarnings({"unused"})
+public final class DateTimeUtil {
 	public static final Clock CLOCK_SYSTEM_UTC = Clock.systemUTC();
 
-	public static final OffsetDateTime nowUtcTruncatedToDays() {
+	public static OffsetDateTime now() {
+		return OffsetDateTime.now(CLOCK_SYSTEM_UTC);
+	}
+	public static OffsetDateTime nowUtcTruncatedToDays() {
         return OffsetDateTime.now(CLOCK_SYSTEM_UTC).truncatedTo(ChronoUnit.DAYS);
 	}
-	public static final OffsetDateTime nowUtcTruncatedToHours() {
+	public static OffsetDateTime nowUtcTruncatedToHours() {
 		return OffsetDateTime.now(CLOCK_SYSTEM_UTC).truncatedTo(ChronoUnit.HOURS);
 	}
-	public static final OffsetDateTime nowUtcTruncatedToMinutes() {
+	public static OffsetDateTime nowUtcTruncatedToMinutes() {
 		return OffsetDateTime.now(CLOCK_SYSTEM_UTC).truncatedTo(ChronoUnit.MINUTES);
 	}
-	public static final OffsetDateTime nowUtcTruncatedToSeconds() {
+	public static OffsetDateTime nowUtcTruncatedToSeconds() {
 		return OffsetDateTime.now(CLOCK_SYSTEM_UTC).truncatedTo(ChronoUnit.SECONDS);
 	}
-	public static final OffsetDateTime nowUtcTruncatedToMilliseconds() {
+	public static OffsetDateTime nowUtcTruncatedToMilliseconds() {
 		return OffsetDateTime.now(CLOCK_SYSTEM_UTC).truncatedTo(ChronoUnit.MILLIS);
 	}
-	public static final OffsetDateTime nowUtcTruncatedToMicroseconds() {
+	public static OffsetDateTime nowUtcTruncatedToMicroseconds() {
 		return OffsetDateTime.now(CLOCK_SYSTEM_UTC).truncatedTo(ChronoUnit.MICROS);
 	}
-	public static final OffsetDateTime nowUtcTruncatedToNanoseconds() {
+	public static OffsetDateTime nowUtcTruncatedToNanoseconds() {
 		return OffsetDateTime.now(CLOCK_SYSTEM_UTC).truncatedTo(ChronoUnit.NANOS);
 	}
 
