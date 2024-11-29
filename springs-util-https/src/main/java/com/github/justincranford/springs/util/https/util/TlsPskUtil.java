@@ -1,9 +1,13 @@
 package com.github.justincranford.springs.util.https.util;
 
-import java.security.KeyStore;
-import java.security.Principal;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
+import com.github.justincranford.springs.util.basic.SecureRandomUtil;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundleKey;
+import org.springframework.boot.ssl.SslStoreBundle;
+import org.springframework.util.Assert;
 
 import javax.crypto.SecretKey;
 import javax.net.ssl.KeyManager;
@@ -11,17 +15,10 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509ExtendedKeyManager;
 import javax.net.ssl.X509TrustManager;
-
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslBundleKey;
-import org.springframework.boot.ssl.SslStoreBundle;
-import org.springframework.util.Assert;
-
-import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.security.KeyStore;
+import java.security.Principal;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 
 public class TlsPskUtil {
 	public static final String PSK_TLS_PROTOCOL = "TLSv1.3";

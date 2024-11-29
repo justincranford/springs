@@ -1,13 +1,13 @@
 package com.github.justincranford.springs.util.https.util;
 
+import com.github.justincranford.springs.util.basic.SecureRandomUtil;
+
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.Security;
 import java.security.spec.ECGenParameterSpec;
 import java.util.List;
 import java.util.stream.IntStream;
-
-import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 
 public class KeyGenUtil {
 	public static List<KeyPair> generateKeyPairs(final int count, final String algorithm) throws Exception {

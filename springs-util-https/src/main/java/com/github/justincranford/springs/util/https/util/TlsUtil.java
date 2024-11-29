@@ -1,23 +1,21 @@
 package com.github.justincranford.springs.util.https.util;
 
+import com.github.justincranford.springs.util.basic.SecureRandomUtil;
+import com.google.common.collect.Sets;
+import org.springframework.boot.autoconfigure.ssl.PemSslBundleProperties;
+import org.springframework.boot.autoconfigure.ssl.PropertiesSslBundle;
+import org.springframework.boot.ssl.SslBundle;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
-
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-
-import org.springframework.boot.autoconfigure.ssl.PemSslBundleProperties;
-import org.springframework.boot.autoconfigure.ssl.PropertiesSslBundle;
-import org.springframework.boot.ssl.SslBundle;
-
-import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-import com.google.common.collect.Sets;
 
 public class TlsUtil {
 	public static final String TLS_PROTOCOL = "TLSv1.3";
