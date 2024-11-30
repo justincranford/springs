@@ -1,2 +1,2 @@
 # springs
-Reusable Spring Boot libraries for secure Web servers and clients.
+Secure by default Spring Boot for secure Web servers and clients.
