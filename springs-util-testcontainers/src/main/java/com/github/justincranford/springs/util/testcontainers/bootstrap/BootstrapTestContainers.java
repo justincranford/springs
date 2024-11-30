@@ -1,7 +1,7 @@
 package com.github.justincranford.springs.util.testcontainers.bootstrap;
 
 import com.github.justincranford.springs.util.basic.EnumUtils;
-import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers.Properties.ENABLE;
+import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers.Properties.MODES;
 import com.google.common.collect.Lists;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -50,10 +50,11 @@ public final class BootstrapTestContainers {
 			final MutablePropertySources readWritePropertySources = configurableEnvironment.getPropertySources();
 
 			final Properties properties = Properties.read(readWritePropertySources);
-			final ENABLE containersEnabled = properties.enabled();
+			final MODES bootstrapMode = properties.mode();
 			final Map<String,String> containerEntries  = properties.containers();
-			log.info("Bootstrap TestContainers Config, {}: {}, {}*: {}", Properties.ENABLED, containersEnabled, Properties.CONTAINERS_PREFIX, containerEntries);
-			if (ENABLE.FALSE.equals(containersEnabled)) {
+			final String containerEntriesString = containerEntries.toString().replace("{", "\n{\n  ").replace("}", "\n}").replaceAll(",", ",\n ");
+			log.info("Bootstrap TestContainers Config\n{}={}\n{}*={}", Properties.MODE, bootstrapMode, Properties.CONTAINERS_PREFIX, containerEntriesString);
+			if (MODES.NO.equals(bootstrapMode)) {
 				return;
 			}
 			final List<ContainerDescriptor> containerDescriptors = containerEntries.entrySet().stream().map(containerEntry -> {
@@ -86,7 +87,7 @@ public final class BootstrapTestContainers {
                     return startingContainerDescriptor.get();
                 } catch (InterruptedException|ExecutionException e) {
 					final Exception e1 = dockerRteOrOriginal(e);
-					if (ENABLE.PREFERRED.equals(containersEnabled)) {
+					if (MODES.PREFERRED.equals(bootstrapMode)) {
 						log.warn("Failed to start container, but not fatal", e1);
 						return null;
 					}
@@ -119,36 +120,6 @@ public final class BootstrapTestContainers {
 		}
 		return e;
 	}
-
-	@SuppressWarnings({"unused"})
-	public record Properties(ENABLE enabled, Map<String,String> containers) {
-		public enum                ENABLE { TRUE, PREFERRED, FALSE }
-		public static final String ENABLED            = "bootstrap.testcontainers.enabled";
-		public static final ENABLE ENABLED_DEFAULT    = ENABLE.FALSE;
-		public static final String CONTAINERS         = "bootstrap.testcontainers.containers";
-		public static final String CONTAINERS_PREFIX  = CONTAINERS + ".";
-
-		private static Properties read(final PropertySources propertySources) {
-			final Map<String, String> found = new HashMap<>();
-			for (final PropertySource<?> propertySource : Lists.newArrayList(propertySources.iterator())) {
-				if (propertySource.containsProperty(ENABLED)) {
-					found.putIfAbsent(ENABLED, Objects.requireNonNull(propertySource.getProperty(ENABLED)).toString());
-				}
-				if (propertySource instanceof org.springframework.core.env.MapPropertySource mapPropertySource) {
-					for (final String key : mapPropertySource.getPropertyNames()) {
-						if (key.startsWith(CONTAINERS_PREFIX)) {
-							found.putIfAbsent(key, Objects.requireNonNull(propertySource.getProperty(key)).toString());
-						}
-					}
-				}
-			}
-			final ENABLE enabled = EnumUtils.valueOfCaseInsensitive(ENABLE.class, found.getOrDefault(ENABLED, ENABLED_DEFAULT.name())) ;
-			found.remove(ENABLED);
-			return new Properties(enabled, found);
-		}
-	}
-
-	public record ContainerDescriptor(String alias, SupportedImage supportedImage, String imageWithTag, GenericContainer<?> containerInstance) { }
 
 	public record SupportedImage(
 		Class<? extends GenericContainer<?>> containerClass, String dockerRegistry, String image, List<Integer> exposedPorts, Function<ContainerDescriptor, Map<String,Object>> clientProperties
@@ -360,4 +331,34 @@ public final class BootstrapTestContainers {
 			}
 		}
 	}
+
+	@SuppressWarnings({"unused"})
+	public record Properties(MODES mode, Map<String,String> containers) {
+		public enum                MODES { REQUIRED, PREFERRED, NO }
+		public static final String MODE               = "bootstrap.testcontainers.mode";
+		public static final MODES MODE_DEFAULT       = MODES.NO;
+		public static final String CONTAINERS         = "bootstrap.testcontainers.containers";
+		public static final String CONTAINERS_PREFIX  = CONTAINERS + ".";
+
+		private static Properties read(final PropertySources propertySources) {
+			final Map<String, String> found = new HashMap<>();
+			for (final PropertySource<?> propertySource : Lists.newArrayList(propertySources.iterator())) {
+				if (propertySource.containsProperty(MODE)) {
+					found.putIfAbsent(MODE, Objects.requireNonNull(propertySource.getProperty(MODE)).toString());
+				}
+				if (propertySource instanceof org.springframework.core.env.MapPropertySource mapPropertySource) {
+					for (final String key : mapPropertySource.getPropertyNames()) {
+						if (key.startsWith(CONTAINERS_PREFIX)) {
+							found.putIfAbsent(key, Objects.requireNonNull(propertySource.getProperty(key)).toString());
+						}
+					}
+				}
+			}
+			final MODES enabled = EnumUtils.valueOfCaseInsensitive(MODES.class, found.getOrDefault(MODE, MODE_DEFAULT.name())) ;
+			found.remove(MODE);
+			return new Properties(enabled, found);
+		}
+	}
+
+	public record ContainerDescriptor(String alias, SupportedImage supportedImage, String imageWithTag, GenericContainer<?> containerInstance) { }
 }

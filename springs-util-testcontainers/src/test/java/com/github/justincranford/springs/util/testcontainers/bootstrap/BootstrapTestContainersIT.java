@@ -32,7 +32,7 @@ public class BootstrapTestContainersIT extends AbstractIT {
 	class EnabledTrue extends AbstractOneTestIT {
 		@DynamicPropertySource
 		static void properties(final DynamicPropertyRegistry registry) {
-			registry.add("bootstrap.testcontainers.enabled", () -> "true");
+			registry.add("bootstrap.testcontainers.mode", () -> "required");
 		}
 		@Nested
 		@ContextConfiguration(initializers={BootstrapTestContainersApplicationContextInitializer.class})
@@ -85,7 +85,7 @@ public class BootstrapTestContainersIT extends AbstractIT {
 	class EnabledPreferred extends AbstractOneTestIT {
 		@DynamicPropertySource
 		static void properties(final DynamicPropertyRegistry registry) {
-			registry.add("bootstrap.testcontainers.enabled", () -> "preferred");
+			registry.add("bootstrap.testcontainers.mode", () -> "preferred");
 		}
 		@Nested
 		@ContextConfiguration(initializers={BootstrapTestContainersApplicationContextInitializer.class})
@@ -108,7 +108,7 @@ public class BootstrapTestContainersIT extends AbstractIT {
 	class EnabledFalse extends AbstractOneTestIT {
 		@DynamicPropertySource
 		static void properties(final DynamicPropertyRegistry registry) {
-			registry.add("bootstrap.testcontainers.enabled", () -> "false");
+			registry.add("bootstrap.testcontainers.mode", () -> "no");
 		}
 		@Nested
 		@ContextConfiguration(initializers={BootstrapTestContainersApplicationContextInitializer.class})
