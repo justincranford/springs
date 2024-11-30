@@ -108,11 +108,12 @@ public final class TlsEnabledByDefault {
 			);
 			final String    httpsClientServerPreSharedKeyPem           = CertPemUtil.toPem(httpsClientServerPreSharedKey);
 
-			log.info("HTTPS Server Root CA:\n{}{}", httpsServerRootCaCertPem, log.isTraceEnabled() ? httpsServerRootCaPrivateKeyPem   : "REDACTED");
-			log.info("HTTPS Server:\n{}{}",         httpsServerCertPem,       log.isTraceEnabled() ? httpsServerPrivateKeyPem         : "REDACTED");
-			log.info("HTTPS Client Root CA:\n{}{}", httpsClientRootCaCertPem, log.isTraceEnabled() ? httpsClientRootCaPrivateKeyPem   : "REDACTED");
-			log.info("HTTPS Client:\n{}{}",         httpsClientCertPem,       log.isTraceEnabled() ? httpsClientPrivateKeyPem         : "REDACTED");
-			log.info("HTTPS PSK:\n{}   ",                                     log.isTraceEnabled() ? httpsClientServerPreSharedKeyPem : "REDACTED");
+			final String redactedMessage = "REDACTED (Set `logging.level." + TlsEnabledByDefault.class.getPackageName() + "=TRACE` to show)\n";
+			log.info("HTTPS Server Root CA:\n{}{}", httpsServerRootCaCertPem, log.isTraceEnabled() ? httpsServerRootCaPrivateKeyPem   : redactedMessage);
+			log.info("HTTPS Server:\n{}{}",         httpsServerCertPem,       log.isTraceEnabled() ? httpsServerPrivateKeyPem         : redactedMessage);
+			log.info("HTTPS Client Root CA:\n{}{}", httpsClientRootCaCertPem, log.isTraceEnabled() ? httpsClientRootCaPrivateKeyPem   : redactedMessage);
+			log.info("HTTPS Client:\n{}{}",         httpsClientCertPem,       log.isTraceEnabled() ? httpsClientPrivateKeyPem         : redactedMessage);
+			log.info("HTTPS PSK:\n{}",                                        log.isTraceEnabled() ? httpsClientServerPreSharedKeyPem : redactedMessage);
 
 	        prependPropertySource(readWritePropertySources,
         		httpsServerRootCaCertPem, httpsServerCertPem, httpsServerPrivateKeyPem,
@@ -184,7 +185,7 @@ public final class TlsEnabledByDefault {
 		tlsProperties.put("server.ssl.enabled",          Boolean.TRUE);
 		tlsProperties.put("server.ssl.protocol",         "TLSv1.3");
 		tlsProperties.put("server.ssl.enabledProtocols", "TLSv1.3,TLSv1.2");
-		tlsProperties.put("server.ssl.bundle", SslBundleNames.SERVER_TLS_CERT);
+		tlsProperties.put("server.ssl.bundle",           SslBundleNames.SERVER_TLS_CERT);
 		tlsProperties.put("server.ssl.clientAuth",       ClientAuth.WANT.name());
 
 		mutablePropertySources.addFirst(new OriginTrackedMapPropertySource("auto-config-tls", tlsProperties));
