@@ -10,9 +10,9 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
 @Import({SpringsServerWebauthnConfiguration.class})
-public class SpringServiceWebauthnMain {
+public class SpringServerWebauthnMain {
 	public static void main(final String[] args) {
-		final SpringApplication springApplication = new SpringApplication(SpringServiceWebauthnMain.class);
+		final SpringApplication springApplication = new SpringApplication(SpringServerWebauthnMain.class);
 		springApplication.addInitializers(new BootstrapTlsApplicationContextInitializer());
 		springApplication.addInitializers(new BootstrapTestContainersApplicationContextInitializer());
 		springApplication.run(args);
