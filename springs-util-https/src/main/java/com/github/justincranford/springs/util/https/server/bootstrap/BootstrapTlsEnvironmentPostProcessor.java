@@ -8,9 +8,9 @@ import org.springframework.core.env.ConfigurableEnvironment;
 
 @NoArgsConstructor(access= AccessLevel.PRIVATE)
 @SuppressWarnings({"unused"})
-public final class TlsEnabledByDefaultEnvironmentPostProcessor implements EnvironmentPostProcessor {
+public final class BootstrapTlsEnvironmentPostProcessor implements EnvironmentPostProcessor {
     @Override
     public void postProcessEnvironment(final ConfigurableEnvironment configurableEnvironment, final SpringApplication springApplication) {
-        TlsEnabledByDefault.generateTlsKeyMaterialAndPrependAsNewPropertySources(configurableEnvironment);
+        BootstrapTls.generateTlsKeyMaterialAndPrependAsNewPropertySources(configurableEnvironment);
     }
 }

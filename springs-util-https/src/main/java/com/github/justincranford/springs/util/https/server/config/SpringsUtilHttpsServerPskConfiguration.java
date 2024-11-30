@@ -1,6 +1,6 @@
 package com.github.justincranford.springs.util.https.server.config;
 
-import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefault;
+import com.github.justincranford.springs.util.https.server.bootstrap.BootstrapTls;
 import com.github.justincranford.springs.util.https.util.TlsPskUtil;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -21,7 +21,7 @@ public class SpringsUtilHttpsServerPskConfiguration {
 		final JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
 		if (ADD_TLS_PSK_CONNECTOR) {
 	        factory.addServerCustomizers(server -> {
-                final SslBundle                serverTlsPskBundle = sslBundles.getBundle(TlsEnabledByDefault.SslBundleNames.SERVER_TLS_PSK);
+                final SslBundle                serverTlsPskBundle = sslBundles.getBundle(BootstrapTls.SslBundleNames.SERVER_TLS_PSK);
                 final SslContextFactory.Server sslContextFactory  = TlsPskUtil.createServerSslContextFactory(serverTlsPskBundle);
  				final ServerConnector serverConnector = new ServerConnector(server, sslContextFactory);
                 serverConnector.setPort(PORT);

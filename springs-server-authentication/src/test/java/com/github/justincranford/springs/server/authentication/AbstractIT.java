@@ -16,7 +16,7 @@ import com.github.justincranford.springs.server.authentication.user.provider.Per
 import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
-import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefaultApplicationContextInitializer;
+import com.github.justincranford.springs.util.https.server.bootstrap.BootstrapTlsApplicationContextInitializer;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.Getter;
@@ -48,7 +48,7 @@ import javax.net.ssl.SSLContext;
 )
 @ContextConfiguration(
 	initializers={
-		TlsEnabledByDefaultApplicationContextInitializer.class,
+		BootstrapTlsApplicationContextInitializer.class,
 		BootstrapTestContainersApplicationContextInitializer.class
 	}
 )

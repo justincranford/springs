@@ -6,9 +6,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 @NoArgsConstructor
 @SuppressWarnings({"unused"})
-public final class TlsEnabledByDefaultApplicationContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+public final class BootstrapTlsApplicationContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
     @Override
     public void initialize(final ConfigurableApplicationContext configurableApplicationContext) {
-		TlsEnabledByDefault.generateTlsKeyMaterialAndPrependAsNewPropertySources(configurableApplicationContext.getEnvironment());
+		BootstrapTls.generateTlsKeyMaterialAndPrependAsNewPropertySources(configurableApplicationContext.getEnvironment());
 	}
 }

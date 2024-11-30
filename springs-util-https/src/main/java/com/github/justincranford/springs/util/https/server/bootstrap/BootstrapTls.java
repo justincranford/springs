@@ -51,7 +51,7 @@ import java.util.concurrent.Future;
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 @Slf4j
 @SuppressWarnings({"static-method"})
-public final class TlsEnabledByDefault {
+public final class BootstrapTls {
 	static void generateTlsKeyMaterialAndPrependAsNewPropertySources(final ConfigurableEnvironment configurableEnvironment) {
 		Security.addProvider(new BouncyCastleProvider()); // HTTP/TLS-Certs
 		Security.addProvider(new BouncyCastleJsseProvider()); // HTTP/TLS-PSK (but SunJSSE & BC-JSSE don't fully support PSK yet so YMMV)
@@ -113,7 +113,7 @@ public final class TlsEnabledByDefault {
 			);
 			final String    httpsClientServerPreSharedKeyPem           = CertPemUtil.toPem(httpsClientServerPreSharedKey);
 
-			final String redactedMessage = "REDACTED (Set `logging.level." + TlsEnabledByDefault.class.getPackageName() + "=TRACE` to show)\n";
+			final String redactedMessage = "REDACTED (Set `logging.level." + BootstrapTls.class.getPackageName() + "=TRACE` to show)\n";
 			log.info("HTTPS Server Root CA:\n{}{}", httpsServerRootCaCertPem, log.isTraceEnabled() ? httpsServerRootCaPrivateKeyPem   : redactedMessage);
 			log.info("HTTPS Server:\n{}{}",         httpsServerCertPem,       log.isTraceEnabled() ? httpsServerPrivateKeyPem         : redactedMessage);
 			log.info("HTTPS Client Root CA:\n{}{}", httpsClientRootCaCertPem, log.isTraceEnabled() ? httpsClientRootCaPrivateKeyPem   : redactedMessage);
@@ -208,7 +208,7 @@ public final class TlsEnabledByDefault {
 				throw new RuntimeException(e);
 			}
 		} else {
-			final String redactedMessage = "REDACTED (Set `logging.level." + TlsEnabledByDefault.class.getPackageName() + "=TRACE` to show)\n";
+			final String redactedMessage = "REDACTED (Set `logging.level." + BootstrapTls.class.getPackageName() + "=TRACE` to show)\n";
 			log.info("Generated Spring properties for bootstrapping TLS:\n{}", redactedMessage);
 		}
 		mutablePropertySources.addFirst(new OriginTrackedMapPropertySource("auto-config-tls", tlsProperties));
