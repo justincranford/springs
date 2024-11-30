@@ -72,7 +72,7 @@ public final class BootstrapTls {
 			}
 			log.info("SSL Auto Config enabled, algorithm: {}, serverAddress: {}, clientEmail: {}", sslAutoConfigAlgorithm, sslAutoConfigServerAddress, sslAutoConfigClientEmail);
 
-			final List<KeyPair> keyPairs = new LinkedList<>(KeyGenUtil.generateKeyPairs(4, sslAutoConfigAlgorithm));
+			final List<KeyPair> keyPairs = new LinkedList<>(KeyGenUtil.generateKeyPairsConcurrently(4, sslAutoConfigAlgorithm));
 	        final KeyPair httpsServerRootCaKeyPair = keyPairs.removeFirst();
 	        final KeyPair httpsServerKeyPair       = keyPairs.removeFirst();
 	        final KeyPair httpsClientRootCaKeyPair = keyPairs.removeFirst();

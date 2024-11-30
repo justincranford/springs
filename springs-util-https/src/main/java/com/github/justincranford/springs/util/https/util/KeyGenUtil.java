@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class KeyGenUtil {
-	public static List<KeyPair> generateKeyPairs(final int count, final String algorithm) throws Exception {
+	public static List<KeyPair> generateKeyPairsConcurrently(final int count, final String algorithm) throws Exception {
 		final KeyPairGenerator keyPairGenerator = createKeyPairGenerator(algorithm);
 		return IntStream.rangeClosed(1, count).parallel().boxed().map(i -> keyPairGenerator.generateKeyPair()).toList();
 	}
