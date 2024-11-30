@@ -56,7 +56,7 @@ public final class BootstrapTls {
 		Security.addProvider(new BouncyCastleProvider()); // HTTP/TLS-Certs
 		Security.addProvider(new BouncyCastleJsseProvider()); // HTTP/TLS-PSK (but SunJSSE & BC-JSSE don't fully support PSK yet so YMMV)
 		try {
-			// Used for auto-configuration properties lookup, and prepending a new property source containing 3 dynamically created SSL bundles
+			// Used for auto-configuration properties lookup, and prepending a new property source containing N dynamically created SSL bundles
 			final MutablePropertySources readWritePropertySources = configurableEnvironment.getPropertySources();
 
 	        // ConfigurationProperties is not autowired yet, so walk through PropertySources and get SslAutoConfigProperties
@@ -156,7 +156,7 @@ public final class BootstrapTls {
 		final String pskKeyAlias,
 		final String pskKeyPassword
 	) {
-		// properties map containing 3 SSL bundles and helper properties
+		// properties map containing N SSL bundles and helper properties
 		final Map<String, Object> tlsProperties = new LinkedHashMap<>();
 
 		// Client Bundle for performing HTTP/TLS Server Authentication
