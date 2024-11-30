@@ -65,6 +65,7 @@
 		<module>springs-persistence-orm-clients</module>
 		<module>springs-persistence-orm-session</module>
 		<module>springs-persistence-redis-session</module>
+		<module>springs-server-webauthn</module>
 		<module>springs-server-authentication</module>
 	</modules>
 

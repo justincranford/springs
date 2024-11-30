@@ -1,15 +1,5 @@
 package com.github.justincranford.springs.server.webauthn.register.service;
 
-import static com.github.justincranford.springs.server.webauthn.util.ByteArrayUtil.randomByteArray;
-
-import java.util.Map;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +14,7 @@ import com.github.justincranford.springs.server.webauthn.register.controller.dat
 import com.github.justincranford.springs.server.webauthn.register.repository.RegistrationOrm;
 import com.github.justincranford.springs.server.webauthn.register.repository.RegistrationRepositoryOrm;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-import com.github.justincranford.springs.util.json.config.PrettyJson;
+import com.github.justincranford.springs.util.json.PrettyJson;
 import com.yubico.webauthn.FinishRegistrationOptions;
 import com.yubico.webauthn.RegistrationResult;
 import com.yubico.webauthn.RelyingParty;
@@ -37,10 +27,18 @@ import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.data.UserVerificationRequirement;
 import com.yubico.webauthn.exception.RegistrationFailedException;
-
 import jakarta.annotation.Nonnull;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Map;
+import java.util.Optional;
+
+import static com.github.justincranford.springs.server.webauthn.util.ByteArrayUtil.randomByteArray;
 
 @Service
 @Slf4j
@@ -71,7 +69,7 @@ public class RegistrationService {
 			final String sessionToken = "Register:" + randomByteArray(NUM_RANDOM_BYTES_SESSION_TOKEN).getBase64Url();
 
 			final UserIdentity userIdentity = this.userIdentityRepositoryOrm.findByUsername(registrationStartClient.getUsername())
-				.map(UserIdentityOrm::toUserIdentity).orElseGet(() -> 
+				.map(UserIdentityOrm::toUserIdentity).orElseGet(() ->
 					this.userIdentityRepositoryOrm.save(
 				        UserIdentityOrm.builder()
 				            .username(registrationStartClient.getUsername())

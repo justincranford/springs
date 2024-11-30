@@ -8,7 +8,7 @@ import com.github.justincranford.springs.persistenceorm.users.person.service.Per
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.service.PersonaService;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
-import com.github.justincranford.springs.util.json.config.PrettyJson;
+import com.github.justincranford.springs.util.json.PrettyJson;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.annotation.Observed;

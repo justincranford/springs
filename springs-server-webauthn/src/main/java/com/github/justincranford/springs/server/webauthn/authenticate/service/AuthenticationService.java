@@ -1,18 +1,5 @@
 package com.github.justincranford.springs.server.webauthn.authenticate.service;
 
-import static com.github.justincranford.springs.server.webauthn.util.ByteArrayUtil.randomByteArray;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +14,7 @@ import com.github.justincranford.springs.server.webauthn.credential.repository.C
 import com.github.justincranford.springs.server.webauthn.credential.repository.CredentialRepositoryOrm;
 import com.github.justincranford.springs.server.webauthn.credential.repository.UserIdentityOrm;
 import com.github.justincranford.springs.server.webauthn.credential.repository.UserIdentityRepositoryOrm;
-import com.github.justincranford.springs.util.json.config.PrettyJson;
+import com.github.justincranford.springs.util.json.PrettyJson;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.FinishAssertionOptions;
@@ -42,11 +29,22 @@ import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 import com.yubico.webauthn.data.UserVerificationRequirement;
 import com.yubico.webauthn.exception.RegistrationFailedException;
-
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import static com.github.justincranford.springs.server.webauthn.util.ByteArrayUtil.randomByteArray;
 
 @Service
 @Slf4j

@@ -1,18 +1,18 @@
 package com.github.justincranford.springs.persistenceredis.sessions.json.config;
 
-import static com.github.justincranford.springs.persistenceredis.sessions.json.util.ObjectMapperModuleUtil.deserializer;
-
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.justincranford.springs.persistenceredis.sessions.json.serdes.SimpleGrantedAuthorityDeserializer;
+import com.github.justincranford.springs.persistenceredis.sessions.json.serdes.UsernamePasswordAuthenticationTokenDeserializer;
+import com.github.justincranford.springs.persistenceredis.sessions.json.serdes.WebAuthenticationDetailsDeserializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.persistenceredis.sessions.json.serdes.SimpleGrantedAuthorityDeserializer;
-import com.github.justincranford.springs.persistenceredis.sessions.json.serdes.UsernamePasswordAuthenticationTokenDeserializer;
-import com.github.justincranford.springs.persistenceredis.sessions.json.serdes.WebAuthenticationDetailsDeserializer;
+import static com.github.justincranford.springs.util.json.util.ObjectMapperModuleUtil.deserializer;
+
 
 @Configuration
 @SuppressWarnings({"static-method"})

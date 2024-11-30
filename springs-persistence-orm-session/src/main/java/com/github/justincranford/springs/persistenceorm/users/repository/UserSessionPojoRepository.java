@@ -1,5 +1,27 @@
 package com.github.justincranford.springs.persistenceorm.users.repository;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.justincranford.springs.persistenceorm.users.model.UserSessionPojo;
+import com.github.justincranford.springs.persistenceredis.sessions.database.entity.AttributeOrm;
+import com.github.justincranford.springs.persistenceredis.sessions.database.entity.SessionOrm;
+import com.github.justincranford.springs.persistenceredis.sessions.database.repository.SessionOrmRepository;
+import com.github.justincranford.springs.util.basic.Base64Util;
+import com.github.justincranford.springs.util.basic.DateTimeUtil;
+import com.github.justincranford.springs.util.json.PrettyJson;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.stereotype.Repository;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -12,30 +34,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.security.web.savedrequest.SavedRequest;
-import org.springframework.session.FindByIndexNameSessionRepository;
-import org.springframework.stereotype.Repository;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.persistenceredis.sessions.database.entity.AttributeOrm;
-import com.github.justincranford.springs.persistenceredis.sessions.database.entity.SessionOrm;
-import com.github.justincranford.springs.persistenceredis.sessions.database.repository.SessionOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.model.UserSessionPojo;
-import com.github.justincranford.springs.util.basic.Base64Util;
-import com.github.justincranford.springs.util.basic.DateTimeUtil;
-import com.github.justincranford.springs.util.json.config.PrettyJson;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Repository
 @Primary

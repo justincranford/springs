@@ -1,19 +1,17 @@
 package com.github.justincranford.springs.util.json.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.justincranford.springs.util.json.PrettyJson;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 @Import({PrettyJson.class})
@@ -21,7 +19,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 public class SpringsUtilJsonConfiguration {
 	@Bean
 	@Primary
-	public ObjectMapper objectMapper(/* final Jackson2ObjectMapperBuilder builder */) {
+	public ObjectMapper objectMapper() {
 		return OBJECT_MAPPER;
 	}
 
@@ -29,7 +27,7 @@ public class SpringsUtilJsonConfiguration {
 		.enable(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION)
 //		.addMixIn(AbstractEntity.class, AbstractEntityMixin.class) // public abstract class AbstractEntityMixin { @JsonProperty("id") String id; }
 //		.setSerializationInclusion(JsonInclude.Include.ALWAYS)
-		.setSerializationInclusion(JsonInclude.Include.NON_EMPTY) // WebAuthn RegistrationRequest.allowCredentials=null breaks JavaScript 
+		.setSerializationInclusion(JsonInclude.Include.NON_EMPTY) // WebAuthn RegistrationRequest.allowCredentials=null breaks JavaScript
 //		.configure(SerializationFeature.WRAP_ROOT_VALUE, true) // true breaks WebAuthn
 		.configure(SerializationFeature.INDENT_OUTPUT, true)
 		.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
@@ -51,6 +49,6 @@ public class SpringsUtilJsonConfiguration {
 		.registerModule(new JavaTimeModule()).registerModule(new Jdk8Module())
         // Enable Polymorphic Deserialization
 //        .enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY)
-        .activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY)
+//        .activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY)
 		;
 }

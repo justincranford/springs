@@ -1,4 +1,4 @@
-package com.github.justincranford.springs.persistenceredis.sessions.json.util;
+package com.github.justincranford.springs.util.json.util;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;

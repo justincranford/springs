@@ -1,7 +1,17 @@
 package com.github.justincranford.springs.server.webauthn;
 
-import javax.net.ssl.SSLContext;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.justincranford.springs.server.webauthn.config.SpringsServiceWebauthnConfiguration;
+import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
+import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
+import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
+import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
+import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefaultApplicationContextInitializer;
+import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
+import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,20 +22,11 @@ import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.server.webauthn.config.SpringsServiceWebauthnConfiguration;
-import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
-import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
-import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
-import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
-import com.github.justincranford.springs.util.https.server.bootstrap.TlsEnabledByDefaultInitializer;
-
-import jakarta.annotation.PostConstruct;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
+import javax.net.ssl.SSLContext;
 
 // TODO RANDOM_PORT
 @SpringBootTest(
@@ -36,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 )
 @ContextConfiguration(
 	initializers={
-		TlsEnabledByDefaultInitializer.class,
+		TlsEnabledByDefaultApplicationContextInitializer.class,
 	    BootstrapTestContainersApplicationContextInitializer.class
 	}
 )
@@ -104,7 +105,7 @@ public class AbstractIT {
 
 	@DynamicPropertySource
 	static void properties(final DynamicPropertyRegistry registry) {
-		registry.add("bootstrap.testcontainers.enabled",              () -> "true");
+		registry.add("bootstrap.testcontainers.enabled",              () -> "preferred");
 		registry.add("bootstrap.testcontainers.containers.postgres1", () -> "redis:7.4.0");
 	}
 }

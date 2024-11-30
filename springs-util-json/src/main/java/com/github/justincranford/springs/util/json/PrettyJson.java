@@ -1,21 +1,19 @@
-package com.github.justincranford.springs.util.json.config;
+package com.github.justincranford.springs.util.json;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.github.justincranford.springs.util.basic.DateTimeUtil;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-
-import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
-import com.github.justincranford.springs.util.basic.DateTimeUtil;
 
 @Component
 @Slf4j
@@ -65,7 +63,7 @@ public class PrettyJson {
 
 	public <T> String pretty(final T pojo) {
 		try {
-			return this.objectWriter.writeValueAsString(pojo).toString();
+			return this.objectWriter.writeValueAsString(pojo);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
