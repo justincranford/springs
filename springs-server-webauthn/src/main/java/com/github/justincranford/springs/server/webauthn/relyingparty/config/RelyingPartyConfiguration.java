@@ -1,20 +1,20 @@
 package com.github.justincranford.springs.server.webauthn.relyingparty.config;
 
-import java.time.Clock;
-import java.util.List;
-
+import com.github.justincranford.springs.server.webauthn.credential.repository.CredentialRepositoryFacade;
+import com.yubico.webauthn.CredentialRepository;
+import com.yubico.webauthn.RelyingParty;
+import com.yubico.webauthn.data.COSEAlgorithmIdentifier;
+import com.yubico.webauthn.data.PublicKeyCredentialParameters;
+import com.yubico.webauthn.data.RelyingPartyIdentity;
+import com.yubico.webauthn.extension.appid.AppId;
+import com.yubico.webauthn.extension.appid.InvalidAppIdException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.github.justincranford.springs.server.webauthn.credential.repository.CredentialRepositoryFacade;
-import com.yubico.webauthn.CredentialRepository;
-import com.yubico.webauthn.RelyingParty;
-import com.yubico.webauthn.data.PublicKeyCredentialParameters;
-import com.yubico.webauthn.data.RelyingPartyIdentity;
-import com.yubico.webauthn.extension.appid.AppId;
-import com.yubico.webauthn.extension.appid.InvalidAppIdException;
+import java.time.Clock;
+import java.util.List;
 
 @Configuration
 @Import({CredentialRepositoryFacade.class})
@@ -42,19 +42,17 @@ public class RelyingPartyConfiguration {
 		return RelyingParty.builder()
 		    .identity(relyingPartyIdentity)
 		    .credentialRepository(credentialRepository)
-		    .appId(
-	    		new AppId("https://" + this.serverAddress)
-    		)
+		    .appId(new AppId("https://" + this.serverAddress))
 		    .preferredPubkeyParams(
 		    	List.of(
-	    			 PublicKeyCredentialParameters.EdDSA // -80
-	    			,PublicKeyCredentialParameters.ES512 // -36
-	    			,PublicKeyCredentialParameters.ES384 // -35
-	    			,PublicKeyCredentialParameters.ES256 // -7
-	    			,PublicKeyCredentialParameters.RS512 // -259
-	    			,PublicKeyCredentialParameters.RS384 // -258
-	    			,PublicKeyCredentialParameters.RS256 // -257
-	    			,PublicKeyCredentialParameters.RS1   // -65535
+	    			 PublicKeyCredentialParameters.EdDSA /** @see COSEAlgorithmIdentifier.EdDSA = -8 */
+	    			,PublicKeyCredentialParameters.ES512 /** @see COSEAlgorithmIdentifier.ES512 = -36 */
+	    			,PublicKeyCredentialParameters.ES384 /** @see COSEAlgorithmIdentifier.ES384 = -35 */
+	    			,PublicKeyCredentialParameters.ES256 /** @see COSEAlgorithmIdentifier.ES256 = -7 */
+	    			,PublicKeyCredentialParameters.RS512 /** @see COSEAlgorithmIdentifier.RS512 = -259 */
+	    			,PublicKeyCredentialParameters.RS384 /** @see COSEAlgorithmIdentifier.RS384 = -258 */
+	    			,PublicKeyCredentialParameters.RS256 /** @see COSEAlgorithmIdentifier.RS256 = -257 */
+	    			,PublicKeyCredentialParameters.RS1   /** @see COSEAlgorithmIdentifier.RS1   = -65535 */
 				)
     		)
 		    .clock(Clock.systemUTC())
