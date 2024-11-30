@@ -1,5 +1,9 @@
 package com.github.justincranford.springs.util.basic;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +15,7 @@ public final class EnumUtils {
                 return enumConstant;
             }
         }
-        throw new IllegalArgumentException("No enum constant for value: " + value);
+        final List<String> values = Arrays.stream(enumClass.getEnumConstants()).map(T::name).toList();
+        throw new IllegalArgumentException("No enum `" + value + "` in " + enumClass.getSimpleName() + "=" + StringUtil.toString("[", ", ", "]", values).toLowerCase() + ". See `" + enumClass.getCanonicalName() + "` for details.");
     }
 }
