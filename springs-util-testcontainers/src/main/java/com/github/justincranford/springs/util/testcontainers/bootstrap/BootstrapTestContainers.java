@@ -51,7 +51,7 @@ public final class BootstrapTestContainers {
 
 			final Properties properties = Properties.read(readWritePropertySources);
 			final ENABLE containersEnabled = properties.enabled();
-			final Map<String,String> containerEntries  = properties.containers(); // CSVs of alias=image:tag
+			final Map<String,String> containerEntries  = properties.containers();
 			log.info("Bootstrap TestContainers Config, {}: {}, {}*: {}", Properties.ENABLED, containersEnabled, Properties.CONTAINERS_PREFIX, containerEntries);
 			if (ENABLE.FALSE.equals(containersEnabled)) {
 				return;
@@ -64,18 +64,18 @@ public final class BootstrapTestContainers {
 					throw new RuntimeException("Image not supported for: " + aliasWithoutPrefix + ". Supported: " + SupportedImage.MAP.keySet());
 				}
 				final GenericContainer<?> containerInstance = createContainerInstance(aliasWithoutPrefix, supportedImage, imageWithTag);
-				return new ContainerDescriptor(aliasWithoutPrefix, supportedImage, containerInstance);
+				return new ContainerDescriptor(aliasWithoutPrefix, supportedImage, imageWithTag, containerInstance);
 			}).toList();
 
 			final List<CompletableFuture<ContainerDescriptor>> starting = containerDescriptors.stream().map(containerDescriptor ->
 				CompletableFuture.supplyAsync(() -> {
-					final String              alias             = containerDescriptor.alias();
 					final SupportedImage      supportedImage    = containerDescriptor.supportedImage();
 					final GenericContainer<?> containerInstance = containerDescriptor.containerInstance();
 					containerInstance.withExposedPorts(supportedImage.exposedPorts().toArray(new Integer[0]));
 					containerInstance.start();
-					final Map<String,Object> clientProperties = supportedImage.clientProperties().apply(containerDescriptor);
-					log.info("alias: {}, isRunning: {}, properties: {}, imageDescriptor: {}, id: {}, name: {}", alias, containerInstance.isRunning(), clientProperties, supportedImage, containerInstance.getContainerId(), containerInstance.getContainerName());
+					final String clientPropertiesString = supportedImage.clientProperties().apply(containerDescriptor).toString().replace("{", "\n{\n  ").replace("}", "\n}").replaceAll(",", ",\n ");
+					final String automationDetailsString = supportedImage.toString().replace("[", "\n[\n  ").replace("]", "\n]").replace(",", ",\n ");
+					log.info("\ncontainer running: {}\ncontainer alias: {}\ncontainer image: {}\ncontainer id: {}\ncontainer name: {}\nspring client properties: {}\nautomation details: {}", containerInstance.isRunning(), containerDescriptor.alias(), containerDescriptor.imageWithTag(), containerInstance.getContainerId(), containerInstance.getContainerName(), clientPropertiesString, automationDetailsString);
 					Runtime.getRuntime().addShutdownHook(new Thread(containerInstance::stop));
 					return containerDescriptor;
             	})
@@ -148,7 +148,7 @@ public final class BootstrapTestContainers {
 		}
 	}
 
-	public record ContainerDescriptor(String alias, SupportedImage supportedImage, GenericContainer<?> containerInstance) { }
+	public record ContainerDescriptor(String alias, SupportedImage supportedImage, String imageWithTag, GenericContainer<?> containerInstance) { }
 
 	public record SupportedImage(
 		Class<? extends GenericContainer<?>> containerClass, String dockerRegistry, String image, List<Integer> exposedPorts, Function<ContainerDescriptor, Map<String,Object>> clientProperties
