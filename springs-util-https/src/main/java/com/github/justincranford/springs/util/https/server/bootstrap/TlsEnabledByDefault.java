@@ -1,5 +1,7 @@
 package com.github.justincranford.springs.util.https.server.bootstrap;
 
+import com.github.justincranford.springs.util.basic.DateTimeUtil;
+import com.github.justincranford.springs.util.basic.StringUtil;
 import com.github.justincranford.springs.util.basic.ThreadUtil;
 import com.github.justincranford.springs.util.https.util.CertPemUtil;
 import com.github.justincranford.springs.util.https.util.CertUtil;
@@ -24,8 +26,11 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
@@ -188,6 +193,24 @@ public final class TlsEnabledByDefault {
 		tlsProperties.put("server.ssl.bundle",           SslBundleNames.SERVER_TLS_CERT);
 		tlsProperties.put("server.ssl.clientAuth",       ClientAuth.WANT.name());
 
+		if (log.isTraceEnabled()) {
+			final String nowString = DateTimeUtil.nowUtcTruncatedToMilliseconds().toString()
+				.replaceAll("-", "")
+				.replaceAll(":", "")
+				.replace("Z", "-")
+				.replace("T", "-");
+			final Path path = Paths.get("target", nowString + "bootstrap.tls" + ".properties");
+			final String tlsPropertiesFileContent = StringUtil.toString("", "\n", "", tlsProperties.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue().toString().replaceAll("[\n\r]", "")).toList());
+			log.info("\nGenerated Spring properties for bootstrapping TLS:\n**************************\n{}\n**************************", tlsPropertiesFileContent);
+			try {
+				Files.write(path, tlsPropertiesFileContent.getBytes(StandardCharsets.UTF_8));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		} else {
+			final String redactedMessage = "REDACTED (Set `logging.level." + TlsEnabledByDefault.class.getPackageName() + "=TRACE` to show)\n";
+			log.info("Generated Spring properties for bootstrapping TLS:\n{}", redactedMessage);
+		}
 		mutablePropertySources.addFirst(new OriginTrackedMapPropertySource("auto-config-tls", tlsProperties));
 	}
 //
