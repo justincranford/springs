@@ -55,6 +55,7 @@ public final class BootstrapTestContainers {
 			final String containerEntriesString = containerEntries.toString().replace("{", "\n{\n  ").replace("}", "\n}").replaceAll(",", ",\n ");
 			log.info("Bootstrap TestContainers Config\n{}={}\n{}*={}", Properties.MODE, bootstrapMode, Properties.CONTAINERS_PREFIX, containerEntriesString);
 			if (MODES.DISABLED.equals(bootstrapMode)) {
+				log.info("Skipping Bootstrap TestContainers because it is disabled");
 				return;
 			}
 			final List<ContainerDescriptor> containerDescriptors = containerEntries.entrySet().stream().map(containerEntry -> {
