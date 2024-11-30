@@ -54,7 +54,7 @@ public final class BootstrapTestContainers {
 			final Map<String,String> containerEntries  = properties.containers();
 			final String containerEntriesString = containerEntries.toString().replace("{", "\n{\n  ").replace("}", "\n}").replaceAll(",", ",\n ");
 			log.info("Bootstrap TestContainers Config\n{}={}\n{}*={}", Properties.MODE, bootstrapMode, Properties.CONTAINERS_PREFIX, containerEntriesString);
-			if (MODES.NO.equals(bootstrapMode)) {
+			if (MODES.DISABLED.equals(bootstrapMode)) {
 				return;
 			}
 			final List<ContainerDescriptor> containerDescriptors = containerEntries.entrySet().stream().map(containerEntry -> {
@@ -334,11 +334,11 @@ public final class BootstrapTestContainers {
 
 	@SuppressWarnings({"unused"})
 	public record Properties(MODES mode, Map<String,String> containers) {
-		public enum                MODES { REQUIRED, PREFERRED, NO }
-		public static final String MODE               = "bootstrap.testcontainers.mode";
-		public static final MODES MODE_DEFAULT       = MODES.NO;
-		public static final String CONTAINERS         = "bootstrap.testcontainers.containers";
-		public static final String CONTAINERS_PREFIX  = CONTAINERS + ".";
+		public enum MODES { REQUIRED, PREFERRED, DISABLED }
+		public static final String MODE              = "bootstrap.testcontainers.mode";
+		public static final MODES  MODE_DEFAULT      = MODES.DISABLED;
+		public static final String CONTAINERS        = "bootstrap.testcontainers.containers";
+		public static final String CONTAINERS_PREFIX = CONTAINERS + ".";
 
 		private static Properties read(final PropertySources propertySources) {
 			final Map<String, String> found = new HashMap<>();
@@ -354,9 +354,9 @@ public final class BootstrapTestContainers {
 					}
 				}
 			}
-			final MODES enabled = EnumUtils.valueOfCaseInsensitive(MODES.class, found.getOrDefault(MODE, MODE_DEFAULT.name())) ;
+			final MODES mode = EnumUtils.valueOfCaseInsensitive(MODES.class, found.getOrDefault(MODE, MODE_DEFAULT.name())) ;
 			found.remove(MODE);
-			return new Properties(enabled, found);
+			return new Properties(mode, found);
 		}
 	}
 
