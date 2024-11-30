@@ -1,14 +1,17 @@
 package com.github.justincranford.springs.server.webauthn.config;
 
-import java.io.Serial;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
+import com.github.justincranford.springs.persistenceorm.base.config.SpringsPersistenceOrmBaseConfiguration;
+import com.github.justincranford.springs.server.webauthn.authenticate.config.AuthenticationConfiguration;
+import com.github.justincranford.springs.server.webauthn.credential.config.CredentialConfiguration;
+import com.github.justincranford.springs.server.webauthn.register.config.RegistrationConfiguration;
+import com.github.justincranford.springs.server.webauthn.relyingparty.config.RelyingPartyConfiguration;
+import com.github.justincranford.springs.util.https.config.SpringsUtilHttpsConfiguration;
+import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
+import io.micrometer.observation.annotation.Observed;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -22,7 +25,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.GrantedAuthority;
-// TODO com.github.justincranford.springs.persistenceorm.sessions.database.util.SimpleGrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -34,19 +36,14 @@ import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.github.justincranford.springs.persistenceorm.base.config.SpringsPersistenceOrmBaseConfiguration;
-import com.github.justincranford.springs.server.webauthn.authenticate.config.AuthenticationConfiguration;
-import com.github.justincranford.springs.server.webauthn.credential.config.CredentialConfiguration;
-import com.github.justincranford.springs.server.webauthn.register.config.RegistrationConfiguration;
-import com.github.justincranford.springs.server.webauthn.relyingparty.config.RelyingPartyConfiguration;
-import com.github.justincranford.springs.util.https.config.SpringsUtilHttpsConfiguration;
-import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
-
-import io.micrometer.observation.annotation.Observed;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import java.io.Serial;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableAutoConfiguration
@@ -66,7 +63,7 @@ import lombok.extern.slf4j.Slf4j;
 })
 @Slf4j
 @SuppressWarnings({"unused", "static-method", "deprecation"})
-public class SpringsServiceWebauthnConfiguration {
+public class SpringsServerWebauthnConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(PasswordEncoder.class)
 	public PasswordEncoder passwordEncoder() {

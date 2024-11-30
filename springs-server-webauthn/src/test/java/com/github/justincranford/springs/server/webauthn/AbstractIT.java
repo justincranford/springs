@@ -1,7 +1,7 @@
 package com.github.justincranford.springs.server.webauthn;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.server.webauthn.config.SpringsServiceWebauthnConfiguration;
+import com.github.justincranford.springs.server.webauthn.config.SpringsServerWebauthnConfiguration;
 import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttpClientConfiguration;
 import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
@@ -32,7 +32,7 @@ import javax.net.ssl.SSLContext;
 @SpringBootTest(
 	webEnvironment = WebEnvironment.DEFINED_PORT,
 	classes={
-		SpringsServiceWebauthnConfiguration.class
+		SpringsServerWebauthnConfiguration.class
 	}
 )
 @ContextConfiguration(
@@ -106,6 +106,6 @@ public class AbstractIT {
 	@DynamicPropertySource
 	static void properties(final DynamicPropertyRegistry registry) {
 		registry.add("bootstrap.testcontainers.enabled",              () -> "preferred");
-		registry.add("bootstrap.testcontainers.containers.postgres1", () -> "redis:7.4.0");
+		registry.add("bootstrap.testcontainers.containers.postgres1", () -> "postgres:16.3");
 	}
 }
