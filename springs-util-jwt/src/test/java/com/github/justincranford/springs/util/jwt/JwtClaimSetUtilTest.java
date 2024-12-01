@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -124,17 +125,55 @@ public class JwtClaimSetUtilTest {
         public class Audience extends UT {
             @ParameterizedTest
             @MethodSource("validJwtClaimsSets")
-            void nullAud(final JWTClaimsSet.Builder builder) {
+            void nullAudString(final JWTClaimsSet.Builder builder) {
+                final JWTClaimsSet jwtClaimsSet = builder.audience((String) null).build();
+                final JOSEException joseException = assertThrows(JOSEException.class, () -> JwtClaimSetUtil.validate(jwtClaimsSet));
+                assertEquals("Required claim 'aud' cannot be null", joseException.getMessage(), printExceptionBeforeSupplyMessage(joseException));
+            }
+            @ParameterizedTest
+            @MethodSource("validJwtClaimsSets")
+            void nullAudList(final JWTClaimsSet.Builder builder) {
                 final JWTClaimsSet jwtClaimsSet = builder.audience((List<String>) null).build();
                 final JOSEException joseException = assertThrows(JOSEException.class, () -> JwtClaimSetUtil.validate(jwtClaimsSet));
                 assertEquals("Required claim 'aud' cannot be null", joseException.getMessage(), printExceptionBeforeSupplyMessage(joseException));
             }
             @ParameterizedTest
             @MethodSource("validJwtClaimsSets")
-            void emptyAud(final JWTClaimsSet.Builder builder) {
+            void blankAudString(final JWTClaimsSet.Builder builder) {
+                final JWTClaimsSet jwtClaimsSet = builder.audience(" ").build();
+                final JOSEException joseException = assertThrows(JOSEException.class, () -> JwtClaimSetUtil.validate(jwtClaimsSet));
+                assertEquals("Required claim 'aud' cannot contain blank values", joseException.getMessage(), printExceptionBeforeSupplyMessage(joseException));
+            }
+            @ParameterizedTest
+            @MethodSource("validJwtClaimsSets")
+            void emptyAudList(final JWTClaimsSet.Builder builder) {
                 final JWTClaimsSet jwtClaimsSet = builder.audience(Collections.emptyList()).build();
                 final JOSEException joseException = assertThrows(JOSEException.class, () -> JwtClaimSetUtil.validate(jwtClaimsSet));
                 assertEquals("Required claim 'aud' cannot be empty", joseException.getMessage(), printExceptionBeforeSupplyMessage(joseException));
+            }
+            @ParameterizedTest
+            @MethodSource("validJwtClaimsSets")
+            void audListNullElement(final JWTClaimsSet.Builder builder) {
+                final List<String> listNullElement = new ArrayList<>(1);
+                listNullElement.add(null);
+                final JWTClaimsSet jwtClaimsSet = builder.audience(listNullElement).build();
+                final JOSEException joseException = assertThrows(JOSEException.class, () -> JwtClaimSetUtil.validate(jwtClaimsSet));
+                assertEquals("Required claim 'aud' cannot contain null values", joseException.getMessage(), printExceptionBeforeSupplyMessage(joseException));
+            }
+            @ParameterizedTest
+            @MethodSource("validJwtClaimsSets")
+            void audListBlankElement(final JWTClaimsSet.Builder builder) {
+                final JWTClaimsSet jwtClaimsSet = builder.audience(List.of(" ")).build();
+                final JOSEException joseException = assertThrows(JOSEException.class, () -> JwtClaimSetUtil.validate(jwtClaimsSet));
+                assertEquals("Required claim 'aud' cannot contain blank values", joseException.getMessage(), printExceptionBeforeSupplyMessage(joseException));
+            }
+            @ParameterizedTest
+            @MethodSource("validJwtClaimsSets")
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            void audListNonStringElement(final JWTClaimsSet.Builder builder) {
+                final JWTClaimsSet jwtClaimsSet = builder.audience((List) List.of(1)).build();
+                final JOSEException joseException = assertThrows(JOSEException.class, () -> JwtClaimSetUtil.validate(jwtClaimsSet));
+                assertEquals("Required claim 'aud' must be List<String> but contains java.lang.Integer", joseException.getMessage(), printExceptionBeforeSupplyMessage(joseException));
             }
             @ParameterizedTest
             @MethodSource("validJwtClaimsSets")
@@ -207,8 +246,28 @@ public class JwtClaimSetUtilTest {
         public class Dates extends UT {
             @ParameterizedTest
             @MethodSource("validJwtClaimsSets")
+            void nullExp(final JWTClaimsSet.Builder builder) {
+                final JWTClaimsSet jwtClaimsSet = builder.expirationTime(null).build();
+                final JOSEException joseException = assertThrows(JOSEException.class, () -> JwtClaimSetUtil.validate(jwtClaimsSet));
+                assertEquals("Required claim 'exp' cannot be null", joseException.getMessage(), printExceptionBeforeSupplyMessage(joseException));
+            }
+
+            @ParameterizedTest
+            @MethodSource("validJwtClaimsSets")
+            void nullIat(final JWTClaimsSet.Builder builder) {
+                final JWTClaimsSet jwtClaimsSet = builder.issueTime(null).build();
+                final JOSEException joseException = assertThrows(JOSEException.class, () -> JwtClaimSetUtil.validate(jwtClaimsSet));
+                assertEquals("Required claim 'iat' cannot be null", joseException.getMessage(), printExceptionBeforeSupplyMessage(joseException));
+            }
+
+            @ParameterizedTest
+            @MethodSource("validJwtClaimsSets")
             void iatAfterNow(final JWTClaimsSet.Builder builder) {
-                final JWTClaimsSet jwtClaimsSet = builder.issueTime(new Date(System.currentTimeMillis() + 10000)).notBeforeTime(new Date(System.currentTimeMillis() + 10000)).build();
+                final JWTClaimsSet jwtClaimsSet = builder
+                    .issueTime(new Date(System.currentTimeMillis() + 10000L))
+                    .notBeforeTime(new Date(System.currentTimeMillis() + 10000L))
+                    .expirationTime(new Date(System.currentTimeMillis() + 60000L))
+                    .build();
                 final JOSEException joseException = assertThrows(JOSEException.class, () -> JwtClaimSetUtil.validate(jwtClaimsSet));
                 assertTrue(joseException.getMessage().contains("cannot be equal or after"), printExceptionBeforeSupplyMessage(joseException));
             }
@@ -216,14 +275,25 @@ public class JwtClaimSetUtilTest {
             @ParameterizedTest
             @MethodSource("validJwtClaimsSets")
             void expBeforeIat(final JWTClaimsSet.Builder builder) {
-                Date now = new Date();
                 final JWTClaimsSet jwtClaimsSet = builder
-                                                      .issueTime(new Date(now.getTime()))
-                                                      .notBeforeTime(new Date(now.getTime()))
-                                                      .expirationTime(new Date(now.getTime() - 10000)) // 10 seconds before
-                                                      .build();
+                    .issueTime(new Date())
+                    .notBeforeTime(new Date())
+                    .expirationTime(new Date(System.currentTimeMillis() - 10000L))
+                    .build();
                 final JOSEException joseException = assertThrows(JOSEException.class, () -> JwtClaimSetUtil.validate(jwtClaimsSet));
                 assertTrue(joseException.getMessage().contains("must be after"), printExceptionBeforeSupplyMessage(joseException));
+            }
+
+            @ParameterizedTest
+            @MethodSource("validJwtClaimsSets")
+            void nbfBeforeIat(final JWTClaimsSet.Builder builder) {
+                final JWTClaimsSet jwtClaimsSet = builder
+                    .issueTime(new Date())
+                    .notBeforeTime(new Date(System.currentTimeMillis() - 10000L))
+                    .expirationTime(new Date(System.currentTimeMillis() + 60000L))
+                    .build();
+                final JOSEException joseException = assertThrows(JOSEException.class, () -> JwtClaimSetUtil.validate(jwtClaimsSet));
+                assertTrue(joseException.getMessage().contains("must be equal or after"), printExceptionBeforeSupplyMessage(joseException));
             }
         }
     }

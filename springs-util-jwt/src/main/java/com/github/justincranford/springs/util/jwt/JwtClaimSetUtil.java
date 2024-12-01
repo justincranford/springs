@@ -88,7 +88,7 @@ public final class JwtClaimSetUtil {
 
     private static void equalOrAfter(final String claim, final Date value, final String otherClaim, final Date otherValue) throws JOSEException {
         if (value != null) {
-            if (value.before(otherValue)) {
+            if ((otherValue != null) && (value.before(otherValue))) {
                 throw new JOSEException("Optional claim '" + claim + "' " + value + " must be equal or after " + otherClaim + " " + otherValue);
             }
         }
@@ -99,14 +99,6 @@ public final class JwtClaimSetUtil {
             throw new JOSEException("Required claim '" + claim + "' cannot be null");
         } else if ((otherValue != null) && (!value.after(otherValue))) {
             throw new JOSEException("Required claim '" + claim + "' " + value + " must be after " + otherClaim + " " + otherValue);
-        }
-    }
-
-    private static void before(final String claim, final Date value, final String otherClaim, final Date otherValue) throws JOSEException {
-        if (value != null) {
-            if (!value.before(otherValue)) {
-                throw new JOSEException("Optional claim '" + claim + "' " + value + " must be before " + otherClaim + " " + otherValue);
-            }
         }
     }
 
