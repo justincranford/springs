@@ -1,7 +1,5 @@
 package com.github.justincranford.springs.util.jwt;
 
-import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-import com.github.justincranford.springs.util.basic.TextCodec;
 import com.github.justincranford.springs.util.basic.ThreadUtil;
 import com.github.justincranford.springs.util.basic.Timer;
 import com.nimbusds.jose.Algorithm;
@@ -33,9 +31,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.security.Security;
 import java.text.ParseException;
-import java.time.Duration;
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
@@ -60,10 +55,10 @@ import static com.github.justincranford.springs.util.jwt.JwtUtilEndToEndTest.Bit
 import static com.github.justincranford.springs.util.jwt.JwtUtilEndToEndTest.Bits.B_384;
 import static com.github.justincranford.springs.util.jwt.JwtUtilEndToEndTest.Bits.B_512;
 import static com.github.justincranford.springs.util.jwt.JwtUtilEndToEndTest.JAlg.NULL;
-import static com.github.justincranford.springs.util.jwt.JwtUtilEndToEndTest.ParamsHelper.validDuration;
-import static com.github.justincranford.springs.util.jwt.JwtUtilEndToEndTest.ParamsHelper.validJwtClaimsSet;
 import static com.github.justincranford.springs.util.jwt.JwtVerifyUtil.jwsVerifier;
 import static com.github.justincranford.springs.util.jwt.JwtVerifyUtil.verify;
+import static com.github.justincranford.springs.util.jwt.ParamsHelper.validDuration;
+import static com.github.justincranford.springs.util.jwt.ParamsHelper.validJwtClaimsSet;
 import static com.nimbusds.jose.EncryptionMethod.A128CBC_HS256;
 import static com.nimbusds.jose.EncryptionMethod.A128GCM;
 import static com.nimbusds.jose.EncryptionMethod.A192CBC_HS384;
@@ -410,35 +405,6 @@ class JwtUtilEndToEndTest {
 //              new EncryptionTestCase(DIR,             XC20P,         validJwtClaimsSet(), true, true, ThreadUtil.supplyAsync(() -> Aes.B_192,  validDuration(), NULL))),
                 new EncryptionTestCase(DIR,             XC20P,         validJwtClaimsSet(), true, true, ThreadUtil.supplyAsync(() -> aes(B_256,  validDuration(), NULL)))
             );
-        }
-    }
-
-    @NoArgsConstructor(access=AccessLevel.PRIVATE)
-    static final class ParamsHelper {
-        static JWTClaimsSet validJwtClaimsSet() {
-            return JwtContentUtil.jwtClaimsSetBuilder(validIssuer(), validAudiences(), validSubject(), validDuration(), validScopes()).build();
-        }
-        static JWTClaimsSet invalidJwtClaimsSetExp() {
-            return JwtContentUtil.jwtClaimsSetBuilder(validIssuer(), validAudiences(), validSubject(), invalidDuration(), validScopes()).build();
-        }
-
-        static String validIssuer() {
-            return "iss-" + SecureRandomUtil.randomString(TextCodec.B64_STD, 8);
-        }
-        static List<String> validAudiences() {
-            return List.of("aud-" + SecureRandomUtil.randomString(TextCodec.B64_STD, 8));
-        }
-        static String validSubject() {
-            return "sub-" + SecureRandomUtil.randomString(TextCodec.B64_STD, 8);
-        }
-        static Set<String> validScopes() {
-            return Set.of("scope-" + SecureRandomUtil.randomString(TextCodec.B64_STD, 8));
-        }
-        static Duration validDuration() {
-            return Duration.ofHours(1);
-        }
-        static Duration invalidDuration() {
-            return Duration.ofHours(-1);
         }
     }
 
