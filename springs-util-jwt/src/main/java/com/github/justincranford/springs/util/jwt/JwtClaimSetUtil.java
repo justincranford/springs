@@ -34,7 +34,7 @@ public final class JwtClaimSetUtil {
         notNullAndNotBlank                       ("sub",   sub);
         notBlank                                 ("jti",   jti);
         notBlank                                 ("nonce", nonce);
-        notNullNotEmptyAndNotNullNotBlankElements("scope", scope);
+        notEmptyAndNotNullNotBlankElements       ("scope", scope);
         equalOrAfter                             ("nbf",   nbf, "iat", iat);
         after                                    ("exp",   exp, "iat", iat);
         after                                    ("exp",   exp, "nbf", nbf);
@@ -55,6 +55,18 @@ public final class JwtClaimSetUtil {
             throw new JOSEException("Required claim '" + claim + "' cannot contain null values");
         } else if (values.stream().anyMatch(String::isBlank)) {
             throw new JOSEException("Required claim '" + claim + "' cannot contain blank values");
+        }
+    }
+
+    private static void notEmptyAndNotNullNotBlankElements(final String claim, final Collection<String> values) throws JOSEException {
+        if (values != null) {
+            if (values.isEmpty()) {
+                throw new JOSEException("Required claim '" + claim + "' cannot be empty");
+            } else if (values.stream().anyMatch(Objects::isNull)) {
+                throw new JOSEException("Required claim '" + claim + "' cannot contain null values");
+            } else if (values.stream().anyMatch(String::isBlank)) {
+                throw new JOSEException("Required claim '" + claim + "' cannot contain blank values");
+            }
         }
     }
 
