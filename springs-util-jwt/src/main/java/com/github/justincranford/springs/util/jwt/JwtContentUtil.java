@@ -22,9 +22,9 @@ import java.util.Set;
 
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class JwtContentUtil {
-    public static final TextCodec JTI_RANDOM_BYTES_CODEC   = TextCodec.B64_URL;
-    public static final int       JTI_RANDOM_BYTES_LENGTH = 32;
-    public static final TextCodec NONCE_RANDOM_BYTES_CODEC   = TextCodec.B64_URL;
+    public static final TextCodec JTI_RANDOM_BYTES_CODEC    = TextCodec.B64_URL;
+    public static final int       JTI_RANDOM_BYTES_LENGTH   = 32;
+    public static final TextCodec NONCE_RANDOM_BYTES_CODEC  = TextCodec.B64_URL;
     public static final int       NONCE_RANDOM_BYTES_LENGTH = 32;
 
     public static JWSHeader jwsHeader(final JWK jwk, final JWSAlgorithm alg) {
@@ -46,8 +46,8 @@ public final class JwtContentUtil {
     }
 
     public static JWTClaimsSet.Builder jwtClaimsSetBuilder(final String iss, final List<String> aud, final String sub, final Duration duration, final Set<String> scopes) {
-        final String         jti   = SecureRandomUtil.randomString(JTI_RANDOM_BYTES_CODEC, JTI_RANDOM_BYTES_LENGTH);
-        final String         nonce = SecureRandomUtil.randomString(NONCE_RANDOM_BYTES_CODEC, NONCE_RANDOM_BYTES_LENGTH);
+        final String         jti   = JTI_RANDOM_BYTES_CODEC.encodeToString(SecureRandomUtil.timeStampBytesAndRandomBytes(8, JTI_RANDOM_BYTES_LENGTH));
+        final String         nonce = NONCE_RANDOM_BYTES_CODEC.encodeToString(SecureRandomUtil.timeStampBytesAndRandomBytes(8, NONCE_RANDOM_BYTES_LENGTH));
         final OffsetDateTime now   = DateTimeUtil.nowUtcTruncatedToNanoseconds();
         final Date           iat   = Date.from(now.toInstant());
         final Date           nbf   = Date.from(now.toInstant());
