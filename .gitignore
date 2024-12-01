@@ -1,6 +1,7 @@
 # IntelliJ
 .idea/
 *.iml
+htmlReport/
 
 # Eclipse
 .settings/
