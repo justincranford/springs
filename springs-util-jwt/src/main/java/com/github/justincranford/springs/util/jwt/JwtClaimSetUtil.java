@@ -1,5 +1,6 @@
 package com.github.justincranford.springs.util.jwt;
 
+import com.github.justincranford.springs.util.basic.StringUtil;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.AccessLevel;
@@ -11,8 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static com.github.justincranford.springs.util.jwt.JwtContentUtil.scopeList;
-
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class JwtClaimSetUtil {
     public static boolean validate(final JWTClaimsSet jwtClaimsSet) throws JOSEException, ParseException {
@@ -21,7 +20,7 @@ public final class JwtClaimSetUtil {
 
     public static boolean validate(final JWTClaimsSet jwtClaimsSet, final String targetIss, final String targetAud, final String targetSub) throws JOSEException, ParseException {
         final String       iss   = jwtClaimsSet.getIssuer();
-        final List<String> aud   = jwtClaimsSet.getAudience();
+        final List<String> aud   = audList(jwtClaimsSet.getClaim("aud"));
         final String       sub   = jwtClaimsSet.getSubject();
         final String       jti   = jwtClaimsSet.getJWTID();
         final String       nonce = jwtClaimsSet.getStringClaim("nonce");
@@ -51,7 +50,7 @@ public final class JwtClaimSetUtil {
         if (values == null) {
             throw new JOSEException("Required claim '" + claim + "' cannot be null");
         } else if (values.isEmpty()) {
-            throw new JOSEException("Required claim '" + claim + "' cannot be blank");
+            throw new JOSEException("Required claim '" + claim + "' cannot be empty");
         } else if (values.stream().anyMatch(Objects::isNull)) {
             throw new JOSEException("Required claim '" + claim + "' cannot contain null values");
         } else if (values.stream().anyMatch(String::isBlank)) {
@@ -117,5 +116,26 @@ public final class JwtClaimSetUtil {
         if ((targetValue != null) && (!value.contains(targetValue))) {
             throw new JOSEException("Claim '" + claim + "' " + value + " must contain '" + targetValue + "'");
         }
+    }
+
+    public static List<String> scopeList(final String scope) {
+        return scope == null ? null : StringUtil.split(scope, " ");
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private static List<String> audList(final Object audObj) throws JOSEException {
+        if (audObj == null) {
+            throw new JOSEException("Required claim 'aud' cannot be null");
+        } else if (audObj instanceof String audString) {
+            return List.of(audString);
+        } else if (audObj instanceof List<?> audLst) {
+            for (final Object aud : audLst) {
+                if ((aud != null) && (!(aud instanceof String))) {
+                    throw new JOSEException("Required claim 'aud' must be List<String> but contains " + aud.getClass().getCanonicalName());
+                }
+            }
+            return (List<String>) audLst;
+        }
+        throw new JOSEException("Required claim 'aud' must be a String or List<String>");
     }
 }

@@ -2,7 +2,6 @@ package com.github.justincranford.springs.util.jwt;
 
 import com.github.justincranford.springs.util.basic.DateTimeUtil;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-import com.github.justincranford.springs.util.basic.StringUtil;
 import com.github.justincranford.springs.util.basic.TextCodec;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JOSEObjectType;
@@ -64,9 +63,5 @@ public final class JwtContentUtil {
             .expirationTime(exp)
             .claim("nonce", nonce)
             .claim("scope", scope);
-    }
-
-    public static List<String> scopeList(final String scope) {
-        return scope == null ? null : StringUtil.split(scope, " ");
     }
 }
