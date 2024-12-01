@@ -5,8 +5,6 @@ import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.basic.TextCodec;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWEAlgorithm;
-import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.crypto.ECDSASigner;
 import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.ECKey;
@@ -89,51 +87,5 @@ public final class JwkUtil {
             .notBeforeTime(nbf)
             .expirationTime(exp)
             .generate();
-    }
-
-    public static JWSAlgorithm ecSignVerifyAlg(final Curve curve) {
-        if (Curve.P_256.equals(curve)) {
-            return JWSAlgorithm.ES256;
-        } else if (Curve.P_384.equals(curve)) {
-            return JWSAlgorithm.ES384;
-        } else if (Curve.P_521.equals(curve)) {
-            return JWSAlgorithm.ES512;
-        } else if (Curve.Ed25519.equals(curve)) {
-            return JWSAlgorithm.EdDSA;
-        } else if (Curve.Ed448.equals(curve)) {
-            return JWSAlgorithm.EdDSA;
-        } else {
-            throw new IllegalArgumentException("Unsupported curve: " + curve.getName());
-        }
-    }
-
-    public static JWEAlgorithm toEcAlg(final Curve curve) {
-        if (Curve.P_256.equals(curve)) {
-            return JWEAlgorithm.ECDH_ES_A128KW;  // ECDH_ES_A128KW, ECDH_ES_A192KW, ECDH_ES_A256KW => Suitable for P-256 is ECDH_ES_A128KW
-        } else if (Curve.P_384.equals(curve)) {
-            return JWEAlgorithm.ECDH_ES_A192KW;  // ECDH_ES_A128KW, ECDH_ES_A192KW, ECDH_ES_A256KW => Suitable for P-384 is ECDH_ES_A128KW
-        } else if (Curve.P_521.equals(curve)) {
-            return JWEAlgorithm.ECDH_ES_A256KW;  // ECDH_ES_A128KW, ECDH_ES_A192KW, ECDH_ES_A256KW => Suitable for P-521 is ECDH_ES_A128KW
-        } else if (Curve.Ed25519.equals(curve)) {
-            return JWEAlgorithm.ECDH_ES_A256KW;  // ECDH_ES_A128KW, ECDH_ES_A256KW                 => Common for Ed25519 is ECDH_ES_A128KW
-        } else if (Curve.Ed448.equals(curve)) {
-            return JWEAlgorithm.ECDH_ES_A256KW;  // ECDH_ES_A128KW, ECDH_ES_A256KW                 => Common for Ed448 is ECDH_ES_A128KW
-        } else {
-            throw new IllegalArgumentException("Unsupported curve: " + curve.getName());
-        }
-    }
-
-    public static Curve toEcCurve(final JWEAlgorithm jweAlgorithm) {
-        if (JWEAlgorithm.ECDH_ES.equals(jweAlgorithm)) {
-            return Curve.P_256;
-        } else if (JWEAlgorithm.ECDH_ES_A128KW.equals(jweAlgorithm)) {
-            return Curve.P_256;
-        } else if (JWEAlgorithm.ECDH_ES_A192KW.equals(jweAlgorithm)) {
-            return Curve.P_384;
-        } else if (JWEAlgorithm.ECDH_ES_A256KW.equals(jweAlgorithm)) {
-            return Curve.P_521;
-        } else {
-            throw new IllegalArgumentException("Unsupported JWEAlgorithm: " + jweAlgorithm.getName());
-        }
     }
 }
