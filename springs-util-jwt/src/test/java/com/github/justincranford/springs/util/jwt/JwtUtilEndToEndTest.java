@@ -44,8 +44,7 @@ import static com.github.justincranford.springs.util.jwt.JwkUtil.ec;
 import static com.github.justincranford.springs.util.jwt.JwkUtil.ed;
 import static com.github.justincranford.springs.util.jwt.JwkUtil.hmac;
 import static com.github.justincranford.springs.util.jwt.JwkUtil.rsa;
-import static com.github.justincranford.springs.util.jwt.JwtClaimSetUtil.validateSemantics;
-import static com.github.justincranford.springs.util.jwt.JwtClaimSetUtil.validateSyntax;
+import static com.github.justincranford.springs.util.jwt.JwtClaimSetUtil.validate;
 import static com.github.justincranford.springs.util.jwt.JwtContentUtil.jweHeader;
 import static com.github.justincranford.springs.util.jwt.JwtContentUtil.jwsHeader;
 import static com.github.justincranford.springs.util.jwt.JwtDecryptUtil.decrypt;
@@ -135,17 +134,14 @@ class JwtUtilEndToEndTest {
         final String    serializedSignedJwt   = signedJwt.serialize();
         final SignedJWT deserializedSignedJwt = SignedJWT.parse(serializedSignedJwt);
 
-        assertEqualsSignedJwts(signedJwt, deserializedSignedJwt); // JWTClaimsSet is cleartext after deserialize, no need to wait for verify
+        assertEqualJwts(signedJwt, deserializedSignedJwt); // JWTClaimsSet is cleartext after deserialize, no need to wait for verify
 
         final JWSVerifier verifier         = jwsVerifier(signingTestCase.jwk.get());
         final boolean     isValidSignature = verify(deserializedSignedJwt, verifier); // verify signature only
         assertEquals(isValidSignature, signingTestCase.expectValidSignature);
 
-        final boolean isValidSyntax = validateSyntax(signedJwt.getJWTClaimsSet()); // verify JWTClaimsSet contents
-        assertEquals(isValidSyntax, signingTestCase.expectValidSyntax);
-
-        final boolean isValidSemantics = validateSemantics(signedJwt.getJWTClaimsSet(), signedJwt.getJWTClaimsSet().getIssuer(), signedJwt.getJWTClaimsSet().getAudience().getFirst()); // verify JWTClaimsSet contents
-        assertEquals(isValidSyntax, signingTestCase.expectValidSyntax);
+        final boolean isValidContents = validate(signedJwt.getJWTClaimsSet()); // verify JWTClaimsSet contents
+        assertEquals(isValidContents, signingTestCase.expectValidSyntax);
     }
 
     @ParameterizedTest
@@ -161,13 +157,10 @@ class JwtUtilEndToEndTest {
         final EncryptedJWT decryptedJwt = decrypt(deserializedEncryptedJwt, jweDecryptor); // decrypt. as well as verify MAC
         assertNotNull(decryptedJwt);
 
-        assertEqualsEncryptedJwts(encryptedJwt, decryptedJwt); // JWTClaimsSet is cleartext only after deserialize and decrypt, need to wait for decrypt
+        assertEqualJwts(encryptedJwt, decryptedJwt); // JWTClaimsSet is cleartext only after deserialize and decrypt, need to wait for decrypt
 
-        final boolean isValidSyntax = validateSyntax(encryptedJwt.getJWTClaimsSet()); // verify JWTClaimsSet contents
-        assertEquals(isValidSyntax, encryptionTestCase.expectValidSyntax);
-
-        final boolean isValidSemantics = validateSemantics(encryptedJwt.getJWTClaimsSet(), encryptedJwt.getJWTClaimsSet().getIssuer(), encryptedJwt.getJWTClaimsSet().getAudience().getFirst()); // verify JWTClaimsSet contents
-        assertEquals(isValidSyntax, encryptionTestCase.expectValidSyntax);
+        final boolean isValidContents = validate(encryptedJwt.getJWTClaimsSet()); // verify JWTClaimsSet contents
+        assertEquals(isValidContents, encryptionTestCase.expectValidSyntax);
     }
 
     record SigningTestCase(JWSAlgorithm alg, JWTClaimsSet jwtClaimsSet, boolean expectValidSignature, boolean expectValidSyntax, Future<JWK> jwk) {}
@@ -392,7 +385,7 @@ class JwtUtilEndToEndTest {
                 new EncryptionTestCase(ECDH_1PU_A256KW, A128CBC_HS256, validJwtClaimsSet(), true, true, ThreadUtil.supplyAsync(() -> ec(P_256,   validDuration(), NULL))),
                 new EncryptionTestCase(ECDH_1PU_A256KW, A192CBC_HS384, validJwtClaimsSet(), true, true, ThreadUtil.supplyAsync(() -> ec(P_384,   validDuration(), NULL))),
                 new EncryptionTestCase(ECDH_1PU_A256KW, A256CBC_HS512, validJwtClaimsSet(), true, true, ThreadUtil.supplyAsync(() -> ec(P_521,   validDuration(), NULL))),
-                //              new EncryptionTestCase(ECDH_1PU_A256KW, XC20P,         validJwtClaimsSet(), true, true, ThreadUtil.supplyAsync(() -> ec(P_521,   validDuration(), NULL))),
+//              new EncryptionTestCase(ECDH_1PU_A256KW, XC20P,         validJwtClaimsSet(), true, true, ThreadUtil.supplyAsync(() -> ec(P_521,   validDuration(), NULL))),
                 new EncryptionTestCase(A128GCMKW,       A128GCM,       validJwtClaimsSet(), true, true, ThreadUtil.supplyAsync(() -> aes(B_128,  validDuration(), NULL))),
                 new EncryptionTestCase(A192GCMKW,       A192GCM,       validJwtClaimsSet(), true, true, ThreadUtil.supplyAsync(() -> aes(B_192,  validDuration(), NULL))),
                 new EncryptionTestCase(A256GCMKW,       A256GCM,       validJwtClaimsSet(), true, true, ThreadUtil.supplyAsync(() -> aes(B_256,  validDuration(), NULL))),
@@ -449,7 +442,7 @@ class JwtUtilEndToEndTest {
         }
     }
 
-    private static void assertEqualsSignedJwts(final SignedJWT expectedSignedJwt, final SignedJWT actualSignedJwt) throws ParseException {
+    private static void assertEqualJwts(final SignedJWT expectedSignedJwt, final SignedJWT actualSignedJwt) throws ParseException {
         final JWSHeader    expectedJwsHeader    = expectedSignedJwt.getHeader();
         final JWTClaimsSet expectedJwtClaimsSet = expectedSignedJwt.getJWTClaimsSet();
         final Base64URL    expectedSignature    = expectedSignedJwt.getSignature();
@@ -463,7 +456,7 @@ class JwtUtilEndToEndTest {
         assertEquals(expectedSignature,                   actualSignature,                   "JWS signatures are not equal");
     }
 
-    private static void assertEqualsEncryptedJwts(final EncryptedJWT expectedEncryptedJwt, final EncryptedJWT actualEncryptedJwt) throws ParseException {
+    private static void assertEqualJwts(final EncryptedJWT expectedEncryptedJwt, final EncryptedJWT actualEncryptedJwt) throws ParseException {
         final JWEHeader    expectedJweHeader    = expectedEncryptedJwt.getHeader();
         final JWTClaimsSet expectedJwtClaimsSet = expectedEncryptedJwt.getJWTClaimsSet();
         final Base64URL    expectedEncryptedKey = expectedEncryptedJwt.getEncryptedKey();
