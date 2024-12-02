@@ -17,6 +17,7 @@ import com.github.justincranford.springs.util.http.client.config.SpringsUtilHttp
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilHttpsClientsConfiguration;
 import com.github.justincranford.springs.util.https.client.config.SpringsUtilTlsClientsConfiguration;
 import com.github.justincranford.springs.util.https.server.bootstrap.BootstrapTlsApplicationContextInitializer;
+import com.github.justincranford.springs.util.json.PrettyJson;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainersApplicationContextInitializer;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.Getter;
@@ -125,6 +126,9 @@ public class AbstractIT {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@Autowired
+	private PrettyJson prettyJson;
 
 	@Autowired
 	private String httpBaseUrl;

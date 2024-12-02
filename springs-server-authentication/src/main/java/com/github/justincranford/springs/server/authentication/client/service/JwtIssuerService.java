@@ -1,9 +1,12 @@
 package com.github.justincranford.springs.server.authentication.client.service;
 
+import com.github.justincranford.springs.server.authentication.client.token.ClientNameSecretAuthenticatedToken;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
+import com.github.justincranford.springs.util.basic.TextCodec;
 import com.github.justincranford.springs.util.jwt.JwkSetUtil;
 import com.github.justincranford.springs.util.jwt.JwsDelegatingDecrypt;
 import com.github.justincranford.springs.util.jwt.JwsDelegatingVerify;
+import com.github.justincranford.springs.util.jwt.JwtContentUtil;
 import com.github.justincranford.springs.util.jwt.JwtEncryptUtil;
 import com.github.justincranford.springs.util.jwt.JwtSignUtil;
 import com.nimbusds.jose.EncryptionMethod;
@@ -22,24 +25,41 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.annotation.PostConstruct;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 @Service
 @Slf4j
 public class JwtIssuerService {
+    private String issuer;
+    private List<String> audiences;
+    private Duration duration;
+    private LinkedHashSet<String> scopes;
     private JWKSet jwkSet;
     private JwsDelegatingVerify jwsDelegatingVerify;
     private JwsDelegatingDecrypt jwsDelegatingDecrypt;
 
     @PostConstruct
     public void postConstruct() {
+        this.issuer = TextCodec.HEX_UC_STRICT.encodeToString(SecureRandomUtil.randomBytes(8));
+        this.audiences = List.of(TextCodec.HEX_UC_STRICT.encodeToString(SecureRandomUtil.randomBytes(8)));
+        this.duration = Duration.ofMinutes(15);
+        this.scopes = new LinkedHashSet<>(List.of("ROLE_client"));
         this.jwkSet = JwkSetUtil.generateSet(Duration.ofHours(1), 1, 1, 1, 1, 1, 1, 1);
         this.jwsDelegatingVerify = new JwsDelegatingVerify(this.jwkSet);
         this.jwsDelegatingDecrypt = new JwsDelegatingDecrypt(this.jwkSet);
+    }
+
+    public JWT issue(@NotNull final ClientNameSecretAuthenticatedToken clientNameSecretAuthenticatedToken) throws JOSEException {
+        @NotNull final String clientName = clientNameSecretAuthenticatedToken.getClientDetails().name();
+        @NotNull final JWTClaimsSet jwtClaimsSet = JwtContentUtil.jwtClaimsSet(this.issuer, this.audiences, clientName, this.duration, this.scopes);
+        return issue(jwtClaimsSet);
     }
 
     public JWT issue(final JWTClaimsSet jwtClaimsSet) throws JOSEException {
