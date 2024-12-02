@@ -11,6 +11,7 @@ import com.github.justincranford.springs.util.jwt.JwtEncryptUtil;
 import com.github.justincranford.springs.util.jwt.JwtSignUtil;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEEncrypter;
 import com.nimbusds.jose.JWEHeader;
@@ -65,11 +66,11 @@ public class JwtIssuerService {
     public JWT issue(final JWTClaimsSet jwtClaimsSet) throws JOSEException {
         final JWK randomJwk = SecureRandomUtil.randomListElement(this.jwkSet.getKeys());
         if (randomJwk.getAlgorithm() instanceof JWSAlgorithm jwsAlgorithm) {
-            final JWSHeader jwsHeader = new JWSHeader(jwsAlgorithm);
+            final JWSHeader jwsHeader = new JWSHeader.Builder(jwsAlgorithm).type(JOSEObjectType.JWT).keyID(randomJwk.getKeyID()).build();
             final JWSSigner jwsSigner = JwtSignUtil.jwsSigner(randomJwk);
             return JwtSignUtil.sign(jwsHeader, jwtClaimsSet, jwsSigner);
         } else if (randomJwk.getAlgorithm() instanceof JWEAlgorithm jweAlgorithm) {
-            final JWEHeader    jweHeader    = new JWEHeader(jweAlgorithm, EncryptionMethod.A256GCM);
+            final JWEHeader    jweHeader    = new JWEHeader.Builder(jweAlgorithm, EncryptionMethod.A256GCM).type(JOSEObjectType.JWT).keyID(randomJwk.getKeyID()).build();
             final JWEEncrypter jweEncrypter = JwtEncryptUtil.jweEncrypter(randomJwk, jweAlgorithm);
             return JwtEncryptUtil.encrypt(jweHeader, jwtClaimsSet, jweEncrypter);
         }

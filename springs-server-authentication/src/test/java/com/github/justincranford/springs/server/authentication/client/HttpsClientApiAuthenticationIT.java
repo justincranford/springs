@@ -8,6 +8,7 @@ import com.nimbusds.jose.Header;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
@@ -108,7 +109,9 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 			final Header header = jwt.getHeader();
 			final JWTClaimsSet jwtClaimsSet = jwt.getJWTClaimsSet();
 			super.prettyJson().logAndSave(header.toJSONObject());
-			super.prettyJson().logAndSave(jwtClaimsSet.toJSONObject());
+			if (jwt instanceof SignedJWT) {
+				super.prettyJson().logAndSave(jwtClaimsSet.toJSONObject());
+			}
 		} else {
 			Assertions.assertTrue(requestJwtResponse.contains("Unsupported authentication"));
 		}
