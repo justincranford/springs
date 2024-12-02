@@ -14,6 +14,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.security.Provider;
 
@@ -24,7 +25,7 @@ import static com.github.justincranford.springs.util.jwt.ProviderUtil.RSA_SIGN_V
 
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class JwtVerifyUtil {
-    public static JWSVerifier jwsVerifier(final JWK jwk) throws JOSEException {
+    public static JWSVerifier jwsVerifier(@NonNull final JWK jwk) throws JOSEException {
         if (jwk instanceof OctetKeyPair) {
             return edVerifier(jwk.toOctetKeyPair(), ED_SIGN_VERIFY_PROVIDER);
         } else if (jwk instanceof ECKey) {
@@ -37,25 +38,25 @@ public final class JwtVerifyUtil {
         throw new JOSEException("Unsupported key type for verifying");
     }
 
-    public static Ed25519Verifier edVerifier(final OctetKeyPair edKey, final Provider provider) throws JOSEException {
+    public static Ed25519Verifier edVerifier(@NonNull final OctetKeyPair edKey, @NonNull final Provider provider) throws JOSEException {
         return new Ed25519Verifier(edKey.toOctetKeyPair().toPublicJWK());
     }
-    public static ECDSAVerifier ecVerifier(final ECKey ecKey, final Provider provider) throws JOSEException {
+    public static ECDSAVerifier ecVerifier(@NonNull final ECKey ecKey, @NonNull final Provider provider) throws JOSEException {
         return new ECDSAVerifier(ecKey.toECPublicKey());
     }
-    public static RSASSAVerifier rsaVerifier(final RSAKey rsaKey, final Provider provider) throws JOSEException {
+    public static RSASSAVerifier rsaVerifier(@NonNull final RSAKey rsaKey, @NonNull final Provider provider) throws JOSEException {
         return new RSASSAVerifier(rsaKey.toRSAPublicKey());
     }
-    public static MACVerifier hmacVerifier(final OctetSequenceKey octetSequenceKey, final Provider provider) throws JOSEException {
+    public static MACVerifier hmacVerifier(@NonNull final OctetSequenceKey octetSequenceKey, @NonNull final Provider provider) throws JOSEException {
         return new MACVerifier(octetSequenceKey.toByteArray());
     }
 
-    public static boolean verify(final SignedJWT signedJWT, final JWK jwk, final Provider provider) throws JOSEException {
+    public static boolean verify(@NonNull final SignedJWT signedJWT, @NonNull final JWK jwk, @NonNull final Provider provider) throws JOSEException {
         final JWSVerifier jwsVerifier = jwsVerifier(jwk);
         return signedJWT.verify(jwsVerifier);
     }
 
-    public static boolean verify(final SignedJWT signedJWT, final JWSVerifier jwsVerifier) throws JOSEException {
+    public static boolean verify(@NonNull final SignedJWT signedJWT, @NonNull final JWSVerifier jwsVerifier) throws JOSEException {
         return signedJWT.verify(jwsVerifier);
     }
 }

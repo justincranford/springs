@@ -31,33 +31,33 @@ public final class JwkSetUtil {
         return new JWKSet(generateList(duration, numEdSign, numEcSign, numRsaSign, numHmacSign, numEcEncrypt, numRsaEncrypt, numAesEncrypt));
     }
 
-    public static List<JWK> filterJwks(final @NonNull JWKSet jwkSet, final @NonNull JWT jwt) {
+    public static List<JWK> filterJwks(final @NonNull List<JWK> jwks, final @NonNull JWT jwt) {
         if (jwt instanceof SignedJWT signedJWT) {
-            return filterJwks(jwkSet, signedJWT.getHeader());
+            return filterJwks(jwks, signedJWT.getHeader());
         } else if (jwt instanceof EncryptedJWT encryptedJWT) {
-            return filterJwks(jwkSet, encryptedJWT.getHeader());
+            return filterJwks(jwks, encryptedJWT.getHeader());
         }
         return List.of();
     }
 
-    public static List<JWK> filterJwks(final @NonNull JWKSet jwkSet, final @NonNull SignedJWT signedJWT) {
-        return filterJwks(jwkSet, signedJWT.getHeader());
+    public static List<JWK> filterJwks(final @NonNull List<JWK> jwks, final @NonNull SignedJWT signedJWT) {
+        return filterJwks(jwks, signedJWT.getHeader());
     }
 
-    public static List<JWK> filterJwks(final @NonNull JWKSet jwkSet, final @NonNull EncryptedJWT encryptedJWT) {
-        return filterJwks(jwkSet, encryptedJWT.getHeader());
+    public static List<JWK> filterJwks(final @NonNull List<JWK> jwks, final @NonNull EncryptedJWT encryptedJWT) {
+        return filterJwks(jwks, encryptedJWT.getHeader());
     }
 
-    private static List<JWK> filterJwks(final @NonNull JWKSet jwkSet, final @NonNull JWSHeader jwsHeader) {
-        return jwkSet.getKeys().stream()
+    private static List<JWK> filterJwks(final @NonNull List<JWK> jwks, final @NonNull JWSHeader jwsHeader) {
+        return jwks.stream()
              .filter(Objects::nonNull)
              .filter(jwk -> isJwkKidMatch(jwsHeader.getKeyID(), jwk.getKeyID()))
              .filter(jwk -> isJwkAlgMatch(jwk, jwsHeader.getAlgorithm()))
              .toList();
     }
 
-    private static List<JWK> filterJwks(final @NonNull JWKSet jwkSet, final @NonNull JWEHeader jweHeader) {
-        return jwkSet.getKeys().stream()
+    private static List<JWK> filterJwks(final @NonNull List<JWK> jwks, final @NonNull JWEHeader jweHeader) {
+        return jwks.stream()
              .filter(Objects::nonNull)
              .filter(jwk -> isJwkKidMatch(jwk.getKeyID(), jweHeader.getKeyID()))
              .filter(jwk -> isJwkAlgMatch(jwk, jweHeader.getAlgorithm()))

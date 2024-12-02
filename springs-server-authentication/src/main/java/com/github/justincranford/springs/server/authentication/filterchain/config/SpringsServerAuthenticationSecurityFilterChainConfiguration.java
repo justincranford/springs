@@ -1,5 +1,7 @@
 package com.github.justincranford.springs.server.authentication.filterchain.config;
 
+import com.github.justincranford.springs.server.authentication.client.filter.ClientJwtBearerTokenAuthenticationFilter;
+import com.github.justincranford.springs.server.authentication.client.provider.ClientJwtAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.client.provider.ClientNameSecretAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.filterchain.redirect.CustomAuthenticationEntryPoint;
 import com.github.justincranford.springs.server.authentication.redirect.controller.RedirectController;
@@ -52,6 +54,11 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 	@Autowired
 	private final ClientNameSecretAuthenticationProvider clientNameSecretAuthenticationProvider;
 	@Autowired
+	private final ClientJwtBearerTokenAuthenticationFilter clientJwtBearerTokenAuthenticationFilter;
+	@Autowired
+	private final ClientJwtAuthenticationProvider clientJwtAuthenticationProvider;
+
+	@Autowired
 	private final RateLimitFilter rateLimitingFilter;
 	@Autowired
 	private final RequestLogFilter requestLoggingFilter;
@@ -64,6 +71,7 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 			.authenticationProvider(this.personaEmailPasswordAuthenticationProvider)
 			.authenticationProvider(this.personUsernamePasswordAuthenticationProvider)
 			.authenticationProvider(this.clientNameSecretAuthenticationProvider)
+			.authenticationProvider(this.clientJwtAuthenticationProvider)
 			.parentAuthenticationManager(null) // Prevent ProviderManager recursively calling `this.parent.authenticate(authentication)`
 			.build();
 	}
@@ -137,7 +145,8 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
 			.addFilterBefore(this.requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
-			.addFilterBefore(this.rateLimitingFilter,   UsernamePasswordAuthenticationFilter.class);
+			.addFilterBefore(this.rateLimitingFilter,   UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(this.clientJwtBearerTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

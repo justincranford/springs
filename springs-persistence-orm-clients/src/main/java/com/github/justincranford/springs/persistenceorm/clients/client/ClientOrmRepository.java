@@ -12,6 +12,9 @@ public interface ClientOrmRepository extends ListCrudRepository<ClientOrm, Long>
     @Query("SELECT c FROM ClientOrm c WHERE c.name=:name")
     Optional<ClientOrm> findByName(String name);
 
+    @Query("SELECT c.id FROM ClientOrm c WHERE c.name=:name")
+    Optional<Long> findIdByName(String name);
+
     // N.B. Include column aliases to match the method names inside IdClientSecretProjection
     @Query("SELECT c.id AS id,c.secret.secret AS secret FROM ClientOrm c WHERE c.name=:name")
     Optional<ClientProjectionIdSecret> findClientProjectionIdSecretByName(String name);

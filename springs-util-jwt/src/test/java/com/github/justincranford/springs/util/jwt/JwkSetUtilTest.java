@@ -111,7 +111,7 @@ public final class JwkSetUtilTest {
         boolean expectFoundJwk = testCase.expectFindJwk();
         boolean expectValid = testCase.expectValid();
 
-        final List<JWK> jwkList = JwkSetUtil.filterJwks(jwkSet, jwt);
+        final List<JWK> jwkList = JwkSetUtil.filterJwks(jwkSet.getKeys(), jwt);
         if (expectFoundJwk) {
             assertEquals(1, jwkList.size());
             assertTrue(jwkList.contains(jwk));

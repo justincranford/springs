@@ -33,6 +33,18 @@ public class ClientService implements UserDetailsService {
 		return new ClientDetails(nameMixedCase, clientOrm.id(), clientOrm, true, true, true, true);
 	}
 
+	@Transactional
+	public Long findIdByName(final String nameMixedCase) throws ClientNameNotFoundException {
+		final String nameLowerCase = nameMixedCase.toLowerCase();
+		final Long id = this.clientOrmRepository.findIdByName(nameLowerCase).orElseThrow(() -> {
+			log.debug("Client id not found by name [{}]", nameMixedCase);
+			return new ClientNameNotFoundException("name not found");
+		});
+		assert id != null : "Client ID must be non-null";
+		log.trace("Client id found by name: {}", nameMixedCase);
+		return id;
+	}
+
     @Transactional
     public ClientProjectionIdSecret findIdSecretByName(final String nameMixedCase) throws ClientNameNotFoundException {
     	final String nameLowerCase = nameMixedCase.toLowerCase();
