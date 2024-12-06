@@ -8,7 +8,6 @@ import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.crypto.ECDSASigner;
 import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
@@ -37,6 +36,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.RSA_LENGTHS_BITS;
+import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.VALID_EC_CURVES;
+import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.mapCurveToJWSAlgorithm;
 import static com.github.justincranford.springs.util.jwt.ProviderUtil.AES_KEY_GENERATOR_PROVIDER;
 import static com.github.justincranford.springs.util.jwt.ProviderUtil.EC_KEY_PAIR_GENERATOR_PROVIDER;
 import static com.github.justincranford.springs.util.jwt.ProviderUtil.ED_KEY_PAIR_GENERATOR_PROVIDER;
@@ -45,8 +47,6 @@ import static com.github.justincranford.springs.util.jwt.ProviderUtil.RSA_KEY_PA
 
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class JwkUtil {
-    public static final ArrayList<Curve> VALID_EC_CURVES = new ArrayList<>(ECDSASigner.SUPPORTED_CURVES.stream().filter(c -> !c.equals(Curve.SECP256K1)).toList());
-
     private static final TextCodec KID_RANDOM_BYTES_CODEC  = TextCodec.B64_URL;
     private static final int       KID_RANDOM_BYTES_LENGTH = 32;
 
@@ -103,20 +103,23 @@ public final class JwkUtil {
             futureJwkList.add(ThreadUtil.supplyAsync(() -> JwkUtil.ed(Curve.Ed25519, duration, JWSAlgorithm.Ed25519)));
         }
         for (int i = 0; i < numEcSign; i++) {
-            futureJwkList.add(ThreadUtil.supplyAsync(() -> JwkUtil.ec(Curve.P_256, duration, JWSAlgorithm.ES256)));
+            futureJwkList.add(ThreadUtil.supplyAsync(() -> {
+                final Curve curve = SecureRandomUtil.randomListElement(VALID_EC_CURVES);
+                return JwkUtil.ec(curve, duration, mapCurveToJWSAlgorithm(curve));
+            }));
         }
         for (int i = 0; i < numRsaSign; i++) {
-            futureJwkList.add(ThreadUtil.supplyAsync(() -> JwkUtil.rsa(2048, duration, JWSAlgorithm.PS256)));
+            futureJwkList.add(ThreadUtil.supplyAsync(() -> JwkUtil.rsa(SecureRandomUtil.randomListElement(RSA_LENGTHS_BITS), duration, JWSAlgorithm.PS256)));
         }
         for (int i = 0; i < numHmacSign; i++) {
             futureJwkList.add(ThreadUtil.supplyAsync(() -> JwkUtil.hmac(256, duration, JWSAlgorithm.HS256)));
         }
 
         for (int i = 0; i < numEcEncrypt; i++) {
-            futureJwkList.add(ThreadUtil.supplyAsync(() -> JwkUtil.ec(Curve.P_256, duration, JWEAlgorithm.ECDH_ES_A256KW)));
+            futureJwkList.add(ThreadUtil.supplyAsync(() -> JwkUtil.ec(SecureRandomUtil.randomListElement(VALID_EC_CURVES), duration, JWEAlgorithm.ECDH_ES_A256KW)));
         }
         for (int i = 0; i < numRsaEncrypt; i++) {
-            futureJwkList.add(ThreadUtil.supplyAsync(() -> JwkUtil.rsa(2048, duration, JWEAlgorithm.RSA_OAEP_256)));
+            futureJwkList.add(ThreadUtil.supplyAsync(() -> JwkUtil.rsa(SecureRandomUtil.randomListElement(RSA_LENGTHS_BITS), duration, JWEAlgorithm.RSA_OAEP_256)));
         }
         for (int i = 0; i < numAesEncrypt; i++) {
             futureJwkList.add(ThreadUtil.supplyAsync(() -> JwkUtil.aes(256, duration, JWEAlgorithm.A256GCMKW)));

@@ -1,16 +1,13 @@
 package com.github.justincranford.springs.util.jwt;
 
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.KeyLengthException;
-import com.nimbusds.jose.crypto.ECDHEncrypter;
 import com.nimbusds.jose.crypto.ECDSASigner;
 import com.nimbusds.jose.crypto.Ed25519Signer;
 import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.RSAEncrypter;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
@@ -24,7 +21,6 @@ import lombok.NoArgsConstructor;
 
 import java.security.Provider;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -37,12 +33,6 @@ import static com.github.justincranford.springs.util.jwt.ProviderUtil.RSA_SIGN_V
 
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class JwtSignUtil {
-    public static final ArrayList<JWSAlgorithm> VALID_EC_SIG_VER_ALG = new ArrayList<>(ECDSASigner.SUPPORTED_ALGORITHMS.stream().filter(a -> !a.equals(JWSAlgorithm.ES256K)).toList());
-    public static final ArrayList<JWEAlgorithm> VALID_EC_ENC_DEC_ALG = new ArrayList<>(ECDHEncrypter.SUPPORTED_ALGORITHMS.stream().toList());
-    public static final ArrayList<JWSAlgorithm> VALID_RSA_SIG_VER_ALG = new ArrayList<>(RSASSASigner.SUPPORTED_ALGORITHMS.stream().toList());
-    public static final ArrayList<JWEAlgorithm> VALID_RSA_ENC_DEC_ALG = new ArrayList<>(RSAEncrypter.SUPPORTED_ALGORITHMS.stream().toList());
-    public static final ArrayList<JWSAlgorithm> VALID_HMAC_SIG_VER_ALG = new ArrayList<>(MACSigner.SUPPORTED_ALGORITHMS.stream().toList());
-
     public static JWSSigner jwsSigner(final JWK jwk) throws JOSEException {
         if (jwk instanceof OctetKeyPair) {
             return edSigner(jwk.toOctetKeyPair(), ED_SIGN_VERIFY_PROVIDER);
