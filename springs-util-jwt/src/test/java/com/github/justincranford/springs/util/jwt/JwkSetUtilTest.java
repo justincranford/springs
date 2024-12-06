@@ -46,13 +46,13 @@ public final class JwkSetUtilTest {
 
     static Stream<TestCase> generateTestCases() throws JOSEException {
         try (final Timer ignore = Timer.go("generateTestCases")) {
-            final int numEdSign     = 2;
-            final int numEcSign     = 2;
+            final int numEdSign     = 10;
+            final int numEcSign     = 10;
             final int numRsaSign    = 2;
-            final int numHmacSign   = 2;
-            final int numEcEncrypt  = 2;
+            final int numHmacSign   = 10;
+            final int numEcEncrypt  = 10;
             final int numRsaEncrypt = 2;
-            final int numAesEncrypt = 2;
+            final int numAesEncrypt = 10;
             final List<JWK> jwkList;
             try (final Timer ignore2 = Timer.go("generateJwks")) {
                 jwkList = generateList(Duration.ofMinutes(1), numEdSign, numEcSign, numRsaSign, numHmacSign, numEcEncrypt, numRsaEncrypt, numAesEncrypt);

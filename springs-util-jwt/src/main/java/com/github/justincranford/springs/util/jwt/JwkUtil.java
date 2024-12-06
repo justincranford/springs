@@ -36,8 +36,10 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.HMAC_LENGTHS_BITS;
 import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.RSA_LENGTHS_BITS;
 import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.VALID_EC_CURVES;
+import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.pickHmacAlgorithm;
 import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.pickJWEAlgorithm;
 import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.pickJWSAlgorithm;
 import static com.github.justincranford.springs.util.jwt.ProviderUtil.AES_KEY_GENERATOR_PROVIDER;
@@ -113,7 +115,10 @@ public final class JwkUtil {
             futureJwkList.add(ThreadUtil.supplyAsync(() -> JwkUtil.rsa(SecureRandomUtil.randomListElement(RSA_LENGTHS_BITS), duration, JWSAlgorithm.PS256)));
         }
         for (int i = 0; i < numHmacSign; i++) {
-            futureJwkList.add(ThreadUtil.supplyAsync(() -> JwkUtil.hmac(256, duration, JWSAlgorithm.HS256)));
+            futureJwkList.add(ThreadUtil.supplyAsync(() -> {
+                final int hmacLengthBits = SecureRandomUtil.randomListElement(HMAC_LENGTHS_BITS);
+                return JwkUtil.hmac(hmacLengthBits, duration, pickHmacAlgorithm(hmacLengthBits));
+            }));
         }
 
         for (int i = 0; i < numEcEncrypt; i++) {

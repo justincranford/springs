@@ -4,7 +4,6 @@ import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.crypto.Ed25519Signer;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.jwk.Curve;
 import lombok.AccessLevel;
@@ -38,6 +37,9 @@ import static com.nimbusds.jose.JWSAlgorithm.ES256;
 import static com.nimbusds.jose.JWSAlgorithm.ES384;
 import static com.nimbusds.jose.JWSAlgorithm.ES512;
 import static com.nimbusds.jose.JWSAlgorithm.EdDSA;
+import static com.nimbusds.jose.JWSAlgorithm.HS256;
+import static com.nimbusds.jose.JWSAlgorithm.HS384;
+import static com.nimbusds.jose.JWSAlgorithm.HS512;
 import static com.nimbusds.jose.JWSAlgorithm.PS256;
 import static com.nimbusds.jose.JWSAlgorithm.PS384;
 import static com.nimbusds.jose.JWSAlgorithm.PS512;
@@ -54,17 +56,19 @@ import static com.nimbusds.jose.jwk.Curve.P_521;
 @SuppressWarnings({"unused", "deprecation"})
 public final class AlgorithmUtil {
     /** @see com.nimbusds.jose.jwk.Curve */
-    public static final List<Curve> VALID_EC_CURVES = java.util.List.of(P_256, P_384, P_521); // omit P_256K
+    public static final List<Curve> VALID_EC_CURVES = List.of(P_256, P_384, P_521); // omit P_256K
 
     /** @see com.nimbusds.jose.crypto.impl.EdDSAProvider */
-    public static final List<Curve> VALID_ED_CURVES = Ed25519Signer.SUPPORTED_CURVES.stream().toList();
-
+    public static final List<Curve> VALID_ED_CURVES = List.of(Ed25519); // omit Ed448, X25519, X448
 
     /** @see com.nimbusds.jose.crypto.impl.ECDSAProvider */
-    public static final List<JWSAlgorithm> VALID_EC_SIG_VER_ALG = java.util.List.of(ES256, ES384, ES512); // omit ES256K
+    public static final List<JWSAlgorithm> VALID_EC_SIG_VER_ALG = List.of(ES256, ES384, ES512); // omit ES256K
 
     /** @see com.nimbusds.jose.crypto.impl.ECDHCryptoProvider */
     public static final List<JWEAlgorithm> VALID_EC_ENC_DEC_ALG = List.of(ECDH_ES, ECDH_ES_A128KW, ECDH_ES_A192KW, ECDH_ES_A256KW, ECDH_1PU, ECDH_1PU_A128KW, ECDH_1PU_A192KW, ECDH_1PU_A256KW);
+
+    /** @see com.nimbusds.jose.crypto.impl.EdDSAProvider */
+    public static final List<JWSAlgorithm> VALID_ED_SIG_VER_ALG = List.of(EdDSA, JWSAlgorithm.Ed25519); // omit Ed448
 
     /** @see com.nimbusds.jose.crypto.impl.ECDHCryptoProvider */
     public static final List<JWEAlgorithm> VALID_ED_ENC_DEC_ALG = List.of(ECDH_ES, ECDH_ES_A128KW, ECDH_ES_A192KW, ECDH_ES_A256KW, ECDH_1PU, ECDH_1PU_A128KW, ECDH_1PU_A192KW, ECDH_1PU_A256KW);
@@ -78,9 +82,14 @@ public final class AlgorithmUtil {
     /** @see com.nimbusds.jose.crypto.impl.MACProvider */
     public static final List<JWSAlgorithm> VALID_HMAC_SIG_VER_ALG = MACSigner.SUPPORTED_ALGORITHMS.stream().toList();
 
-    public static final List<Integer> RSA_LENGTHS_BITS = List.of(2048, 3072, 4096);
+    public static final List<EncryptionMethod> VALID_AES_ENC_METHODS = List.of(A128CBC_HS256, A192CBC_HS384, A256CBC_HS512, A128GCM, A192GCM, A256GCM);
+    public static final List<EncryptionMethod> VALID_RSA_ENC_METHODS = List.of(A128CBC_HS256, A192CBC_HS384, A256CBC_HS512, A128GCM, A192GCM, A256GCM);
+    public static final List<EncryptionMethod> VALID_ECDH_ES_ENC_METHODS = List.of(A128CBC_HS256, A192CBC_HS384, A256CBC_HS512, A128GCM, A192GCM, A256GCM);
+    public static final List<EncryptionMethod> VALID_ECDH_1PU_ENC_METHODS = List.of(A128CBC_HS256, A192CBC_HS384, A256CBC_HS512); // omit A128GCM, A192GCM, A256GCM
 
+    public static final List<Integer> RSA_LENGTHS_BITS = List.of(2048, 3072, 4096);
     public static final List<Integer> AES_LENGTHS_BITS = List.of(128, 192, 256);
+    public static final List<Integer> HMAC_LENGTHS_BITS = List.of(256, 384, 512);
 
     public static JWSAlgorithm pickJWSAlgorithm(final Curve curve) {
         if (P_256.equals(curve)) {
@@ -90,9 +99,9 @@ public final class AlgorithmUtil {
         } else if (P_521.equals(curve)) {
             return ES512;
         } else if (Ed25519.equals(curve)) {
-            return SecureRandomUtil.randomListElement(List.of(EdDSA, JWSAlgorithm.Ed25519));
+            return SecureRandomUtil.randomListElement(VALID_ED_SIG_VER_ALG);
         } else if (Ed448.equals(curve)) {
-            return SecureRandomUtil.randomListElement(List.of(EdDSA, JWSAlgorithm.Ed448));
+            return SecureRandomUtil.randomListElement(VALID_ED_SIG_VER_ALG);
         }
         throw new IllegalArgumentException("Unsupported curve: " + curve); // omit P_256K
     }
@@ -114,15 +123,23 @@ public final class AlgorithmUtil {
 
     public static EncryptionMethod pickEncryptionMethod(final JWEAlgorithm alg) {
         if (A128GCMKW.equals(alg) || A192GCMKW.equals(alg) || A256GCMKW.equals(alg)) {
-            return SecureRandomUtil.randomListElement(List.of(A128CBC_HS256, A192CBC_HS384, A256CBC_HS512, A128GCM, A192GCM, A256GCM));
+            return SecureRandomUtil.randomListElement(VALID_AES_ENC_METHODS);
         } else if (RSA1_5.equals(alg) || RSA_OAEP.equals(alg) || RSA_OAEP_256.equals(alg) || RSA_OAEP_384.equals(alg) || RSA_OAEP_512.equals(alg)) {
-            return SecureRandomUtil.randomListElement(List.of(A128CBC_HS256, A192CBC_HS384, A256CBC_HS512, A128GCM, A192GCM, A256GCM));
+            return SecureRandomUtil.randomListElement(VALID_RSA_ENC_METHODS);
         } else if (ECDH_ES.equals(alg) || ECDH_ES_A128KW.equals(alg) || ECDH_ES_A192KW.equals(alg) || ECDH_ES_A256KW.equals(alg)) {
-            return SecureRandomUtil.randomListElement(List.of(A128CBC_HS256, A192CBC_HS384, A256CBC_HS512, A128GCM, A192GCM, A256GCM));
+            return SecureRandomUtil.randomListElement(VALID_ECDH_ES_ENC_METHODS);
         } else if (ECDH_1PU.equals(alg) || ECDH_1PU_A128KW.equals(alg) || ECDH_1PU_A192KW.equals(alg) || ECDH_1PU_A256KW.equals(alg)) {
-            return SecureRandomUtil.randomListElement(List.of(A128CBC_HS256, A192CBC_HS384, A256CBC_HS512));
+            return SecureRandomUtil.randomListElement(VALID_ECDH_1PU_ENC_METHODS);
         }
         throw new IllegalArgumentException("Unsupported algorithm: " + alg);
     }
 
+    public static JWSAlgorithm pickHmacAlgorithm(final int hmacLengthBits) {
+        if (hmacLengthBits < 384) {
+            return HS256;
+        } else if (hmacLengthBits < 512) {
+            return SecureRandomUtil.randomListElement(List.of(HS256, HS384));
+        }
+        return SecureRandomUtil.randomListElement(List.of(HS256, HS384, HS512));
+    }
 }
