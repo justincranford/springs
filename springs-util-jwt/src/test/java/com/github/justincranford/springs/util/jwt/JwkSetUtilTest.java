@@ -1,7 +1,6 @@
 package com.github.justincranford.springs.util.jwt;
 
 import com.github.justincranford.springs.util.basic.Timer;
-import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -23,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.pickEncryptionMethod;
 import static com.github.justincranford.springs.util.jwt.JwkSetUtil.generateSet;
 import static com.github.justincranford.springs.util.jwt.JwkUtil.generateList;
 import static com.github.justincranford.springs.util.jwt.JwtContentUtil.jweHeader;
@@ -72,9 +72,9 @@ public final class JwkSetUtilTest {
                         testCases.add(new TestCase(signedJwt2, jwk, jwkSetAllJwks, true,  true));
                         testCases.add(new TestCase(signedJwt3, jwk, jwkSetNoJwks,  false, false));
                     } else if (jwk.getAlgorithm() instanceof JWEAlgorithm jweAlg) {
-                        final EncryptedJWT encryptedJwt1 = encrypt(jweHeader(jwk, jweAlg, EncryptionMethod.A128GCM), validJwtClaimsSet(), jweEncrypter(jwk, jweAlg));
-                        final EncryptedJWT encryptedJwt2 = encrypt(jweHeader(jwk, jweAlg, EncryptionMethod.A128GCM), validJwtClaimsSet(), jweEncrypter(jwk, jweAlg));
-                        final EncryptedJWT encryptedJwt3 = encrypt(jweHeader(jwk, jweAlg, EncryptionMethod.A128GCM), validJwtClaimsSet(), jweEncrypter(jwk, jweAlg));
+                        final EncryptedJWT encryptedJwt1 = encrypt(jweHeader(jwk, jweAlg, pickEncryptionMethod(jweAlg)), validJwtClaimsSet(), jweEncrypter(jwk, jweAlg));
+                        final EncryptedJWT encryptedJwt2 = encrypt(jweHeader(jwk, jweAlg, pickEncryptionMethod(jweAlg)), validJwtClaimsSet(), jweEncrypter(jwk, jweAlg));
+                        final EncryptedJWT encryptedJwt3 = encrypt(jweHeader(jwk, jweAlg, pickEncryptionMethod(jweAlg)), validJwtClaimsSet(), jweEncrypter(jwk, jweAlg));
                         testCases.add(new TestCase(encryptedJwt1, jwk, jwkSetOneJwk,  true,  true));
                         testCases.add(new TestCase(encryptedJwt2, jwk, jwkSetAllJwks, true,  true));
                         testCases.add(new TestCase(encryptedJwt3, jwk, jwkSetNoJwks,  false, false));

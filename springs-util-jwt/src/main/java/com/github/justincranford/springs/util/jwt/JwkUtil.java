@@ -38,7 +38,8 @@ import java.util.concurrent.Future;
 
 import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.RSA_LENGTHS_BITS;
 import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.VALID_EC_CURVES;
-import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.mapCurveToJWSAlgorithm;
+import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.pickJWEAlgorithm;
+import static com.github.justincranford.springs.util.jwt.AlgorithmUtil.pickJWSAlgorithm;
 import static com.github.justincranford.springs.util.jwt.ProviderUtil.AES_KEY_GENERATOR_PROVIDER;
 import static com.github.justincranford.springs.util.jwt.ProviderUtil.EC_KEY_PAIR_GENERATOR_PROVIDER;
 import static com.github.justincranford.springs.util.jwt.ProviderUtil.ED_KEY_PAIR_GENERATOR_PROVIDER;
@@ -105,7 +106,7 @@ public final class JwkUtil {
         for (int i = 0; i < numEcSign; i++) {
             futureJwkList.add(ThreadUtil.supplyAsync(() -> {
                 final Curve curve = SecureRandomUtil.randomListElement(VALID_EC_CURVES);
-                return JwkUtil.ec(curve, duration, mapCurveToJWSAlgorithm(curve));
+                return JwkUtil.ec(curve, duration, pickJWSAlgorithm(curve));
             }));
         }
         for (int i = 0; i < numRsaSign; i++) {
@@ -116,7 +117,10 @@ public final class JwkUtil {
         }
 
         for (int i = 0; i < numEcEncrypt; i++) {
-            futureJwkList.add(ThreadUtil.supplyAsync(() -> JwkUtil.ec(SecureRandomUtil.randomListElement(VALID_EC_CURVES), duration, JWEAlgorithm.ECDH_ES_A256KW)));
+            futureJwkList.add(ThreadUtil.supplyAsync(() -> {
+                final Curve curve = SecureRandomUtil.randomListElement(VALID_EC_CURVES);
+                return JwkUtil.ec(curve, duration, pickJWEAlgorithm(curve));
+            }));
         }
         for (int i = 0; i < numRsaEncrypt; i++) {
             futureJwkList.add(ThreadUtil.supplyAsync(() -> JwkUtil.rsa(SecureRandomUtil.randomListElement(RSA_LENGTHS_BITS), duration, JWEAlgorithm.RSA_OAEP_256)));
