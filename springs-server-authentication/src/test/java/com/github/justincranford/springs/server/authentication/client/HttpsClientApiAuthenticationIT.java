@@ -102,8 +102,8 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 		Assertions.assertFalse(clients.isEmpty());
 		final SpringsPersistenceOrmClientsClientProperties.Client client = clients.getFirst();
 		final String requestJwtResponse = attemptRequestJwt(httpsRestTemplate, client.getName(), assertLoginSuccess ? client.getSecret() : "Wrong");
-		Assertions.assertNotNull(requestJwtResponse);
 		if (assertLoginSuccess) {
+			Assertions.assertNotNull(requestJwtResponse);
 			final JWT jwt = JWTParser.parse(requestJwtResponse);
 			Assertions.assertNotNull(jwt);
 			final Header header = jwt.getHeader();
@@ -113,7 +113,7 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 				super.prettyJson().logAndSave(jwtClaimsSet.toJSONObject());
 			}
 		} else {
-			Assertions.assertTrue(requestJwtResponse.contains("Unsupported authentication"));
+			Assertions.assertNull(requestJwtResponse);
 		}
 	}
 
