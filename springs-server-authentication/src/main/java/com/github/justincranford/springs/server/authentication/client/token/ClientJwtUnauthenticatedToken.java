@@ -1,13 +1,17 @@
 package com.github.justincranford.springs.server.authentication.client.token;
 
+import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.util.Assert;
 
 import java.io.Serial;
 import java.text.ParseException;
 
+@Slf4j
 public class ClientJwtUnauthenticatedToken extends AbstractAuthenticationToken {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -20,8 +24,15 @@ public class ClientJwtUnauthenticatedToken extends AbstractAuthenticationToken {
 		super(null);
 		this.jwt = _jwt;
 		try {
-			this.name = this.jwt.getJWTClaimsSet().getSubject();
+			if (_jwt instanceof SignedJWT) {
+				this.name = this.jwt.getJWTClaimsSet().getSubject();
+			} else if (_jwt instanceof EncryptedJWT) {
+				this.name = "Unknown because EncryptedJWT";
+			} else {
+				throw new IllegalArgumentException("Invalid jwt " + _jwt);
+			}
 		} catch (ParseException e) {
+			log.error("Unexpected exception", e);
 			throw new RuntimeException(e);
 		}
 		super.setAuthenticated(false);
