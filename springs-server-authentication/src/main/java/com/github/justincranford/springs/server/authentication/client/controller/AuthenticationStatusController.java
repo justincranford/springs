@@ -17,13 +17,14 @@ public class AuthenticationStatusController {
 	public ResponseEntity<String> status() {
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authenticated");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Null authentication");
 		} else if (authentication instanceof AnonymousAuthenticationToken) {
 			return ResponseEntity.ok().body("Authenticated as anonymous");
-		} else if (authentication.isAuthenticated()) {
-			return ResponseEntity.ok().body("Authenticated as " + authentication.getName());
+		} else if (!authentication.isAuthenticated()) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non-null authentication, but unauthenticated: " + authentication);
 		}
-		log.error("Unexpected authentication state: {}", authentication);
-		return ResponseEntity.internalServerError().body("Unexpected authentication state");
+		return ResponseEntity.ok().body("Authenticated as " + authentication.getName());
+//		log.error("Unexpected authentication state: {}", authentication);
+//		return ResponseEntity.internalServerError().body("Unexpected authentication state");
 	}
 }

@@ -21,7 +21,8 @@ public final class ClientJwtBearerTokenAuthenticationFilter extends OncePerReque
     @Override
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain) throws ServletException, IOException {
         if (jwt(request) instanceof JWT jwt) {
-            SecurityContextHolder.getContext().setAuthentication(new ClientJwtUnauthenticatedToken(jwt));
+            final ClientJwtUnauthenticatedToken clientJwtUnauthenticatedToken = new ClientJwtUnauthenticatedToken(jwt);
+            SecurityContextHolder.getContext().setAuthentication(clientJwtUnauthenticatedToken);
         }
         filterChain.doFilter(request, response);
     }
