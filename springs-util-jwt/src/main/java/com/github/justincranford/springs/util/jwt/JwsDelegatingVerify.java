@@ -16,11 +16,12 @@ public class JwsDelegatingVerify {
     private final List<JWK> jwks;
 
     public JwsDelegatingVerify(final JWKSet jwkSet) {
-        this.jwks = jwkSet.toPublicJWKSet().getKeys();
+        this.jwks = jwkSet.getKeys(); // TODO Public JWKs (RSA, EC, ED) + Secret JWKs (HMAC)
     }
 
     public SignedJWT verify(@NonNull final SignedJWT signedJWT) throws JOSEException {
         final List<JWK> filteredJwks = filterJwks(this.jwks, signedJWT);
+        final JOSEException fallThroughException = new JOSEException("JWT verification failed with " + filteredJwks.size() + " keys");
         for (final JWK filteredJwk : filteredJwks) {
             try {
                 final JWSVerifier jwsVerifier = jwsVerifier(filteredJwk);
@@ -28,9 +29,9 @@ public class JwsDelegatingVerify {
                     return signedJWT;
                 }
             } catch(JOSEException e) {
-                e.printStackTrace();
+                fallThroughException.addSuppressed(e);
             }
         }
-        throw new JOSEException("JWT verification failed with " + filteredJwks.size() + " keys");
+        throw fallThroughException;
     }
 }

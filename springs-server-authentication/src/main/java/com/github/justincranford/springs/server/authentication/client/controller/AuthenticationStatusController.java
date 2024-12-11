@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @SuppressWarnings({"static-method"})
 @Slf4j
 public class AuthenticationStatusController {
-	@GetMapping({"/v1/api/authenticate/status", "/v1/api/authenticate/status/"})
+	@GetMapping({"/api/v1/authenticate/status", "/api/v1/authenticate/status/"})
 	public ResponseEntity<String> status() {
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication == null) {
@@ -24,7 +24,5 @@ public class AuthenticationStatusController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non-null authentication, but unauthenticated: " + authentication);
 		}
 		return ResponseEntity.ok().body("Authenticated as " + authentication.getName());
-//		log.error("Unexpected authentication state: {}", authentication);
-//		return ResponseEntity.internalServerError().body("Unexpected authentication state");
 	}
 }

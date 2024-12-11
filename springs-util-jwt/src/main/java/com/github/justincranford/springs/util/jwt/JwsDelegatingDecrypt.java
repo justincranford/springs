@@ -16,19 +16,20 @@ public class JwsDelegatingDecrypt {
     private final List<JWK> jwks;
 
     public JwsDelegatingDecrypt(final JWKSet jwkSet) {
-        this.jwks = jwkSet.toPublicJWKSet().getKeys();
+        this.jwks = jwkSet.getKeys();
     }
 
     public EncryptedJWT verify(@NonNull final EncryptedJWT encryptedJWT) throws JOSEException {
         final List<JWK> filteredJwks = filterJwks(this.jwks, encryptedJWT);
+        final JOSEException fallThroughException = new JOSEException("JWT verification failed with " + filteredJwks.size() + " keys");
         for (final JWK filteredJwk : filteredJwks) {
             try {
                 final JWEDecrypter jweDecrypter = JwtDecryptUtil.jweDecryptor(filteredJwk, encryptedJWT.getHeader().getAlgorithm());
                 return JwtDecryptUtil.decrypt(encryptedJWT, jweDecrypter);
             } catch(JOSEException|ParseException e) {
-                e.printStackTrace();
+                fallThroughException.addSuppressed(e);
             }
         }
-        throw new JOSEException("JWT decryption failed with " + filteredJwks.size() + " keys");
+        throw fallThroughException;
     }
 }

@@ -19,7 +19,7 @@ public class JwtIssuerController {
 	@Autowired
 	private JwtIssuerService jwtIssuerService;
 
-	@PostMapping({"/v1/api/authenticate/jwt", "/v1/api/authenticate/jwt/"})
+	@PostMapping({"/api/v1/authenticate/jwt", "/api/v1/authenticate/jwt/"})
 	public ResponseEntity<String> jwt() throws JOSEException {
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication instanceof ClientNameSecretAuthenticatedToken clientNameSecretAuthenticatedToken) {

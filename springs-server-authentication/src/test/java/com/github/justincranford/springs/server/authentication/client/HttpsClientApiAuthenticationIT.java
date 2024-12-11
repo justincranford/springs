@@ -78,7 +78,7 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 	}
 
 	private void attemptUnauthenticatedHttpGet(final RestTemplate httpsRestTemplate) {
-		final String response = RestTemplateUtil.plainGet(httpsRestTemplate, httpsBaseUrl() + "/v1/api/authenticate/status", null, String.class);
+		final String response = RestTemplateUtil.plainGet(httpsRestTemplate, httpsBaseUrl() + "/api/v1/authenticate/status", null, String.class);
 		assertThat(response).contains("Authenticated as anonymous");
 	}
 
@@ -121,7 +121,7 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 
 	private String authenticateStatus(final RestTemplate httpsRestTemplate, final String authorizationHeader) {
 		try {
-			final String response = RestTemplateUtil.plainGet(httpsRestTemplate, httpsBaseUrl() + "/v1/api/authenticate/status", authorizationHeader, String.class);
+			final String response = RestTemplateUtil.plainGet(httpsRestTemplate, httpsBaseUrl() + "/api/v1/authenticate/status", authorizationHeader, String.class);
 			log.info("Authentication status response: {}", response);
 			return response;
 		} catch(Exception e) {
@@ -132,7 +132,7 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 
 	private String authenticateJwt(final RestTemplate httpsRestTemplate, final String authorizationHeader) {
 		try {
-			final String response = RestTemplateUtil.plainPost(httpsRestTemplate, null, httpsBaseUrl() + "/v1/api/authenticate/jwt", authorizationHeader, String.class);
+			final String response = RestTemplateUtil.plainPost(httpsRestTemplate, null, httpsBaseUrl() + "/api/v1/authenticate/jwt", authorizationHeader, String.class);
 			log.info("Request JWT response: {}", response);
 			return response;
 		} catch(Exception e) {

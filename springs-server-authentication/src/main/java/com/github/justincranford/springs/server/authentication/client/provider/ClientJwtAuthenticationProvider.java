@@ -6,13 +6,16 @@ import com.github.justincranford.springs.persistenceorm.users.persona.email.Emai
 import com.github.justincranford.springs.server.authentication.client.exception.ClientTokenClassNotSupportedException;
 import com.github.justincranford.springs.server.authentication.client.exception.ClientTokenNullNotAllowedException;
 import com.github.justincranford.springs.server.authentication.client.service.JwtIssuerService;
+import com.github.justincranford.springs.server.authentication.client.token.BearerUnauthenticatedToken;
 import com.github.justincranford.springs.server.authentication.client.token.ClientJwtAuthenticatedToken;
-import com.github.justincranford.springs.server.authentication.client.token.ClientJwtUnauthenticatedToken;
 import com.github.justincranford.springs.util.basic.Timer;
 import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
@@ -36,18 +39,32 @@ public class ClientJwtAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(final Class<?> clazz) {
-    	return ClientJwtUnauthenticatedToken.class.isAssignableFrom(clazz);
+    	return BearerUnauthenticatedToken.class.isAssignableFrom(clazz);
     }
 
     @Override
     public Authentication authenticate(final Authentication unauthenticatedToken) throws AuthenticationException {
         switch (unauthenticatedToken) {
-            case ClientJwtUnauthenticatedToken ignored -> log.trace("Token class ClientJwtUnauthenticatedToken supported by ClientJwtAuthenticationProvider");
+            case BearerUnauthenticatedToken ignored -> log.trace("Token class ClientJwtUnauthenticatedToken supported by ClientJwtAuthenticationProvider");
             case null -> throw logAndCreate(ClientTokenNullNotAllowedException.class, DEBUG, "Token null not supported by ClientJwtAuthenticationProvider");
             default -> throw logAndCreate(ClientTokenClassNotSupportedException.class, TRACE, "Token class " + unauthenticatedToken.getClass().getSimpleName() + " not supported by ClientJwtAuthenticationProvider");
         }
-		final ClientJwtUnauthenticatedToken clientJwtUnauthenticatedToken = (ClientJwtUnauthenticatedToken) unauthenticatedToken;
-		final JWT authenticatedJwt = this.jwtIssuerService.authenticate(clientJwtUnauthenticatedToken.getJwt());
+		final BearerUnauthenticatedToken bearerUnauthenticatedToken = (BearerUnauthenticatedToken) unauthenticatedToken;
+        final String bearerToken = bearerUnauthenticatedToken.getBearer();
+        if (bearerToken == null) {
+            throw logAndCreate(AuthenticationCredentialsNotFoundException.class, DEBUG, "Unexpected null bearer token passed into ClientJwtAuthenticationProvider");
+        } else if (bearerToken.isEmpty()) {
+            throw logAndCreate(AuthenticationCredentialsNotFoundException.class, DEBUG, "Unexpected empty bearer token passed into ClientJwtAuthenticationProvider");
+        } else if (bearerToken.isBlank()) {
+            throw logAndCreate(AuthenticationCredentialsNotFoundException.class, DEBUG, "Unexpected blank bearer token passed into ClientJwtAuthenticationProvider");
+        }
+        final JWT jwt;
+        try {
+            jwt = JWTParser.parse(bearerToken);  // PlainJWT, SignedJWT, or EncryptedJWT
+        } catch (ParseException e) {
+            throw logAndCreate(BadCredentialsException.class, DEBUG, "Bearer token is not a JWT");
+        }
+		final JWT authenticatedJwt = this.jwtIssuerService.authenticate(jwt); // Only validates SignedJWT or EncryptedJWT, rejects PlainJWT
 
         final String nameMixedCase;
         try {
