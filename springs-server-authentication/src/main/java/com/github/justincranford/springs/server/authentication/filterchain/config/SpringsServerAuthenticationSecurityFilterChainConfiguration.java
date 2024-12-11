@@ -37,7 +37,7 @@ import org.springframework.security.web.session.DisableEncodeUrlFilter;
  * @see org.springframework.web.filter.DelegatingFilterProxy#doFilter
  * @see org.springframework.security.web.FilterChainProxy#doFilter
 // * @see org.springframework.security.web.FilterChainProxy.VirtualFilterChain#doFilter
-// * @see org.springframework.security.config.annotation.web.builders.FilterOrderRegistration
+ * @see org.springframework.security.config.annotation.web.builders.FilterOrderRegistration
  */
 @Configuration
 @EnableAutoConfiguration

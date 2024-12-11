@@ -11,7 +11,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,10 +26,12 @@ public final class BearerTokenAuthenticationFilter extends OncePerRequestFilter 
         this.authenticationManager = authenticationManager;
     }
 
-    /** @see UsernamePasswordAuthenticationFilter#attemptAuthentication
-      * @see org.springframework.security.web.authentication.www.BasicAuthenticationFilter#doFilterInternal
-//    * @see org.springframework.security.oauth2.provider.endpoint.OAuth2TokenEndpointFilter
-      */
+    /**
+     * @see org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter#attemptAuthentication
+     * @see org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter#attemptAuthentication
+     * @see org.springframework.security.web.authentication.www.BasicAuthenticationFilter#doFilterInternal
+//   * @see org.springframework.security.oauth2.provider.endpoint.OAuth2TokenEndpointFilter
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         final String method = request.getMethod();
@@ -47,10 +48,11 @@ public final class BearerTokenAuthenticationFilter extends OncePerRequestFilter 
             try {
                 final Authentication authenticated = this.authenticationManager.authenticate(bearerUnauthenticatedToken);
                 SecurityContextHolder.getContext().setAuthentication(authenticated);
-                // success handler
+                // publish authentication success event
             } catch (AuthenticationException ex) {
                 SecurityContextHolder.clearContext();
-                // failure handler
+                // publish authentication failure event
+                // save exception
             }
         }
         chain.doFilter(request, response);
