@@ -94,8 +94,8 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 		final String response = RestTemplateUtil.plainGet(httpsRestTemplate, httpsBaseUrl() + "/api/v1/authenticate/status", null, String.class);
 		assertThat(response).contains("Authenticated as anonymous");
 		// TODO Why does onFailure not get called?
-		verify(authenticationListener(), never()).onSuccess(any());
-		verify(authenticationListener(), times(1)).onFailure(any());
+		verify(authenticationListener(), never()).onAuthenticationSuccessEvent(any());
+		verify(authenticationListener(), times(1)).onAbstractAuthenticationFailureEvent(any());
 	}
 
 	private void attemptLoginClientName(final RestTemplate httpsRestTemplate, final boolean assertLoginSuccess) {
@@ -107,12 +107,12 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 		final boolean success = (authenticationStatusResponse != null) && (authenticationStatusResponse.equals("Authenticated as " + client.getName()));
 		if (assertLoginSuccess) {
 			Assertions.assertTrue(success);
-			verify(authenticationListener(), times(1)).onSuccess(any());
-			verify(authenticationListener(), never()).onFailure(any());
+			verify(authenticationListener(), times(1)).onAuthenticationSuccessEvent(any());
+			verify(authenticationListener(), never()).onAbstractAuthenticationFailureEvent(any());
 		} else {
 			Assertions.assertFalse(success);
-			verify(authenticationListener(), never()).onSuccess(any());
-			verify(authenticationListener(), times(1)).onFailure(any());
+			verify(authenticationListener(), never()).onAuthenticationSuccessEvent(any());
+			verify(authenticationListener(), times(1)).onAbstractAuthenticationFailureEvent(any());
 		}
 	}
 
@@ -124,8 +124,8 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 		final String authenticateJwtResponse = authenticateJwt(httpsRestTemplate, basicAuthorizationHeader);
 		if (assertGetJwtSuccess) {
 			Assertions.assertNotNull(authenticateJwtResponse);
-			verify(authenticationListener(), times(1)).onSuccess(any());
-			verify(authenticationListener(), never()).onFailure(any());
+			verify(authenticationListener(), times(1)).onAuthenticationSuccessEvent(any());
+			verify(authenticationListener(), never()).onAbstractAuthenticationFailureEvent(any());
 			final JWT jwt = JWTParser.parse(authenticateJwtResponse);
 			Assertions.assertNotNull(jwt);
 			super.prettyJson().logAndSave(jwt.getHeader().toJSONObject());
@@ -137,16 +137,16 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 			final boolean success = (authenticationStatusResponse != null) && (authenticationStatusResponse.equals("Authenticated as " + client.getName()));
             Assertions.assertEquals(success, assertUseJwtSuccess);
 			if (assertUseJwtSuccess) {
-				verify(authenticationListener(), times(2)).onSuccess(any());
-				verify(authenticationListener(), never()).onFailure(any());
+				verify(authenticationListener(), times(2)).onAuthenticationSuccessEvent(any());
+				verify(authenticationListener(), never()).onAbstractAuthenticationFailureEvent(any());
 			} else {
-				verify(authenticationListener(), times(1)).onSuccess(any());
-				verify(authenticationListener(), times(1)).onFailure(any());
+				verify(authenticationListener(), times(1)).onAuthenticationSuccessEvent(any());
+				verify(authenticationListener(), times(1)).onAbstractAuthenticationFailureEvent(any());
 			}
         } else {
 			Assertions.assertNull(authenticateJwtResponse);
-			verify(authenticationListener(), never()).onSuccess(any());
-			verify(authenticationListener(), times(1)).onFailure(any());
+			verify(authenticationListener(), never()).onAuthenticationSuccessEvent(any());
+			verify(authenticationListener(), times(1)).onAbstractAuthenticationFailureEvent(any());
 		}
 	}
 

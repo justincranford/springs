@@ -21,26 +21,26 @@ public class ApplicationEventPublisherIT extends AbstractIT {
     @Nested
     public class VerifyAuthenticationListener {
         @Test
-        public void onSuccess() {
-            final AuthenticationSuccessEvent mockAuthenticationSuccessEvent = mockAuthenticationSuccessEvent();
+        public void onAuthenticationSuccessEvent() {
+            final AuthenticationSuccessEvent mockAuthenticationSuccessEvent = mockAuthenticationAuthenticationSuccessEventEvent();
             applicationEventPublisher().publishEvent(mockAuthenticationSuccessEvent);
-            verify(authenticationListener(), times(1)).onSuccess(mockAuthenticationSuccessEvent);
+            verify(authenticationListener(), times(1)).onAuthenticationSuccessEvent(mockAuthenticationSuccessEvent);
         }
 
         @Test
-        public void onFailure() {
-            final AbstractAuthenticationFailureEvent mockAbstractAuthenticationFailureEvent = mockAbstractAuthenticationFailureEvent();
+        public void onAbstractAuthenticationFailureEvent() {
+            final AbstractAuthenticationFailureEvent mockAbstractAuthenticationFailureEvent = mockAbstractAuthenticationAbstractAuthenticationFailureEventEvent();
             applicationEventPublisher().publishEvent(mockAbstractAuthenticationFailureEvent);
-            verify(authenticationListener(), times(1)).onFailure(mockAbstractAuthenticationFailureEvent);
+            verify(authenticationListener(), times(1)).onAbstractAuthenticationFailureEvent(mockAbstractAuthenticationFailureEvent);
         }
 
-        private AuthenticationSuccessEvent mockAuthenticationSuccessEvent() {
+        private AuthenticationSuccessEvent mockAuthenticationAuthenticationSuccessEventEvent() {
             final AuthenticationSuccessEvent mockAuthenticationSuccessEvent = mock(AuthenticationSuccessEvent.class);
             when(mockAuthenticationSuccessEvent.toString()).thenReturn("mockAuthenticationSuccessEvent");
             return mockAuthenticationSuccessEvent;
         }
 
-        private AbstractAuthenticationFailureEvent mockAbstractAuthenticationFailureEvent() {
+        private AbstractAuthenticationFailureEvent mockAbstractAuthenticationAbstractAuthenticationFailureEventEvent() {
             final AbstractAuthenticationFailureEvent mockAbstractAuthenticationFailureEvent = mock(AbstractAuthenticationFailureEvent.class);
             when(mockAbstractAuthenticationFailureEvent.toString()).thenReturn("mockAbstractAuthenticationFailureEvent");
             return mockAbstractAuthenticationFailureEvent;
