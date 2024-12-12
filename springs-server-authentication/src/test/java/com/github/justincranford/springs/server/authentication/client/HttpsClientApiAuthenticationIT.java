@@ -18,6 +18,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @Slf4j
 public class HttpsClientApiAuthenticationIT extends AbstractIT {
@@ -89,6 +93,9 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 	private void attemptUnauthenticatedHttpGet(final RestTemplate httpsRestTemplate) {
 		final String response = RestTemplateUtil.plainGet(httpsRestTemplate, httpsBaseUrl() + "/api/v1/authenticate/status", null, String.class);
 		assertThat(response).contains("Authenticated as anonymous");
+		// TODO Why does onFailure not get called?
+		verify(authenticationListener(), never()).onSuccess(any());
+		verify(authenticationListener(), times(1)).onFailure(any());
 	}
 
 	private void attemptLoginClientName(final RestTemplate httpsRestTemplate, final boolean assertLoginSuccess) {
@@ -100,8 +107,12 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 		final boolean success = (authenticationStatusResponse != null) && (authenticationStatusResponse.equals("Authenticated as " + client.getName()));
 		if (assertLoginSuccess) {
 			Assertions.assertTrue(success);
+			verify(authenticationListener(), times(1)).onSuccess(any());
+			verify(authenticationListener(), never()).onFailure(any());
 		} else {
 			Assertions.assertFalse(success);
+			verify(authenticationListener(), never()).onSuccess(any());
+			verify(authenticationListener(), times(1)).onFailure(any());
 		}
 	}
 
@@ -113,6 +124,8 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 		final String authenticateJwtResponse = authenticateJwt(httpsRestTemplate, basicAuthorizationHeader);
 		if (assertGetJwtSuccess) {
 			Assertions.assertNotNull(authenticateJwtResponse);
+			verify(authenticationListener(), times(1)).onSuccess(any());
+			verify(authenticationListener(), never()).onFailure(any());
 			final JWT jwt = JWTParser.parse(authenticateJwtResponse);
 			Assertions.assertNotNull(jwt);
 			super.prettyJson().logAndSave(jwt.getHeader().toJSONObject());
@@ -123,8 +136,17 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 			final String authenticationStatusResponse = authenticateStatus(httpsRestTemplate, bearerAuthorizationHeader);
 			final boolean success = (authenticationStatusResponse != null) && (authenticationStatusResponse.equals("Authenticated as " + client.getName()));
             Assertions.assertEquals(success, assertUseJwtSuccess);
+			if (assertUseJwtSuccess) {
+				verify(authenticationListener(), times(2)).onSuccess(any());
+				verify(authenticationListener(), never()).onFailure(any());
+			} else {
+				verify(authenticationListener(), times(1)).onSuccess(any());
+				verify(authenticationListener(), times(1)).onFailure(any());
+			}
         } else {
 			Assertions.assertNull(authenticateJwtResponse);
+			verify(authenticationListener(), never()).onSuccess(any());
+			verify(authenticationListener(), times(1)).onFailure(any());
 		}
 	}
 
