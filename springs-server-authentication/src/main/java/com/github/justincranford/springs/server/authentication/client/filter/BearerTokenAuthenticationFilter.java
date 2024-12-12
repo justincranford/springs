@@ -48,11 +48,8 @@ public final class BearerTokenAuthenticationFilter extends OncePerRequestFilter 
             try {
                 final Authentication authenticated = this.authenticationManager.authenticate(bearerUnauthenticatedToken);
                 SecurityContextHolder.getContext().setAuthentication(authenticated);
-                // publish authentication success event
             } catch (AuthenticationException ex) {
                 SecurityContextHolder.clearContext();
-                // publish authentication failure event
-                // save exception
             }
         }
         chain.doFilter(request, response);

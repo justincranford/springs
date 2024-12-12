@@ -3,6 +3,7 @@ package com.github.justincranford.springs.server.authentication.client;
 import com.github.justincranford.springs.persistenceorm.clients.properties.SpringsPersistenceOrmClientsClientProperties;
 import com.github.justincranford.springs.server.authentication.AbstractIT;
 import com.github.justincranford.springs.util.basic.Base64Util;
+import com.github.justincranford.springs.util.basic.TextCodec;
 import com.github.justincranford.springs.util.http.client.util.RestTemplateUtil;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
@@ -47,12 +48,12 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 				attemptLoginClientName(mtlsRestTemplate(), true);
 			}
 			@RepeatedTest(REPEATS)
-			void sTlsRequestJwt() throws Exception {
-				attemptRequestJwt(stlsRestTemplate(), true);
+			void sTlsGetAndUseJwt() throws Exception {
+				attemptGetAndUseJwt(stlsRestTemplate(), true, true);
 			}
 			@RepeatedTest(REPEATS)
-			void mTlsRequestJwt() throws Exception {
-				attemptRequestJwt(mtlsRestTemplate(), true);
+			void mTlsGetAndUseJwt() throws Exception {
+				attemptGetAndUseJwt(mtlsRestTemplate(), true, true);
 			}
 		}
 
@@ -67,12 +68,20 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 				attemptLoginClientName(mtlsRestTemplate(), false);
 			}
 			@RepeatedTest(REPEATS)
-			void sTlsRequestJwt() throws Exception {
-				attemptRequestJwt(stlsRestTemplate(), false);
+			void sTlsGetJwt() throws Exception {
+				attemptGetAndUseJwt(stlsRestTemplate(), false, false);
 			}
 			@RepeatedTest(REPEATS)
-			void mTlsRequestJwt() throws Exception {
-				attemptRequestJwt(mtlsRestTemplate(), false);
+			void mTlsGetJwt() throws Exception {
+				attemptGetAndUseJwt(mtlsRestTemplate(), false, false);
+			}
+			@RepeatedTest(REPEATS)
+			void sTlsUseJwt() throws Exception {
+				attemptGetAndUseJwt(stlsRestTemplate(), true, false);
+			}
+			@RepeatedTest(REPEATS)
+			void mTlsUseJwt() throws Exception {
+				attemptGetAndUseJwt(mtlsRestTemplate(), true, false);
 			}
 		}
 	}
@@ -96,13 +105,13 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 		}
 	}
 
-	private void attemptRequestJwt(final RestTemplate httpsRestTemplate, final boolean assertLoginSuccess) throws Exception {
+	private void attemptGetAndUseJwt(final RestTemplate httpsRestTemplate, final boolean assertGetJwtSuccess, final boolean assertUseJwtSuccess) throws Exception {
 		final List<SpringsPersistenceOrmClientsClientProperties.Client> clients = springsPersistenceOrmClientsClientProperties().getClient();
 		Assertions.assertFalse(clients.isEmpty());
 		final SpringsPersistenceOrmClientsClientProperties.Client client = clients.getFirst();
-		final String basicAuthorizationHeader = basicAuthorizationHeader(client.getName(), assertLoginSuccess ? client.getSecret() : "Wrong");
+		final String basicAuthorizationHeader = basicAuthorizationHeader(client.getName(), assertGetJwtSuccess ? client.getSecret() : "Wrong");
 		final String authenticateJwtResponse = authenticateJwt(httpsRestTemplate, basicAuthorizationHeader);
-		if (assertLoginSuccess) {
+		if (assertGetJwtSuccess) {
 			Assertions.assertNotNull(authenticateJwtResponse);
 			final JWT jwt = JWTParser.parse(authenticateJwtResponse);
 			Assertions.assertNotNull(jwt);
@@ -110,11 +119,11 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 			if (jwt instanceof SignedJWT) {
 				super.prettyJson().logAndSave(jwt.getJWTClaimsSet().toJSONObject());
 			}
-			final String bearerAuthorizationHeader = bearerAuthorizationHeader(jwt);
+			final String bearerAuthorizationHeader = bearerAuthorizationHeader(jwt) + (assertUseJwtSuccess ? "" : TextCodec.B64_URL.encodeToString(new byte[1]));
 			final String authenticationStatusResponse = authenticateStatus(httpsRestTemplate, bearerAuthorizationHeader);
 			final boolean success = (authenticationStatusResponse != null) && (authenticationStatusResponse.equals("Authenticated as " + client.getName()));
-			Assertions.assertTrue(success);
-		} else {
+            Assertions.assertEquals(success, assertUseJwtSuccess);
+        } else {
 			Assertions.assertNull(authenticateJwtResponse);
 		}
 	}
