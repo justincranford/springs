@@ -175,14 +175,14 @@ public final class BootstrapTls {
     	// Client Bundle for performing HTTP/TLS PSK Authentication
 		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK + ".key.alias", pskKeyAlias);
 		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK + ".key.password", pskKeyPassword);
-		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK + ".keystore.location", httpsClientServerPskKeyStoreTypeFilePath);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK + ".keystore.location", "file://" + httpsClientServerPskKeyStoreTypeFilePath);
 		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK + ".keystore.password", pskKeyStorePassword);
 		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.CLIENT_TLS_PSK + ".keystore.type", httpsClientServerPskKeyStoreType);
 
 		// Server Bundle for listening to HTTP/TLS PSK requests
 		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK + ".key.alias", pskKeyAlias);
 		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK + ".key.password", pskKeyPassword);
-		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK + ".keystore.location", httpsClientServerPskKeyStoreTypeFilePath);
+		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK + ".keystore.location", "file://" + httpsClientServerPskKeyStoreTypeFilePath);
 		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK + ".keystore.password", pskKeyStorePassword);
 		tlsProperties.put("spring.ssl.bundle.jks." + SslBundleNames.SERVER_TLS_PSK + ".keystore.type", httpsClientServerPskKeyStoreType);
 
