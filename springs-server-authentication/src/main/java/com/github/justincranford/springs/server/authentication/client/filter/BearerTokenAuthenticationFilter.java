@@ -5,11 +5,13 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -17,14 +19,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Slf4j
+@RequiredArgsConstructor
 public final class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
     private static final AntPathRequestMatcher ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/api/v1/**");
 
     private final AuthenticationManager authenticationManager;
-
-    public BearerTokenAuthenticationFilter(final AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
 
     /**
      * @see org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter#attemptAuthentication
@@ -47,7 +46,9 @@ public final class BearerTokenAuthenticationFilter extends OncePerRequestFilter 
             log.trace("HTTP method [{}] path [{}] pathInfo [{}] hasBearerToken [true] match", method, path, pathInfo);
             try {
                 final Authentication authenticated = this.authenticationManager.authenticate(bearerUnauthenticatedToken);
-                SecurityContextHolder.getContext().setAuthentication(authenticated);
+                final SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+                securityContext.setAuthentication(authenticated);
+                SecurityContextHolder.setContext(securityContext);
             } catch (AuthenticationException ex) {
                 SecurityContextHolder.clearContext();
             }
