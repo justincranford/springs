@@ -1,5 +1,6 @@
 package com.github.justincranford.springs.server.authentication.filterchain.config;
 
+import com.github.justincranford.springs.server.authentication.anonymous.filter.AnonymousAuthenticationEventPublisherFilter;
 import com.github.justincranford.springs.server.authentication.client.filter.BearerTokenAuthenticationFilter;
 import com.github.justincranford.springs.server.authentication.client.provider.ClientJwtAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.client.provider.ClientNameSecretAuthenticationProvider;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -29,6 +31,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.DisableEncodeUrlFilter;
@@ -82,6 +85,11 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 	@Bean
 	public BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter(final AuthenticationManager authenticationManager) {
 		return new BearerTokenAuthenticationFilter(authenticationManager);
+	}
+
+	@Bean
+	public AnonymousAuthenticationEventPublisherFilter anonymousAuthenticationEventPublisherFilter(final ApplicationEventPublisher applicationEventPublisher) {
+		return new AnonymousAuthenticationEventPublisherFilter(applicationEventPublisher);
 	}
 
 	@Bean
@@ -145,7 +153,11 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 	}
 
 	@Bean
-	public SecurityFilterChain securityFilterChainApi(final HttpSecurity http, final BearerTokenAuthenticationFilter clientJwtBearerTokenAuthenticationFilter) throws Exception {
+	public SecurityFilterChain securityFilterChainApi(
+		final HttpSecurity http,
+		final BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter,
+		final AnonymousAuthenticationEventPublisherFilter anonymousAuthenticationEventPublisherFilter
+	) throws Exception {
         http.securityMatcher("/api/v1/**")
             .authorizeHttpRequests(authz -> authz
 				.requestMatchers("/api/v1/authenticate/**", "/api/v1/register/**").permitAll()
@@ -161,7 +173,8 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 			)
 			.addFilterBefore(this.requestLoggingFilter, DisableEncodeUrlFilter.class)
 			.addFilterBefore(this.rateLimitingFilter,   DisableEncodeUrlFilter.class)
-			.addFilterBefore(clientJwtBearerTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(bearerTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+			.addFilterAfter(anonymousAuthenticationEventPublisherFilter, AnonymousAuthenticationFilter.class)
 			;
 
         return http.build();
