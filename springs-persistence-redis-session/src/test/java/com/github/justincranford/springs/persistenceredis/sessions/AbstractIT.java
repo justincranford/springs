@@ -158,6 +158,6 @@ public class AbstractIT {
 	@DynamicPropertySource
 	static void redisServerContainer(final DynamicPropertyRegistry registry) {
 		registry.add(BootstrapTestContainers.Properties.MODE,                             () -> BootstrapTestContainers.Properties.MODES.PREFERRED);
-		registry.add(BootstrapTestContainers.Properties.CONTAINERS_PREFIX + "redis1", () -> "redis:7.4.0");
+		registry.add(BootstrapTestContainers.Properties.CONTAINERS_PREFIX + "redis1", () -> "redis:7.4.1");
 	}
 }

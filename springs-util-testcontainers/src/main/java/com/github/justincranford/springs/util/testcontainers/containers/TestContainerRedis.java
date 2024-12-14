@@ -1,19 +1,18 @@
 package com.github.justincranford.springs.util.testcontainers.containers;
 
-import java.time.Duration;
-
+import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.utility.DockerImageName;
 
-import lombok.extern.slf4j.Slf4j;
+import java.time.Duration;
 
 @Slf4j
 @SuppressWarnings({"resource"})
 public class TestContainerRedis extends AbstractTestContainer<GenericContainer<?>> {
-	public static final String DOCKER_IMAGE_NAME = "redis:7.4.0"; // Last checked on 2024-08-01
+	public static final String DOCKER_IMAGE_NAME = "redis:7.4.1"; // Last checked on 2024-12-14
 	private static final String NETWORK_ALIAS = "redis";
 	private static final Integer REDIS_PORT = Integer.valueOf(6379);
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(15);

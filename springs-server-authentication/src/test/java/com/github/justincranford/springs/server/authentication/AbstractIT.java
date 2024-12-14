@@ -142,7 +142,7 @@ public class AbstractIT {
 	@DynamicPropertySource
 	static void properties(final DynamicPropertyRegistry registry) {
 		registry.add("bootstrap.testcontainers.mode",                 () -> "preferred");
-		registry.add("bootstrap.testcontainers.containers.redis1",    () -> "redis:7.4.0");
-		registry.add("bootstrap.testcontainers.containers.postgres1", () -> "postgres:16.3");
+		registry.add("bootstrap.testcontainers.containers.redis1",    () -> "redis:7.4.1");
+		registry.add("bootstrap.testcontainers.containers.postgres1", () -> "postgres:17.2");
 	}
 }

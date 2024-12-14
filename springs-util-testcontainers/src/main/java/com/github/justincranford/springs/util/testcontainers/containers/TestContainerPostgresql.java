@@ -1,19 +1,18 @@
 package com.github.justincranford.springs.util.testcontainers.containers;
 
-import java.time.Duration;
-
+import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.utility.DockerImageName;
 
-import lombok.extern.slf4j.Slf4j;
+import java.time.Duration;
 
 @Slf4j
 @SuppressWarnings({"resource"})
 public class TestContainerPostgresql extends AbstractTestContainer<PostgreSQLContainer<?>> {
-	public static final String DOCKER_IMAGE_NAME = "postgres:16.3"; // Last checked on 2024-08-01
+	public static final String DOCKER_IMAGE_NAME = "postgres:17.2"; // Last checked on 2024-12-14
 	private static final String NETWORK_ALIAS = "postgresql";
 	private static final Integer POSTGRESQL_PORT = PostgreSQLContainer.POSTGRESQL_PORT;
 	private static final Duration START_TIMEOUT = Duration.ofSeconds(15);

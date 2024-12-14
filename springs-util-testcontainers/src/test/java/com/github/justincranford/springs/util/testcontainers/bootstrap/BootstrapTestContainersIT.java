@@ -45,7 +45,7 @@ public class BootstrapTestContainersIT extends AbstractIT {
 		class TwoSame extends AbstractOneTestIT {
 			@DynamicPropertySource
 			static void properties(final DynamicPropertyRegistry registry) {
-				registry.add("bootstrap.testcontainers.containers.redis1",         () -> "redis:7.4.0");
+				registry.add("bootstrap.testcontainers.containers.redis1",         () -> "redis:7.4.1");
 				registry.add("bootstrap.testcontainers.containers.ollama1",        () -> "ollama/ollama:0.4.3");
 			}
 		}
@@ -54,8 +54,8 @@ public class BootstrapTestContainersIT extends AbstractIT {
 		class TwoDifferent extends AbstractOneTestIT {
 			@DynamicPropertySource
 			static void properties(final DynamicPropertyRegistry registry) {
-				registry.add("bootstrap.testcontainers.containers.redis1",         () -> "redis:7.4.0");
-				registry.add("bootstrap.testcontainers.containers.redis2",         () -> "redis:7.4.0");
+				registry.add("bootstrap.testcontainers.containers.redis1",         () -> "redis:7.4.1");
+				registry.add("bootstrap.testcontainers.containers.redis2",         () -> "redis:7.4.1");
 			}
 		}
 		@Disabled(value="Comment out to test all. Too slow to test all of them every time.")
@@ -70,12 +70,12 @@ public class BootstrapTestContainersIT extends AbstractIT {
 				registry.add("bootstrap.testcontainers.containers.kafka1", () -> "confluentinc/cp-kafka:7.7.1");
 				registry.add("bootstrap.testcontainers.containers.zipkin1", () -> "openzipkin/zipkin:3.4.2");
 				registry.add("bootstrap.testcontainers.containers.dynamodb1", () -> "amazon/dynamodb-local:2.5.3");
-				registry.add("bootstrap.testcontainers.containers.postgres1", () -> "postgres:16.3");
+				registry.add("bootstrap.testcontainers.containers.postgres1", () -> "postgres:17.2");
 				registry.add("bootstrap.testcontainers.containers.grafana1", () -> "selenium/standalone-chrome:130.0");
 				registry.add("bootstrap.testcontainers.containers.mongodb1", () -> "mongo:8.0.3");
 				registry.add("bootstrap.testcontainers.containers.vault1", () -> "hashicorp/vault:1.18.2");
 				registry.add("bootstrap.testcontainers.containers.consul1", () -> "hashicorp/consul:1.19.2");
-				registry.add("bootstrap.testcontainers.containers.redis1", () -> "redis:7.4.0");
+				registry.add("bootstrap.testcontainers.containers.redis1", () -> "redis:7.4.1");
 				registry.add("bootstrap.testcontainers.containers.ollama1", () -> "ollama/ollama:0.4.3");
 			}
 		}
@@ -98,8 +98,8 @@ public class BootstrapTestContainersIT extends AbstractIT {
 		class Two extends AbstractOneTestIT {
 			@DynamicPropertySource
 			static void properties(final DynamicPropertyRegistry registry) {
-//				registry.add("bootstrap.testcontainers.containers.redis1", () -> "redis:7.4.0");
-//				registry.add("bootstrap.testcontainers.containers.redis2", () -> "redis:7.4.0");
+//				registry.add("bootstrap.testcontainers.containers.redis1", () -> "redis:7.4.1");
+//				registry.add("bootstrap.testcontainers.containers.redis2", () -> "redis:7.4.1");
 			}
 		}
 	}
@@ -121,8 +121,8 @@ public class BootstrapTestContainersIT extends AbstractIT {
 		class Two extends AbstractOneTestIT {
 			@DynamicPropertySource
 			static void properties(final DynamicPropertyRegistry registry) {
-//				registry.add("bootstrap.testcontainers.containers.redis1", () -> "redis:7.4.0");
-//				registry.add("bootstrap.testcontainers.containers.redis2", () -> "redis:7.4.0");
+//				registry.add("bootstrap.testcontainers.containers.redis1", () -> "redis:7.4.1");
+//				registry.add("bootstrap.testcontainers.containers.redis2", () -> "redis:7.4.1");
 			}
 		}
 	}
