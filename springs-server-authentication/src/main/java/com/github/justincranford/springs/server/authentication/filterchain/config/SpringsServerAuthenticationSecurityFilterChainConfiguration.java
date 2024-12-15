@@ -15,6 +15,7 @@ import com.github.justincranford.springs.util.http.server.redirect.RedirectToLog
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,6 +31,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -69,6 +72,9 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 	@Autowired
 	private final RequestLogFilter requestLoggingFilter;
 
+	@Value("${server.address}")
+	private String serverAddress;
+
 	@Primary
 	@Bean
 	public AuthenticationManager authenticationManager(final HttpSecurity http) throws Exception {
@@ -92,6 +98,17 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 		return new AnonymousAuthenticationEventPublisherFilter(applicationEventPublisher);
 	}
 
+//	@Bean
+//	public UserDetailsService userDetailsService(final PersonService personService) {
+//		return personService;
+//	}
+//	@Qualifier("userDetailsService")
+	@Primary
+	@Bean
+	public UserDetailsService webauthnUserDetailsService() {
+		return new InMemoryUserDetailsManager();
+	}
+
 	@Bean
 	public FilterRegistrationBean<BearerTokenAuthenticationFilter> filterRegistrationBeanBearerTokenAuthenticationFilter(final BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter) {
 		final FilterRegistrationBean<BearerTokenAuthenticationFilter> filterRegistrationBeanBearerTokenAuthenticationFilter = new FilterRegistrationBean<>(bearerTokenAuthenticationFilter);
@@ -106,9 +123,9 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 	 */
     @Bean
     public SecurityFilterChain securityFilterChainUserUi(HttpSecurity http) throws Exception {
-		http.securityMatcher("/login", "/logout", "/secure/**")
+		http.securityMatcher("/login", "/logout", "/default-ui.css", "/login/webauthn.js", "/login/webauthn", "/webauthn/**", "/secure/**")
 			.authorizeHttpRequests(authz -> authz
-				.requestMatchers("/login", "/logout").permitAll()
+				.requestMatchers("/login", "/logout", "/default-ui.css", "/login/webauthn.js", "/login/webauthn", "/webauthn/**").permitAll()
 				.requestMatchers("/secure/**").authenticated()
 			)
 			.csrf(csrf -> csrf
@@ -118,6 +135,11 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 			.formLogin(form -> form
 			    .permitAll()
 				.defaultSuccessUrl("/secure/home", true)
+			)
+			.webAuthn((webAuthn) -> webAuthn
+				.rpName("Springs Server Authentication Relying Party")
+				.rpId(this.serverAddress)
+				.allowedOrigins("https://" + this.serverAddress)
 			)
 			.logout(logout -> logout
 				.permitAll()
