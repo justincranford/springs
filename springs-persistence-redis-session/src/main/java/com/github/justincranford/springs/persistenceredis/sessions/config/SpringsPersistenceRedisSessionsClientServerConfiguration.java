@@ -1,7 +1,6 @@
 package com.github.justincranford.springs.persistenceredis.sessions.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.persistenceredis.properties.RedisProperties;
 import com.github.justincranford.springs.persistenceredis.serdes.serdes.JsonRedisSerializer;
 import com.github.justincranford.springs.persistenceredis.sessions.generator.CustomSessionIdGenerator;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers;
@@ -10,9 +9,11 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -95,28 +96,29 @@ public class SpringsPersistenceRedisSessionsClientServerConfiguration {
     }
 
     @Bean
-    public LettuceConnectionFactory redisConnectionFactory() {
+    public LettuceConnectionFactory redisConnectionFactoryJustin() {
         final String host = this.redisProperties.getHost();
         final Integer port = this.redisProperties.getPort();
         log.info("Creating redis client, host: {}, port: {}", host, port);
         return new LettuceConnectionFactory(host, port);
     }
 
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(
-        final LettuceConnectionFactory redisConnectionFactory,
+    @Primary
+    @Bean(name="redisTemplate")
+    public RedisTemplate<Object, Object> redisTemplateJustin(
+        final LettuceConnectionFactory redisConnectionFactoryJustin,
         final JsonRedisSerializer jsonRedisSerializer
     ) {
         final StringRedisSerializer              stringRedisSerializer              = new StringRedisSerializer();
 //      final GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer(this.objectMapperPersistence);
 
-        final RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory);
-        redisTemplate.setDefaultSerializer(jsonRedisSerializer);
+        final RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactoryJustin);
         redisTemplate.setKeySerializer(stringRedisSerializer);
         redisTemplate.setHashKeySerializer(stringRedisSerializer);
         redisTemplate.setValueSerializer(jsonRedisSerializer);
         redisTemplate.setHashValueSerializer(jsonRedisSerializer);
+//        redisTemplate.setDefaultSerializer(jsonRedisSerializer);
         return redisTemplate;
     }
 

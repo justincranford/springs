@@ -138,8 +138,8 @@ public final class BootstrapTestContainers {
 		public static final SupportedImage REDIS = new SupportedImage((Class<? extends GenericContainer<?>>) (Class<?>) GenericContainer.class,
 		   "docker.io", "redis", List.of(6379),
 			(containerDescriptor) -> new LinkedHashMap<>() {{
-				put("spring.redis.host", containerDescriptor.containerInstance().getHost());
-				put("spring.redis.port", containerDescriptor.containerInstance().getMappedPort(6379));
+				put("spring.redis.data.host", containerDescriptor.containerInstance().getHost());
+				put("spring.redis.data.port", containerDescriptor.containerInstance().getMappedPort(6379));
 			}}
 		);
 		@SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
