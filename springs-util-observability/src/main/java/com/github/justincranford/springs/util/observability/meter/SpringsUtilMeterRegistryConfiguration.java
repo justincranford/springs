@@ -1,11 +1,13 @@
 package com.github.justincranford.springs.util.observability.meter;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-
+import io.micrometer.core.aop.TimedAspect;
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.ImmutableTag;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -13,20 +15,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Primary;
 
-//import com.netflix.spectator.atlas.AtlasConfig;
-
-//import io.micrometer.atlas.AtlasMeterRegistry;
-import io.micrometer.core.aop.TimedAspect;
-import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.ImmutableTag;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
-import io.micrometer.core.instrument.logging.LoggingMeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-//import io.micrometer.prometheusmetrics.PrometheusConfig;
-//import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
-import lombok.extern.slf4j.Slf4j;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Configuration
 @EnableAspectJAutoProxy
@@ -43,7 +36,7 @@ public class SpringsUtilMeterRegistryConfiguration {
 		final CompositeMeterRegistry compositeMeterRegistry = new CompositeMeterRegistry(Clock.SYSTEM);
 		compositeMeterRegistry.config().commonTags(metricsCommonTags());
 		compositeMeterRegistry.add(new SimpleMeterRegistry());
-		compositeMeterRegistry.add(new LoggingMeterRegistry());
+//		compositeMeterRegistry.add(new LoggingMeterRegistry());
 //		compositeMeterRegistry.add(new AtlasMeterRegistry(atlasConfig()));
 //		compositeMeterRegistry.add(new PrometheusMeterRegistry(prometheusConfig()));
 		return compositeMeterRegistry;
