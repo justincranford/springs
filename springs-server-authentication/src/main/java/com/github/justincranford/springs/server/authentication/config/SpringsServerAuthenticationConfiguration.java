@@ -7,6 +7,7 @@ import com.github.justincranford.springs.server.authentication.client.config.Spr
 import com.github.justincranford.springs.server.authentication.event.config.SpringsServerAuthenticationEventsConfiguration;
 import com.github.justincranford.springs.server.authentication.filterchain.config.SpringsServerAuthenticationSecurityFilterChainConfiguration;
 import com.github.justincranford.springs.server.authentication.user.config.SpringsServerAuthenticationUserConfiguration;
+import com.github.justincranford.springs.server.authentication.webauthn.config.SpringsServerAuthenticationWebauthnConfiguration;
 import com.github.justincranford.springs.util.https.config.SpringsUtilHttpsConfiguration;
 import com.github.justincranford.springs.util.security.hashes.config.SpringsUtilSecurityHashesConfiguration;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +24,8 @@ import org.springframework.context.annotation.Import;
 	SpringsServerAuthenticationUserConfiguration.class,
 	SpringsServerAuthenticationClientConfiguration.class,
 	SpringsServerAuthenticationSecurityFilterChainConfiguration.class,
-	SpringsServerAuthenticationEventsConfiguration.class
+	SpringsServerAuthenticationEventsConfiguration.class,
+	SpringsServerAuthenticationWebauthnConfiguration.class
 })
 public class SpringsServerAuthenticationConfiguration {
 	// do nothing
