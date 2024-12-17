@@ -10,14 +10,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 @NoArgsConstructor
-public class JsonRedisSerializer implements RedisSerializer<Object> {
+public class JsonRedisSerializer<T> implements RedisSerializer<T> {
+
     /** @see com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration */
     @Autowired
     @Qualifier("objectMapperPersistence")
     private ObjectMapper objectMapper;
 
     @Override
-    public byte[] serialize(final Object value) throws SerializationException {
+    public byte[] serialize(final T value) throws SerializationException {
         try {
             return this.objectMapper.writeValueAsBytes(value);
         } catch (Exception e) {
@@ -26,12 +27,13 @@ public class JsonRedisSerializer implements RedisSerializer<Object> {
     }
 
     @Override
-    public Object deserialize(final byte[] bytes) throws SerializationException {
+    public T deserialize(final byte[] bytes) throws SerializationException {
         try {
             if (bytes == null || bytes.length == 0) {
                 return null;
             }
-            return this.objectMapper.readValue(bytes, Object.class);
+            // Deserialize into a generic type
+            return this.objectMapper.readValue(bytes, objectMapper.getTypeFactory().constructType(Object.class));
         } catch (Exception e) {
             throw new SerializationException("Error deserializing object", e);
         }
