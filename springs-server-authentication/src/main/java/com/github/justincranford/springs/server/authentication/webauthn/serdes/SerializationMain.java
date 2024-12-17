@@ -79,7 +79,7 @@ public final class SerializationMain {
         objectMapper.addMixIn(CredProtectAuthenticationExtensionsClientInput.class, CredProtectAuthenticationExtensionsClientInputMixIn.class);
         objectMapper.addMixIn(CredProtect.class, CredProtectMixIn.class);
 
-        final Bytes bytes = new Bytes(new byte[] {1, 2, 3, 4, 5, 6 });
+        final Bytes bytes = Bytes.random();
         final String serializedBytes = objectMapper.writeValueAsString(bytes);
         System.out.println("Serialized  Bytes: " + serializedBytes);
         final Bytes deserializedBytes = objectMapper.readValue(serializedBytes, Bytes.class);
