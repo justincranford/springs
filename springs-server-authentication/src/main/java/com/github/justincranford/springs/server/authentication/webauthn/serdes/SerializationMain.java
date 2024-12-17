@@ -9,7 +9,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.security.web.webauthn.api.AuthenticationExtensionsClientInput;
@@ -46,9 +45,6 @@ public final class SerializationMain {
             .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             ;
 
-        final SimpleModule webauthnSerdesModule = new SimpleModule();
-        objectMapper.registerModule(webauthnSerdesModule);
-
         objectMapper.addMixIn(PublicKeyCredentialRequestOptions.class, WebauthnPublicKeyCredentialRequestOptionsMixIn.class);
 
         objectMapper.addMixIn(PublicKeyCredentialCreationOptions.class, WebauthnPublicKeyCredentialCreationOptionsMixIn.class);
@@ -62,7 +58,6 @@ public final class SerializationMain {
         objectMapper.addMixIn(CredProtectAuthenticationExtensionsClientInput.class, CredProtectAuthenticationExtensionsClientInputMixIn.class);
         objectMapper.addMixIn(CredProtect.class, CredProtectMixIn.class);
         objectMapper.addMixIn(Bytes.class, WebauthnBytesMixIn.class);
-
 
         final Bytes bytes = new Bytes(new byte[] {1, 2, 3, 4, 5, 6 });
         final String serializedBytes = objectMapper.writeValueAsString(bytes);
