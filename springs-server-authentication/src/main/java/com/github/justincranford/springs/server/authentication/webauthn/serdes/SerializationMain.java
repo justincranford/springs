@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+@SuppressWarnings({"unused"})
 public final class SerializationMain {
     private SerializationMain() { }
 
@@ -261,7 +262,7 @@ public final class SerializationMain {
     public static abstract class AuthenticationExtensionsClientInputsMixIn {
         @JsonCreator
         public AuthenticationExtensionsClientInputsMixIn(
-            @JsonProperty("inputs") List<? extends AuthenticationExtensionsClientInput> inputs
+            @JsonProperty("inputs") List<?> inputs
         ) { }
     }
 
