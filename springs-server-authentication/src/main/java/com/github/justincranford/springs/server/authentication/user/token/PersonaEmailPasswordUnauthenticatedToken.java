@@ -9,23 +9,23 @@ public class PersonaEmailPasswordUnauthenticatedToken extends AbstractAuthentica
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private final String emailAddress;
-	private String password;
+	private final String principal;
+	private String credentials;
 	public PersonaEmailPasswordUnauthenticatedToken(final String _emailAddress, final String _password) {
 		super(null);
-		this.emailAddress = _emailAddress;
-		this.password = _password;
+		this.principal = _emailAddress;
+		this.credentials = _password;
 		super.setAuthenticated(false);
 	}
 
 	@Override
 	public Object getPrincipal() {
-		return this.emailAddress;
+		return this.principal;
 	}
 
 	@Override
 	public Object getCredentials() {
-		return this.password;
+		return this.credentials;
 	}
 
 	@Override
@@ -37,7 +37,6 @@ public class PersonaEmailPasswordUnauthenticatedToken extends AbstractAuthentica
 	@Override
 	public void eraseCredentials() {
 		super.eraseCredentials();
-		this.password = null;
+		this.credentials = null;
 	}
-
 }

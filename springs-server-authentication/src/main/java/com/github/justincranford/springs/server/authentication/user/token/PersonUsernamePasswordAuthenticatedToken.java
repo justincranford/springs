@@ -3,14 +3,9 @@ package com.github.justincranford.springs.server.authentication.user.token;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.github.justincranford.springs.persistenceorm.users.person.model.PersonDetails;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.Serial;
-import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
@@ -19,11 +14,7 @@ public class PersonUsernamePasswordAuthenticatedToken extends AbstractAuthentica
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	@Getter
-    private final PersonDetails personDetails;
-
-	@Setter
-    private List<SimpleGrantedAuthority> authorities;
+	private final String principal;
 
 	public PersonUsernamePasswordAuthenticatedToken() {
 		this(null);
@@ -32,23 +23,17 @@ public class PersonUsernamePasswordAuthenticatedToken extends AbstractAuthentica
 	public PersonUsernamePasswordAuthenticatedToken(final PersonDetails actualPersonDetails) {
 		super(actualPersonDetails == null ? null : actualPersonDetails.getAuthorities());
 		super.setAuthenticated(true);
-		this.personDetails = actualPersonDetails;
-		this.authorities = actualPersonDetails == null ? null : actualPersonDetails.getAuthorities();
+		this.principal = actualPersonDetails == null ? null : actualPersonDetails.getUsername();
 	}
 
 	@Override
 	public Object getPrincipal() {
-		return this.personDetails.getUsername();
+		return this.principal;
 	}
 
 	@Override
 	public Object getCredentials() {
 		return null;
-	}
-
-	@Override
-	public List<GrantedAuthority> getAuthorities() {
-		return this.authorities == null ? List.of() : List.copyOf(this.authorities);
 	}
 
     @Override

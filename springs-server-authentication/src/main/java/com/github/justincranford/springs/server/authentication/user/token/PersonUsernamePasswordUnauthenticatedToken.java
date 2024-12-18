@@ -9,23 +9,23 @@ public class PersonUsernamePasswordUnauthenticatedToken extends AbstractAuthenti
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private final String username;
-	private String password;
+	private final String principal;
+	private String credentials;
 	public PersonUsernamePasswordUnauthenticatedToken(final String _username, final String _password) {
 		super(null);
-		this.username = _username;
-		this.password = _password;
+		this.principal = _username;
+		this.credentials = _password;
 		super.setAuthenticated(false);
 	}
 
 	@Override
 	public Object getPrincipal() {
-		return this.username;
+		return this.principal;
 	}
 
 	@Override
 	public Object getCredentials() {
-		return this.password;
+		return this.credentials;
 	}
 
 	@Override
@@ -37,7 +37,6 @@ public class PersonUsernamePasswordUnauthenticatedToken extends AbstractAuthenti
 	@Override
 	public void eraseCredentials() {
 		super.eraseCredentials();
-		this.password = null;
+		this.credentials = null;
 	}
-
 }

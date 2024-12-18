@@ -3,14 +3,9 @@ package com.github.justincranford.springs.server.authentication.user.token;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.github.justincranford.springs.persistenceorm.users.persona.model.PersonaDetails;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.Serial;
-import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
@@ -19,11 +14,7 @@ public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticati
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	@Getter
-    private final PersonaDetails personaDetails;
-
-	@Setter
-    private List<SimpleGrantedAuthority> authorities;
+    private final String principal;
 
 	public PersonaEmailPasswordAuthenticatedToken() {
 		this(null);
@@ -32,23 +23,17 @@ public class PersonaEmailPasswordAuthenticatedToken extends AbstractAuthenticati
 	public PersonaEmailPasswordAuthenticatedToken(final PersonaDetails _personaDetails) {
 		super(_personaDetails == null ? null : _personaDetails.getAuthorities());
 		super.setAuthenticated(true);
-		this.personaDetails = _personaDetails;
-		this.authorities = _personaDetails == null ? null : _personaDetails.getAuthorities();
+		this.principal = _personaDetails == null ? null : _personaDetails.getUsername();
 	}
 
 	@Override
 	public Object getPrincipal() {
-		return this.personaDetails.getUsername(); // email address
+		return this.principal;
 	}
 
 	@Override
 	public Object getCredentials() {
 		return null;
-	}
-
-	@Override
-	public List<GrantedAuthority> getAuthorities() {
-		return this.authorities == null ? List.of() : List.copyOf(this.authorities);
 	}
 
     @Override

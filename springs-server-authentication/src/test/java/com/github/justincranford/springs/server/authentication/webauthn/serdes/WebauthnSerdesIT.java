@@ -30,6 +30,11 @@ import java.util.Set;
 
 @Slf4j
 public class WebauthnSerdesIT extends AbstractIT {
+//    @Test
+//    void testSerdesPersonUsernamePasswordAuthenticatedToken() throws JsonProcessingException {
+//        PersonUsernamePasswordAuthenticatedToken
+//    }
+
     @Test
     void testSerdesBytes() throws JsonProcessingException {
         final Bytes bytes = Bytes.random();
