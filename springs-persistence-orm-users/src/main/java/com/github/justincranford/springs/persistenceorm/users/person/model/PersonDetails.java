@@ -61,6 +61,6 @@ public class PersonDetails implements UserDetails {
 
 	@Override
 	public List<SimpleGrantedAuthority> getAuthorities() {
-		return this.authorities;
+		return this.authorities == null ? List.of() : List.copyOf(this.authorities);
 	}
 }

@@ -141,7 +141,7 @@ public class HttpsClientApiAuthenticationIT extends AbstractIT {
 				verify(authenticationListener(), never()).onAbstractAuthenticationFailureEvent(any());
 			} else {
 				verify(authenticationListener(), times(1)).onAuthenticationSuccessEvent(any());
-				verify(authenticationListener(), times(1)).onAbstractAuthenticationFailureEvent(any());
+				verify(authenticationListener(), times(2)).onAbstractAuthenticationFailureEvent(any());
 			}
         } else {
 			Assertions.assertNull(authenticateJwtResponse);

@@ -52,9 +52,8 @@ public class ClientJwtAuthenticatedToken extends AbstractAuthenticationToken {
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	public List<GrantedAuthority> getAuthorities() {
-		return (List) this.authorities;
+		return this.authorities == null ? List.of() : List.copyOf(this.authorities);
 	}
 
     @Override
