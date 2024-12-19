@@ -43,5 +43,4 @@ public class PersonUsernamePasswordAuthenticatedToken extends AbstractAuthentica
 		}
 		super.setAuthenticated(true);
 	}
-
 }

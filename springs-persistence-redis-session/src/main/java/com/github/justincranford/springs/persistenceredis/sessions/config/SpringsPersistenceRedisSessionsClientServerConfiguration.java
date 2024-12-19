@@ -1,25 +1,31 @@
 package com.github.justincranford.springs.persistenceredis.sessions.config;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.github.justincranford.springs.persistenceredis.sessions.generator.CustomSessionIdGenerator;
+import com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers;
 import com.github.justincranford.springs.util.testcontainers.bootstrap.BootstrapTestContainers.ContainerDescriptor;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.jackson2.SimpleGrantedAuthorityMixin;
 import org.springframework.session.data.redis.RedisSessionRepository;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import org.springframework.session.data.redis.config.annotation.SpringSessionRedisConnectionFactory;
+import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
 import redis.embedded.RedisServer;
 
 import java.io.IOException;
@@ -62,8 +68,6 @@ import java.util.List;
 // * @see org.springframework.session.data.redis.SortedSetReactiveRedisSessionExpirationStore
  */
 @Configuration
-@Import(SpringsPersistenceRedisSessionsClientServerConfiguration.ExtraConfiguration.class)
-@EnableRedisHttpSession
 @Slf4j
 public class SpringsPersistenceRedisSessionsClientServerConfiguration {
     @Autowired
@@ -91,28 +95,19 @@ public class SpringsPersistenceRedisSessionsClientServerConfiguration {
         return redisServer;
     }
 
-    @Primary
+    /** @see org.springframework.boot.autoconfigure.session.RedisSessionConfiguration */
     @Bean
-    public LettuceConnectionFactory redisConnectionFactory() {
-        final String host = this.redisProperties.getHost();
-        final int port = this.redisProperties.getPort();
-        log.info("Creating redis client, host: {}, port: {}", host, port);
-        return new LettuceConnectionFactory(host, port);
+    public RedisSessionRepository redisSessionRepository(final RedisTemplate<String, Object> sessionRedisTemplate) {
+        return new RedisSessionRepository(sessionRedisTemplate);
     }
 
-    @Bean(name="springSessionDefaultRedisSerializer")
-    public RedisSerializer<Object> thisOne(final ObjectMapper springSessionDefaultRedisSerializer) {
-        return GenericJackson2JsonRedisSerializer.builder().objectMapper(springSessionDefaultRedisSerializer).build();
-    }
-
-    @Primary
     @Bean
-    public RedisTemplate<Object, Object> sessionRedisTemplate(
+    public RedisTemplate<String, Object> sessionRedisTemplate(
         final LettuceConnectionFactory redisConnectionFactory,
         final RedisSerializer<Object> springSessionDefaultRedisSerializer
     ) {
         final StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
-        final RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
+        final RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         redisTemplate.setKeySerializer(stringRedisSerializer);
         redisTemplate.setHashKeySerializer(stringRedisSerializer);
@@ -122,18 +117,47 @@ public class SpringsPersistenceRedisSessionsClientServerConfiguration {
         log.info("redisTemplate: {}", redisTemplate);
         return redisTemplate;
     }
+    @Bean
+    public RedisHttpSessionConfiguration redisHttpSessionConfiguration(
+        @SpringSessionRedisConnectionFactory ObjectProvider<RedisConnectionFactory> springSessionRedisConnectionFactory,
+        final ObjectMapper springSessionDefaultRedisSerializer,
+        final RedisConnectionFactory redisConnectionFactory
+    ) {
+        final RedisHttpSessionConfiguration config = new RedisHttpSessionConfiguration();
+        config.setSessionIdGenerator(new CustomSessionIdGenerator());
+        config.setMaxInactiveInterval(Duration.ofSeconds(7));
+        config.setRedisNamespace("justin:cranford");
+        config.setDefaultRedisSerializer(GenericJackson2JsonRedisSerializer.builder().objectMapper(springSessionDefaultRedisSerializer).build());
+        final ObjectProvider<RedisConnectionFactory> objectProvider = new ObjectProvider<>() {
+            @Override
+            public RedisConnectionFactory getObject() throws BeansException {
+                return redisConnectionFactory;
+            }
 
-    @Configuration
-    public static class ExtraConfiguration {
-        @Autowired
-        private RedisSessionRepository redisSessionRepository;
-
-        @PostConstruct
-        public void postConstruct() {
-            log.info("Add CustomSessionIdGenerator to sessionRepository: {}", this.redisSessionRepository.getClass().getCanonicalName());
-            this.redisSessionRepository.setSessionIdGenerator(new CustomSessionIdGenerator());
-            this.redisSessionRepository.setDefaultMaxInactiveInterval(Duration.ofMinutes(60));
-            this.redisSessionRepository.setRedisKeyNamespace("springs:sessions");
-        }
+        };
+        config.setRedisConnectionFactory(objectProvider, objectProvider);
+        return config;
     }
+
+    @Bean(name="springSessionDefaultRedisSerializer")
+    public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
+        final ObjectMapper objectMapper = SpringsUtilJsonConfiguration.newObjectMapper();
+        objectMapper.activateDefaultTyping(
+            LaissezFaireSubTypeValidator.instance,
+            ObjectMapper.DefaultTyping.NON_FINAL,
+            JsonTypeInfo.As.PROPERTY
+        );
+        objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class);
+
+        return GenericJackson2JsonRedisSerializer.builder().objectMapper(objectMapper).build();
+    }
+
+    @Bean
+    public LettuceConnectionFactory redisConnectionFactory() {
+        final String host = this.redisProperties.getHost();
+        final int port = this.redisProperties.getPort();
+        log.info("Creating redis client, host: {}, port: {}", host, port);
+        return new LettuceConnectionFactory(host, port);
+    }
+
 }

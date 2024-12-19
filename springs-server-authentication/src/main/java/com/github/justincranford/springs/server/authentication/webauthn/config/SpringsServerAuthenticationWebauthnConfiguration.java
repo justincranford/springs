@@ -9,6 +9,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.jackson2.SimpleGrantedAuthorityMixin;
 import org.springframework.security.web.webauthn.api.AttestationConveyancePreference;
 import org.springframework.security.web.webauthn.api.AuthenticationExtensionsClientInput;
 import org.springframework.security.web.webauthn.api.AuthenticationExtensionsClientInputs;
@@ -50,6 +52,8 @@ public class SpringsServerAuthenticationWebauthnConfiguration {
     }
 
     public static void updateObjectMapper(final ObjectMapper objectMapper) {
+        objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class);
+
         objectMapper.addMixIn(Bytes.class, WebauthnBytesMixIn.class);
 
         objectMapper.addMixIn(PublicKeyCredentialCreationOptions.class, WebauthnPublicKeyCredentialCreationOptionsMixIn.class);

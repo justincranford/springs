@@ -33,6 +33,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.session.SessionRepository;
+import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -58,6 +60,11 @@ import javax.net.ssl.SSLContext;
 @ActiveProfiles({"test"})
 @Slf4j
 public class AbstractIT {
+	@Autowired
+	@SuppressWarnings({"rawtypes"})
+	private SessionRepository sessionRepository;
+	@Autowired
+	private RedisSessionRepository redisSessionRepository;
 	@Autowired
     private MeterRegistry meterRegistry;
     @Autowired

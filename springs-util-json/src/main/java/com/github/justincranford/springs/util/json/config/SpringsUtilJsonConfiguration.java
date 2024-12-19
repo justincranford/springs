@@ -20,11 +20,14 @@ import org.springframework.context.annotation.Import;
 public class SpringsUtilJsonConfiguration {
 	@Bean
 	public ObjectMapper objectMapper() {
+		return newObjectMapper();
+	}
+
+	public static ObjectMapper newObjectMapper() {
 		return new ObjectMapper()
 		.registerModule(new JavaTimeModule())
 		.registerModule(new Jdk8Module())
 		.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-//		.setSerializationInclusion(JsonInclude.Include.ALWAYS)
 		.enable(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION)
 		.configure(SerializationFeature.INDENT_OUTPUT, true)
 		.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
