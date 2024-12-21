@@ -1,20 +1,19 @@
 package com.github.justincranford.springs.persistenceorm.users.persona.service;
 
+import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaProjectionIdAndPersonIdPassword;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.PersonaType;
+import com.github.justincranford.springs.persistenceorm.users.persona.exception.PersonaEmailNotFoundException;
+import com.github.justincranford.springs.persistenceorm.users.persona.model.PersonaDetails;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import com.github.justincranford.springs.persistenceorm.users.persona.exception.PersonaEmailNotFoundException;
-import com.github.justincranford.springs.persistenceorm.users.persona.model.PersonaDetails;
-import com.github.justincranford.springs.persistenceorm.users.persona.PersonaProjectionIdAndPersonIdPassword;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
-import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
-import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
-
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -42,7 +41,7 @@ public class PersonaService implements UserDetailsService {
 
 		final PersonaType personaType = personaOrm.personaType();
 		assert personaType != null;
-		final List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
+		final List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
 		return new PersonaDetails(emailAddressMixedCase, personOrm.id(), personaOrm.id(), authorities, true, true, true, true);
     }
 

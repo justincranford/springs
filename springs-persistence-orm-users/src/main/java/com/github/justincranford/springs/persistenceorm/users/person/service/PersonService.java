@@ -1,26 +1,25 @@
 package com.github.justincranford.springs.persistenceorm.users.person.service;
 
-import java.util.List;
-
+import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
+import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
+import com.github.justincranford.springs.persistenceorm.users.person.PersonProjectionIdPassword;
+import com.github.justincranford.springs.persistenceorm.users.person.exception.PersonUsernameNotFoundException;
+import com.github.justincranford.springs.persistenceorm.users.person.model.PersonDetails;
+import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.PersonaType;
+import com.github.justincranford.springs.persistenceorm.users.persona.exception.PersonaEmailNotFoundException;
+import com.github.justincranford.springs.util.basic.DateTimeUtil;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.github.justincranford.springs.persistenceorm.users.person.exception.PersonUsernameNotFoundException;
-import com.github.justincranford.springs.persistenceorm.users.persona.exception.PersonaEmailNotFoundException;
-import com.github.justincranford.springs.persistenceorm.users.person.model.PersonDetails;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonProjectionIdPassword;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
-import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
-import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm;
-import com.github.justincranford.springs.util.basic.DateTimeUtil;
-
-import jakarta.persistence.OptimisticLockException;
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -49,7 +48,7 @@ public class PersonService implements UserDetailsService {
 
 		final PersonaType personaType = personaOrm.personaType();
 		assert personaType != null;
-		final List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
+		final List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
 		return new PersonDetails(usernameMixedCase, personOrm.id(), personaOrm.id(), authorities, true, true, true, true);
 	}
 

@@ -61,7 +61,7 @@ public class SpringsServerAuthenticationWebauthnConfiguration {
 
     @PostConstruct
     public void postConstruct() {
-        updateObjectMapper(this.objectMapper);
+//        updateObjectMapper(this.objectMapper);
         updateObjectMapper(this.springSessionDefaultObjectMapper);
     }
 

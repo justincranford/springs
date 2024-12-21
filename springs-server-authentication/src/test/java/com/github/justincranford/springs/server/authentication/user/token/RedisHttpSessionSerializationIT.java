@@ -18,7 +18,10 @@ public class RedisHttpSessionSerializationIT extends AbstractIT {
     @Test
     @SuppressWarnings({"unchecked"})
     void testSecurityContextSerialization() {
-        final PersonDetails personDetails = PersonDetails.builder().username("admin1").authorities(List.of(new SimpleGrantedAuthority("ROLE_ADM"))).build();
+        final PersonDetails personDetails = PersonDetails.builder()
+            .username("admin1")
+            .authorities(List.of(new SimpleGrantedAuthority("ROLE_ADM")))
+            .build();
         final PersonUsernamePasswordAuthenticatedToken authentication = new PersonUsernamePasswordAuthenticatedToken(personDetails);
 
         final SecurityContext securityContext = SecurityContextHolder.createEmptyContext();

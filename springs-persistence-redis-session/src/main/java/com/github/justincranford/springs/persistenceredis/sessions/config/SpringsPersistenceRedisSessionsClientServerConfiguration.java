@@ -149,7 +149,7 @@ public class SpringsPersistenceRedisSessionsClientServerConfiguration {
     public ObjectMapper springSessionDefaultObjectMapper() {
         final ObjectMapper objectMapper = SpringsUtilJsonConfiguration.newObjectMapper();
 
-        // Registers SimpleGrantedAuthorityMixin and many others
+        // Registers CoreJackson2Module (e.g. SimpleGrantedAuthorityMixin) and many others
         objectMapper.registerModules(SecurityJackson2Modules.getModules(this.getClass().getClassLoader()));
 
         objectMapper.activateDefaultTyping(

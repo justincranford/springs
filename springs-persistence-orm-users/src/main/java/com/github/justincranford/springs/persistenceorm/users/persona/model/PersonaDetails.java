@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
@@ -34,7 +34,7 @@ public class PersonaDetails implements UserDetails {
 	private Long personaId;
 
 	@Builder.Default
-	private List<SimpleGrantedAuthority> authorities = new ArrayList<>(1);
+	private List<GrantedAuthority> authorities = new ArrayList<>(1);
 
 	@Builder.Default
 	private boolean accountNonExpired = true;
@@ -59,7 +59,7 @@ public class PersonaDetails implements UserDetails {
 	}
 
 	@Override
-	public List<SimpleGrantedAuthority> getAuthorities() {
+	public List<GrantedAuthority> getAuthorities() {
 		return this.authorities == null ? List.of() : List.copyOf(this.authorities);
 
 	}
