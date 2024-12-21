@@ -66,8 +66,6 @@ public class SpringsServerAuthenticationWebauthnConfiguration {
     }
 
     public static void updateObjectMapper(final ObjectMapper objectMapper) {
-//        objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class);
-
         objectMapper.addMixIn(Bytes.class, WebauthnBytesMixIn.class);
 
         objectMapper.addMixIn(PublicKeyCredentialCreationOptions.class, WebauthnPublicKeyCredentialCreationOptionsMixIn.class);

@@ -22,6 +22,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.session.data.redis.config.annotation.SpringSessionRedisConnectionFactory;
 import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
@@ -147,19 +148,10 @@ public class SpringsPersistenceRedisSessionsClientServerConfiguration {
     @Bean
     public ObjectMapper springSessionDefaultObjectMapper() {
         final ObjectMapper objectMapper = SpringsUtilJsonConfiguration.newObjectMapper();
-//        objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class);
 
-//        objectMapper.registerModule(new CoreJackson2Module());
-//        objectMapper.registerModule(new CasJackson2Module());
-//        objectMapper.registerModule(new WebJackson2Module());
-//        objectMapper.registerModule(new WebServletJackson2Module());
-//        objectMapper.registerModule(new WebServerJackson2Module());
-//        objectMapper.registerModule(new OAuth2ClientJackson2Module());
-//        objectMapper.registerModule(new Saml2Jackson2Module());
-//        final List<Module> modules = SecurityJackson2Modules.getModules(this.getClass().getClassLoader());
-//        log.info("Available Modules:\n{}", modules);
-//        objectMapper.registerModules(modules);
-//        log.info("Registered Modules:\n{}", objectMapper.getRegisteredModuleIds());
+        // Registers SimpleGrantedAuthorityMixin and many others
+        objectMapper.registerModules(SecurityJackson2Modules.getModules(this.getClass().getClassLoader()));
+
         objectMapper.activateDefaultTyping(
             LaissezFaireSubTypeValidator.instance,
             ObjectMapper.DefaultTyping.NON_FINAL,
