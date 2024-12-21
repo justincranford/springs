@@ -75,6 +75,9 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 	@Value("${server.address}")
 	private String serverAddress;
 
+	@Value("${server.port}")
+	private Integer serverPort;
+
 	@Primary
 	@Bean
 	public AuthenticationManager authenticationManager(final HttpSecurity http) throws Exception {
@@ -125,6 +128,7 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
     public SecurityFilterChain securityFilterChainUserUi(HttpSecurity http) throws Exception {
 		http.securityMatcher("/login", "/logout", "/default-ui.css", "/login/webauthn.js", "/login/webauthn", "/webauthn/**", "/secure/**")
 			.authorizeHttpRequests(authz -> authz
+				.requestMatchers("/webauthn/register").authenticated()
 				.requestMatchers("/login", "/logout", "/default-ui.css", "/login/webauthn.js", "/login/webauthn", "/webauthn/**").permitAll()
 				.requestMatchers("/secure/**").authenticated()
 			)
@@ -136,10 +140,23 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 			    .permitAll()
 				.defaultSuccessUrl("/secure/home", true)
 			)
+			/** @see org.springframework.security.web.webauthn.registration.DefaultWebAuthnRegistrationPageGeneratingFilter#HTML_TEMPLATE */
+			/** @see org.springframework.security.web.webauthn.registration.HttpSessionPublicKeyCredentialCreationOptionsRepository */
+			/** @see org.springframework.security.web.webauthn.registration.PublicKeyCredentialCreationOptionsFilter */
+			/** @see org.springframework.security.web.webauthn.registration.WebAuthnRegistrationFilter */
+
+			/** @see org.springframework.security.web.webauthn.authentication.HttpSessionPublicKeyCredentialRequestOptionsRepository */
+			/** @see org.springframework.security.web.webauthn.authentication.PublicKeyCredentialRequestOptionsFilter */
+			/** @see org.springframework.security.web.webauthn.authentication.PublicKeyCredentialRequestOptionsRepository */
+			/** @see org.springframework.security.web.webauthn.authentication.WebAuthnAuthentication */
+			/** @see org.springframework.security.web.webauthn.authentication.WebAuthnAuthenticationFilter */
+			/** @see org.springframework.security.web.webauthn.authentication.WebAuthnAuthenticationProvider */
+			/** @see org.springframework.security.web.webauthn.authentication.WebAuthnAuthenticationRequestToken */
+
 			.webAuthn((webAuthn) -> webAuthn
 				.rpName("Springs Server Authentication Relying Party")
 				.rpId(this.serverAddress)
-				.allowedOrigins("https://" + this.serverAddress)
+				.allowedOrigins("https://" + this.serverAddress + ":" + this.serverPort)
 			)
 			.logout(logout -> logout
 				.permitAll()
