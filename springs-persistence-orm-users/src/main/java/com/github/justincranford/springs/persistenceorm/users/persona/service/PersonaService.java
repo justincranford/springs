@@ -9,7 +9,6 @@ import com.github.justincranford.springs.persistenceorm.users.persona.exception.
 import com.github.justincranford.springs.persistenceorm.users.persona.model.PersonaDetails;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -41,7 +40,7 @@ public class PersonaService implements UserDetailsService {
 
 		final PersonaType personaType = personaOrm.personaType();
 		assert personaType != null;
-		final List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
+		final List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
 		return new PersonaDetails(emailAddressMixedCase, personOrm.id(), personaOrm.id(), authorities, true, true, true, true);
     }
 

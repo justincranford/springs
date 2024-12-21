@@ -13,7 +13,6 @@ import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -48,7 +47,7 @@ public class PersonService implements UserDetailsService {
 
 		final PersonaType personaType = personaOrm.personaType();
 		assert personaType != null;
-		final List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
+		final List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
 		return new PersonDetails(usernameMixedCase, personOrm.id(), personaOrm.id(), authorities, true, true, true, true);
 	}
 

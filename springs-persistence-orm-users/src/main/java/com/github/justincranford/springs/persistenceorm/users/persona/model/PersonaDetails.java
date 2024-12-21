@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
@@ -34,7 +35,7 @@ public class PersonaDetails implements UserDetails {
 	private Long personaId;
 
 	@Builder.Default
-	private List<GrantedAuthority> authorities = new ArrayList<>(1);
+	private List<SimpleGrantedAuthority> authorities = new ArrayList<>(1);
 
 	@Builder.Default
 	private boolean accountNonExpired = true;
