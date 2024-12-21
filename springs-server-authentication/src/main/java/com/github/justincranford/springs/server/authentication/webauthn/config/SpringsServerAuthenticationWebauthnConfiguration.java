@@ -1,7 +1,6 @@
 package com.github.justincranford.springs.server.authentication.webauthn.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.AttestationConveyancePreferenceMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.AuthenticationExtensionsClientInputMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.AuthenticationExtensionsClientInputsMixIn;
@@ -18,6 +17,7 @@ import com.github.justincranford.springs.server.authentication.webauthn.serdes.W
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.PublicKeyCredentialUserEntityMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.ResidentKeyRequirementMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.UserVerificationRequirementMixIn;
+import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.WebauthnBytesMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.WebauthnPublicKeyCredentialCreationOptionsMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.WebauthnPublicKeyCredentialRequestOptionsMixIn;
 import jakarta.annotation.PostConstruct;
@@ -64,7 +64,7 @@ public class SpringsServerAuthenticationWebauthnConfiguration {
     public static void updateObjectMapper(final ObjectMapper objectMapper) {
         objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class);
 
-        objectMapper.addMixIn(Bytes.class, WebauthnMixins.WebauthnBytesMixIn.class);
+        objectMapper.addMixIn(Bytes.class, WebauthnBytesMixIn.class);
 
         objectMapper.addMixIn(PublicKeyCredentialCreationOptions.class, WebauthnPublicKeyCredentialCreationOptionsMixIn.class);
         objectMapper.addMixIn(ImmutablePublicKeyCredentialUserEntity.class, PublicKeyCredentialUserEntityMixIn.class);
@@ -87,5 +87,7 @@ public class SpringsServerAuthenticationWebauthnConfiguration {
         objectMapper.addMixIn(AuthenticatorTransport.class, AuthenticatorTransportMixIn.class);
         objectMapper.addMixIn(CredProtectAuthenticationExtensionsClientInput.class, CredProtectAuthenticationExtensionsClientInputMixIn.class);
         objectMapper.addMixIn(CredProtect.class, CredProtectMixIn.class);
+
+        log.info("Registered Modules:\n{}", objectMapper.getRegisteredModuleIds());
     }
 }

@@ -30,19 +30,14 @@ import java.util.Set;
 
 @Slf4j
 public class WebauthnSerdesIT extends AbstractIT {
-//    @Test
-//    void testSerdesPersonUsernamePasswordAuthenticatedToken() throws JsonProcessingException {
-//        PersonUsernamePasswordAuthenticatedToken
-//    }
-
     @Test
-    void testSerdesBytes() throws JsonProcessingException {
+    void testSerdesBytes() {
         final Bytes bytes = Bytes.random();
 
-        final String serialized = objectMapper().writeValueAsString(bytes);
+        final byte[] serialized = springSessionDefaultRedisSerializer().serialize(bytes);
         log.info("Serialized: {}", serialized);
 
-        final Bytes deserialized = objectMapper().readValue(serialized, Bytes.class);
+        final Bytes deserialized = (Bytes) springSessionDefaultRedisSerializer().deserialize(serialized);
         log.info("Deserialized: {}\n", deserialized);
     }
 

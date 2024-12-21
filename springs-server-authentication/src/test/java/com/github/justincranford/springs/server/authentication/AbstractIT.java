@@ -31,6 +31,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.session.SessionRepository;
@@ -131,8 +132,13 @@ public class AbstractIT {
 	@Qualifier("ptlsSslContext")
 	private SSLContext ptlsSslContext; /** @see SpringsUtilTlsClientsConfiguration#ptlsSslContext */
 
+	/** @see com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration#objectMapper */
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	/** @see com.github.justincranford.springs.persistenceredis.sessions.config.SpringsPersistenceRedisSessionsClientServerConfiguration#springSessionDefaultRedisSerializer */
+	@Autowired
+	public RedisSerializer<Object> springSessionDefaultRedisSerializer;
 
 	@Autowired
 	private PrettyJson prettyJson;

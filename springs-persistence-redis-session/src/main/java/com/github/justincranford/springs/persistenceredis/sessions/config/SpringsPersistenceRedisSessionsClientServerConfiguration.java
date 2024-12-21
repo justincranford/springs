@@ -21,8 +21,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.jackson2.SimpleGrantedAuthorityMixin;
+import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.session.data.redis.config.annotation.SpringSessionRedisConnectionFactory;
 import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
@@ -147,7 +146,9 @@ public class SpringsPersistenceRedisSessionsClientServerConfiguration {
             ObjectMapper.DefaultTyping.NON_FINAL,
             JsonTypeInfo.As.PROPERTY
         );
-        objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class);
+//        objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class);
+        objectMapper.registerModules(SecurityJackson2Modules.getModules(SpringsPersistenceRedisSessionsClientServerConfiguration.class.getClassLoader()));
+        log.info("Registered Modules:\n{}", objectMapper.getRegisteredModuleIds());
 
         return GenericJackson2JsonRedisSerializer.builder().objectMapper(objectMapper).build();
     }
