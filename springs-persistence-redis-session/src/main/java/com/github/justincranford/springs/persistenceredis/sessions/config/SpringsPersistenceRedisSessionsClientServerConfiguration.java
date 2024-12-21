@@ -1,6 +1,7 @@
 package com.github.justincranford.springs.persistenceredis.sessions.config;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.github.justincranford.springs.persistenceredis.sessions.generator.CustomSessionIdGenerator;
@@ -133,7 +134,6 @@ public class SpringsPersistenceRedisSessionsClientServerConfiguration {
             public RedisConnectionFactory getObject() throws BeansException {
                 return redisConnectionFactory;
             }
-
         };
         config.setRedisConnectionFactory(objectProvider, objectProvider);
         return config;
@@ -151,6 +151,13 @@ public class SpringsPersistenceRedisSessionsClientServerConfiguration {
 
         // Registers CoreJackson2Module (e.g. SimpleGrantedAuthorityMixin) and many others
         objectMapper.registerModules(SecurityJackson2Modules.getModules(this.getClass().getClassLoader()));
+
+        // Relax deserialization to handle this cryptic Collections$UnmodifiableRandomAccessList nested serialization:
+        //    "authorities" : [ "java.util.Collections$UnmodifiableRandomAccessList", [ {
+        //      "@class" : "org.springframework.security.core.authority.SimpleGrantedAuthority",
+        //      "authority" : "ROLE_ADM"
+        //    } ] ],
+        objectMapper.configure(DeserializationFeature.FAIL_ON_TRAILING_TOKENS, false);
 
         objectMapper.activateDefaultTyping(
             LaissezFaireSubTypeValidator.instance,
