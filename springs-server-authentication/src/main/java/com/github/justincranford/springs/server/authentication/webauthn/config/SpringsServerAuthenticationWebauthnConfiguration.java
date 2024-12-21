@@ -23,9 +23,8 @@ import com.github.justincranford.springs.server.authentication.webauthn.serdes.W
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.jackson2.SimpleGrantedAuthorityMixin;
 import org.springframework.security.web.webauthn.api.AttestationConveyancePreference;
 import org.springframework.security.web.webauthn.api.AuthenticationExtensionsClientInput;
 import org.springframework.security.web.webauthn.api.AuthenticationExtensionsClientInputs;
@@ -52,17 +51,22 @@ import org.springframework.security.web.webauthn.api.UserVerificationRequirement
 @Slf4j
 @SuppressWarnings({"unused"})
 public class SpringsServerAuthenticationWebauthnConfiguration {
-    /** @see  com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration#objectMapper */
+    /** @see com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration#objectMapper */
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Qualifier("springSessionDefaultObjectMapper")
+    @Autowired
+    private ObjectMapper springSessionDefaultObjectMapper;
 
     @PostConstruct
     public void postConstruct() {
         updateObjectMapper(this.objectMapper);
+        updateObjectMapper(this.springSessionDefaultObjectMapper);
     }
 
     public static void updateObjectMapper(final ObjectMapper objectMapper) {
-        objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class);
+//        objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class);
 
         objectMapper.addMixIn(Bytes.class, WebauthnBytesMixIn.class);
 

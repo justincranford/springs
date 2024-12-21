@@ -6,6 +6,7 @@ import com.github.justincranford.springs.persistenceorm.clients.properties.Sprin
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
+import com.github.justincranford.springs.persistenceredis.sessions.config.SpringsPersistenceRedisSessionsClientServerConfiguration;
 import com.github.justincranford.springs.server.authentication.client.provider.ClientNameSecretAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.config.SpringsServerAuthenticationConfiguration;
 import com.github.justincranford.springs.server.authentication.event.listener.AuthenticationListener;
@@ -135,6 +136,11 @@ public class AbstractIT {
 	/** @see com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration#objectMapper */
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	/** @see SpringsPersistenceRedisSessionsClientServerConfiguration#springSessionDefaultObjectMapper */
+	@Qualifier("springSessionDefaultObjectMapper")
+	@Autowired
+	private ObjectMapper springSessionDefaultObjectMapper;
 
 	/** @see com.github.justincranford.springs.persistenceredis.sessions.config.SpringsPersistenceRedisSessionsClientServerConfiguration#springSessionDefaultRedisSerializer */
 	@Autowired

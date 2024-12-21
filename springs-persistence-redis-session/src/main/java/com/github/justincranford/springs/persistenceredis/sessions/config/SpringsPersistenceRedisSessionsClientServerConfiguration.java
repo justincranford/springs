@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +22,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.session.data.redis.config.annotation.SpringSessionRedisConnectionFactory;
 import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
@@ -119,14 +119,14 @@ public class SpringsPersistenceRedisSessionsClientServerConfiguration {
     @Bean
     public RedisHttpSessionConfiguration redisHttpSessionConfiguration(
         @SpringSessionRedisConnectionFactory ObjectProvider<RedisConnectionFactory> springSessionRedisConnectionFactory,
-        final ObjectMapper springSessionDefaultRedisSerializer,
+        RedisSerializer<Object> springSessionDefaultRedisSerializer,
         final RedisConnectionFactory redisConnectionFactory
     ) {
         final RedisHttpSessionConfiguration config = new RedisHttpSessionConfiguration();
         config.setSessionIdGenerator(new CustomSessionIdGenerator());
         config.setMaxInactiveInterval(Duration.ofSeconds(7));
         config.setRedisNamespace("justin:cranford");
-        config.setDefaultRedisSerializer(GenericJackson2JsonRedisSerializer.builder().objectMapper(springSessionDefaultRedisSerializer).build());
+        config.setDefaultRedisSerializer(springSessionDefaultRedisSerializer);
         final ObjectProvider<RedisConnectionFactory> objectProvider = new ObjectProvider<>() {
             @Override
             public RedisConnectionFactory getObject() throws BeansException {
@@ -139,18 +139,33 @@ public class SpringsPersistenceRedisSessionsClientServerConfiguration {
     }
 
     @Bean(name="springSessionDefaultRedisSerializer")
-    public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
+    public RedisSerializer<Object> springSessionDefaultRedisSerializer(@Qualifier("springSessionDefaultObjectMapper") final ObjectMapper springSessionDefaultObjectMapper) {
+        return GenericJackson2JsonRedisSerializer.builder().objectMapper(springSessionDefaultObjectMapper).build();
+    }
+
+    @Qualifier("springSessionDefaultObjectMapper")
+    @Bean
+    public ObjectMapper springSessionDefaultObjectMapper() {
         final ObjectMapper objectMapper = SpringsUtilJsonConfiguration.newObjectMapper();
+//        objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class);
+
+//        objectMapper.registerModule(new CoreJackson2Module());
+//        objectMapper.registerModule(new CasJackson2Module());
+//        objectMapper.registerModule(new WebJackson2Module());
+//        objectMapper.registerModule(new WebServletJackson2Module());
+//        objectMapper.registerModule(new WebServerJackson2Module());
+//        objectMapper.registerModule(new OAuth2ClientJackson2Module());
+//        objectMapper.registerModule(new Saml2Jackson2Module());
+//        final List<Module> modules = SecurityJackson2Modules.getModules(this.getClass().getClassLoader());
+//        log.info("Available Modules:\n{}", modules);
+//        objectMapper.registerModules(modules);
+//        log.info("Registered Modules:\n{}", objectMapper.getRegisteredModuleIds());
         objectMapper.activateDefaultTyping(
             LaissezFaireSubTypeValidator.instance,
             ObjectMapper.DefaultTyping.NON_FINAL,
             JsonTypeInfo.As.PROPERTY
         );
-//        objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class);
-        objectMapper.registerModules(SecurityJackson2Modules.getModules(SpringsPersistenceRedisSessionsClientServerConfiguration.class.getClassLoader()));
-        log.info("Registered Modules:\n{}", objectMapper.getRegisteredModuleIds());
-
-        return GenericJackson2JsonRedisSerializer.builder().objectMapper(objectMapper).build();
+        return objectMapper;
     }
 
     @Bean

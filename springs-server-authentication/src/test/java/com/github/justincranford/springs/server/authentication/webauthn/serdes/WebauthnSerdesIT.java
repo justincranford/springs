@@ -31,13 +31,13 @@ import java.util.Set;
 @Slf4j
 public class WebauthnSerdesIT extends AbstractIT {
     @Test
-    void testSerdesBytes() {
+    void testSerdesBytes() throws JsonProcessingException {
         final Bytes bytes = Bytes.random();
 
-        final byte[] serialized = springSessionDefaultRedisSerializer().serialize(bytes);
+        final String serialized = springSessionDefaultObjectMapper().writeValueAsString(bytes);
         log.info("Serialized: {}", serialized);
 
-        final Bytes deserialized = (Bytes) springSessionDefaultRedisSerializer().deserialize(serialized);
+        final Bytes deserialized = springSessionDefaultObjectMapper().readValue(serialized, Bytes.class);
         log.info("Deserialized: {}\n", deserialized);
     }
 
@@ -68,10 +68,10 @@ public class WebauthnSerdesIT extends AbstractIT {
             )
             .build();
 
-        final String serialized = objectMapper().writeValueAsString(publicKeyCredentialCreationOptions);
+        final String serialized = springSessionDefaultObjectMapper().writeValueAsString(publicKeyCredentialCreationOptions);
         log.info("Serialized: {}", serialized);
 
-        final PublicKeyCredentialCreationOptions deserialized = objectMapper().readValue(serialized, PublicKeyCredentialCreationOptions.class);
+        final PublicKeyCredentialCreationOptions deserialized = springSessionDefaultObjectMapper().readValue(serialized, PublicKeyCredentialCreationOptions.class);
         log.info("Deserialized: {}\n", deserialized);
     }
 
@@ -98,10 +98,10 @@ public class WebauthnSerdesIT extends AbstractIT {
             )
             .build();
 
-        final String serialized = objectMapper().writeValueAsString(publicKeyCredentialRequestOptions);
+        final String serialized = springSessionDefaultObjectMapper().writeValueAsString(publicKeyCredentialRequestOptions);
         log.info("Serialized: {}", serialized);
 
-        final PublicKeyCredentialRequestOptions deserialized = objectMapper().readValue(serialized, PublicKeyCredentialRequestOptions.class);
+        final PublicKeyCredentialRequestOptions deserialized = springSessionDefaultObjectMapper().readValue(serialized, PublicKeyCredentialRequestOptions.class);
         log.info("Deserialized: {}\n", deserialized);
 
     }

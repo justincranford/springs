@@ -5,7 +5,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.jackson2.SecurityJackson2Modules;
 
 @Configuration
 @Slf4j
@@ -21,7 +20,9 @@ public class SpringsPersistenceRedisSessionJsonSerdesConfiguration {
     }
 
     public static void updateObjectMapper(final ObjectMapper objectMapper) {
-        objectMapper. registerModules(SecurityJackson2Modules.getModules(SpringsPersistenceRedisSessionJsonSerdesConfiguration.class.getClassLoader()));
-        log.info("Registered Modules:\n{}", objectMapper.getRegisteredModuleIds());
+//        final List<Module> modules = SecurityJackson2Modules.getModules(SpringsPersistenceRedisSessionJsonSerdesConfiguration.class.getClassLoader());
+//        log.info("Available Modules:\n{}", modules);
+//        objectMapper.registerModules(modules);
+//        log.info("Registered Modules:\n{}", objectMapper.getRegisteredModuleIds());
     }
 }
