@@ -31,10 +31,11 @@ public class RedisHttpSessionSerializationIT extends AbstractIT {
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
         sessionRepository().save(session);
 
-        // Retrieve and validate the SecurityContext
+        // Retrieve SecurityContext, which implies deserialization
         final Session retrievedSession = sessionRepository().findById(session.getId());
         assertThat(retrievedSession).isNotNull();
 
+        // Validate contents of the Session
         final Object storedContext = retrievedSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertThat(storedContext).isInstanceOf(SecurityContext.class);
         final SecurityContext storedContext1 = (SecurityContext) storedContext;
