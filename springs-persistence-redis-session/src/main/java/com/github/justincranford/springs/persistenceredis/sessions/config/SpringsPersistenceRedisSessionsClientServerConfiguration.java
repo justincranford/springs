@@ -89,10 +89,6 @@ public class SpringsPersistenceRedisSessionsClientServerConfiguration {
         log.trace("Creating embedded redis server, host: {}, port: {}", host, port);
         final RedisServer redisServer = new RedisServer(port);
         log.info("Created embedded redis server, host: {}, port: {}", host, port);
-        if (!redisServer.isActive()) {
-            redisServer.start();
-            log.info("Started embedded redis server, host: {}, port: {}", host, port);
-        }
         return redisServer;
     }
 
