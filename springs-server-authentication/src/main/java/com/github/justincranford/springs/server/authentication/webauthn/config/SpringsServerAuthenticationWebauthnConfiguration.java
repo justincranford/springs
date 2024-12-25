@@ -13,7 +13,6 @@ import com.github.justincranford.springs.server.authentication.webauthn.serdes.W
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.WebauthnPublicKeyCredentialCreationOptionsMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.WebauthnPublicKeyCredentialRequestOptionsMixIn;
 import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
@@ -31,8 +30,56 @@ import org.springframework.security.web.webauthn.api.PublicKeyCredentialRequestO
 import org.springframework.security.web.webauthn.api.PublicKeyCredentialRpEntity;
 import org.springframework.security.web.webauthn.jackson.WebauthnJackson2Module;
 
+/**
+ * @see <a href="https://github.com/spring-projects/spring-security/tree/main/web/src/main/java/org/springframework/security/web/webauthn"/>
+ * <P/>
+ * GET /webauthn/registration => generate HTML page
+ * @see org.springframework.security.web.webauthn.registration.DefaultWebAuthnRegistrationPageGeneratingFilter
+ * @see org.springframework.security.web.webauthn.registration.PublicKeyCredentialCreationOptionsRepository
+ * @see org.springframework.security.web.webauthn.registration.HttpSessionPublicKeyCredentialCreationOptionsRepository
+ * x
+ * @see org.springframework.security.web.webauthn.management.PublicKeyCredentialUserEntityRepository
+ * @see org.springframework.security.web.webauthn.management.MapPublicKeyCredentialUserEntityRepository
+ * @see org.springframework.security.web.webauthn.api.PublicKeyCredentialUserEntity
+ * x
+ * @see org.springframework.security.web.webauthn.management.UserCredentialRepository
+ * @see org.springframework.security.web.webauthn.management.MapUserCredentialRepository
+ * @see org.springframework.security.web.webauthn.api.CredentialRecord
+ * <P/>
+ * POST or DELETE /webauthn/registration => insert or delete credential
+ * @see org.springframework.security.web.webauthn.registration.WebAuthnRegistrationFilter
+ * @see org.springframework.security.web.webauthn.registration.PublicKeyCredentialCreationOptionsRepository
+ * @see org.springframework.security.web.webauthn.api.PublicKeyCredentialUserEntity
+ * @see org.springframework.security.web.webauthn.management.UserCredentialRepository
+ * @see org.springframework.security.web.webauthn.api.CredentialRecord
+ * @see org.springframework.http.converter.HttpMessageConverter
+ * @see org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+ * @see org.springframework.security.web.webauthn.registration.WebAuthnRegistrationFilter.WebAuthnRegistrationRequest;
+ * @see org.springframework.security.web.webauthn.api.PublicKeyCredential
+ * @see org.springframework.security.web.webauthn.api.AuthenticatorAttestationResponse
+ * @see org.springframework.security.web.webauthn.management.RelyingPartyPublicKey
+ * @see org.springframework.security.web.webauthn.management.WebAuthnRelyingPartyOperations
+ * @see org.springframework.security.web.webauthn.api.PublicKeyCredentialCreationOptions
+ * @see org.springframework.security.web.webauthn.api.CredentialRecord
+ * @see org.springframework.security.web.webauthn.registration.WebAuthnRegistrationFilter.SuccessfulUserRegistrationResponse
+ * <P/>
+ * // POST /webauthn/register/options =>
+ * @see org.springframework.security.web.webauthn.registration.PublicKeyCredentialCreationOptionsFilter
+ * @see org.springframework.security.web.webauthn.registration.HttpSessionPublicKeyCredentialCreationOptionsRepository
+ * @see org.springframework.security.web.webauthn.management.WebAuthnRelyingPartyOperations
+ * @see org.springframework.http.converter.HttpMessageConverter
+ * @see org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+ * @see org.springframework.security.web.webauthn.api.PublicKeyCredentialCreationOptions
+ * @see org.springframework.security.web.webauthn.management.PublicKeyCredentialCreationOptionsRequest
+ * @see org.springframework.security.web.webauthn.api.CredentialRecord
+ * @see org.springframework.security.web.webauthn.management.RelyingPartyRegistrationRequest
+ * @see org.springframework.security.web.webauthn.api.PublicKeyCredentialRequestOptions
+ * @see org.springframework.security.web.webauthn.management.PublicKeyCredentialRequestOptionsRequest
+ * @see org.springframework.security.web.webauthn.api.PublicKeyCredentialUserEntity
+ * @see org.springframework.security.web.webauthn.management.RelyingPartyAuthenticationRequest
+ */
+
 @Configuration
-@Slf4j
 @SuppressWarnings({"unused"})
 public class SpringsServerAuthenticationWebauthnConfiguration {
     /** @see com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration#objectMapper */
@@ -45,7 +92,7 @@ public class SpringsServerAuthenticationWebauthnConfiguration {
 
     @PostConstruct
     public void postConstruct() {
-//        updateObjectMapper(this.objectMapper);
+        updateObjectMapper(this.objectMapper);
         updateObjectMapper(this.springSessionDefaultObjectMapper);
     }
 
@@ -74,7 +121,5 @@ public class SpringsServerAuthenticationWebauthnConfiguration {
 //        objectMapper.addMixIn(AuthenticatorTransport.class, AuthenticatorTransportMixIn.class);
         objectMapper.addMixIn(CredProtectAuthenticationExtensionsClientInput.class, CredProtectAuthenticationExtensionsClientInputMixIn.class);
         objectMapper.addMixIn(CredProtect.class, CredProtectMixIn.class);
-//
-//        log.info("Registered Modules:\n{}", objectMapper.getRegisteredModuleIds());
     }
 }
