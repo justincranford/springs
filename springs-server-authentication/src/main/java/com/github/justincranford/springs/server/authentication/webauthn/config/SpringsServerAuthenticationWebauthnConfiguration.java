@@ -6,12 +6,12 @@ import com.github.justincranford.springs.server.authentication.webauthn.serdes.W
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.AuthenticatorSelectionCriteriaMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.CredProtectAuthenticationExtensionsClientInputMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.CredProtectMixIn;
+import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.PublicKeyCredentialCreationOptionsMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.PublicKeyCredentialDescriptorMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.PublicKeyCredentialParametersMixIn;
+import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.PublicKeyCredentialRequestOptionsMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.PublicKeyCredentialRpEntityMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.PublicKeyCredentialUserEntityMixIn;
-import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.WebauthnPublicKeyCredentialCreationOptionsMixIn;
-import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.WebauthnPublicKeyCredentialRequestOptionsMixIn;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -86,6 +86,7 @@ public class SpringsServerAuthenticationWebauthnConfiguration {
     @Autowired
     private ObjectMapper objectMapper;
 
+    /** @see com.github.justincranford.springs.persistenceredis.sessions.config.SpringsPersistenceRedisSessionsClientServerConfiguration#springSessionDefaultObjectMapper  */
     @Qualifier("springSessionDefaultObjectMapper")
     @Autowired
     private ObjectMapper springSessionDefaultObjectMapper;
@@ -100,7 +101,7 @@ public class SpringsServerAuthenticationWebauthnConfiguration {
         objectMapper.registerModule(new WebauthnJackson2Module());
 //        objectMapper.addMixIn(Bytes.class, WebauthnBytesMixIn.class);
 
-        objectMapper.addMixIn(PublicKeyCredentialCreationOptions.class, WebauthnPublicKeyCredentialCreationOptionsMixIn.class);
+        objectMapper.addMixIn(PublicKeyCredentialCreationOptions.class, PublicKeyCredentialCreationOptionsMixIn.class);
         objectMapper.addMixIn(ImmutablePublicKeyCredentialUserEntity.class, PublicKeyCredentialUserEntityMixIn.class);
 //        objectMapper.addMixIn(PublicKeyCredentialUserEntity.class, PublicKeyCredentialUserEntityMixIn.class);
         objectMapper.addMixIn(PublicKeyCredentialRpEntity.class, PublicKeyCredentialRpEntityMixIn.class);
@@ -113,7 +114,7 @@ public class SpringsServerAuthenticationWebauthnConfiguration {
 //        objectMapper.addMixIn(ResidentKeyRequirement.class, ResidentKeyRequirementMixIn.class);
 //        objectMapper.addMixIn(UserVerificationRequirement.class, UserVerificationRequirementMixIn.class);
 //
-        objectMapper.addMixIn(PublicKeyCredentialRequestOptions.class, WebauthnPublicKeyCredentialRequestOptionsMixIn.class);
+        objectMapper.addMixIn(PublicKeyCredentialRequestOptions.class, PublicKeyCredentialRequestOptionsMixIn.class);
         objectMapper.addMixIn(ImmutableAuthenticationExtensionsClientInputs.class, AuthenticationExtensionsClientInputsMixIn.class);
         objectMapper.addMixIn(AuthenticationExtensionsClientInputs.class, AuthenticationExtensionsClientInputsMixIn.class);
         objectMapper.addMixIn(AuthenticationExtensionsClientInput.class, AuthenticationExtensionsClientInputMixIn.class);

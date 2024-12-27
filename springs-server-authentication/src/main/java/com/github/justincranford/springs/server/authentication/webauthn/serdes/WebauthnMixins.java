@@ -31,9 +31,9 @@ public class WebauthnMixins {
      * @see org.springframework.security.web.webauthn.api.Bytes
      */
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-    public static abstract class WebauthnBytesMixIn {
+    public static abstract class BytesMixIn {
         @JsonCreator
-        public WebauthnBytesMixIn(
+        public BytesMixIn(
                 @JsonProperty("bytes") byte[] bytes
         ) {
         }
@@ -43,9 +43,9 @@ public class WebauthnMixins {
      * @see org.springframework.security.web.webauthn.api.PublicKeyCredentialCreationOptions
      */
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-    public static abstract class WebauthnPublicKeyCredentialCreationOptionsMixIn {
+    public static abstract class PublicKeyCredentialCreationOptionsMixIn {
         @JsonCreator
-        public WebauthnPublicKeyCredentialCreationOptionsMixIn(
+        public PublicKeyCredentialCreationOptionsMixIn(
                 @JsonProperty("rp") PublicKeyCredentialRpEntity rp,
                 @JsonProperty("user") PublicKeyCredentialUserEntity user,
                 @JsonProperty("challenge") Bytes challenge,
@@ -153,9 +153,9 @@ public class WebauthnMixins {
      * @see org.springframework.security.web.webauthn.api.PublicKeyCredentialRequestOptions
      */
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-    public static abstract class WebauthnPublicKeyCredentialRequestOptionsMixIn {
+    public static abstract class PublicKeyCredentialRequestOptionsMixIn {
         @JsonCreator
-        public WebauthnPublicKeyCredentialRequestOptionsMixIn(
+        public PublicKeyCredentialRequestOptionsMixIn(
                 @JsonProperty("challenge") Bytes challenge,
                 @JsonProperty("timeout") Duration timeout,
                 @JsonProperty("rpId") String rpId,
