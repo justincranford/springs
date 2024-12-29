@@ -1,6 +1,7 @@
 package com.github.justincranford.springs.server.authentication.webauthn.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.justincranford.springs.server.authentication.webauthn.credential.config.SpringsServerAuthenticationWebauthnCredentialConfiguration;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.AuthenticationExtensionsClientInputMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.AuthenticationExtensionsClientInputsMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.AuthenticatorSelectionCriteriaMixIn;
@@ -12,10 +13,12 @@ import com.github.justincranford.springs.server.authentication.webauthn.serdes.W
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.PublicKeyCredentialRequestOptionsMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.PublicKeyCredentialRpEntityMixIn;
 import com.github.justincranford.springs.server.authentication.webauthn.serdes.WebauthnMixins.PublicKeyCredentialUserEntityMixIn;
+import com.github.justincranford.springs.server.authentication.webauthn.user.config.SpringsServerAuthenticationWebauthnUserConfiguration;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.web.webauthn.api.AuthenticationExtensionsClientInput;
 import org.springframework.security.web.webauthn.api.AuthenticationExtensionsClientInputs;
 import org.springframework.security.web.webauthn.api.AuthenticatorSelectionCriteria;
@@ -65,6 +68,7 @@ import org.springframework.security.web.webauthn.jackson.WebauthnJackson2Module;
  * <P/>
  * // POST /webauthn/register/options =>
  * @see org.springframework.security.web.webauthn.registration.PublicKeyCredentialCreationOptionsFilter
+ * @see org.springframework.security.web.webauthn.registration.PublicKeyCredentialCreationOptionsRepository
  * @see org.springframework.security.web.webauthn.registration.HttpSessionPublicKeyCredentialCreationOptionsRepository
  * @see org.springframework.security.web.webauthn.management.WebAuthnRelyingPartyOperations
  * @see org.springframework.http.converter.HttpMessageConverter
@@ -80,7 +84,12 @@ import org.springframework.security.web.webauthn.jackson.WebauthnJackson2Module;
  */
 
 @Configuration
-@SuppressWarnings({"unused"})
+@Import(
+    value={
+        SpringsServerAuthenticationWebauthnCredentialConfiguration.class,
+        SpringsServerAuthenticationWebauthnUserConfiguration.class
+    }
+)
 public class SpringsServerAuthenticationWebauthnConfiguration {
     /** @see com.github.justincranford.springs.util.json.config.SpringsUtilJsonConfiguration#objectMapper */
     @Autowired
