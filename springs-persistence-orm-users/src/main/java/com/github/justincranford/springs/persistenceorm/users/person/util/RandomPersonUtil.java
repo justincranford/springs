@@ -1,12 +1,5 @@
 package com.github.justincranford.springs.persistenceorm.users.person.util;
 
-import static com.github.justincranford.springs.util.basic.SecureRandomUtil.SECURE_RANDOM;
-import static com.github.justincranford.springs.util.basic.SecureRandomUtil.randomString;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.TimeZone;
-
 import com.github.justincranford.springs.persistenceorm.users.person.LanguageOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.NameOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
@@ -17,15 +10,25 @@ import com.github.justincranford.springs.persistenceorm.users.person.enums.Perso
 import com.github.justincranford.springs.util.basic.Base64Util;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 
-public class RandomPersonUtil {
+import java.time.LocalDate;
+import java.util.List;
+import java.util.TimeZone;
+
+import static com.github.justincranford.springs.util.basic.SecureRandomUtil.SECURE_RANDOM;
+import static com.github.justincranford.springs.util.basic.SecureRandomUtil.randomString;
+
+public final class RandomPersonUtil {
+	private RandomPersonUtil() { }
+
 	public static PersonOrm generatePerson() {
 		return PersonOrm.builder()
 			.username("username-" + randomString(Base64Util.URL, 32))
 			.password(PasswordOrm.builder().password("password" + randomString(Base64Util.URL, 32)).build())
 			.name(NameOrm.builder()
-				.first("First "   + randomString(Base64Util.URL, 32))
-				.middle("Middle " + randomString(Base64Util.URL, 32))
-				.last("Last "     + randomString(Base64Util.URL, 32))
+				.first("First "       + randomString(Base64Util.URL, 32))
+				.middle("Middle "     + randomString(Base64Util.URL, 32))
+				.last("Last "         + randomString(Base64Util.URL, 32))
+				.nickname("Nickname " + randomString(Base64Util.URL, 32))
 				.build())
 			.dateOfBirth(LocalDate.ofYearDay(SECURE_RANDOM.nextInt(100) + 1923, SECURE_RANDOM.nextInt(365) + 1))
 			.personStatus(SecureRandomUtil.randomEnumElement(PersonStatusType.class))

@@ -1,17 +1,9 @@
 package com.github.justincranford.springs.persistenceorm.example.apple;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.envers.Audited;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.example.bushel.BushelOrm;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,6 +23,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.envers.Audited;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Audited
@@ -43,7 +41,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-@SQLDelete(sql="UPDATE apple SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE id=? AND version=?")
+@SQLDelete(sql="UPDATE apple SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE internal_id=? AND version=?")
 @SQLRestriction(AbstractEntity.SQL_WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="apple_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 public class AppleOrm extends AbstractEntity {
@@ -65,14 +63,14 @@ public class AppleOrm extends AbstractEntity {
 	@Enumerated(EnumType.STRING)
 	@NotNull
 	private Type type;
-  
+
 	@Column(length=255,nullable=false)
-	@Size(min=0,max=255)
+	@Size(max=255)
 	@NotNull
 	@Builder.Default
 	private String description = "";
 
 	@ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="bushel_id",foreignKey=@ForeignKey(name="fk_apple_bushelid_2_bushel_id"))
+    @JoinColumn(name="bushel_internal_id",foreignKey=@ForeignKey(name="fk_apple_bushelinternalid_2_bushel_internal_id"))
     private BushelOrm bushel;
 }

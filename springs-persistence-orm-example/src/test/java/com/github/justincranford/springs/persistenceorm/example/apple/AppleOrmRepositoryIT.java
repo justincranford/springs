@@ -1,6 +1,13 @@
 package com.github.justincranford.springs.persistenceorm.example.apple;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.github.justincranford.springs.persistenceorm.example.AbstractIT;
+import com.github.justincranford.springs.persistenceorm.example.apple.AppleOrm.Type;
+import com.github.justincranford.springs.util.basic.SecureRandomUtil;
+import com.github.justincranford.springs.util.basic.StringUtil;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,16 +15,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import com.github.justincranford.springs.persistenceorm.example.AbstractIT;
-import com.github.justincranford.springs.persistenceorm.example.apple.AppleOrm.Type;
-import com.github.justincranford.springs.util.basic.SecureRandomUtil;
-import com.github.justincranford.springs.util.basic.StringUtil;
-
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 public class AppleOrmRepositoryIT extends AbstractIT {
@@ -42,16 +40,16 @@ public class AppleOrmRepositoryIT extends AbstractIT {
 		IntStream.range(appleOffsetStart, appleOffsetStart + args.numApples()).forEach(appleOffset -> {
 			final Type type = SecureRandomUtil.randomEnumElement(AppleOrm.Type.class);
 			final AppleOrm savedApple = super.appleOrmRepository().save(AppleOrm.builder().type(type).description(description + "_" + appleOffset).build());
-			final Optional<AppleOrm> appleById = super.appleOrmRepository().findById(savedApple.id());
+			final Optional<AppleOrm> appleById = super.appleOrmRepository().findById(savedApple.internalId());
 			assertThat(appleById).isPresent();
-			log.info("Apple By ID: {}\n{}\n", savedApple.id(), appleById.orElseThrow());
+			log.info("Apple By ID: {}\n{}\n", savedApple.internalId(), appleById.orElseThrow());
 		});
 		IntStream.range(appleOffsetStart, appleOffsetStart + args.numApples()).forEach(appleOffset -> {
 			final Type type = SecureRandomUtil.randomEnumElement(AppleOrm.Type.class);
 			final AppleOrm savedApple = super.appleOrmRepository().save(AppleOrm.builder().type(type).description("").build());
-			final Optional<AppleOrm> appleById = super.appleOrmRepository().findById(savedApple.id());
+			final Optional<AppleOrm> appleById = super.appleOrmRepository().findById(savedApple.internalId());
 			assertThat(appleById).isPresent();
-			log.info("Apple By ID: {}\n{}\n", savedApple.id(), appleById.orElseThrow());
+			log.info("Apple By ID: {}\n{}\n", savedApple.internalId(), appleById.orElseThrow());
 		});
 		final List<AppleOrm> applesAll = super.appleOrmRepository().findAll();
 		assertThat(applesAll).isNotNull().hasSize(args.numApples() * 2);

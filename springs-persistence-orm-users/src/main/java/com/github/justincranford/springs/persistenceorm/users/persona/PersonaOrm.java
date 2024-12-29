@@ -1,19 +1,10 @@
 package com.github.justincranford.springs.persistenceorm.users.persona;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.envers.Audited;
-import org.springframework.lang.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.PersonaType;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -37,13 +28,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.envers.Audited;
+import org.springframework.lang.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Audited
 @Table(name="persona")
 @ToString(callSuper=true,exclude="person")
 @Builder(toBuilder=true)
-@SQLDelete(sql="UPDATE persona SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE id=? AND version=?")
+@SQLDelete(sql="UPDATE persona SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE internal_id=? AND version=?")
 @SQLRestriction(AbstractEntity.SQL_WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="persona_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 @NoArgsConstructor
@@ -58,54 +56,54 @@ public class PersonaOrm extends AbstractEntity {
     @ElementCollection
     @CollectionTable(
 		name="persona_email_address",
-    	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name="fk_persona_email_address_persona_id"),
-		uniqueConstraints={@UniqueConstraint(name="idx_persona_email_address_persona_id_rank",columnNames={"persona_id","rank"})}
+    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
+    	foreignKey=@ForeignKey(name="fk_persona_email_address_persona_internal_id"),
+		uniqueConstraints={@UniqueConstraint(name="idx_persona_email_address_persona_internal_id_rank",columnNames={"persona_internal_id","rank"})}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @OrderBy("persona_id,rank")
+    @OrderBy("persona_internal_id,rank")
     @NotNull
-    @Size(min=0,max=5)
+    @Size(max=5)
     @Builder.Default
-    private List<com.github.justincranford.springs.persistenceorm.users.persona.EmailAddressOrm> emailAddresses = new ArrayList<>(2);
+    private List<com.github.justincranford.springs.persistenceorm.users.persona.EmailAddressOrm> emailAddresses = new ArrayList<>(1);
 
     @ElementCollection
     @CollectionTable(
 		name="persona_phone_number",
-    	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name="fk_persona_phone_number_persona_id"),
-		uniqueConstraints={@UniqueConstraint(name="idx_persona_phone_number_persona_id_rank",columnNames={"persona_id","rank"})}
+    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
+    	foreignKey=@ForeignKey(name="fk_persona_phone_number_persona_internal_id"),
+		uniqueConstraints={@UniqueConstraint(name="idx_persona_phone_number_persona_internal_id_rank",columnNames={"persona_internal_id","rank"})}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @OrderBy("persona_id,rank")
+    @OrderBy("persona_internal_id,rank")
     @NotNull
-    @Size(min=0,max=5)
+    @Size(max=5)
     @Builder.Default
     private List<com.github.justincranford.springs.persistenceorm.users.persona.PhoneNumberOrm> phoneNumbers = new ArrayList<>(1);
 
     @ElementCollection
     @CollectionTable(
 		name="persona_location_address",
-    	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name="fk_persona_location_address_persona_id"),
-		uniqueConstraints={@UniqueConstraint(name="idx_persona_location_address_persona_id_rank",columnNames={"persona_id","rank"})}
+    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
+    	foreignKey=@ForeignKey(name="fk_persona_location_address_persona_internal_id"),
+		uniqueConstraints={@UniqueConstraint(name="idx_persona_location_address_persona_internal_id_rank",columnNames={"persona_internal_id","rank"})}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @OrderBy("persona_id,rank")
+    @OrderBy("persona_internal_id,rank")
     @NotNull
-    @Size(min=0,max=5)
+    @Size(max=5)
     @Builder.Default
     private List<com.github.justincranford.springs.persistenceorm.users.persona.LocationAddressOrm> locationAddresses = new ArrayList<>(1);
 
     @ElementCollection
     @CollectionTable(
 		name="persona_url",
-    	joinColumns=@JoinColumn(name="personaId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name = "fk_persona_url_persona_id"),
-		uniqueConstraints={@UniqueConstraint(name="idx_persona_url_persona_id_rank",columnNames={"persona_id","rank"})}
+    	joinColumns=@JoinColumn(name="personaInternalId",referencedColumnName="internalId"),
+    	foreignKey=@ForeignKey(name = "fk_persona_url_persona_internal_id"),
+		uniqueConstraints={@UniqueConstraint(name="idx_persona_url_persona_internal_id_rank",columnNames={"persona_internal_id","rank"})}
     )
     @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @OrderBy("persona_id,rank")
+    @OrderBy("persona_internal_id,rank")
     @NotNull
     @Size(max=5)
     @Builder.Default
@@ -118,6 +116,6 @@ public class PersonaOrm extends AbstractEntity {
 
     @JsonBackReference
 	@ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="person_id",foreignKey=@ForeignKey(name="fk_persona_personid_2_person_id"))
+    @JoinColumn(name="person_internal_id",foreignKey=@ForeignKey(name="fk_persona_personinternalid_2_person_internal_id"))
     private PersonOrm person;
 }

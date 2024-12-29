@@ -37,7 +37,7 @@ import java.util.List;
 @Entity
 @Audited
 @Table(name="client")
-@SQLDelete(sql="UPDATE client SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE id=? AND version=?")
+@SQLDelete(sql="UPDATE client SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE internal_id=? AND version=?")
 @SQLRestriction(AbstractEntity.SQL_WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="client_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 @Getter(onMethod=@__(@JsonProperty))
@@ -70,9 +70,9 @@ public class ClientOrm extends AbstractEntity {
     @ElementCollection
     @CollectionTable(
 		name="client_timezones",
-    	joinColumns=@JoinColumn(name="clientId",referencedColumnName="id"),
-    	foreignKey=@ForeignKey(name = "fk_client_timezones_client_id"),
-    	indexes= {@Index(name="idx_client_timezones_client_id_rank",columnList="client_id,rank")}
+    	joinColumns=@JoinColumn(name="clientInternalId",referencedColumnName="internalId"),
+    	foreignKey=@ForeignKey(name = "fk_client_timezones_client_internal_id"),
+    	indexes= {@Index(name="idx_client_timezones_client_internal_id_rank",columnList="client_internal_id,rank")}
     )
     @OrderColumn(name="rank")
     @NotNull

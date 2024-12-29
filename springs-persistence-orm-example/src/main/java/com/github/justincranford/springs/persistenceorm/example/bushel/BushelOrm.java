@@ -1,16 +1,8 @@
 package com.github.justincranford.springs.persistenceorm.example.bushel;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.envers.Audited;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
 import com.github.justincranford.springs.persistenceorm.example.apple.AppleOrm;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -25,6 +17,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.envers.Audited;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Audited
@@ -36,7 +34,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-@SQLDelete(sql="UPDATE bushel SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE id=? AND version=?")
+@SQLDelete(sql="UPDATE bushel SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE internal_id=? AND version=?")
 @SQLRestriction(AbstractEntity.SQL_WHERE_CLAUSE)
 //@FilterDef(name="isNotDeletedBushelFilter", parameters=@ParamDef(name="deleteDateTime",type=OffsetDateTime.class))
 //@FilterDef(name="isDeletedBushelFilter", parameters=@ParamDef(name="deleteDateTime",type=OffsetDateTime.class))
@@ -45,7 +43,7 @@ import lombok.experimental.Accessors;
 @SequenceGenerator(sequenceName="bushel_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_SMALL)
 public class BushelOrm extends AbstractEntity {
 	@OneToMany(mappedBy="bushel",cascade=CascadeType.ALL,orphanRemoval=true,fetch=FetchType.LAZY)
-//	@JoinColumn(name="bushel_id")
+//	@JoinColumn(name="bushel_internal_id")
 	@NotNull
 	@Builder.Default
 	private Set<AppleOrm> apples = new HashSet<>();
@@ -54,7 +52,7 @@ public class BushelOrm extends AbstractEntity {
         this.apples.add(apple);
         apple.bushel(this);
     }
- 
+
     public void removeApple(AppleOrm apple) {
     	this.apples.remove(apple);
         apple.bushel(null);

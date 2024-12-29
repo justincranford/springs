@@ -58,7 +58,7 @@ public class AbstractEntity {
 
 	@Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE,generator=AbstractEntity.SEQUENCE_ID)
-    private Long id;
+    private Long internalId;
 
     @Version
     @Column(nullable=false,insertable=false,columnDefinition="bigint default 0")
@@ -143,7 +143,7 @@ public class AbstractEntity {
 	@Override
     public final boolean equals(Object o) {
 		// TODO Change id comparison to Object.equals
-		return (this == o) || ( (o != null) && (this.getClass().equals(o.getClass())) && (this.id == ((AbstractEntity)o).id) );
+		return (this == o) || ( (o != null) && (this.getClass().equals(o.getClass())) && (this.internalId == ((AbstractEntity)o).internalId) );
     }
 
     @Override

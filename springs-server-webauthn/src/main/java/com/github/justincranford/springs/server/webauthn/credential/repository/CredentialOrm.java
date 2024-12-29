@@ -1,14 +1,5 @@
 package com.github.justincranford.springs.server.webauthn.credential.repository;
 
-import static com.github.justincranford.springs.server.webauthn.util.ByteArrayUtil.decodeBase64Url;
-
-import java.util.Optional;
-import java.util.Set;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.envers.Audited;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.justincranford.springs.persistenceorm.base.entity.AbstractEntity;
@@ -21,7 +12,6 @@ import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import com.yubico.webauthn.data.PublicKeyCredentialType;
-
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -37,6 +27,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.envers.Audited;
+
+import java.util.Optional;
+import java.util.Set;
+
+import static com.github.justincranford.springs.server.webauthn.util.ByteArrayUtil.decodeBase64Url;
 
 @Entity
 @Audited
@@ -48,7 +46,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(fluent=true)
-@SQLDelete(sql="UPDATE credential SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE id=? AND version=?")
+@SQLDelete(sql="UPDATE credential SET pre_delete_date_time=CURRENT_TIMESTAMP WHERE internal_id=? AND version=?")
 @SQLRestriction(AbstractEntity.SQL_WHERE_CLAUSE)
 @SequenceGenerator(sequenceName="credential_sequence",name=AbstractEntity.SEQUENCE_ID,initialValue=AbstractEntity.SEQUENCE_ID_INITIAL_VALUE,allocationSize=AbstractEntity.SEQUENCE_ID_ALLOCATION_SIZE_MEDIUM)
 @SuppressWarnings({"deprecation"})
@@ -57,7 +55,7 @@ public class CredentialOrm extends AbstractEntity {
 
 	@JsonBackReference
 	@ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="user_identity_id",nullable=false)
+    @JoinColumn(name="user_identity_internal_id",nullable=false)
     private UserIdentityOrm                     userIdentity;            // RegisteredCredential.userHandle, UserIdentity.username/id/displayName
 
 	// TODO byte[]

@@ -41,7 +41,7 @@ public class PersonaService implements UserDetailsService {
 		final PersonaType personaType = personaOrm.personaType();
 		assert personaType != null;
 		final List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
-		return new PersonaDetails(emailAddressMixedCase, personOrm.id(), personaOrm.id(), authorities, true, true, true, true);
+		return new PersonaDetails(emailAddressMixedCase, personOrm.internalId(), personaOrm.internalId(), authorities, true, true, true, true);
     }
 
     @Transactional

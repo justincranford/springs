@@ -29,17 +29,12 @@ public class PersonService implements UserDetailsService {
     @Transactional
 	@Override
 	public PersonDetails loadUserByUsername(final String usernameMixedCase) throws UsernameNotFoundException {
-    	final String usernameLowerCase = usernameMixedCase.toLowerCase();
-		final PersonOrm personOrm = this.personOrmRepository.findByUsername(usernameLowerCase).orElseThrow(() -> {
-			log.debug("Person not found by username [{}]", usernameMixedCase);
-            return new PersonUsernameNotFoundException("Username not found");
-		});
-		log.trace("Person found by username, person: {}", personOrm);
+		final PersonOrm personOrm = loadPersonByUsername(usernameMixedCase);
 
 		final List<PersonaOrm> personaOrms = personOrm.personas();
 		if (personaOrms.isEmpty()) {
 			log.trace("Personas not found by person: {}", personOrm);
-			return new PersonDetails(usernameMixedCase, personOrm.id(), null, List.of(), true, true, true, true);
+			return new PersonDetails(usernameMixedCase, personOrm.internalId(), null, List.of(), true, true, true, true);
 		}
 
 		final PersonaOrm personaOrm = personaOrms.getFirst();
@@ -48,10 +43,21 @@ public class PersonService implements UserDetailsService {
 		final PersonaType personaType = personaOrm.personaType();
 		assert personaType != null;
 		final List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + personaType.name()));
-		return new PersonDetails(usernameMixedCase, personOrm.id(), personaOrm.id(), authorities, true, true, true, true);
+		return new PersonDetails(usernameMixedCase, personOrm.internalId(), personaOrm.internalId(), authorities, true, true, true, true);
 	}
 
-    @Transactional
+	@Transactional
+	public PersonOrm loadPersonByUsername(final String usernameMixedCase) {
+		final String usernameLowerCase = usernameMixedCase.toLowerCase();
+		final PersonOrm personOrm = this.personOrmRepository.findByUsername(usernameLowerCase).orElseThrow(() -> {
+			log.debug("Person not found by username [{}]", usernameMixedCase);
+            return new PersonUsernameNotFoundException("Username not found");
+		});
+		log.trace("Person found by username, person: {}", personOrm);
+		return personOrm;
+	}
+
+	@Transactional
     public PersonProjectionIdPassword findPersonIdPasswordByUsername(final String usernameMixedCase) throws UsernameNotFoundException {
     	final String usernameLowerCase = usernameMixedCase.toLowerCase();
 		final PersonProjectionIdPassword personProjectionIdPassword = this.personOrmRepository.findPersonProjectionIdPasswordByUsername(usernameLowerCase).orElseThrow(() -> {

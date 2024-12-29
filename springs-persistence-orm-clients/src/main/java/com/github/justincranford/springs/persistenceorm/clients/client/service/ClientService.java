@@ -30,7 +30,7 @@ public class ClientService implements UserDetailsService {
 		});
 		log.trace("Client found by name, client: {}", clientOrm);
 
-		return new ClientDetails(nameMixedCase, clientOrm.id(), clientOrm, true, true, true, true);
+		return new ClientDetails(nameMixedCase, clientOrm.internalId(), clientOrm, true, true, true, true);
 	}
 
 	@Transactional
