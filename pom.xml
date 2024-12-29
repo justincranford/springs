@@ -97,6 +97,20 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- Fix dup class pulled in by spring-boot-starter-test -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-test</artifactId>
+				<scope>test</scope>
+				<version>${project.parent.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>com.vaadin.external.google</groupId>
+						<artifactId>android-json</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
 			<!-- BOMS -->
 
 			<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom -->
