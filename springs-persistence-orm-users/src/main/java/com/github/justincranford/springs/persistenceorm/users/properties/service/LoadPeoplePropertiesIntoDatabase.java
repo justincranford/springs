@@ -1,14 +1,5 @@
 package com.github.justincranford.springs.persistenceorm.users.properties.service;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
-import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties.Person;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.github.justincranford.springs.persistenceorm.users.person.LanguageOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.NameOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PasswordOrm;
@@ -21,11 +12,18 @@ import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrm
 import com.github.justincranford.springs.persistenceorm.users.persona.PersonaOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.persona.PhoneNumberOrm;
 import com.github.justincranford.springs.persistenceorm.users.persona.UrlOrm;
+import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties;
+import com.github.justincranford.springs.persistenceorm.users.properties.SpringsPersistenceOrmUsersPeopleProperties.Person;
 import com.github.justincranford.springs.util.security.hashes.encoder.EncodeUtil;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Slf4j
@@ -80,6 +78,7 @@ public class LoadPeoplePropertiesIntoDatabase {
 			.middle(nameProperties.getMiddle())
 			.last(nameProperties.getLast())
 			.suffix(nameProperties.getSuffix())
+			.nickname(nameProperties.getNickname())
 			.build();
 	}
     private static List<LanguageOrm> languagesPropertiesToOrm(List<SpringsPersistenceOrmUsersPeopleProperties.Person.Language> languagesProperties) {

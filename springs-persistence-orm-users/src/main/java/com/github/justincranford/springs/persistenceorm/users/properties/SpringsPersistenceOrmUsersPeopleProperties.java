@@ -1,13 +1,4 @@
 package com.github.justincranford.springs.persistenceorm.users.properties;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
 
 import com.github.justincranford.springs.persistenceorm.users.person.enums.I18nLanguageType;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.L10nRegionType;
@@ -19,7 +10,6 @@ import com.github.justincranford.springs.persistenceorm.users.persona.enums.Loca
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.PersonaType;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.PhoneNumberType;
 import com.github.justincranford.springs.persistenceorm.users.persona.enums.URLType;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -28,6 +18,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @ConfigurationProperties(prefix="springs.persistenceorm.users", ignoreUnknownFields=false)
@@ -97,6 +96,8 @@ public class SpringsPersistenceOrmUsersPeopleProperties {
             private String last;
         	@Nullable
             private SuffixType suffix;
+            @Nullable
+            private String nickname;
         }
 
         @Validated
