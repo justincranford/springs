@@ -3,6 +3,7 @@ package com.github.justincranford.springs.server.authentication.client.service;
 import com.github.justincranford.springs.server.authentication.client.token.ClientNameSecretAuthenticatedToken;
 import com.github.justincranford.springs.util.basic.SecureRandomUtil;
 import com.github.justincranford.springs.util.basic.TextCodec;
+import com.github.justincranford.springs.util.jwt.AlgorithmUtil;
 import com.github.justincranford.springs.util.jwt.JwkSetUtil;
 import com.github.justincranford.springs.util.jwt.JwsDelegatingDecrypt;
 import com.github.justincranford.springs.util.jwt.JwsDelegatingVerify;
@@ -70,8 +71,9 @@ public class JwtIssuerService {
             final JWSSigner jwsSigner = JwtSignUtil.jwsSigner(randomJwk);
             return JwtSignUtil.sign(jwsHeader, jwtClaimsSet, jwsSigner);
         } else if (randomJwk.getAlgorithm() instanceof JWEAlgorithm jweAlgorithm) {
-            final JWEHeader    jweHeader    = new JWEHeader.Builder(jweAlgorithm, EncryptionMethod.A256CBC_HS512).type(JOSEObjectType.JWT).keyID(randomJwk.getKeyID()).build();
-            final JWEEncrypter jweEncrypter = JwtEncryptUtil.jweEncrypter(randomJwk, jweAlgorithm);
+            final EncryptionMethod encryptionMethod = AlgorithmUtil.pickEncryptionMethod(jweAlgorithm);
+            final JWEHeader        jweHeader        = new JWEHeader.Builder(jweAlgorithm, encryptionMethod).type(JOSEObjectType.JWT).keyID(randomJwk.getKeyID()).build();
+            final JWEEncrypter     jweEncrypter     = JwtEncryptUtil.jweEncrypter(randomJwk, jweAlgorithm);
             return JwtEncryptUtil.encrypt(jweHeader, jwtClaimsSet, jweEncrypter);
         }
         throw new IllegalStateException("Unsupported JWK from JWKSet");
