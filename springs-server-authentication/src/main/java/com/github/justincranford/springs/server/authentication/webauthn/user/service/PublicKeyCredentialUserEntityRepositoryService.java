@@ -59,12 +59,13 @@ public class PublicKeyCredentialUserEntityRepositoryService implements PublicKey
                 PersonOrm.builder()
                     .username(userEntity.getName())
                     .name(
-                        NameOrm.builder().first(userEntity.getDisplayName()).build()
+                        NameOrm.builder().nickname(userEntity.getDisplayName()).build()
                     )
                     .webauthnId(userEntity.getId().getBytes())
                     .personStatus(PersonStatusType.ACT)
                     .build()
             );
+            log.info("Name={} and ID={} didn't exist, created person {}", userEntity.getName(), userEntity.getId().getBytes(), savedPersonOrm.internalId());
         }
     }
 
@@ -80,7 +81,7 @@ public class PublicKeyCredentialUserEntityRepositoryService implements PublicKey
         return ImmutablePublicKeyCredentialUserEntity.builder()
             .name(personOrm.username())
             .id(new Bytes(personOrm.externalId()))
-            .displayName(personOrm.name().first())
+            .displayName(personOrm.name().nickname())
             .build();
     }
 }
