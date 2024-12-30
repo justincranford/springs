@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.0</version>
+		<version>3.4.1</version>
 		<relativePath/>
 	</parent>
 
@@ -98,20 +98,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- Fix dup class pulled in by spring-boot-starter-test -->
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-test</artifactId>
-				<scope>test</scope>
-				<version>${project.parent.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>com.vaadin.external.google</groupId>
-						<artifactId>android-json</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
 			<!-- BOMS -->
 
 			<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom -->
@@ -197,13 +183,13 @@
 			<dependency>
 				<groupId>com.nimbusds</groupId>
 				<artifactId>nimbus-jose-jwt</artifactId>
-				<version>9.47</version>
+				<version>9.48</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.google.crypto.tink/tink -->
 			<dependency>
 				<groupId>com.google.crypto.tink</groupId>
 				<artifactId>tink</artifactId>
-				<version>1.15.0</version>
+				<version>1.16.0</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
 			<dependency>
