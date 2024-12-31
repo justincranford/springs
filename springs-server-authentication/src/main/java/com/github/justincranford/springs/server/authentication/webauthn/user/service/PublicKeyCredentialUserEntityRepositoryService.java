@@ -4,9 +4,8 @@ import com.github.justincranford.springs.persistenceorm.users.person.NameOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrm;
 import com.github.justincranford.springs.persistenceorm.users.person.PersonOrmRepository;
 import com.github.justincranford.springs.persistenceorm.users.person.enums.PersonStatusType;
-import com.github.justincranford.springs.persistenceorm.users.person.service.PersonService;
+import com.github.justincranford.springs.util.json.PrettyJson;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotSupportedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.webauthn.api.Bytes;
@@ -15,63 +14,110 @@ import org.springframework.security.web.webauthn.api.PublicKeyCredentialUserEnti
 import org.springframework.security.web.webauthn.management.PublicKeyCredentialUserEntityRepository;
 import org.springframework.stereotype.Service;
 
+import java.security.MessageDigest;
+
 @Service
 @Slf4j
 public class PublicKeyCredentialUserEntityRepositoryService implements PublicKeyCredentialUserEntityRepository {
+    public static final String ANONYMOUS_USER = "anonymousUser";
+
     @Autowired
     private PersonOrmRepository personOrmRepository;
 
     @Autowired
-    private PersonService personService;
+    private PrettyJson prettyJson;
 
     @Transactional
     @Override
-    public PublicKeyCredentialUserEntity findById(final Bytes id) {
-        return toPublicKeyCredentialUserEntity(this.personOrmRepository.findByWebauthnId(id.getBytes()).orElse(null));
-    }
-
-    @Transactional
-    @Override
-    public PublicKeyCredentialUserEntity findByUsername(final String username) {
-        return toPublicKeyCredentialUserEntity(this.personService.loadPersonByUsername(username));
-    }
-
-    @Transactional
-    @Override
-    public void save(final PublicKeyCredentialUserEntity userEntity) {
-        final PersonOrm byUsername   = this.personService.loadPersonByUsername(userEntity.getName().toLowerCase());
-        final PersonOrm byExternalId = this.personOrmRepository.findByWebauthnId(userEntity.getId().getBytes()).orElse(null);
-        if ((byUsername != null) && (byExternalId != null)) {
-            if (byUsername.internalId().longValue() != byExternalId.internalId().longValue()) {
-                log.error("Name={} vs ID={} mismatch, they refer to two different people: {} {}", userEntity.getName(), userEntity.getId().getBytes(), byUsername.internalId(), byExternalId.internalId());
-                throw new IllegalArgumentException("Name vs ID mismatch, they refer to two different people");
+    public PublicKeyCredentialUserEntity findById(final Bytes userId) {
+        try {
+            log.debug("Searching for WebAuthn user by userId: {}", userId);
+            final PersonOrm personOrm = this.personOrmRepository.findByWebauthnId(userId.getBytes()).orElse(null);
+            if (personOrm == null) {
+                log.info("No WebAuthn user found by userId: {}", userId);
+                return null;
             }
-            log.info("Person already exists with that name and externalId");
-        } else if (byUsername != null) {
-            log.error("Name={} vs ID={} mismatch, name exists but ID does not: {}", userEntity.getName(), userEntity.getId().getBytes(), byUsername.internalId());
-            throw new IllegalArgumentException("Name vs ID mismatch, name exists but ID does not");
-        } else if (byExternalId != null) {
-            log.error("Name={} vs ID={} mismatch, ID exists but Name does not: {}", userEntity.getName(), userEntity.getId().getBytes(), byExternalId.internalId());
-            throw new IllegalArgumentException("Name vs ID mismatch, ID exists but Name does not");
-        } else {
-            log.info("Name={} and ID={} don't exist, creating person now", userEntity.getName(), userEntity.getId().getBytes());
-            final PersonOrm savedPersonOrm = this.personOrmRepository.save(
-                PersonOrm.builder()
-                    .username(userEntity.getName())
-                    .name(
-                        NameOrm.builder().nickname(userEntity.getDisplayName()).build()
-                    )
-                    .webauthnId(userEntity.getId().getBytes())
-                    .personStatus(PersonStatusType.ACT)
-                    .build()
-            );
-            log.info("Name={} and ID={} didn't exist, created person {}", userEntity.getName(), userEntity.getId().getBytes(), savedPersonOrm.internalId());
+            log.info("Found WebAuthn user by userId: {}, userEntity: {}", userId, this.prettyJson.pretty(personOrm));
+            final PublicKeyCredentialUserEntity publicKeyCredentialUserEntity = toPublicKeyCredentialUserEntity(personOrm);
+            log.info("Returning WebAuthn user by userId: {}, publicKeyCredentialUserEntity: {}", userId, this.prettyJson.pretty(publicKeyCredentialUserEntity));
+            return publicKeyCredentialUserEntity;
+        } catch (Exception e) {
+            log.error("Error searching for WebAuthn user by userId: {}", userId, e);
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public PublicKeyCredentialUserEntity findByUsername(final String usernameMixedCase) {
+        try {
+            if (usernameMixedCase.equalsIgnoreCase(ANONYMOUS_USER)) {
+                log.info("Search for WebAuthn not supported for username: {}", usernameMixedCase);
+                return null;
+            }
+            log.debug("Searching for WebAuthn user by username: {}", usernameMixedCase);
+            final String usernameLowerCase = usernameMixedCase.toLowerCase();
+            final PersonOrm personOrm = this.personOrmRepository.findByUsername(usernameLowerCase).orElse(null);
+            if (personOrm == null) {
+                log.info("No WebAuthn user found by username: {}", usernameMixedCase);
+                return null;
+            }
+            log.info("Found WebAuthn user by username: {}, userEntity: {}", usernameMixedCase, this.prettyJson.pretty(personOrm));
+            final PublicKeyCredentialUserEntity publicKeyCredentialUserEntity = toPublicKeyCredentialUserEntity(personOrm);
+            log.info("Returning WebAuthn user by username: {}, publicKeyCredentialUserEntity: {}", usernameMixedCase, this.prettyJson.pretty(publicKeyCredentialUserEntity));
+            return publicKeyCredentialUserEntity;
+        } catch (Exception e) {
+            log.error("Error searching for WebAuthn user by username: {}", usernameMixedCase, e);
+            throw e;
+        }
+    }
+
+    @Transactional
+    @Override
+    public void save(final PublicKeyCredentialUserEntity publicKeyCredentialUserEntity) {
+        try {
+            if (publicKeyCredentialUserEntity.getName().equalsIgnoreCase(ANONYMOUS_USER)) {
+                throw new IllegalArgumentException("Saving WebAuthn user not allowed: " + publicKeyCredentialUserEntity.getName());
+            }
+            log.debug("Saving WebAuthn user: {}", this.prettyJson.pretty(publicKeyCredentialUserEntity));
+            final PublicKeyCredentialUserEntity byUserId   = findById(publicKeyCredentialUserEntity.getId());
+            final PublicKeyCredentialUserEntity byUsername = findByUsername(publicKeyCredentialUserEntity.getName());
+
+            if ((byUserId != null) && (byUsername != null)) {
+                if (!MessageDigest.isEqual(byUserId.getId().getBytes(), byUsername.getId().getBytes())) {
+                    log.error("Mismatch: Name and userId {} refer to different WebAuthn users: byId={} byUsername={}",
+                        this.prettyJson.pretty(publicKeyCredentialUserEntity), this.prettyJson.pretty(byUserId), this.prettyJson.pretty(byUsername));
+                    throw new IllegalArgumentException("Name vs userId refer to different WebAuthn users");
+                }
+                log.info("WebAuthn user already exists: {}", this.prettyJson.pretty(publicKeyCredentialUserEntity));
+            } else if (byUserId != null) {
+                log.error("userId={} exists but Name={} does not", this.prettyJson.pretty(publicKeyCredentialUserEntity), this.prettyJson.pretty(byUserId));
+                throw new IllegalArgumentException("Name vs userId mismatch, userId exists but Name does not");
+            } else if (byUsername != null) {
+                log.error("Name={} exists but userId={} does not", this.prettyJson.pretty(publicKeyCredentialUserEntity), this.prettyJson.pretty(byUsername));
+                throw new IllegalArgumentException("Name vs userId mismatch, Name exists but userId does not");
+            } else {
+                log.info("Creating WebAuthn user: {}", this.prettyJson.pretty(publicKeyCredentialUserEntity));
+                final PersonOrm savedPersonOrm = this.personOrmRepository.save(
+                    PersonOrm.builder()
+                             .username(publicKeyCredentialUserEntity.getName())
+                             .name(NameOrm.builder().nickname(publicKeyCredentialUserEntity.getDisplayName()).build())
+                             .webauthnId(publicKeyCredentialUserEntity.getId().getBytes())
+                             .personStatus(PersonStatusType.ACT)
+                             .build()
+                );
+                log.info("Created WebAuthn user: {}", this.prettyJson.pretty(savedPersonOrm));
+            }
+        } catch (Exception e) {
+            log.error("Error saving WebAuthn user: {}", this.prettyJson.pretty(publicKeyCredentialUserEntity), e);
+            throw e;
         }
     }
 
     @Override
-    public void delete(final Bytes id) {
-        throw new NotSupportedException("Delete by ID not supported at this time"); // TODO Maybe later?
+    public void delete(final Bytes userId) {
+        log.warn("Delete operation not supported for userId: {}", userId);
+        throw new UnsupportedOperationException("Delete by userId not supported at this time"); // TODO Maybe later?
     }
 
     private static PublicKeyCredentialUserEntity toPublicKeyCredentialUserEntity(final PersonOrm personOrm) {
