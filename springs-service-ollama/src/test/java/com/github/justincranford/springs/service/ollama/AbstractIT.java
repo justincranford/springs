@@ -40,6 +40,6 @@ public abstract class AbstractIT {
 	@DynamicPropertySource
 	static void properties(final DynamicPropertyRegistry registry) {
 		registry.add("bootstrap.testcontainers.mode",               () -> "disabled");
-		registry.add("bootstrap.testcontainers.containers.ollama1", () -> "ollama/ollama:0.4.3");
+		registry.add("bootstrap.testcontainers.containers.ollama1", () -> "ollama/ollama:0.5.4");
 	}
 }

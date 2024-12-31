@@ -1,18 +1,17 @@
 package com.github.justincranford.springs.util.testcontainers.containers;
 
-import java.time.Duration;
-
+import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.ollama.OllamaContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import lombok.extern.slf4j.Slf4j;
+import java.time.Duration;
 
 @Slf4j
 public class TestContainerOllama extends AbstractTestContainer<OllamaContainer> {
-	public static final String DOCKER_IMAGE_NAME = "ollama/ollama:0.4.3"; // Last checked on 2024-11-21
+	public static final String DOCKER_IMAGE_NAME = "ollama/ollama:0.5.4"; // Last checked on 2024-11-21
 //	public static final String LOCAL_DOCKER_IMAGE_NAME = "ollama-custom";
 	private static final String NETWORK_ALIAS = "ollama";
 	private static final Integer OLLAMA_PORT = 11434;

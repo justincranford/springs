@@ -46,7 +46,7 @@ public class BootstrapTestContainersIT extends AbstractIT {
 			@DynamicPropertySource
 			static void properties(final DynamicPropertyRegistry registry) {
 				registry.add("bootstrap.testcontainers.containers.redis1",         () -> "redis:7.4.1");
-				registry.add("bootstrap.testcontainers.containers.ollama1",        () -> "ollama/ollama:0.4.3");
+				registry.add("bootstrap.testcontainers.containers.ollama1",        () -> "ollama/ollama:0.5.4");
 			}
 		}
 		@Nested
@@ -66,7 +66,7 @@ public class BootstrapTestContainersIT extends AbstractIT {
 			static void properties(final DynamicPropertyRegistry registry) {
 				registry.add("bootstrap.testcontainers.containers.elasticsearch1", () -> "docker.elastic.co/elasticsearch/elasticsearch:8.16.0");
 				registry.add("bootstrap.testcontainers.containers.keycloak1", () -> "keycloak/keycloak:26.0.5");
-				registry.add("bootstrap.testcontainers.containers.selenium1", () -> "grafana/otel-lgtm:0.8.0");
+				registry.add("bootstrap.testcontainers.containers.selenium1", () -> "grafana/otel-lgtm:0.8.1");
 				registry.add("bootstrap.testcontainers.containers.kafka1", () -> "confluentinc/cp-kafka:7.7.1");
 				registry.add("bootstrap.testcontainers.containers.zipkin1", () -> "openzipkin/zipkin:3.4.2");
 				registry.add("bootstrap.testcontainers.containers.dynamodb1", () -> "amazon/dynamodb-local:2.5.3");
@@ -76,7 +76,7 @@ public class BootstrapTestContainersIT extends AbstractIT {
 				registry.add("bootstrap.testcontainers.containers.vault1", () -> "hashicorp/vault:1.18.2");
 				registry.add("bootstrap.testcontainers.containers.consul1", () -> "hashicorp/consul:1.19.2");
 				registry.add("bootstrap.testcontainers.containers.redis1", () -> "redis:7.4.1");
-				registry.add("bootstrap.testcontainers.containers.ollama1", () -> "ollama/ollama:0.4.3");
+				registry.add("bootstrap.testcontainers.containers.ollama1", () -> "ollama/ollama:0.5.4");
 			}
 		}
 	}
