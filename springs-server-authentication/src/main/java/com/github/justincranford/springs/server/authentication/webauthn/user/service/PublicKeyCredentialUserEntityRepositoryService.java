@@ -12,11 +12,10 @@ import org.springframework.security.web.webauthn.api.Bytes;
 import org.springframework.security.web.webauthn.api.ImmutablePublicKeyCredentialUserEntity;
 import org.springframework.security.web.webauthn.api.PublicKeyCredentialUserEntity;
 import org.springframework.security.web.webauthn.management.PublicKeyCredentialUserEntityRepository;
-import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 
-@Service
+//@Service
 @Slf4j
 public class PublicKeyCredentialUserEntityRepositoryService implements PublicKeyCredentialUserEntityRepository {
     public static final String ANONYMOUS_USER = "anonymousUser";

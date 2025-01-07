@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <!-- Fragments typically don't include head or meta tags -->
+</head>
+<body>
+<div th:fragment="navbar">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Secure Home</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <!-- User Management Menu -->
+                    <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUserManagement" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Users
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownUserManagement">
+                            <li><a class="dropdown-item" href="/user/add">Add</a></li>
+                            <li><a class="dropdown-item" href="/user/find">Find</a></li>
+                            <li><a class="dropdown-item" href="/user/update">Update</a></li>
+                            <li><a class="dropdown-item" href="/user/delete">Delete</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <!-- Profile Menu -->
+                    <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProfile" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Profile
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownProfile">
+                            <li><a class="dropdown-item" href="/settings/profile">Profile</a></li>
+                            <li><a class="dropdown-item" href="/settings/security">Security</a></li>
+                            <li><a class="dropdown-item" href="/webauthn/register">WebAuthn Register</a></li>
+                            <li><a class="dropdown-item" href="/logout">Log Out</a></li>
+                            <li>
+                                <form class="dropdown-item" th:action="@{/logout}" method="POST">
+                                    <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+                                    <button class="btn btn-link p-0 m-0 align-baseline" type="submit">Log Out</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- Login Link (visible only for unauthenticated users) -->
+                    <li class="nav-item" sec:authorize="isAnonymous()">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+</body>
+</html>

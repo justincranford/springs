@@ -19,7 +19,7 @@ public class SpringsServerAuthenticationSecurityFilterChainConfigurationIT exten
 
     @Test
     void testIndexHtml_notAuthenticated() {
-		RestTemplateUtil.anyGet(stlsRestTemplate(), httpsBaseUrl() + "/index.html", NO_AUTHORIZE, String.class);
+		RestTemplateUtil.anyGet(stlsRestTemplate(), httpsBaseUrl() + "/login.html", NO_AUTHORIZE, String.class);
 	}
 
     @Test

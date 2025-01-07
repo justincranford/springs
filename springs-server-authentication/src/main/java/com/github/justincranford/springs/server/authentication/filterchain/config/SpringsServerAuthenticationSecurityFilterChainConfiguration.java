@@ -5,7 +5,7 @@ import com.github.justincranford.springs.server.authentication.client.filter.Bea
 import com.github.justincranford.springs.server.authentication.client.provider.ClientJwtAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.client.provider.ClientNameSecretAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.filterchain.redirect.CustomAuthenticationEntryPoint;
-import com.github.justincranford.springs.server.authentication.redirect.controller.RedirectController;
+import com.github.justincranford.springs.server.authentication.ui.controller.UiController;
 import com.github.justincranford.springs.server.authentication.user.provider.PersonUsernamePasswordAuthenticationProvider;
 import com.github.justincranford.springs.server.authentication.user.provider.PersonaEmailPasswordAuthenticationProvider;
 import com.github.justincranford.springs.util.http.server.helloworld.HelloWorldController;
@@ -36,7 +36,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.session.DisableEncodeUrlFilter;
 
 /**
@@ -51,8 +51,7 @@ import org.springframework.security.web.session.DisableEncodeUrlFilter;
 //@EnableMethodSecurity(prePostEnabled=true, securedEnabled=true, jsr250Enabled=true)
 @Import(value = {
 	HelloWorldController.class,
-	RedirectController.class,
-//	LoginController.class,
+	UiController.class,
 	RedirectToLoginConfigurer.class
 })
 @RequiredArgsConstructor
@@ -133,10 +132,11 @@ public class SpringsServerAuthenticationSecurityFilterChainConfiguration {
 				.requestMatchers("/secure/**").authenticated()
 			)
 			.csrf(csrf -> csrf
-				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+				.csrfTokenRepository(new HttpSessionCsrfTokenRepository())
 			)
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.formLogin(form -> form
+				.loginPage("/login")
 			    .permitAll()
 				.defaultSuccessUrl("/secure/home", true)
 			)

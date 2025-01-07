@@ -3,6 +3,7 @@ package com.github.justincranford.springs.server.authentication.webauthn.credent
 import com.github.justincranford.springs.server.authentication.webauthn.credential.repository.PublicKeyCredentialOrm;
 import com.github.justincranford.springs.server.authentication.webauthn.credential.repository.PublicKeyCredentialRepositoryOrm;
 import com.github.justincranford.springs.util.json.PrettyJson;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.webauthn.api.Bytes;
@@ -22,6 +23,7 @@ public class PublicKeyCredentialRepositoryService implements UserCredentialRepos
     @Autowired
     private PrettyJson prettyJson;
 
+    @Transactional
     @Override
     public List<CredentialRecord> findByUserId(final Bytes userId) {
         try {
@@ -37,6 +39,7 @@ public class PublicKeyCredentialRepositoryService implements UserCredentialRepos
         }
     }
 
+    @Transactional
     @Override
     public CredentialRecord findByCredentialId(final Bytes credentialId) {
         try {
@@ -52,6 +55,7 @@ public class PublicKeyCredentialRepositoryService implements UserCredentialRepos
         }
     }
 
+    @Transactional
     @Override
     public void save(final CredentialRecord credentialRecord) {
         try {
@@ -66,6 +70,7 @@ public class PublicKeyCredentialRepositoryService implements UserCredentialRepos
         }
     }
 
+    @Transactional
     @Override
     public void delete(final Bytes credentialId) {
         try {
