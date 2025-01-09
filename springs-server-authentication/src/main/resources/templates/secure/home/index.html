@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>My Page</title>
+  <title>Welcome to Secure Home!</title>
+  <div th:replace="~{fragments/head-resources :: headResources}"></div>
 </head>
 <body>
-<div th:replace="fragments/navbar :: navbar"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 <div class="container mt-5">
   <h1>Welcome to Secure Home!</h1>
 </div>
