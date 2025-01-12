@@ -133,7 +133,7 @@ public class HttpsUserUiAuthenticationIT extends AbstractIT {
 			final String loggedInPageAsXml = loggedInPage.asXml();
 			log.info("Logged in page as XML:\n{}", loggedInPageAsXml);
 			final String loggedInPageTitleText = loggedInPage.getTitleText();
-			return loggedInPageTitleText.contains("Secure Home");
+			return loggedInPageTitleText.contains("Secure Springs");
 		}
 	}
 
