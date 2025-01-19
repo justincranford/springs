@@ -14,7 +14,7 @@
 </head>
 <body>
 <div th:fragment="navbar">
-    <nav class="navbar navbar-expand">
+    <nav class="navbar navbar-expand bg-body-secondary">
         <div class="container-fluid">
             <a class="navbar-brand" id="navbarBrand" type="button" role="button" href="javascript:void(0);">
                 Springs
@@ -28,15 +28,8 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownUserManagement">
                             <li><a class="dropdown-item" href="/user/add">Add</a></li>
-                            <li><a class="dropdown-item" href="/user/find">Find</a></li>
-                            <li><a class="dropdown-item" href="/user/update">Update</a></li>
-                            <li><a class="dropdown-item" href="/user/delete">Delete</a></li>
+                            <li><a class="dropdown-item" href="/user/users">View</a></li>
                         </ul>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ms-auto" sec:authorize="isAnonymous()">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login">Login</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto" sec:authorize="isAuthenticated()">
@@ -61,14 +54,18 @@
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/webauthn/register">WebAuthn Register</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/logout">Log Out</a></li>
                             <li>
-                                <form class="dropdown-item" th:action="@{/logout}" method="POST">
+                                <form th:action="@{/logout}" method="POST">
                                     <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
-                                    <button class="btn btn-link p-0 m-0 align-baseline" type="submit">Log Out</button>
+                                    <button class="dropdown-item btn btn-link" type="submit">Log Out</button>
                                 </form>
                             </li>
                         </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto" sec:authorize="isAnonymous()">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
                     </li>
                 </ul>
             </div>
