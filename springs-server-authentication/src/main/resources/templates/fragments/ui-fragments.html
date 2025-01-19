@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" data-bs-theme="dark">
 <head th:fragment="head">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -9,22 +9,23 @@
 
     <link href="/default-ui.css" rel="stylesheet"/>
     <script type="text/javascript" src="/login/webauthn.js"></script>
+
+    <script type="text/javascript" src="/theme.js"></script>
 </head>
 <body>
 <div th:fragment="navbar">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Springs</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <a class="navbar-brand" id="navbarBrand" type="button" role="button" href="javascript:void(0);">
+                Springs
+            </a>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav me-auto" sec:authorize="isAuthenticated()">
                     <!-- User Management Menu -->
-                    <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUserManagement" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <li class="nav-item dropdown">
+                        <button class="nav-link btn btn-secondary dropdown-toggle" type="button" role="button" id="navbarDropdownUserManagement" data-bs-toggle="dropdown" aria-expanded="false">
                             Users
-                        </a>
+                        </button>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownUserManagement">
                             <li><a class="dropdown-item" href="/user/add">Add</a></li>
                             <li><a class="dropdown-item" href="/user/find">Find</a></li>
@@ -33,16 +34,33 @@
                         </ul>
                     </li>
                 </ul>
-                <ul class="navbar-nav ms-auto">
-                    <!-- Profile Menu -->
-                    <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProfile" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Profile
-                        </a>
+                <ul class="navbar-nav ms-auto" sec:authorize="isAnonymous()">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto" sec:authorize="isAuthenticated()">
+                    <!-- Profile Menu (visible only for authenticated users) -->
+                    <li class="nav-item dropdown">
+                        <button class="nav-link btn btn-secondary dropdown-toggle" type="button" role="button" id="navbarDropdownProfile" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span sec:authentication="principal"></span>
+                        </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownProfile">
+                            <!-- Theme Switcher (visible to authenticated and unauthenticated users) -->
+                            <li>
+                                <div class="btn-group mt-2" role="group" aria-label="Theme switcher">
+                                    <a class="dropdown-item">Theme</a>
+                                    <button class="btn btn-light     btn-sm" onclick="setTheme('light')">Light</button>
+                                    <button class="btn btn-dark      btn-sm" onclick="setTheme('dark')">Dark</button>
+                                    <button class="btn btn-secondary btn-sm" onclick="setTheme('user')">User</button>
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/settings/profile">Profile</a></li>
                             <li><a class="dropdown-item" href="/settings/security">Security</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/webauthn/register">WebAuthn Register</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/logout">Log Out</a></li>
                             <li>
                                 <form class="dropdown-item" th:action="@{/logout}" method="POST">
@@ -51,10 +69,6 @@
                                 </form>
                             </li>
                         </ul>
-                    </li>
-                    <!-- Login Link (visible only for unauthenticated users) -->
-                    <li class="nav-item" sec:authorize="isAnonymous()">
-                        <a class="nav-link" href="/login">Login</a>
                     </li>
                 </ul>
             </div>
